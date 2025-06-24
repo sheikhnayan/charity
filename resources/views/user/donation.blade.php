@@ -148,7 +148,7 @@
                                                     <td colspan="1" class="text-center">No donations found.</td>
                                                 </tr>
                                             @else
-                                                @foreach (Auth::user()->doantions as $item)
+                                                @foreach (Auth::user()->donations as $item)
                                                     <tr>
                                                         <td>{{ $item->fist_name }} {{ $item->last_name }}</td>
                                                         <td>${{ $item->amount }}</td>
