@@ -6,6 +6,8 @@
   <title>Simple Page Builder</title>
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -168,6 +170,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      margin-bottom: 5px
     }
 
     .btn:hover {
@@ -220,6 +223,39 @@
         opacity: 0.6;
         outline: 2px dashed red;
     }
+
+    /* image modal css */
+
+    #largeImageModal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 99999;
+}
+#largeImageModal .modal-content {
+    background: #fff; border-radius: 10px; padding: 20px; position: relative;
+}
+#largeImageModal .close {
+    position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 32px; color: #333;
+}
+
+/* css for gallery */
+
+
+.gallery-select-img.selected {
+    border: 3px solid #007bff !important;
+    box-shadow: 0 0 0 2px #007bff33;
+}
+
+
+button a {
+    color: white;
+    text-decoration: none;
+}
+
+button a:hover {
+    color: black;
+
+}
+
   </style>
 </head>
 <body>
@@ -229,11 +265,13 @@
     <input type="hidden" name="page_id" id="page_id" value="{{ $data->id }}">
   <div class="app">
     <div class="sidebar">
+        <button class="btn"><a href="/admins/page"><i class="bi bi-arrow-left-short">back</i></a></button>
         <h2>Builder</h2>
         <div style="margin-bottom: 10px;">
             <button class="btn" onclick="showTab('componentsTab')">Components</button>
             <button class="btn" onclick="showTab('featuresTab')">Features</button>
             <button class="btn btn-success" onclick="saveBuilderState()">Save</button>
+
         </div>
 
         <div id="componentsTab" class="tab-section">
@@ -266,7 +304,7 @@
             <div class="component-item" draggable="true" data-type="whos-coming">Who's Coming</div>
             <div class="component-item" draggable="true" data-type="donation-form">Donation Form</div>
             <div class="component-item" draggable="true" data-type="donor-list">Donor List</div>
-            <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div>
+            {{-- <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div> --}}
             <div class="component-item" draggable="true" data-type="custom-form">Custom Form</div>
             <div class="component-item" draggable="true" data-type="contact-form">Contact Form</div>
             <div class="component-item" draggable="true" data-type="social-share">Sharing Buttons</div>
@@ -278,6 +316,7 @@
             <div class="component-item" draggable="true" data-type="sponsorships">Sponsorships</div>
             <div class="component-item" draggable="true" data-type="contact-us">Contact Us</div>
             <div class="component-item" draggable="true" data-type="site-goal">Site Goal</div>
+            <div class="component-item" draggable="true" data-type="image">Image</div>
             </div>
         </div>
     </div>
@@ -435,6 +474,37 @@
 
       let content;
       switch (type) {
+
+        case 'image':
+    content = document.createElement('div');
+    content.className = 'single-image-component';
+    // Store image data for this component
+    content._imageData = {
+        src: 'https://via.placeholder.com/400x250',
+        alt: 'Image',
+        width: '100%',
+        height: 'auto',
+        objectFit: 'cover',
+        link: '',
+        openInNewTab: false,
+    };
+    content.renderImage = function() {
+        const d = content._imageData;
+        content.innerHTML = `
+            <a href="${d.link || '#'}" ${d.link ? (d.openInNewTab ? 'target="_blank"' : '') : ''} class="image-link" style="display:inline-block;">
+                <img src="${d.src}" alt="${d.alt}" style="width:${d.width};height:${d.height};object-fit:${d.objectFit};border-radius:8px;cursor:pointer;transition:box-shadow .2s;" class="img-preview"/>
+            </a>
+        `;
+        // Click to open modal
+        const img = content.querySelector('img');
+        img.onclick = function(e) {
+            e.preventDefault();
+            openLargeImageModal(d.src, d.alt);
+        };
+    };
+    content.renderImage();
+break;
+
         // case 'heading':
         //   content = document.createElement('h2');
         //   content.textContent = 'New Heading';
@@ -509,7 +579,7 @@
             imgCustom.style.width = '100%';
             imgCustom.style.height = 'auto';
             imgCustom.style.objectFit = 'cover';
-            // Overlay text
+            // Overlay title
             const h3Custom = document.createElement('h3');
             h3Custom.textContent = 'Custom Banner Title';
             h3Custom.contentEditable = true;
@@ -524,25 +594,147 @@
             h3Custom.style.textAlign = 'center';
             h3Custom.style.width = '90%';
             h3Custom.style.pointerEvents = 'auto';
+            // Overlay subtitle
+            const subCustom = document.createElement('div');
+            subCustom.textContent = 'Custom Banner Subtitle';
+            subCustom.contentEditable = true;
+            subCustom.style.position = 'absolute';
+            subCustom.style.top = '55%';
+            subCustom.style.left = '50%';
+            subCustom.style.transform = 'translate(-50%, -50%)';
+            subCustom.style.margin = '0';
+            subCustom.style.color = 'white';
+            subCustom.style.textShadow = '0 2px 8px rgba(0,0,0,0.5)';
+            subCustom.style.fontSize = '1.2em';
+            subCustom.style.textAlign = 'center';
+            subCustom.style.width = '90%';
+            subCustom.style.pointerEvents = 'auto';
             content.appendChild(imgCustom);
             content.appendChild(h3Custom);
+            content.appendChild(subCustom);
+
+            // Store settings for serialization
+            content._customBannerData = {
+                imgSrc: '',
+                title: 'Custom Banner Title',
+                subtitle: 'Custom Banner Subtitle',
+                titleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                subtitleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                titleColor: '#ffffff',
+                subtitleColor: '#ffffff',
+                titleFontSize: '2.2em',
+                subtitleFontSize: '1.2em',
+                textAlign: 'center'
+            };
+
+            // Render function for custom banner
+            content.renderCustomBanner = function() {
+                const d = content._customBannerData;
+                imgCustom.src = d.imgSrc || '';
+                h3Custom.textContent = d.title || '';
+                h3Custom.style.textShadow = d.titleShadow || '';
+                h3Custom.style.color = d.titleColor || '#ffffff';
+                h3Custom.style.fontSize = d.titleFontSize || '2.2em';
+                h3Custom.style.textAlign = d.textAlign || 'center';
+                subCustom.textContent = d.subtitle || '';
+                subCustom.style.textShadow = d.subtitleShadow || '';
+                subCustom.style.color = d.subtitleColor || '#ffffff';
+                subCustom.style.fontSize = d.subtitleFontSize || '1.2em';
+                subCustom.style.textAlign = d.textAlign || 'center';
+            };
+            // Live update on edit
+            h3Custom.oninput = function() {
+                content._customBannerData.title = h3Custom.textContent;
+            };
+            subCustom.oninput = function() {
+                content._customBannerData.subtitle = subCustom.textContent;
+            };
+            content.renderCustomBanner();
         break;
 
         case 'gallery':
             content = document.createElement('div');
-            content.textContent = 'Gallery Placeholder';
-            content.style.border = '1px dashed #ccc';
-            content.style.padding = '40px';
-            content.style.textAlign = 'center';
+            content.className = 'gallery-component';
+            // Default state
+            content._galleryData = {
+                images: [],
+                columns: 3
+            };
+            content.renderGallery = function() {
+                const { images, columns } = content._galleryData;
+                if (!images.length) {
+                    content.innerHTML = '<div style="border: 1px dashed #ccc; padding: 40px; text-align: center;">Gallery Placeholder</div>';
+                    return;
+                }
+                if (images.length === 1) {
+                    content.innerHTML = `
+                        <div style="display:flex;justify-content:center;">
+                            <img src="${images[0]}" data-idx="0" class="gallery-img" style="width:auto;max-width:100%;height:220px;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                        </div>
+                    `;
+                    return;
+                }
+                // Responsive grid for multiple images
+                let html = `<div class="gallery-row" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
+                images.forEach((src, idx) => {
+                    html += `
+                        <div class="gallery-img-col" style="flex: 0 0 calc(${100/columns}% - 10px); max-width: calc(${100/columns}% - 10px); display: flex; justify-content: center;">
+                            <img src="${src}" data-idx="${idx}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                content.innerHTML = html;
+            };
+            content.renderGallery();
         break;
 
         case 'slider':
-            content = document.createElement('div');
-            content.textContent = 'Slider Placeholder';
-            content.style.border = '1px dashed #ccc';
-            content.style.padding = '40px';
-            content.style.textAlign = 'center';
-        break;
+    content = document.createElement('div');
+    content.className = 'slider-component';
+    // Default state
+    content._sliderData = {
+        images: [],
+        slidesToShow: 1,
+        slideSpeed: 2000 // ms
+    };
+    content._sliderInterval = null;
+    content._sliderStartIdx = 0;
+    content.renderSlider = function() {
+        const { images, slidesToShow } = content._sliderData;
+        if (!images.length) {
+            content.innerHTML = '<div style="border: 1px dashed #ccc; padding: 40px; text-align: center;">Slider Placeholder</div>';
+            return;
+        }
+        // Clamp slidesToShow
+        let showCount = Math.max(1, Math.min(slidesToShow, images.length));
+        // Track start index for manual/auto slide
+        let startIdx = content._sliderStartIdx || 0;
+        // Build slider HTML
+        let html = `<div class="slider-row" style="display: flex; overflow: hidden; gap: 10px; position:relative;">`;
+        for (let s = 0; s < showCount; s++) {
+            const idx = (startIdx + s) % images.length;
+            html += `
+                <div class="slider-img-col" style="flex: 0 0 calc(${100/showCount}% - 10px); max-width: calc(${100/showCount}% - 10px); display: flex; justify-content: center;">
+                    <img src="${images[idx]}" data-idx="${idx}" class="slider-img"
+                        style="display:block;width:auto;max-width:100%;height:220px;max-height:100%;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);"
+                        onclick="openSliderModal(this)">
+                </div>
+            `;
+        }
+        html += `</div>`;
+        content.innerHTML = html;
+        // Start auto-slide
+        if (content._sliderInterval) clearInterval(content._sliderInterval);
+        if (images.length > showCount) {
+            content._sliderInterval = setInterval(() => {
+                content._sliderStartIdx = (content._sliderStartIdx + 1) % images.length;
+                content.renderSlider();
+            }, content._sliderData.slideSpeed);
+        }
+    };
+    content.renderSlider();
+break;
 
         case 'visitor-upload':
             content = document.createElement('div');
@@ -589,11 +781,36 @@
 
         case 'full-width-text-image':
             content = document.createElement('div');
-            content.innerHTML = `
-                <h3 contenteditable="true" style="margin-bottom: 10px;">Full Width Title</h3>
-                <p contenteditable="true">This block takes the entire section and screen width.</p>
-                <img src="https://via.placeholder.com/1200x400" style="width:100%; height:auto; object-fit: cover;" />
-            `;
+            content.className = 'text-images-component';
+            // Default state with two texts and image
+            content._fwtiData = {
+                text1: 'Full Width Title',
+                text2: 'This block takes the entire section and screen width.',
+                fontSize1: '32px',
+                fontSize2: '18px',
+                color1: '#222222',
+                color2: '#444444',
+                imgSrc: 'https://via.placeholder.com/1200x400',
+                imgAlt: '',
+                imgHeight: 400,
+                imgCustomWidth: '100%',
+                imgCustomHeight: 'auto',
+                imgObjectFit: 'cover'
+            };
+            content.renderFWTI = function() {
+                const d = content._fwtiData;
+                content.innerHTML = `
+                    <h3
+                        style="margin-bottom: 10px; font-size:${d.fontSize1}; color:${d.color1};"
+                    >${d.text1}</h3>
+                    <p
+                        style="font-size:${d.fontSize2}; color:${d.color2};"
+                    >${d.text2}</p>
+                    <img src="${d.imgSrc}" alt="${d.imgAlt}"
+                        style="width:${d.imgCustomWidth};height:${d.imgCustomHeight};object-fit:${d.imgObjectFit};max-width:100%;margin-top:10px;${d.imgSrc ? '' : 'display:none;'}" />
+                `;
+            };
+            content.renderFWTI();
         break;
 
         case 'alert-message':
@@ -734,7 +951,39 @@
 
         case 'sell-tickets':
             content = document.createElement('div');
-            content.innerHTML = `<h4 contenteditable="true">Buy Tickets</h4><button class="btn">Buy Now</button>`;
+            // Store data for serialization and live editing
+            content._sellTicketsData = {
+                title: 'Buy Tickets',
+                buttonText: 'Buy Now',
+                buttonBg: '#007bff',
+                buttonColor: '#fff',
+                buttonPadding: '10px 20px',
+                buttonRadius: '4px'
+            };
+            content.renderSellTickets = function() {
+                const d = content._sellTicketsData;
+                content.innerHTML = `
+                    <h4 contenteditable="true" style="margin-bottom:10px;">${d.title}</h4>
+                    <button class="btn" style="
+                        background:${d.buttonBg};
+                        color:${d.buttonColor};
+                        padding:${d.buttonPadding};
+                        border-radius:${d.buttonRadius};
+                        border:none;
+                        font-size:16px;
+                    ">${d.buttonText}</button>
+                `;
+                // Live update on edit
+                const h4 = content.querySelector('h4');
+                h4.oninput = function() {
+                    content._sellTicketsData.title = h4.textContent;
+                };
+                const btn = content.querySelector('button');
+                btn.onclick = function() {
+                    // You can add your ticket logic here
+                };
+            };
+            content.renderSellTickets();
         break;
         case 'whos-coming':
             content = document.createElement('ul');
@@ -747,7 +996,7 @@
                     style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
                     <div class="block-container container " id="block-086fc842-f2e9-4d56-af2e-be42317d11e7"
                         data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
-                        data-action="https://gmu-events.com/ajax/block/b2dd141f-e084-45c7-ba93-d8b6158d65af/086fc842-f2e9-4d56-af2e-be42317d11e7"
+
                         style="margin-top: 3rem;">
 
 
@@ -770,7 +1019,7 @@
                                                 <label
                                                     for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b2"
                                                     class="form-label " style="color: #000; font-weight: bold;">
-                                                    Donate To the SHPS PTO
+                                                    Donate To the {{ $data->website->name}}
                                                 </label>
                                                 <div></div>
 
@@ -784,7 +1033,7 @@
                                                     <label class="btn btn-outline-primary m-1"
                                                     style="color: #2e4053 !important; border-color: #2e4053 !important;"
                                                         for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b24479f3e5-aac8-4044-ac77-7c3192197e63">Donate
-                                                        to the PTO</label>
+                                                        to the {{ $data->website->name}}</label>
                                                 </div>
                                             </div>
 
@@ -869,33 +1118,11 @@
                                                 <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
                                             </div>
 
-                                            <div class="col-12">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" role="switch"
-                                                        id="hear_from_myevent_086fc842-f2e9-4d56-af2e-be42317d11e7"
-                                                        name="hear_from_myevent">
-                                                    <label class="form-check-label"
-                                                        for="hear_from_myevent_086fc842-f2e9-4d56-af2e-be42317d11e7">Hear
-                                                        from MyEvent</label>
-                                                    <i role="button"
-                                                        class="fa-solid fa-circle-info text-info  btn-modal-info  "
-                                                        data-title="Hear from MyEvent"
-                                                        data-description="In compliance with the new Anti-Spam CASL legislation, we need your permission to continue communicating
-with you. Please confirm your interest in hearing from MyEvent."></i>
-                                                </div>
-                                            </div>
 
 
 
-                                            <input type="hidden" name="template"
-                                                value="7e729e7e3c534cbf918a45b5540afa84">
 
-                                            <div class="col-12">
-                                                <small class="text-muted">This form is protected by reCAPTCHA and the
-                                                    Google <a href="https://policies.google.com/privacy">Privacy Policy</a>
-                                                    and <a href="https://policies.google.com/terms">Terms of Service</a>
-                                                    apply.</small>
-                                            </div>
+
 
                                         </div>
                                     </div>
@@ -1608,7 +1835,49 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         const type = selectedComponent.dataset.type;
         let specificControls = '';
 
+
         switch (type) {
+
+            case 'image':
+            const d = content._imageData || {};
+            specificControls = `
+                <div class="form-group">
+                    <label>Upload Image</label>
+                    <input type="file" accept="image/*" onchange="uploadSingleImage(event)">
+                    <img src="${d.src}" class="image-preview" style="margin-top:8px;max-width:100%;border-radius:4px;"/>
+                </div>
+                <div class="form-group">
+                    <label>Alt Text</label>
+                    <input type="text" value="${d.alt || ''}" oninput="updateImageField(this.value, 'alt')">
+                </div>
+                <div class="form-group">
+                    <label>Width</label>
+                    <input type="text" value="${d.width || '100%'}" oninput="updateImageField(this.value, 'width')">
+                </div>
+                <div class="form-group">
+                    <label>Height</label>
+                    <input type="text" value="${d.height || 'auto'}" oninput="updateImageField(this.value, 'height')">
+                </div>
+                <div class="form-group">
+                    <label>Object Fit</label>
+                    <select oninput="updateImageField(this.value, 'objectFit')">
+                        <option value="cover" ${d.objectFit==='cover'?'selected':''}>Cover</option>
+                        <option value="contain" ${d.objectFit==='contain'?'selected':''}>Contain</option>
+                        <option value="fill" ${d.objectFit==='fill'?'selected':''}>Fill</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link (optional)</label>
+                    <input type="text" value="${d.link || ''}" oninput="updateImageField(this.value, 'link')">
+                </div>
+                <div class="form-group">
+                    <label>Open in new tab</label>
+                    <input type="checkbox" ${d.openInNewTab ? 'checked' : ''} onchange="updateImageField(this.checked, 'openInNewTab')">
+                </div>
+            `;
+        break;
+
+
             case 'image':
             specificControls = `
                 <div class="form-group">
@@ -1687,36 +1956,103 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
             case 'site-banner':
             case 'custom-banner':
-            specificControls = `
-                <div class="form-group">
-                <label>Banner Image</label>
-                <input type="file" accept="image/*" onchange="uploadBannerImage(event)">
-                </div>
-                <div class="form-group">
-                <label>Banner Text</label>
-                <input type="text" oninput="updateBannerText(this.value)"
-                </div>
-                <div class="form-group">
-                <label>Banner Alt Text</label>
-                <input type="text" value="${content.alt || ''}" oninput="updateAltText(this.value)">
-                </div>
-            `;
+                const bannerData = content._customBannerData || {
+                    imgSrc: '',
+                    title: 'Custom Banner Title',
+                    subtitle: 'Custom Banner Subtitle',
+                    titleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    subtitleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    titleColor: '#ffffff',
+                    subtitleColor: '#ffffff',
+                    titleFontSize: '2.2em',
+                    subtitleFontSize: '1.2em',
+                    textAlign: 'center'
+                };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Banner Image</label>
+                        <input type="file" accept="image/*" onchange="uploadCustomBannerImage(event)">
+                    </div>
+                    <div class="form-group">
+                        <label>Banner Title</label>
+                        <input type="text" value="${bannerData.title || ''}" oninput="updateCustomBannerField(this.value, 'title')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Color</label>
+                        <input type="color" value="${bannerData.titleColor || '#ffffff'}" oninput="updateCustomBannerField(this.value, 'titleColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Font Size</label>
+                        <input type="text" value="${bannerData.titleFontSize || '2.2em'}" oninput="updateCustomBannerField(this.value, 'titleFontSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>Banner Subtitle</label>
+                        <input type="text" value="${bannerData.subtitle || ''}" oninput="updateCustomBannerField(this.value, 'subtitle')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Color</label>
+                        <input type="color" value="${bannerData.subtitleColor || '#ffffff'}" oninput="updateCustomBannerField(this.value, 'subtitleColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Font Size</label>
+                        <input type="text" value="${bannerData.subtitleFontSize || '1.2em'}" oninput="updateCustomBannerField(this.value, 'subtitleFontSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Drop Shadow</label>
+                        <input type="text" value="${bannerData.titleShadow || ''}" oninput="updateCustomBannerField(this.value, 'titleShadow')">
+                        <small>e.g. 0 2px 8px rgba(0,0,0,0.5)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Drop Shadow</label>
+                        <input type="text" value="${bannerData.subtitleShadow || ''}" oninput="updateCustomBannerField(this.value, 'subtitleShadow')">
+                        <small>e.g. 0 2px 8px rgba(0,0,0,0.5)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Text Align</label>
+                        <select oninput="updateCustomBannerField(this.value, 'textAlign')">
+                            <option value="left" ${bannerData.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="center" ${bannerData.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="right" ${bannerData.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                        </select>
+                    </div>
+                `;
             break;
 
             case 'gallery':
+                const galleryData = content._galleryData || { images: [], columns: 3 };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Upload Images</label>
+                        <input type="file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
+                        <div style="margin-top:8px;">
+                            ${galleryData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(${idx})">`).join('')}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Columns</label>
+                        <input type="number" min="1" max="6" value="${galleryData.columns}" oninput="updateGalleryColumns(this.value)">
+                    </div>
+                `;
+            break;
             case 'slider':
-            // Default to 1 if not set
-            const slidesToShow = content.dataset.slidesToShow ? parseInt(content.dataset.slidesToShow, 10) : 1;
-            specificControls = `
-                <div class="form-group">
-                    <label>Manage Images</label>
-                    <button onclick="openImageManager()">Edit Gallery</button>
-                </div>
-                <div class="form-group">
-                    <label>Slides to Show</label>
-                    <input type="number" min="1" max="10" value="${slidesToShow}" oninput="updateSliderSlidesToShow(this)">
-                </div>
-            `;
+                const sliderData = content._sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Upload Images</label>
+                        <input type="file" accept="image/*" multiple onchange="uploadSliderImages(event)">
+                        <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
+                            ${sliderData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(${idx})">`).join('')}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Slides to Show</label>
+                        <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" oninput="updateSliderSlidesToShow(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Slide Speed (ms)</label>
+                        <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" oninput="updateSliderSlideSpeed(this.value)">
+                    </div>
+                `;
             break;
 
             case 'visitor-upload':
@@ -1791,16 +2127,58 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'full-width-text-image':
-            specificControls = `
-                <div class="form-group">
-                <label>Text Content</label>
-                <textarea oninput="updateContent(this.value)">${content.textContent}</textarea>
-                </div>
-                <div class="form-group">
-                <label>Background Image</label>
-                <input type="file" accept="image/*" onchange="uploadBackgroundImage(event)">
-                </div>
-            `;
+                const fwti = content._fwtiData || {};
+                specificControls = `
+                    <div class="form-group">
+                        <label>Title Text</label>
+                        <input type="text" value="${fwti.text1 || ''}" oninput="updateFWTIField(this.value, 'text1')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Font Size</label>
+                        <input type="text" value="${fwti.fontSize1 || '32px'}" oninput="updateFWTIField(this.value, 'fontSize1')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Color</label>
+                        <input type="color" value="${fwti.color1 || '#222222'}" oninput="updateFWTIField(this.value, 'color1')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Text</label>
+                        <input type="text" value="${fwti.text2 || ''}" oninput="updateFWTIField(this.value, 'text2')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Font Size</label>
+                        <input type="text" value="${fwti.fontSize2 || '18px'}" oninput="updateFWTIField(this.value, 'fontSize2')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Color</label>
+                        <input type="color" value="${fwti.color2 || '#444444'}" oninput="updateFWTIField(this.value, 'color2')">
+                    </div>
+                    <div class="form-group">
+                        <label>Image</label>
+                        <input type="file" accept="image/*" onchange="uploadFWTIImage(event)">
+                        <img src="${fwti.imgSrc}" style="max-width:100%;margin-top:8px;border-radius:4px;${fwti.imgSrc ? '' : 'display:none;'}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Image Alt Text</label>
+                        <input type="text" value="${fwti.imgAlt || ''}" oninput="updateFWTIField(this.value, 'imgAlt')">
+                    </div>
+                    <div class="form-group">
+                        <label>Image Width</label>
+                        <input type="text" value="${fwti.imgCustomWidth || '100%'}" oninput="updateFWTIField(this.value, 'imgCustomWidth')">
+                    </div>
+                    <div class="form-group">
+                        <label>Image Height</label>
+                        <input type="text" value="${fwti.imgCustomHeight || 'auto'}" oninput="updateFWTIField(this.value, 'imgCustomHeight')">
+                    </div>
+                    <div class="form-group">
+                        <label>Image Object Fit</label>
+                        <select oninput="updateFWTIField(this.value, 'imgObjectFit')">
+                            <option value="cover" ${fwti.imgObjectFit==='cover'?'selected':''}>Cover</option>
+                            <option value="contain" ${fwti.imgObjectFit==='contain'?'selected':''}>Contain</option>
+                            <option value="fill" ${fwti.imgObjectFit==='fill'?'selected':''}>Fill</option>
+                        </select>
+                    </div>
+                `;
             break;
 
             case 'alert-message':
@@ -1867,14 +2245,44 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 </div>
             `;
             break;
+
+
             case 'sell-tickets':
+                const sellData = content._sellTicketsData || {
+                    title: 'Buy Tickets',
+                    buttonText: 'Buy Now',
+                    buttonBg: '#007bff',
+                    buttonColor: '#fff',
+                    buttonPadding: '10px 20px',
+                    buttonRadius: '4px'
+                };
                 specificControls = `
                     <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" value="${sellData.title}" oninput="updateSellTicketsField(this.value, 'title')">
+                    </div>
+                    <div class="form-group">
                         <label>Button Text</label>
-                        <input type="text" value="${content.querySelector('button') ? content.querySelector('button').textContent : ''}" oninput="content.querySelector('button').textContent = this.value">
+                        <input type="text" value="${sellData.buttonText}" oninput="updateSellTicketsField(this.value, 'buttonText')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Background</label>
+                        <input type="color" value="${sellData.buttonBg}" oninput="updateSellTicketsField(this.value, 'buttonBg')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <input type="color" value="${sellData.buttonColor}" oninput="updateSellTicketsField(this.value, 'buttonColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Padding</label>
+                        <input type="text" value="${sellData.buttonPadding}" oninput="updateSellTicketsField(this.value, 'buttonPadding')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Border Radius</label>
+                        <input type="text" value="${sellData.buttonRadius}" oninput="updateSellTicketsField(this.value, 'buttonRadius')">
                     </div>
                 `;
-                break;
+            break;
             case 'whos-coming':
                 specificControls = `
                     <div class="form-group">
@@ -2065,20 +2473,20 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             </select>
             </div>
             <div class="form-group">
-            <label>Margin Left</label>
-            <input type="text" value="${content.style.marginLeft || ''}" oninput="updateStyle(this, 'marginLeft')">
+                <label>Margin Left</label>
+                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginLeft) || 0}" oninput="updateStyleWithUnit(this, 'marginLeft')">
             </div>
             <div class="form-group">
-            <label>Margin Right</label>
-            <input type="text" value="${content.style.marginRight || ''}" oninput="updateStyle(this, 'marginRight')">
+                <label>Margin Right</label>
+                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginRight) || 0}" oninput="updateStyleWithUnit(this, 'marginRight')">
             </div>
             <div class="form-group">
-            <label>Margin Top</label>
-            <input type="text" value="${content.style.marginTop || ''}" oninput="updateStyle(this, 'marginTop')">
+                <label>Margin Top</label>
+                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginTop) || 0}" oninput="updateStyleWithUnit(this, 'marginTop')">
             </div>
             <div class="form-group">
-            <label>Margin Bottom</label>
-            <input type="text" value="${content.style.marginBottom || ''}" oninput="updateStyle(this, 'marginBottom')">
+                <label>Margin Bottom</label>
+                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginBottom) || 0}" oninput="updateStyleWithUnit(this, 'marginBottom')">
             </div>
         `;
 
@@ -2093,19 +2501,431 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         }
     }
 
+// helper function for sell tickets
 
-    // ...add this function outside updatePropertyPanel:
-    function updateSliderSlidesToShow(input) {
-        if (!selectedComponent) return;
+function updateSellTicketsField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sellTicketsData) return;
+    content._sellTicketsData[field] = value;
+    if (typeof content.renderSellTickets === 'function') content.renderSellTickets();
+    updatePropertyPanel();
+}
+
+
+
+
+    // helper function for custom banner
+
+function uploadCustomBannerImage(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
         const content = getContentElement(selectedComponent);
-        content.dataset.slidesToShow = input.value;
-        // Re-render the slider preview if images are present
-        // (You may want to store selected images in content._sliderImages or similar)
-        // For now, just trigger selectImagesForComponent if needed
-        if (typeof selectImagesForComponent === 'function') {
-            selectImagesForComponent();
-        }
+        if (!content._customBannerData) return;
+        content._customBannerData.imgSrc = e.target.result;
+        if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
+    };
+    reader.readAsDataURL(file);
+}
+
+function updateCustomBannerField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._customBannerData) return;
+    // Font size: ensure px/em if not present
+    if (field === 'titleFontSize' || field === 'subtitleFontSize') {
+        content._customBannerData[field] = value.match(/(px|em|rem|%)$/) ? value : value + 'px';
+    } else {
+        content._customBannerData[field] = value;
     }
+    if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
+}
+
+
+//  helper function for mergin
+
+function updateStyleWithUnit(input, property) {
+    if (!selectedComponent) return;
+    // Always use px for margin fields
+    selectedComponent.style[property] = input.value + 'px';
+    // Update the input to reflect the actual value (removes any non-numeric input)
+    setTimeout(() => {
+        input.value = parseInt(selectedComponent.style[property]) || 0;
+    }, 0);
+}
+
+
+// slider IMAGE UPLOAD & COLUMN UPDATE HELPERS
+
+function uploadSliderImages(event) {
+    if (!selectedComponent) return;
+    const files = Array.from(event.target.files);
+    if (!files.length) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    let loaded = 0;
+    files.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            content._sliderData.images.push(e.target.result);
+            loaded++;
+            if (loaded === files.length) {
+                content.renderSlider();
+                updatePropertyPanel();
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function updateSliderSlidesToShow(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    // Update the slidesToShow value in the slider data
+    content._sliderData.slidesToShow = Math.max(1, Math.min(10, parseInt(val, 10) || 1));
+    content._sliderStartIdx = 0; // Reset to first slide
+    // Re-render the slider with the new slidesToShow value
+    content.renderSlider();
+    updatePropertyPanel();
+}
+
+function updateSliderSlideSpeed(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    content._sliderData.slideSpeed = Math.max(500, Math.min(10000, parseInt(val, 10) || 2000));
+    content.renderSlider();
+    updatePropertyPanel();
+}
+
+function openSliderModalFromPanel(idx) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    sliderModalComponent = content;
+    sliderModalImages = content._sliderData.images;
+    sliderModalIndex = idx;
+    showSliderModalImage();
+    document.getElementById('galleryLargeModal').style.display = 'flex';
+}
+
+
+
+
+
+
+
+
+let sliderModalImages = [];
+let sliderModalIndex = 0;
+let sliderModalComponent = null;
+
+function openSliderModal(imgElem) {
+    let comp = imgElem.closest('.component');
+    if (!comp) return;
+    const content = getContentElement(comp);
+    if (!content._sliderData) return;
+    sliderModalComponent = content;
+    sliderModalImages = content._sliderData.images;
+    sliderModalIndex = parseInt(imgElem.dataset.idx, 10) || 0;
+    showSliderModalImage();
+    document.getElementById('galleryLargeModal').style.display = 'flex';
+}
+
+function showSliderModalImage() {
+    const img = document.getElementById('galleryLargeModalImg');
+    if (!sliderModalImages.length) return;
+    if (sliderModalIndex < 0) sliderModalIndex = sliderModalImages.length - 1;
+    if (sliderModalIndex >= sliderModalImages.length) sliderModalIndex = 0;
+    img.src = sliderModalImages[sliderModalIndex];
+    // Add or update delete button
+    let delBtn = document.getElementById('galleryDeleteBtn');
+    if (!delBtn) {
+        delBtn = document.createElement('button');
+        delBtn.id = 'galleryDeleteBtn';
+        delBtn.textContent = 'Delete';
+        delBtn.className = 'btn btn-danger';
+        delBtn.style.position = 'absolute';
+        delBtn.style.bottom = '20px';
+        delBtn.style.right = '50%';
+        delBtn.style.transform = 'translateX(50%)';
+        delBtn.onclick = deleteSliderModalImage;
+        document.querySelector('#galleryLargeModal .modal-content').appendChild(delBtn);
+    } else {
+        delBtn.style.display = 'block';
+        delBtn.onclick = deleteSliderModalImage;
+    }
+}
+
+function deleteSliderModalImage() {
+    if (!sliderModalComponent || !sliderModalImages.length) return;
+    if (!confirm('Remove this image from slider?')) return;
+    sliderModalComponent._sliderData.images.splice(sliderModalIndex, 1);
+    if (sliderModalComponent.renderSlider) sliderModalComponent.renderSlider();
+    if (!sliderModalComponent._sliderData.images.length) {
+        closeGalleryLargeModal();
+        return;
+    }
+    if (sliderModalIndex >= sliderModalComponent._sliderData.images.length) {
+        sliderModalIndex = sliderModalComponent._sliderData.images.length - 1;
+    }
+    sliderModalImages = sliderModalComponent._sliderData.images;
+    showSliderModalImage();
+}
+
+// 3. Attach navigation for slider modal (and gallery modal) after DOM loaded
+window.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('galleryPrevBtn').onclick = function(e) {
+        e.stopPropagation();
+        if (sliderModalComponent && sliderModalImages.length) {
+            sliderModalIndex--;
+            showSliderModalImage();
+        } else if (galleryModalComponent && galleryModalImages.length) {
+            galleryModalIndex = (galleryModalIndex - 1 + galleryModalImages.length) % galleryModalImages.length;
+            showGalleryModalImage();
+        }
+    };
+    document.getElementById('galleryNextBtn').onclick = function(e) {
+        e.stopPropagation();
+        if (sliderModalComponent && sliderModalImages.length) {
+            sliderModalIndex++;
+            showSliderModalImage();
+        } else if (galleryModalComponent && galleryModalImages.length) {
+            galleryModalIndex = (galleryModalIndex + 1) % galleryModalImages.length;
+            showGalleryModalImage();
+        }
+    };
+});
+
+
+
+
+
+    // GALLERY IMAGE UPLOAD & COLUMN UPDATE HELPERS
+
+    function uploadGalleryImages(event) {
+    if (!selectedComponent) return;
+    const files = Array.from(event.target.files);
+    if (!files.length) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._galleryData) return;
+    let loaded = 0;
+    files.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            content._galleryData.images.push(e.target.result);
+            loaded++;
+            if (loaded === files.length) {
+                content.renderGallery();
+                updatePropertyPanel();
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function updateGalleryColumns(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._galleryData) return;
+    content._galleryData.columns = Math.max(1, Math.min(6, parseInt(val, 10) || 3));
+    content.renderGallery();
+    updatePropertyPanel();
+}
+
+let galleryModalImages = [];
+let galleryModalIndex = 0;
+let galleryModalComponent = null;
+
+function openGalleryModal(imgElem) {
+    let comp = imgElem.closest('.component');
+    if (!comp) return;
+    const content = getContentElement(comp);
+    if (!content._galleryData) return;
+    galleryModalComponent = content;
+    galleryModalImages = content._galleryData.images;
+    galleryModalIndex = parseInt(imgElem.dataset.idx, 10) || 0;
+    showGalleryModalImage();
+    document.getElementById('galleryLargeModal').style.display = 'flex';
+}
+
+function openGalleryModalFromPanel(idx) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._galleryData) return;
+    galleryModalComponent = content;
+    galleryModalImages = content._galleryData.images;
+    galleryModalIndex = idx;
+    showGalleryModalImage();
+    document.getElementById('galleryLargeModal').style.display = 'flex';
+}
+
+function showGalleryModalImage() {
+    const img = document.getElementById('galleryLargeModalImg');
+    if (!galleryModalImages.length) return;
+    galleryModalIndex = (galleryModalIndex + galleryModalImages.length) % galleryModalImages.length;
+    img.src = galleryModalImages[galleryModalIndex];
+
+    let delBtn = document.getElementById('galleryDeleteBtn');
+    if (!delBtn) {
+        delBtn = document.createElement('button');
+        delBtn.id = 'galleryDeleteBtn';
+        delBtn.textContent = 'Delete';
+        delBtn.className = 'btn btn-danger';
+        delBtn.style.position = 'absolute';
+        delBtn.style.bottom = '20px';
+        delBtn.style.right = '50%';
+        delBtn.style.transform = 'translateX(50%)';
+        delBtn.onclick = deleteGalleryModalImage;
+        document.querySelector('#galleryLargeModal .modal-content').appendChild(delBtn);
+    } else {
+        delBtn.style.display = 'block';
+    }
+}
+
+function closeGalleryLargeModal() {
+    document.getElementById('galleryLargeModal').style.display = 'none';
+}
+
+// --- FIX: Attach event listeners after DOM is loaded ---
+window.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('galleryPrevBtn').onclick = function(e) {
+        e.stopPropagation();
+        if (!galleryModalImages.length) return;
+        galleryModalIndex--;
+        showGalleryModalImage();
+    };
+    document.getElementById('galleryNextBtn').onclick = function(e) {
+        e.stopPropagation();
+        if (!galleryModalImages.length) return;
+        galleryModalIndex++;
+        showGalleryModalImage();
+    };
+});
+
+
+// document.getElementById('galleryPrevBtn').onclick = function(e) {
+//     e.stopPropagation();
+//     if (!galleryModalImages.length) return;
+//     galleryModalIndex = (galleryModalIndex - 1 + galleryModalImages.length) % galleryModalImages.length;
+//     showGalleryModalImage();
+// };
+// document.getElementById('galleryNextBtn').onclick = function(e) {
+//     e.stopPropagation();
+//     if (!galleryModalImages.length) return;
+//     galleryModalIndex = (galleryModalIndex + 1) % galleryModalImages.length;
+//     showGalleryModalImage();
+// };
+
+function deleteGalleryModalImage() {
+    if (!galleryModalComponent || !galleryModalImages.length) return;
+    if (!confirm('Remove this image from gallery?')) return;
+    galleryModalComponent._galleryData.images.splice(galleryModalIndex, 1);
+    if (galleryModalComponent.renderGallery) galleryModalComponent.renderGallery();
+    // If no images left, close modal
+    if (!galleryModalComponent._galleryData.images.length) {
+        closeGalleryLargeModal();
+        return;
+    }
+    // Adjust index if needed
+    if (galleryModalIndex >= galleryModalComponent._galleryData.images.length) {
+        galleryModalIndex = galleryModalComponent._galleryData.images.length - 1;
+    }
+    galleryModalImages = galleryModalComponent._galleryData.images;
+    showGalleryModalImage();
+}
+
+
+
+    // helper function for image component
+
+        function openLargeImageModal(src, alt) {
+    let modal = document.getElementById('largeImageModal');
+    document.getElementById('largeImageModalImg').src = src;
+    document.getElementById('largeImageModalAlt').textContent = alt || '';
+    modal.style.display = 'flex';
+}
+function closeLargeImageModal() {
+    const modal = document.getElementById('largeImageModal');
+    if (modal) modal.style.display = 'none';
+}
+
+
+function uploadSingleImage(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = getContentElement(selectedComponent);
+        if (!content._imageData) return;
+        content._imageData.src = e.target.result;
+        content.renderImage();
+        updatePropertyPanel();
+    };
+    reader.readAsDataURL(file);
+}
+function updateImageField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._imageData) return;
+    content._imageData[field] = value;
+    content.renderImage();
+    updatePropertyPanel();
+}
+
+    // helper function for full width text and image
+
+
+    function updateFWTIField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._fwtiData) return;
+    if (field === 'fontSize1' || field === 'fontSize2') {
+        content._fwtiData[field] = value.endsWith('px') || value.endsWith('em') || value.endsWith('%') ? value : value + 'px';
+    } else {
+        content._fwtiData[field] = value;
+    }
+    if (typeof content.renderFWTI === 'function') content.renderFWTI();
+}
+
+function uploadFWTIImage(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = getContentElement(selectedComponent);
+        if (!content._fwtiData) return;
+        content._fwtiData.imgSrc = e.target.result;
+        if (typeof content.renderFWTI === 'function') content.renderFWTI();
+    };
+    reader.readAsDataURL(file);
+}
+
+
+
+
+
+
+    // // ...add this function outside updatePropertyPanel:
+    // function updateSliderSlidesToShow(input) {
+    //     if (!selectedComponent) return;
+    //     const content = getContentElement(selectedComponent);
+    //     content.dataset.slidesToShow = input.value;
+    //     // Re-render the slider preview if images are present
+    //     // (You may want to store selected images in content._sliderImages or similar)
+    //     // For now, just trigger selectImagesForComponent if needed
+    //     if (typeof selectImagesForComponent === 'function') {
+    //         selectImagesForComponent();
+    //     }
+    // }
 
     // Helper function to convert RGB to Hex
     function rgbToHex(rgb) {
@@ -2119,13 +2939,71 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
     }
 
     // Update component style
-    function updateStyle(input, property) {
-      if (selectedComponent) {
-        const content = getContentElement(selectedComponent);
+//     function updateStyle(input, property) {
+//     if (!selectedComponent) return;
+//     const content = getContentElement(selectedComponent);
 
-        content.style[property] = input.value;
-      }
+//     // Update the style on the content element
+//     content.style[property] = input.value;
+
+//     // --- FIX: Also update the style on the parent .component for margin properties ---
+//     // This ensures margin changes are saved and restored correctly
+//     if (
+//         property === 'marginLeft' ||
+//         property === 'marginRight' ||
+//         property === 'marginTop' ||
+//         property === 'marginBottom' ||
+//         property === 'margin'
+//     ) {
+//         // Set the margin on the .component wrapper, not just the content
+//         selectedComponent.style[property] = input.value;
+//     }
+// }
+
+    function updateStyle(input, property) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+
+    // Margin properties: set on wrapper
+    if (
+        property === 'marginLeft' ||
+        property === 'marginRight' ||
+        property === 'marginTop' ||
+        property === 'marginBottom' ||
+        property === 'margin'
+    ) {
+        selectedComponent.style[property] = input.value;
     }
+    // Text align: set on wrapper AND content for best compatibility
+    else if (property === 'textAlign') {
+        selectedComponent.style.textAlign = input.value;
+        content.style.textAlign = input.value;
+    }
+    // All other styles: set on content
+    else {
+        content.style[property] = input.value;
+    }
+
+    // Update the property panel input to reflect the actual applied margin
+    setTimeout(() => {
+        if (
+            property === 'marginLeft' ||
+            property === 'marginRight' ||
+            property === 'marginTop' ||
+            property === 'marginBottom' ||
+            property === 'margin'
+        ) {
+            const propertyControls = document.getElementById('propertyControls');
+            if (propertyControls) {
+                const inputEl = propertyControls.querySelector(`input[oninput*="updateStyle"][oninput*="'${property}'"]`);
+                if (inputEl) {
+                    inputEl.value = selectedComponent.style[property] || '';
+                }
+            }
+        }
+    }, 0);
+}
+
 
     // Update image source
     function updateImage(src) {
@@ -2317,22 +3195,22 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             // You can replace this with a custom modal logic
         }
 
-        function uploadGalleryImages(event) {
-            const files = Array.from(event.target.files);
-            const content = getContentElement(selectedComponent);
-            content.innerHTML = ''; // Clear existing gallery
+        // function uploadGalleryImages(event) {
+        //     const files = Array.from(event.target.files);
+        //     const content = getContentElement(selectedComponent);
+        //     content.innerHTML = ''; // Clear existing gallery
 
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'gallery-image';
-                content.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        //     files.forEach(file => {
+        //         const reader = new FileReader();
+        //         reader.onload = function (e) {
+        //         const img = document.createElement('img');
+        //         img.src = e.target.result;
+        //         img.className = 'gallery-image';
+        //         content.appendChild(img);
+        //         };
+        //         reader.readAsDataURL(file);
+        //     });
+        // }
         let uploadedImages = []; // Store uploaded image URLs
 
         function openImageManager() {
@@ -3217,9 +4095,39 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             textDecoration: content.style.textDecoration || '',
             // Add more as needed
           };
+          data.wrapperStyle = {
+            margin: component.style.margin || '',
+            marginLeft: component.style.marginLeft || '',
+            marginRight: component.style.marginRight || '',
+            marginTop: component.style.marginTop || '',
+            marginBottom: component.style.marginBottom || ''
+            };
         }
         // Serialize per type
         switch (type) {
+
+            case 'sell-tickets':
+                data.sellTicketsData = content._sellTicketsData;
+                break;
+
+            case 'slider':
+                data.sliderData = content._sliderData;
+                break;
+
+
+            case 'gallery':
+                data.galleryData = content._galleryData;
+                break;
+
+
+            case 'image':
+                data.imageData = content._imageData;
+                break;
+
+            case 'full-width-text-image':
+                data.fwtiData = content._fwtiData;
+                break;
+
           case 'section-title':
             data.text = content.textContent;
             break;
@@ -3231,8 +4139,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             data.alt = content.alt;
             break;
           case 'custom-banner':
-            data.imgSrc = content.querySelector('img').src;
-            data.text = content.querySelector('h3').textContent;
+            data.customBannerData = content._customBannerData;
             break;
           case 'faq':
             data.faqData = content._faqData || {};
@@ -3268,17 +4175,95 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         const content = getContentElement(component);
         // Restore per type
         switch (data.type) {
+
+            case 'sell-tickets':
+                content._sellTicketsData = data.sellTicketsData || {
+                    title: 'Buy Tickets',
+                    buttonText: 'Buy Now',
+                    buttonBg: '#007bff',
+                    buttonColor: '#fff',
+                    buttonPadding: '10px 20px',
+                    buttonRadius: '4px'
+                };
+                content.renderSellTickets();
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                break;
+
+            case 'slider':
+                content._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                content.renderSlider();
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                break;
+
+            case 'gallery':
+                content._galleryData = data.galleryData || { images: [], columns: 3 };
+                content.renderGallery();
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                break;
+
+
+            case 'image':
+                content._imageData = data.imageData;
+                content.renderImage();
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                break;
+
+            // case 'image':
+            //         content = document.createElement('div');
+            //         content.className = 'single-image-component';
+            //         // Store image data for this component
+            //         content._imageData = {
+            //             src: 'https://via.placeholder.com/400x250',
+            //             alt: 'Image',
+            //             width: '100%',
+            //             height: 'auto',
+            //             objectFit: 'cover',
+            //             link: '',
+            //             openInNewTab: false,
+            //         };
+            //         content.renderImage = function() {
+            //             const d = content._imageData;
+            //             content.innerHTML = `
+            //                 <a href="${d.link || '#'}" ${d.link ? (d.openInNewTab ? 'target="_blank"' : '') : ''} class="image-link" style="display:inline-block;">
+            //                     <img src="${d.src}" alt="${d.alt}" style="width:${d.width};height:${d.height};object-fit:${d.objectFit};border-radius:8px;cursor:pointer;transition:box-shadow .2s;" class="img-preview"/>
+            //                 </a>
+            //             `;
+            //             // Click to open modal
+            //             const img = content.querySelector('img');
+            //             img.onclick = function(e) {
+            //                 e.preventDefault();
+            //                 openLargeImageModal(d.src, d.alt);
+            //             };
+            //         };
+            //         content.renderImage();
+            //     break;
+
+
+            case 'full-width-text-image':
+                content._fwtiData = data.fwtiData;
+                content.renderFWTI();
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                break;
+
+
           case 'section-title':
             content.textContent = data.text;
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'divider':
             if (data.style) {
               content.style.height = data.style.height;
               content.style.backgroundColor = data.style.backgroundColor;
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'site-banner':
             content.src = data.src;
@@ -3286,13 +4271,19 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'custom-banner':
-            content.querySelector('img').src = data.imgSrc;
-            content.querySelector('h3').textContent = data.text;
-            if (data.style) {
-              Object.assign(content.style, data.style);
-            }
+            content._customBannerData = data.customBannerData || {
+                imgSrc: '',
+                title: 'Custom Banner Title',
+                subtitle: 'Custom Banner Subtitle',
+                titleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                subtitleShadow: '0 2px 8px rgba(0,0,0,0.5)'
+            };
+            content.renderCustomBanner();
+            if (data.style) Object.assign(content.style, data.style);
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'faq':
             content._faqData = data.faqData;
@@ -3304,6 +4295,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'event-information':
             content._eventInfoData = data.eventInfoData;
@@ -3311,6 +4303,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'site-goal':
             content._goalData = data.goalData;
@@ -3318,6 +4311,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'text-images':
             content._textImagesData = data.textImagesData;
@@ -3325,6 +4319,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           case 'custom-form':
             content._customFormFields = data.customFormFields || [];
@@ -3332,6 +4327,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
           // ...add other types as needed...
           default:
@@ -3430,5 +4426,34 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         });
     });
 </script>
+
+{{-- modal html for image modal start --}}
+
+<div id="largeImageModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;">
+    <span class="close" onclick="closeLargeImageModal()">&times;</span>
+    <img id="largeImageModalImg" src="" alt="" style="max-width:80vw;max-height:80vh;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.2);"/>
+    <div id="largeImageModalAlt" style="margin-top:8px;color:#444;font-size:1.1em;"></div>
+  </div>
+</div>
+{{-- modal html for image modal end --}}
+
+
+{{-- modal html for gallery image modal start --}}
+
+<div id="galleryLargeModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;position:relative;">
+    <span class="close" onclick="closeGalleryLargeModal()">&times;</span>
+    <img id="galleryLargeModalImg" src="" alt="" style="max-width:80vw;max-height:80vh;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.2);"/>
+    <button id="galleryPrevBtn" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:2em;background:none;border:none;color:#333;cursor:pointer;">&#8592;</button>
+    <button id="galleryNextBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:2em;background:none;border:none;color:#333;cursor:pointer;">&#8594;</button>
+  </div>
+</div>
+
+
+
+
+{{-- modal html for gallery image modal end --}}
+
 </body>
 </html>
