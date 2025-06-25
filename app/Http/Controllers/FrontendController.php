@@ -95,6 +95,39 @@ class FrontendController extends Controller
         $add->last_name = $request->last_name;
         $add->email = $request->email;
         $add->website_id = $check->id;
+        $add->type = 'student';
+
+        if(isset($request->anonymous_donation)) {
+            $add->hide = 1;
+        } else {
+            $add->hide = 0;
+
+        }
+
+        $add->status = 0;
+        $add->save();
+
+
+        return redirect('/authorize/payment/'.$add->id)->with('success', 'Donation Pending');
+    }
+
+    public function donation_general(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'donate_now_amount' => 'required|numeric',
+            // 'user_id' => 'required|exists:users,id',
+        ]);
+
+        $url = url()->current();
+        $doamin = parse_url($url, PHP_URL_HOST);
+        $check = Website::where('domain', $doamin)->first();
+
+        $add = new Donation;
+        $add->user_id = $check->user_id;
+        $add->amount = $request->donate_now_amount;
+        $add->website_id = $check->id;
+        $add->type = 'general';
 
         if(isset($request->anonymous_donation)) {
             $add->hide = 1;

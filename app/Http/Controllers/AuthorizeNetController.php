@@ -71,7 +71,16 @@ class AuthorizeNetController extends Controller
                 $donation->status = 1;
                 $donation->transaction_id = $tresponse->getTransId();
                 $donation->update();
-                return redirect('/student/'.$donation->user->id.'-'.$donation->user->name.'-'.$donation->user->last_name)->with('success', 'Payment successful!');
+
+                if ($donation->type == 'student') {
+                    # code...
+                    return redirect('/student/'.$donation->user->id.'-'.$donation->user->name.'-'.$donation->user->last_name)->with('success', 'Payment successful!');
+                } else {
+                    # code...
+                    return redirect('/auction')->with('success', 'Payment successful!');
+                }
+
+
             } else {
                 return back()->with('error', "Payment failed: ". $response->getMessages()->getMessage()[0]->getText());
             }

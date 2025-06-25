@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\AuthorizeNetController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\SponsorController;
+use App\Http\Controllers\AuctionController;
 use App\Http\Middleware\admin;
 
 Route::get('authorize/payment/{id}', [AuthorizeNetController::class, 'index']);
@@ -26,6 +27,8 @@ Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::get('/auction', [AuctionController::class, 'all'])->name('auction');
+
 Route::get('/page/{id}', [FrontendController::class, 'page'])->name('page');
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -37,6 +40,7 @@ Route::get('/logout', [AuthController::class, 'logout']);
 Route::get('/donate', [FrontendController::class, 'donate'])->name('donate');
 
 Route::post('/donation', [FrontendController::class, 'donation'])->name('donation');
+Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
 
 Route::get('/student/{slug}', [FrontendController::class, 'student'])->name('donate');
 
@@ -91,6 +95,18 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::post('/store',[AdminController::class, 'store'])->name('admin.store');
 
     Route::get('/menu',[AdminController::class, 'menu_index'])->name('admin.menu');
+
+    Route::get('/auction',[AdminController::class, 'auction_index'])->name('admin.auction');
+
+    Route::get('/auction/{id}',[AdminController::class, 'auction_edit'])->name('admin.auction.edit');
+
+    Route::get('/auction/add/{id}',[AdminController::class, 'auction_add'])->name('admin.add');
+
+    Route::get('/auction-edit/{id}',[AdminController::class, 'auction_edit_auction'])->name('admin.edit-auction');
+
+    Route::post('/auction/store',[AdminController::class, 'store_auction'])->name('admin.auction.store');
+
+    Route::post('/auction/update/{id}',[AdminController::class, 'update_auction'])->name('admin.auction.update');
 
     Route::get('/menu/{id}',[AdminController::class, 'menu'])->name('admin.menu');
 

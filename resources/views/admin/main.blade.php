@@ -166,6 +166,15 @@
               </a>
             </li>
 
+            <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}">
+              <a
+                href="/admins/auction"
+                class="menu-link">
+                <i class="menu-icon tf-icons bx bx-envelope"></i>
+                <div class="text-truncate" data-i18n="Email">Auction</div>
+              </a>
+            </li>
+
             <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}">
               <a
                 href="/admins/sponsor"

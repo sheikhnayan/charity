@@ -66,6 +66,13 @@
                 </div>
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
+                        Goal
+                    </label>
+
+                    <input type="number" class="form-control" id="last_name" name="goal" value="{{ $data->goal ?? null}}">
+                </div>
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
                         Location
                     </label>
 

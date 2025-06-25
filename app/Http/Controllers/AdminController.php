@@ -10,6 +10,7 @@ use App\Models\Header;
 use App\Models\Website;
 use App\Models\DirectDeposit;
 use App\Models\MailedCheck;
+use App\Models\Auction;
 use Auth;
 
 class AdminController extends Controller
@@ -122,6 +123,7 @@ class AdminController extends Controller
         $add->title2 = $request->title2;
         $add->sub_title = $request->sub_title;
         $add->date = $request->date;
+        $add->goal = $request->goal;
         $add->time = $request->time;
         $add->participant_name = $request->participant_name;
         $add->team_name = $request->team_name;
@@ -220,5 +222,112 @@ class AdminController extends Controller
 
         return view('admin.menu.index', compact('data'));
     }
+
+    public function auction_index()
+    {
+        $data = Website::get();
+
+        return view('admin.auction.index', compact('data'));
+    }
+
+    public function auction_edit($id)
+    {
+        $data = Auction::where('website_id', $id)->get();
+
+        $website = Website::find($id);
+
+        return view('admin.auction.auction', compact('data','website'));
+    }
+
+    public function auction_edit_auction($id)
+    {
+        $data = Auction::find($id);
+
+        return view('admin.auction.edit', compact('data'));
+    }
+
+    public function auction_add($id)
+    {
+        $website = Website::find($id);
+
+        return view('admin.auction.add', compact('website'));
+    }
+
+    public function store_auction(Request $request)
+    {
+        // dd($request->all());
+        $data = new Auction();
+        $data->website_id = $request->id;
+        $data->title = $request->title;
+        $data->description = $request->description;
+        $data->dead_line = $request->deadline;
+        $data->value = $request->value;
+        $data->status = $request->status;
+        $data->save();
+
+        if (isset($request->images)) {
+            foreach ($request->images as $key => $value) {
+                # code...
+                $file = $value;
+                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads'), $fileName);
+                $image = new \App\Models\AuctionImage();
+                $image->auction_id = $data->id;
+                $image->image = $fileName;
+                $image->save();
+            }
+        }
+
+        return redirect()->route('admin.auction.edit',[$data->website_id])->with('success', 'Auction Created successfully');
+
+    }
+
+    public function update_auction(Request $request, $id)
+    {
+        // dd($request->all());
+        $data = Auction::find($id);
+        $data->title = $request->title;
+        $data->description = $request->description;
+        $data->dead_line = $request->deadline;
+        $data->value = $request->value;
+        $data->status = $request->status;
+        $data->update();
+
+        // Remove old images
+        if (isset($request->delete_images)) {
+            foreach ($request->delete_images as $key => $value) {
+                # code...
+                $image = \App\Models\AuctionImage::find($value);
+                if ($image) {
+                    // Delete the image file from storage
+                    if (file_exists(public_path('uploads/' . $image->image))) {
+                        unlink(public_path('uploads/' . $image->image));
+                    }
+                    // Delete the image record from database
+                    $image->delete();
+                }
+            }
+        }
+
+        // $remove = \App\Models\AuctionImage::where('auction_id', $data->id)->delete();
+
+        if (isset($request->images)) {
+            foreach ($request->images as $key => $value) {
+                # code...
+                $file = $value;
+                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads'), $fileName);
+                $image = new \App\Models\AuctionImage();
+                $image->auction_id = $data->id;
+                $image->image = $fileName;
+                $image->save();
+            }
+        }
+
+        return redirect()->route('admin.auction.edit',[$data->website_id])->with('success', 'Auction Updated successfully');
+
+    }
+
+
 
 }
