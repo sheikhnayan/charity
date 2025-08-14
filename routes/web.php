@@ -12,8 +12,22 @@ use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Middleware\admin;
 
-Route::get('authorize/payment/{id}', [AuthorizeNetController::class, 'index']);
+Route::get('authorize/payment/{type}/{id}', [AuthorizeNetController::class, 'index']);
 Route::post('authorize/payment', [AuthorizeNetController::class, 'paymentPost'])->name('authorize.payment');
+Route::post('authorize/stripe', [AuthorizeNetController::class, 'paymentStripe'])->name('stripe.post');
+Route::get('/product', function(){
+    return view('thank-you');
+});
+
+
+Route::get('/run-migrate', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return 'Migration completed: ' . Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
 
 Route::get('/', [
     FrontendController::class, 'index'
@@ -29,6 +43,10 @@ Route::get('/login', function () {
 
 Route::get('/auction', [AuctionController::class, 'all'])->name('auction');
 
+Route::get('/place-bid', [AuctionController::class, 'store'])->name('auction.store');
+
+Route::get('/auction/{id}', [AuctionController::class, 'show'])->name('auction-show');
+
 Route::get('/page/{id}', [FrontendController::class, 'page'])->name('page');
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -39,10 +57,15 @@ Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::get('/donate', [FrontendController::class, 'donate'])->name('donate');
 
-Route::post('/donation', [FrontendController::class, 'donation'])->name('donation');
+Route::post('/donations', [FrontendController::class, 'donation'])->name('donation');
+
+Route::post('/tickets', [FrontendController::class, 'tickets'])->name('tickets');
+
+Route::post('/custom-form', [FrontendController::class, 'custom_form'])->name('custom-form');
+
 Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
 
-Route::get('/student/{slug}', [FrontendController::class, 'student'])->name('donate');
+Route::get('/profile/{slug}', [FrontendController::class, 'student'])->name('donate');
 
 Route::get('/leader-board', [FrontendController::class, 'leaderBoard'])->name('leader-board');
 
@@ -54,10 +77,10 @@ Route::get('/about', [FrontendController::class, 'about'])->name('about');
 
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 
+Route::post('/contact-form', [FrontendController::class, 'contact_form'])->name('contact-form');
+
 Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
-    Route::get('/', function () {
-        return view('user.donation');
-    });
+    Route::get('/', [AdminController::class, 'donation']);
 
     Route::get('/setting', [AdminController::class, 'index']);
 
@@ -67,6 +90,15 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/mailed_deposit', [AdminController::class, 'mailed_deposit']);
     Route::post('/mailed_deposit/store', [AdminController::class, 'mailed_deposit_store']);
 
+    Route::get('/wire_transfer', [AdminController::class, 'wire_transfer']);
+    Route::post('/wire_transfer/store', [AdminController::class, 'wire_transfer_store']);
+
+    Route::get('/tax', [AdminController::class, 'tax']);
+    Route::post('/tax/store', [AdminController::class, 'tax_store']);
+
+    Route::get('/tax-receipt', [AdminController::class, 'tax_receipt']);
+    Route::post('/tax-receipt/store', [AdminController::class, 'tax_receipt_store']);
+
 
     Route::get('/profile', function () {
         return view('user.profile');
@@ -74,14 +106,22 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 
-    Route::get('/donation', function () {
-        return view('user.donation');
-    });
+    Route::get('/donation', [AdminController::class, 'donation']);
 
     Route::get('/student',[
         AdminController::class, 'student'
     ])->name('admin.student');
 });
+
+    Route::post('/admins/store',[AdminController::class, 'store'])->name('admin.store');
+
+    Route::get('/admins/approve/{id}',[
+        AdminController::class, 'approve'
+    ])->name('admin.approve');
+
+    Route::get('/admins/student/approve/{id}',[
+        AdminController::class, 'student_approve'
+    ])->name('admin.student.approve');
 
 Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], function () {
     Route::get('/', [
@@ -92,7 +132,17 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         AdminController::class, 'setting'
     ])->name('admin.setting');
 
-    Route::post('/store',[AdminController::class, 'store'])->name('admin.store');
+    Route::get('/tax/show/{id}',[AdminController::class, 'tax_show'])->name('admin.tax.show');
+
+    Route::get('/tax-list',[AdminController::class, 'tax_list'])->name('admin.tax.list');
+
+    Route::get('/tax-receipt/show/{id}',[AdminController::class, 'tax_receipt_show'])->name('admin.tax-receipt.show');
+
+    Route::get('/tax-receipt-list',[AdminController::class, 'tax_receipt_list'])->name('admin.tax-receipt.list');
+
+    Route::get('/auction/{id}',[AdminController::class, 'auction_edit'])->name('admin.auction.edit');
+
+    Route::get('/auction/add/{id}',[AdminController::class, 'auction_add'])->name('admin.add');
 
     Route::get('/menu',[AdminController::class, 'menu_index'])->name('admin.menu');
 
@@ -116,14 +166,19 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
     Route::post('/payment/update',[AuthorizeNetController::class, 'update'])->name('admin.payment.update');
 
+    Route::get('/payout-methods',[AdminController::class, 'payment_method'])->name('admin.payment-method');
 
-    Route::get('/approve/{id}',[
-        AdminController::class, 'approve'
-    ])->name('admin.approve');
+    Route::get('/payment_method/{id}',[AdminController::class, 'payment_method_details'])->name('admin.payment-method.details');
 
-    Route::get('/student/approve/{id}',[
-        AdminController::class, 'student_approve'
-    ])->name('admin.student.approve');
+    Route::get('/footer',[AdminController::class, 'footer_index'])->name('admin.footer');
+
+    Route::get('/footer/{id}',[AdminController::class, 'footer'])->name('admin.footer');
+
+    Route::post('/footer/store',[AdminController::class, 'store_footer'])->name('admin.footer.store');
+
+
+
+
 
     Route::get('/donation', [
         AdminController::class, 'donation'
