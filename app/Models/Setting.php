@@ -18,4 +18,16 @@ class Setting extends Model
     {
         return $this->hasOne(Header::class, 'user_id', 'user_id');
     }
+
+    public function refund_page(){
+        return $this->belongsTo(Page::class,'refund','id');
+    }
+
+    public function privacy_page(){
+        return $this->belongsTo(Page::class,'privacy','id');
+    }
+
+    public function terms_page(){
+        return $this->belongsTo(Page::class,'terms','id');
+    }
 }

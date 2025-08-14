@@ -17,31 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <style>
-    #studentTable {
-        background-color: #fff !important; /* Set the table background to white */
-        border: none !important; /* Remove the table border */
-    }
-
-    #studentTable th, #studentTable td {
-        background-color: #fff !important; /* Set the background of table cells to white */
-        border: none !important; /* Remove borders from table cells */
-    }
-
-    #studentTable tbody tr {
-        background-color: #fff !important; /* Set the background of table rows to white */
-    }
-
-    #studentTable_filter {
-        display: none;
-    }
-
-    #studentTable_length {
-        display: none;
-    }
-
-    #studentTable thead {
-        display: none; /* Hide the table header */
-    }
 
     .non-float{
         margin-bottom: -111px;
@@ -102,6 +77,12 @@
         font-family: AvenirLTPro-Black,sans-serif;
         color: #000
     }
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
 </style>
 </head>
 <body style="background-color: #fff;">
@@ -155,7 +136,7 @@ $user = \App\Models\User::where('id', $check->user_id)->first();
                                 <div class="c-node-ap__auction-total-component-auction"><span
                                         class="c-node-ap__auction-total-component-label">Bids: </span>
                                     <span class="c-node-ap__auction-total-component-amount u-tc--highlight"
-                                        data-live-item="auction">$61,729.00</span>
+                                        data-live-item="auction">$0</span>
                                 </div>
                                 <div class="c-node-ap__auction-total-component-donations"><span
                                         class="c-node-ap__auction-total-component-label">Donations: </span>
@@ -508,10 +489,10 @@ $date = $setting->date;
                                                                                     <span class="c-timer__value" id="minutes-{{ $item->id }}">0</span>
                                                                                     <span class="c-timer__period">Mins</span>
                                                                                 </span>
-                                                                                <span class="js-timer-element-secs u-hide-js c-timer__element">
+                                                                                {{-- <span class="js-timer-element-secs u-hide-js c-timer__element">
                                                                                     <span class="c-timer__value" id="seconds-{{ $item->id }}">0</span>
                                                                                     <span class="c-timer__period">Secs</span>
-                                                                                </span>
+                                                                                </span> --}}
                                                                             </span>
                                                                         </span>
                                                                     </div>
@@ -524,8 +505,12 @@ $date = $setting->date;
                                                                                 class="js-price-title">Current bid</span></div>
                                                                         <div class="c-price__wrapper">
                                                                             <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
-                                                                                data-live-item="price" data-tcid="203924:price"
-                                                                                style="font-size: 16px;">$328</div>
+                                                                                id="auction-price-{{ $item->id }}"
+                                                                                data-live-item="price"
+                                                                                data-tcid="{{ $item->id }}:price"
+                                                                                style="font-size: 16px;">
+                                                                                ${{ $item->starting_price ?? 0 }}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -587,6 +572,49 @@ function startAuctionTimer(deadline, id) {
 document.addEventListener('DOMContentLoaded', function() {
     @foreach ($data as $item)
         startAuctionTimer("{{ $item->dead_line }}", "{{ $item->id }}");
+    @endforeach
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+// Your Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
+    authDomain: "charity-390ca.firebaseapp.com",
+    projectId: "charity-390ca",
+    storageBucket: "charity-390ca.firebasestorage.app",
+    messagingSenderId: "875958450032",
+    appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
+    measurementId: "G-FC73HL5XF3"
+};
+
+const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', async function() {
+    @foreach ($data as $item)
+        {
+            const auctionId = "{{ $item->id }}";
+            const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
+            if (priceDiv) {
+                const bidsRef = collection(firestore, "bid");
+                const q = query(
+                    bidsRef,
+                    where("auction_id", "==", auctionId),
+                    orderBy("amount", "desc"),
+                    limit(1)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    const latestAmount = doc.data().amount;
+                    priceDiv.textContent = '$' + latestAmount;
+                }
+            }
+        }
     @endforeach
 });
 </script>

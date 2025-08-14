@@ -7,8 +7,11 @@ use App\Models\Website;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\Header;
+use App\Models\Footer;
 use App\Models\DirectDeposit;
 use App\Models\MailedCheck;
+use App\Models\WireTransfer;
+use App\Models\Tax;
 use Auth;
 use Hash;
 
@@ -86,6 +89,25 @@ class WebsiteController extends Controller
             $header->menu = 1;
             $header->save();
 
+            $footer = new Footer;
+            $footer->status = 0;
+            $footer->color = '#000';
+            $footer->privacy = 1;
+            $footer->background = '#fff';
+            $footer->menu = 1;
+            $footer->message = $request->name;
+            $footer->copy_right = $request->name;
+            $footer->social = 0;
+            $footer->facebook = '#';
+            $footer->instagram = '#';
+            $footer->twitter = '#';
+            $footer->linkedin = '#';
+            $footer->youtube = '#';
+            $footer->pinterest = '#';
+            $footer->tiktok = '#';
+            $footer->blue_sky = '#';
+            $footer->save();
+
             $n = new DirectDeposit;
             $n->user_id = $user->id;
             $n->save();
@@ -93,6 +115,15 @@ class WebsiteController extends Controller
             $m = new MailedCheck;
             $m->user_id = $user->id;
             $m->save();
+
+            $w = new WireTransfer;
+            $w->user_id = $user->id;
+            $w->save();
+
+            $t = new Tax;
+            $t->user_id = $user->id;
+            $t->website_id = $add->id;
+            $t->save();
 
             return redirect()->route('admin.website.index')->with('success', 'Website created successfully.');
         } catch (\Throwable $th) {

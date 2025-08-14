@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sponsor;
 use App\Models\Website;
+use App\Models\Transaction;
 
 class SponsorController extends Controller
 {
@@ -46,6 +47,16 @@ class SponsorController extends Controller
         $add->user_id = $website->user_id;
         $add->save();
 
+        $tran = new Transaction;
+        $tran->amount = $request->price;
+        $tran->type = 'sponsor';
+        $tran->website_id = $request->website_id;
+        $tran->transaction_id = null;
+        $tran->name = $request->name;
+        $tran->status = $request->status;
+        $tran->reference_id = $add->id; // Assuming reference_id is not provided in the request
+        $tran->save();
+
         return redirect()->route('admin.sponsor.index')->with('success', 'Sponsor created successfully.');
     }
 
@@ -74,6 +85,14 @@ class SponsorController extends Controller
             $add->image = 'uploads/tickets/' . $filename;
         }
         $add->update();
+
+        $tran = Transaction::where('reference_id', $id)->first();
+        $tran->amount = $request->price;
+        $tran->name = $request->name;
+        $tran->status = $request->status;
+        $tran->update();
+
+
         return redirect()->route('admin.sponsor.index')->with('success', 'Sponsor updated successfully.');
     }
 

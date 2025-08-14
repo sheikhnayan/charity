@@ -25,6 +25,8 @@ class User extends Authenticatable
         'role',
         'group_id',
         'group_name',
+        'website_id',
+        'status',
     ];
 
     /**
@@ -58,5 +60,10 @@ class User extends Authenticatable
     public function website()
     {
         return $this->belongsTo(Website::class, 'website_id', 'id');
+    }
+
+    public function setting()
+    {
+        return $this->hasOne(Setting::class);
     }
 }

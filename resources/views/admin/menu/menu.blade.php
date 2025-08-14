@@ -128,6 +128,19 @@
                                     <input type="number" name="logo_size" value="{{ $data->logo_size }}" class="form-control">
                                 </div>
                             </div>
+                            <div class="col-12 mb-4">
+                                <label class="form-label">Menu Order</label>
+                                <ul id="menu-sortable" class="list-group">
+                                    @foreach($pages as $page)
+                                        <li class="list-group-item d-flex align-items-center" data-id="{{ $page->id }}">
+                                            <span class="handle me-2" style="cursor:move;">&#9776;</span>
+                                            <span>{{ $page->name }}</span>
+                                            <input type="hidden" name="menu_order[]" value="{{ $page->id }}">
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <small class="text-muted">Drag and drop to reorder your menu.</small>
+                            </div>
 
                             <div class="sticky-save-button-container mt-4" bis_skin_checked="1">
                                 <div class="sticky-save-button-inner" bis_skin_checked="1">
@@ -150,4 +163,25 @@
                         console.error(error);
                     });
             </script>
+
+            <!-- SortableJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.getElementById('menu-sortable');
+        if (el) {
+            Sortable.create(el, {
+                handle: '.handle',
+                animation: 150,
+                onEnd: function () {
+                    // Update hidden inputs to match new order
+                    let ids = [];
+                    el.querySelectorAll('li').forEach(function(li, idx) {
+                        li.querySelector('input[name="menu_order[]"]').value = li.getAttribute('data-id');
+                    });
+                }
+            });
+        }
+    });
+</script>
         @endsection

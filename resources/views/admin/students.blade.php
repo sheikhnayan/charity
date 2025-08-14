@@ -81,9 +81,17 @@
 
                         <div class="row">
                             <div class="col-lg">
-                                <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
-
-                                    <table class="table">
+                                <div class="card-shadow-primary p-4 card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
+                                    <div class="mb-3">
+                                        <label for="websiteFilter" class="form-label">Filter by Website:</label>
+                                        <select id="websiteFilter" class="form-select" style="max-width:300px;">
+                                            <option value="">All Websites</option>
+                                            @foreach($websites as $website)
+                                                <option value="{{ $website->name }}">{{ $website->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
@@ -98,6 +106,9 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
+                                        {{-- @php
+                                            dd($data);
+                                        @endphp --}}
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
@@ -113,13 +124,14 @@
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
+                                                @if ($item->role != 'admin')
                                                     <tr>
                                                         <td>{{ $item->id }}</td>
                                                         <td>{{ $item->fist_name }} {{ $item->last_name }}</td>
                                                         <td>{{ $item->website->name }}</td>
                                                         <td>{{ $item->email }}</td>
                                                         <td>
-                                                            <img src="{{ asset($item->photo) }}" width="200px">
+                                                            <img src="{{ asset($item->photo ?? null) }}" width="200px">
                                                         </td>
                                                         <td>${{ $item->goal }}</td>
                                                         <td>{{ $item->size }}</td>
@@ -135,6 +147,7 @@
                                                             @endif
                                                         </td>
                                                     </tr>
+                                                @endif
                                                 @endforeach
                                             @endif
                                         </tbody>
@@ -150,12 +163,33 @@
             <!-- Include DataTables and jQuery CDN -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+            <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
             <script>
                 $(document).ready(function() {
-                    // Initialize DataTable with default search disabled
-                    let table = new DataTable('.table');
+                    // Initialize DataTable with export/import buttons
+                    let table = new DataTable('.table', {
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
+                    });
+                    $('#websiteFilter').on('change', function() {
+                        let val = $(this).val();
+                        if(val) {
+                            table.column(2).search('^' + val + '$', true, false).draw();
+                        } else {
+                            table.column(2).search('').draw();
+                        }
+                    });
                 });
+
             </script>
         @endsection

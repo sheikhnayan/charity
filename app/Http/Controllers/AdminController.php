@@ -7,10 +7,15 @@ use App\Models\User;
 use App\Models\Donation;
 use App\Models\Setting;
 use App\Models\Header;
+use App\Models\Footer;
 use App\Models\Website;
 use App\Models\DirectDeposit;
 use App\Models\MailedCheck;
+use App\Models\WireTransfer;
 use App\Models\Auction;
+use App\Models\Tax;
+use App\Models\TaxReceipt;
+use App\Models\Transaction;
 use Auth;
 
 class AdminController extends Controller
@@ -27,6 +32,42 @@ class AdminController extends Controller
             return view('admin.setting.list', compact('data'));
         }
 
+    }
+
+    public function wire_transfer()
+    {
+        $user = Auth::user();
+
+        $data = WireTransfer::where('user_id',$user->id)->first();
+
+        return view('user.wire_transfer', compact('data'));
+    }
+
+    public function wire_transfer_store(Request $request)
+    {
+        // dd($request->all());
+        $data = WireTransfer::where('user_id', Auth::user()->id)->first();
+        // dd(Auth::user()->id);
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+        $data->address = $request->address;
+        $data->city = $request->city;
+        $data->country = $request->country;
+        $data->state = $request->state;
+        $data->zip = $request->zip;
+        $data->paybale_to = $request->paybale_to;
+        $data->send_check_to = $request->send_check_to;
+        $data->address_to_send = $request->address_to_send;
+        $data->city_to_send = $request->city_to_send;
+        $data->beneficiary_address = $request->beneficiary_address;
+        $data->beneficiary_zip = $request->beneficiary_zip;
+        $data->beneficiary_city = $request->beneficiary_city;
+        $data->beneficiary_country = $request->beneficiary_country;
+        $data->beneficiary_state = $request->beneficiary_state;
+        $data->update();
+
+        return redirect()->back()->with('success', 'Direct Deposit Updated successfully');
     }
 
     public function mailed_deposit()
@@ -66,6 +107,102 @@ class AdminController extends Controller
         $data->update();
 
         return redirect()->back()->with('success', 'Direct Deposit Updated successfully');
+    }
+
+    public function tax()
+    {
+        $user = Auth::user();
+
+        $data = Tax::where('user_id',$user->id)->first();
+
+        return view('user.tax', compact('data'));
+    }
+
+    public function tax_store(Request $request)
+    {
+        // dd(Auth::user()->id);
+        $data = Tax::where('user_id', Auth::user()->id)->first();
+        $data->name = $request->name;
+        $data->business_name = $request->business_name;
+        $data->address = $request->address;
+        $data->zip = $request->zip;
+        $data->city = $request->city;
+        $data->state = $request->state;
+        $data->tin = $request->tin;
+        $data->type_of_tin = $request->type_of_tin;
+        $data->update();
+
+        return redirect()->back()->with('success', 'Tax Information Updated successfully');
+    }
+
+    public function tax_receipt_list()
+    {
+        $data = User::where('role', 'user')->latest()->get();
+
+        return view('admin.tax-receipt.index', compact('data'));
+    }
+
+    public function tax_receipt()
+    {
+        $user = Auth::user();
+
+        $data = TaxReceipt::where('user_id',$user->id)->first();
+
+        return view('user.tax_receipt', compact('data'));
+    }
+
+    public function tax_receipt_show($id)
+    {
+        $data = TaxReceipt::where('user_id',$id)->first();
+
+        return view('admin.tax-receipt.show', compact('data'));
+    }
+
+    public function tax_list()
+    {
+
+        $data = User::where('role', 'user')->latest()->get();
+
+
+        return view('admin.tax.index', compact('data'));
+    }
+
+    public function tax_show($id)
+    {
+        $data = Tax::where('user_id',$id)->first();
+
+        return view('admin.tax.show', compact('data'));
+
+    }
+
+    public function tax_receipt_store(Request $request)
+    {
+        // dd($request->all());
+        $data = TaxReceipt::where('user_id', Auth::user()->id)->first();
+        $data->organization = $request->organization;
+        $data->phone_number = $request->phone_number;
+        $data->website = $request->website;
+        $data->charitable_id = $request->charitable_id;
+        $data->reference = $request->reference;
+        $data->number_prefix = $request->number_prefix;
+        $data->starting_number = $request->starting_number;
+        $data->address = $request->address;
+        $data->zip = $request->zip;
+        $data->city = $request->city;
+        $data->state = $request->state;
+        $data->country = $request->country;
+
+            if ($request->hasFile('logo')) {
+                $data->logo = $request->file('logo')->store('uploads', 'public');
+            }
+
+            if ($request->hasFile('signature')) {
+                $data->signature = $request->file('signature')->store('uploads', 'public');
+            }
+
+        $data->update();
+
+        return redirect()->back()->with('success', 'Tax Receipt Information Updated successfully');
     }
 
     public function mailed_deposit_store(Request $request)
@@ -109,21 +246,56 @@ class AdminController extends Controller
         $data->logo_size = $request->logo_size;
         $data->update();
 
+        if ($request->has('menu_order')) {
+            foreach ($request->menu_order as $order => $pageId) {
+                \App\Models\Page::where('id', $pageId)->update(['position' => $order]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Menu Updated successfully');
+    }
+
+    public function store_footer(Request $request)
+    {
+        $data = Footer::where('id', $request->id)->first();
+        $data->status = $request->status;
+        $data->color = $request->color;
+        $data->privacy = $request->privacy;
+        $data->background = $request->background;
+        $data->menu = $request->menu;
+        $data->message = $request->message;
+        $data->copy_right = $request->copy_right;
+        $data->social = $request->social;
+        $data->facebook = $request->facebook;
+        $data->instagram = $request->instagram;
+        $data->twitter = $request->twitter;
+        $data->linkedin = $request->linkedin;
+        $data->youtube = $request->youtube;
+        $data->pinterest = $request->pinterest;
+        $data->tiktok = $request->tiktok;
+        $data->blue_sky = $request->blue_sky;
+        $data->update();
+
         return redirect()->back()->with('success', 'Menu Updated successfully');
     }
 
     public function store(Request $request){
-
+        // dd($request->all());
         $id = $request->id;
 
         $add = Setting::find($id);
         $add->title = $request->title;
         $add->description = $request->description;
         $add->location = $request->location;
+        $add->payout_method = $request->payout_method;
         $add->title2 = $request->title2;
         $add->sub_title = $request->sub_title;
         $add->date = $request->date;
+        $add->api_key = $request->api_key;
+        $add->api_secret = $request->api_secret;
         $add->goal = $request->goal;
+        $add->site_status = $request->site_status;
+        $add->payment_method = $request->payment_method;
         $add->time = $request->time;
         $add->participant_name = $request->participant_name;
         $add->team_name = $request->team_name;
@@ -136,6 +308,9 @@ class AdminController extends Controller
         $add->city = $request->city;
         $add->country = $request->country;
         $add->state = $request->state;
+        $add->privacy = $request->privacy;
+        $add->terms = $request->terms;
+        $add->refund = $request->refund;
 
 
         if (isset($request->logo)) {
@@ -159,17 +334,49 @@ class AdminController extends Controller
 
     }
 
+    public function payment_method()
+    {
+        $data = User::where('role',  'user')->get();
+
+        return view('admin.payment_method.index', compact('data'));
+    }
+
+    public function payment_method_details($id)
+    {
+        $mailed = MailedCheck::where('user_id', $id)->first();
+        $direct = DirectDeposit::where('user_id', $id)->first();
+        $wire = WireTransfer::where('user_id', $id)->first();
+
+        return view('admin.payment_method.payment_method', compact('mailed', 'direct', 'wire'));
+    }
+
 
     public function donation()
     {
         $user = Auth::user();
 
-        $websites = Website::where('user_id', $user->id)->select('id')->get();
-        $websites = $websites->pluck('id')->toArray();
+        if ($user->role == 'admin') {
+            # code...
+            $data = Transaction::latest()->get();
+            $websites = \App\Models\Website::all();
 
-        $data = Donation::whereIn('website_id',[$websites])->with('user')->get();
+            return view('admin.donation', compact('data', 'websites'));
+        }elseif($user->role == 'user'){
+            $websites = Website::where('user_id', $user->id)->select('id')->first();
+            // $websites = $websites->pluck('id')->toArray();
 
-        return view('admin.donation', compact('data'));
+            // dd($websites);
+
+            $data = Transaction::where('website_id',$websites->id)->get();
+
+            return view('user.donation', compact('data', 'websites'));
+        }else{
+            $data = Donation::where('user_id',Auth::user()->id)->with('user')->get();
+
+            return view('user.donation', compact('data'));
+        }
+
+
     }
 
     public function approve($id)
@@ -197,7 +404,13 @@ class AdminController extends Controller
             # code...
             $data = User::where('role', '!=','user')->get();
 
-            return view('admin.students', compact('data'));
+            $websites = \App\Models\Website::all();
+
+            return view('admin.students', compact('data', 'websites'));
+        }elseif(Auth::user()->role == 'group_leader'){
+            $data = User::where('group_id',Auth::user()->id)->where('id','!=',Auth::user()->id)->get();
+
+            return view('user.students', compact('data'));
         }else{
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
@@ -213,7 +426,9 @@ class AdminController extends Controller
     {
         $data = Header::find($id);
 
-        return view('admin.menu.menu', compact('data'));
+        $pages = \App\Models\Page::where('website_id',$data->website_id)->orderBy('position')->get();
+
+        return view('admin.menu.menu', compact('data', 'pages'));
     }
 
     public function menu_index()
@@ -221,6 +436,20 @@ class AdminController extends Controller
         $data = Header::get();
 
         return view('admin.menu.index', compact('data'));
+    }
+
+    public function footer($id)
+    {
+        $data = Footer::where('user_id',$id)->first();
+
+        return view('admin.footer.footer', compact('data'));
+    }
+
+    public function footer_index()
+    {
+        $data = User::where('role','user')->latest()->get();
+
+        return view('admin.footer.index', compact('data'));
     }
 
     public function auction_index()
@@ -262,6 +491,7 @@ class AdminController extends Controller
         $data->description = $request->description;
         $data->dead_line = $request->deadline;
         $data->value = $request->value;
+        $data->timezone = $request->timezone;
         $data->status = $request->status;
         $data->save();
 
@@ -290,6 +520,7 @@ class AdminController extends Controller
         $data->description = $request->description;
         $data->dead_line = $request->deadline;
         $data->value = $request->value;
+        $data->timezone = $request->timezone;
         $data->status = $request->status;
         $data->update();
 

@@ -83,7 +83,7 @@
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
 
-                                    <table class="table">
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
@@ -116,7 +116,7 @@
                                                         <td>{{ $item->fist_name }} {{ $item->last_name }}</td>
                                                         <td>{{ $item->email }}</td>
                                                         <td>
-                                                            <img src="{{ asset($item->photo) }}" width="200px">
+                                                            <img src="{{ asset($item->photo ?? null) }}" width="200px">
                                                         </td>
                                                         <td>${{ $item->goal }}</td>
                                                         {{-- <td>{{ $item->size }}</td>
@@ -147,12 +147,71 @@
             <!-- Include DataTables and jQuery CDN -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+            <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
             <script>
                 $(document).ready(function() {
                     // Initialize DataTable with default search disabled
-                    let table = new DataTable('.table');
+                   let table = new DataTable('.table', {
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'csv',
+                                text: 'Export CSV',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-check:checked');
+                                        if (checked.length === 0) return true; // export all if none checked
+                                        return $(node).find('.row-check').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)' // Exclude checkbox and action columns
+                                }
+                            },
+                            {
+                                extend: 'excel',
+                                text: 'Export Excel',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-check:checked');
+                                        if (checked.length === 0) return true;
+                                        return $(node).find('.row-check').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'pdf',
+                                text: 'Export PDF',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-check:checked');
+                                        if (checked.length === 0) return true;
+                                        return $(node).find('.row-check').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'print',
+                                text: 'Print',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-check:checked');
+                                        if (checked.length === 0) return true;
+                                        return $(node).find('.row-check').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            }
+                        ]
+                    });
                 });
             </script>
         @endsection

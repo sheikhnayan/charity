@@ -81,9 +81,20 @@
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
                                     <form action="{{ route('admin.website.update',[$data->id]) }}" method="post">
                                         @csrf
-
                                         <div class="card-body">
                                             <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="first_name" class="form-label">Name</label>
+                                                        <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name" value="{{ $data->user->name }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label">Email</label>
+                                                        <input type="email" name="email" class="form-control" id="email" placeholder="Email" value="{{ $data->user->email }}" required>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="name" class="form-label">Website Name</label>

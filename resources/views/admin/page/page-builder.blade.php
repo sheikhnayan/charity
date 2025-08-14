@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Page Builder</title>
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('auction.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -38,6 +39,62 @@
     #studentTable thead {
         display: none; /* Hide the table header */
     }
+
+    .c-node-ap__auction-results{
+        margin-right: 36px;
+        margin-bottom: 24px;
+        display: inline-block;
+        background-color: #f8f9fa;
+        border-color: #DBDCDD;
+        border: 1px solid;
+        border-radius: 4px;
+        padding: 24px;
+        font-size: 1rem;
+    }
+
+    .c-node-ap__fundraising-target{
+        margin-bottom: 12px;
+    }
+
+    .c-node-ap__auction-total-label {
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #355159
+    }
+    .c-node-ap__auction-total-amount {
+        font-size: 2rem;
+        line-height: 1.5;
+        color: #d9b730;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+    }
+
+    .c-node-ap__totalizer{
+        height: 18px;
+        border-radius: 12px;
+        --color-ui: #d9b730;
+    }
+
+    .c-node-ap__auction-total-component-label{
+        color: #6d6e71
+    }
+
+    .c-node-ap__auction-total-component-amount{
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #000
+    }
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
 </style>
 
   <style>
@@ -56,44 +113,168 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.5;
+      margin: 0;
+      padding: 0;
     }
 
     .app {
       display: flex;
-      height: 100vh;
+      height: calc(100vh - 60px); /* Subtract header height */
     }
 
     .sidebar {
-      width: 250px;
-      background: white;
+      width: 280px;
+      background: #ffffff;
       border-right: 1px solid var(--border-color);
-      padding: 20px;
+      padding: 0;
       overflow-y: auto;
+      box-shadow: 2px 0 4px rgba(0,0,0,0.05);
     }
 
-    .sidebar h2 {
-      margin-bottom: 20px;
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: #f8f9fa;
+    }
+
+    .sidebar-header h2 {
+      margin: 0;
       color: var(--primary-color);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .sidebar-content {
+      padding: 20px;
+    }
+
+    .sidebar-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .sidebar-tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .sidebar-tab-btn:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .sidebar-tab-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 10px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+
+    .save-btn:hover {
+      background: #059669;
+    }
+
+    .back-btn {
+      padding: 8px 12px;
+      background: #6b7280;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-btn:hover {
+      background: #4b5563;
+    }
+
+    .back-btn a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .tab-section {
+      margin-top: 20px;
+    }
+
+    .tab-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .component-list {
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
 
     .component-item {
-      padding: 15px;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
       cursor: move;
       transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .component-item:before {
+      content: "⋮⋮";
+      color: #9ca3af;
+      font-size: 12px;
+      letter-spacing: -2px;
+      line-height: 1;
     }
 
     .component-item:hover {
-      background: white;
-      transform: translateY(-2px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: #f8f9fa;
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+      color: var(--primary-color);
+    }
+
+    .component-item:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
     }
 
     .canvas {
@@ -146,6 +327,94 @@
       outline: 2px solid var(--primary-color);
     }
 
+    .inner-section-component {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .inner-section-component:hover {
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+    }
+
+    .column-container {
+      margin-top: 25px;
+      min-height: 60px;
+    }
+
+    .inner-column {
+      border: 1px dashed #adb5bd;
+      border-radius: 4px;
+      background-color: #ffffff;
+      min-height: 60px;
+      padding: 10px;
+      position: relative;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .inner-column:hover {
+      border-color: var(--primary-color);
+      background-color: #f0f9ff;
+    }
+
+    .column-dropzone {
+      text-align: center;
+      color: #6c757d;
+      font-size: 12px;
+      padding: 20px 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .inner-column .component {
+      margin: 5px 0;
+      width: 100%;
+    }
+
+    .inner-dropzone {
+      transition: all 0.3s ease;
+    }
+
+    .inner-dropzone:hover {
+      border-color: var(--primary-color) !important;
+      background-color: #f0f9ff !important;
+    }
+
+    .inner-section-component .component {
+      margin: 5px 0;
+    }
+
+    .section-label {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-size: 12px;
+      color: #6c757d;
+      background-color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      z-index: 10;
+    }
+
+    /* Responsive adjustments for mobile and tablet */
+    @media (max-width: 768px) {
+      .inner-column {
+        min-height: 40px;
+        margin-bottom: 10px;
+      }
+      
+      .column-dropzone {
+        padding: 15px 5px;
+        font-size: 11px;
+      }
+    }
+
     .component-controls {
       position: absolute;
       top: -30px;
@@ -187,6 +456,18 @@
 
     .properties h3 {
       margin-bottom: 20px;
+    }
+
+    .gallery-thumb.selected, .slider-thumb.selected {
+        border: 2px solid #007bff !important;
+        box-shadow: 0 0 0 2px #007bff33;
+    }
+    .deselect-btn {
+        display: none;
+    }
+    .gallery-thumb-wrapper:hover .deselect-btn,
+    .slider-thumb-wrapper:hover .deselect-btn {
+        display: block !important;
     }
 
     .form-group {
@@ -239,6 +520,152 @@
 
 /* css for gallery */
 
+/* Responsive Preview Header Styles */
+.preview-header {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.preview-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.device-preview {
+  display: flex;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.device-btn {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+  font-size: 16px;
+}
+
+.device-btn:hover {
+  background: white;
+  color: var(--primary-color);
+}
+
+.device-btn.active {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: #6b7280;
+}
+
+.btn-outline:hover {
+  background: #f8f9fa;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Device specific canvas styles */
+.canvas.tablet-view .page {
+  max-width: 768px;
+  border: 2px solid #6c757d;
+  border-radius: 8px;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: #fff;
+}
+
+.canvas.mobile-view .page {
+  max-width: 375px;
+  border: 2px solid #6c757d;
+  border-radius: 12px;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: #fff;
+}
+
+/* Add device frame styling */
+.canvas.tablet-view {
+  background: #f8f9fa;
+  padding: 20px;
+}
+
+.canvas.mobile-view {
+  background: #f8f9fa;
+  padding: 30px 20px;
+}
+
+/* Force Bootstrap responsive behavior in preview modes */
+/* Tablet View (md breakpoint) - simulate 768px viewport */
+.canvas.tablet-view .inner-column.col-lg-6.col-md-6 {
+  width: 50% !important;
+}
+
+.canvas.tablet-view .inner-column.col-lg-4.col-md-6 {
+  width: 50% !important;
+}
+
+.canvas.tablet-view .inner-column.col-lg-3.col-md-6 {
+  width: 50% !important;
+}
+
+.canvas.tablet-view .inner-column.col-lg-2.col-md-4 {
+  width: 33.333333% !important;
+}
+
+/* Mobile View (sm breakpoint) - simulate 375px viewport */
+.canvas.mobile-view .inner-column.col-lg-6.col-md-6.col-sm-12,
+.canvas.mobile-view .inner-column.col-lg-4.col-md-6.col-sm-12,
+.canvas.mobile-view .inner-column.col-lg-3.col-md-6.col-sm-12,
+.canvas.mobile-view .inner-column.col-lg-2.col-md-4.col-sm-6,
+.canvas.mobile-view .inner-column.col-12 {
+  width: 100% !important;
+}
+
+/* Special case for 5-6 column layouts on mobile that use col-sm-6 */
+.canvas.mobile-view .inner-column.col-sm-6 {
+  width: 50% !important;
+}
+
+/* Ensure proper spacing in responsive views */
+.canvas.tablet-view .inner-column,
+.canvas.mobile-view .inner-column {
+  margin-bottom: 15px !important;
+}
+
 
 .gallery-select-img.selected {
     border: 3px solid #007bff !important;
@@ -256,6 +683,463 @@ button a:hover {
 
 }
 
+.ticket-mask {
+        --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
+        -webkit-mask: var(--mask);
+        mask: var(--mask);
+        padding: 1.5rem;
+        background-color: #eee;
+        border: unset;
+    }
+
+    .page {
+      max-width: 800px;
+      min-height: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    
+    .dropzone {
+      min-height: 100px;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      transition: all 0.2s;
+    }
+    
+    .dropzone.dragover {
+      background: #f0f9ff;
+      border-color: var(--primary-color);
+    }
+    
+    .component {
+      position: relative;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+    
+    .component:hover {
+      border-color: var(--primary-color);
+    }
+    
+    .component.selected {
+      outline: 2px solid var(--primary-color);
+    }
+    
+    .component-controls {
+      position: absolute;
+      top: -30px;
+      right: 0;
+      display: none;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 4px;
+      z-index: 10;
+    }
+    
+    .component:hover .component-controls {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .btn {
+      padding: 4px 8px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 5px
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    .properties {
+      width: 300px;
+      background: white;
+      border-left: 1px solid var(--border-color);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .properties h3 {
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #666;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .image-preview {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    
+    .component[data-type="gallery"] img:hover {
+        opacity: 0.6;
+        outline: 2px dashed red;
+    }
+    
+    /* image modal css */
+    
+    #largeImageModal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 99999;
+    }
+    #largeImageModal .modal-content {
+    background: #fff; border-radius: 10px; padding: 20px; position: relative;
+    }
+    #largeImageModal .close {
+    position: absolute; top: 10px; right: 20px; cursor: pointer; font-size: 32px; color: #333;
+    }
+    
+    /* css for gallery */
+    
+    
+    .gallery-select-img.selected {
+    border: 3px solid #007bff !important;
+    box-shadow: 0 0 0 2px #007bff33;
+    }
+    
+    
+    button a {
+    color: white;
+    text-decoration: none;
+    }
+    
+    button a:hover {
+    color: black;
+    
+    }
+
+    /* Structure Toggle Button */
+    .structure-toggle-btn {
+        width: 100%;
+        padding: 10px;
+        background: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .structure-toggle-btn:hover {
+        background: #4f46e5;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Floating Structure Panel */
+    .floating-structure-panel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 350px;
+        max-width: 90vw;
+        max-height: 80vh;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        z-index: 1050;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .floating-structure-panel:hover {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .floating-structure-panel.dragging {
+        user-select: none;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        transform: none;
+    }
+
+    .floating-panel-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: move;
+        user-select: none;
+    }
+
+    .floating-panel-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .close-panel-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-size: 18px;
+    }
+
+    .close-panel-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+
+    .floating-panel-content {
+        padding: 20px;
+        max-height: calc(80vh - 80px);
+        overflow-y: auto;
+    }
+
+    /* Updated Structure Panel Styles */
+    .structure-header {
+        margin-bottom: 16px;
+    }
+
+    .structure-header small {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .structure-tree {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f9fafb;
+        margin-bottom: 16px;
+    }
+
+    .structure-item {
+        padding: 8px 12px;
+        margin: 4px 0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        background: white;
+        border: 1px solid transparent;
+        user-select: none;
+    }
+
+    .structure-item:hover {
+        background: #f3f4f6;
+        border-color: var(--primary-color);
+        transform: translateX(3px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .structure-item.selected {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .structure-item.dragging {
+        opacity: 0.6;
+        transform: rotate(2deg);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+    }
+
+    .structure-item.drag-over {
+        border-top: 3px solid var(--primary-color);
+        background: #f0f9ff;
+    }
+
+    .structure-item[data-level="0"] {
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+
+    .structure-item[data-level="0"]:hover {
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        transform: none;
+    }
+
+    .structure-item[data-level="1"] {
+        margin-left: 16px;
+        border-left: 3px solid #e5e7eb;
+        padding-left: 16px;
+        position: relative;
+    }
+
+    .structure-item[data-level="1"]:before {
+        content: '';
+        position: absolute;
+        left: -3px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--primary-color);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .structure-item[data-level="1"]:hover:before {
+        opacity: 1;
+    }
+
+    .structure-item[data-level="2"] {
+        margin-left: 32px;
+        border-left: 3px solid #e5e7eb;
+        padding-left: 16px;
+    }
+
+    .structure-item[data-level="3"] {
+        margin-left: 48px;
+        border-left: 2px solid #d1d5db;
+        padding-left: 12px;
+        background: rgba(16, 185, 129, 0.05);
+        border-radius: 4px;
+        margin-bottom: 2px;
+    }
+
+    .structure-item[data-level="4"] {
+        margin-left: 64px;
+        border-left: 1px solid #e5e7eb;
+        padding-left: 8px;
+        background: rgba(16, 185, 129, 0.03);
+        border-radius: 3px;
+        margin-bottom: 1px;
+        font-size: 0.85em;
+    }
+
+    .structure-item.section-header {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 4px;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .structure-item.section-header:hover {
+        background: rgba(139, 92, 246, 0.15);
+    }
+
+    .structure-item.nested-column {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 4px;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .structure-item.nested-component {
+        font-size: 0.9em;
+    }
+
+    .structure-item.nested-component:hover {
+        background: rgba(16, 185, 129, 0.1);
+    }
+
+    .structure-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .structure-actions .btn {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .structure-actions .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Panel Animation */
+    .floating-structure-panel {
+        animation: fadeInScale 0.3s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    /* Overlay for floating panel */
+    .structure-panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+  </style>
+
+
+
   </style>
 </head>
 <body>
@@ -263,64 +1147,111 @@ button a:hover {
         $groups = \App\Models\User::where('website_id', $data->website->id)->where('role','group_leader')->get();
     @endphp
     <input type="hidden" name="page_id" id="page_id" value="{{ $data->id }}">
+  
+  <!-- Responsive Preview Header -->
+  <div class="preview-header">
+    <div class="preview-controls">
+      <div class="device-preview">
+        <button class="device-btn active" data-device="desktop" title="Desktop View">
+          <i class="bi bi-laptop"></i>
+        </button>
+        <button class="device-btn" data-device="tablet" title="Tablet View">
+          <i class="bi bi-tablet"></i>
+        </button>
+        <button class="device-btn" data-device="mobile" title="Mobile View">
+          <i class="bi bi-phone"></i>
+        </button>
+      </div>
+      
+      <div class="preview-actions">
+        <button class="btn btn-outline" onclick="undoLastAction()" title="Undo">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+        <button class="btn btn-outline" onclick="redoLastAction()" title="Redo">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        <button class="btn btn-primary" onclick="previewPage()" title="Preview">
+          <i class="bi bi-eye"></i> Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <div class="sidebar">
-        <button class="btn"><a href="/admins/page"><i class="bi bi-arrow-left-short">back</i></a></button>
-        <h2>Builder</h2>
-        <div style="margin-bottom: 10px;">
-            <button class="btn" onclick="showTab('componentsTab')">Components</button>
-            <button class="btn" onclick="showTab('featuresTab')">Features</button>
-            <button class="btn btn-success" onclick="saveBuilderState()">Save</button>
-
+        <div class="sidebar-header">
+            <button class="back-btn">
+                <a href="/admins/page">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </button>
+            <h2><i class="bi bi-tools"></i> Page Builder</h2>
         </div>
-
-        <div id="componentsTab" class="tab-section">
-            <h3>Components</h3>
-            <div class="component-list">
-            <div class="component-item" draggable="true" data-type="text-images">Text & Images</div>
-            <div class="component-item" draggable="true" data-type="section-title">Section Title</div>
-            <div class="component-item" draggable="true" data-type="divider">Divider</div>
-            <div class="component-item" draggable="true" data-type="site-banner">Site Banner</div>
-            <div class="component-item" draggable="true" data-type="custom-banner">Custom Banner</div>
-            <div class="component-item" draggable="true" data-type="gallery">Gallery</div>
-            <div class="component-item" draggable="true" data-type="slider">Slider</div>
-            <div class="component-item" draggable="true" data-type="visitor-upload">Visitor Upload</div>
-            <div class="component-item" draggable="true" data-type="video">Video</div>
-            <div class="component-item" draggable="true" data-type="faq">FAQ</div>
-            <div class="component-item" draggable="true" data-type="buttons">Buttons</div>
-            <div class="component-item" draggable="true" data-type="display-assets">Display Assets</div>
-            <div class="component-item" draggable="true" data-type="cards">Cards</div>
-            <div class="component-item" draggable="true" data-type="full-width-text-image">Full Width Text & Image</div>
-            <div class="component-item" draggable="true" data-type="alert-message">Alert Message</div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-controls">
+                <button class="sidebar-tab-btn active" onclick="showTab('componentsTab')">
+                    <i class="bi bi-puzzle"></i> Components
+                </button>
+                <button class="sidebar-tab-btn" onclick="showTab('featuresTab')">
+                    <i class="bi bi-star"></i> Features
+                </button>
             </div>
-        </div>
+            
+            <button class="structure-toggle-btn" onclick="toggleStructurePanel()">
+                <i class="bi bi-diagram-3"></i> Structure
+            </button>
+            
+            <button class="save-btn" onclick="saveBuilderState()">
+                <i class="bi bi-check-circle"></i> Save Page
+            </button>
 
-        <div id="featuresTab" class="tab-section" style="display: none;">
-            <h3>Features</h3>
-            <div class="component-list">
-            <div class="component-item" draggable="true" data-type="event-countdown">Event Countdown</div>
-            <div class="component-item" draggable="true" data-type="event-information">Event Information</div>
-            <div class="component-item" draggable="true" data-type="sell-tickets">Sell Tickets</div>
-            <div class="component-item" draggable="true" data-type="whos-coming">Who's Coming</div>
-            <div class="component-item" draggable="true" data-type="donation-form">Donation Form</div>
-            <div class="component-item" draggable="true" data-type="donor-list">Donor List</div>
-            {{-- <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div> --}}
-            <div class="component-item" draggable="true" data-type="custom-form">Custom Form</div>
-            <div class="component-item" draggable="true" data-type="contact-form">Contact Form</div>
-            <div class="component-item" draggable="true" data-type="social-share">Sharing Buttons</div>
-            <div class="component-item" draggable="true" data-type="auth-form">Authentication Form</div>
-            <div class="component-item" draggable="true" data-type="student-leaderboard">Student Leaderboard</div>
-            <div class="component-item" draggable="true" data-type="student-listing">Student Listing</div>
-            <div class="component-item" draggable="true" data-type="updates">Updates</div>
-            <div class="component-item" draggable="true" data-type="facebook-comments">Facebook Comments</div>
-            <div class="component-item" draggable="true" data-type="sponsorships">Sponsorships</div>
-            <div class="component-item" draggable="true" data-type="contact-us">Contact Us</div>
-            <div class="component-item" draggable="true" data-type="site-goal">Site Goal</div>
-            <div class="component-item" draggable="true" data-type="image">Image</div>
+            <div id="componentsTab" class="tab-section">
+                <h3><i class="bi bi-collection"></i> Components</h3>
+                <div class="component-list">
+                <div class="component-item" draggable="true" data-type="inner-section"><i class="fas fa-layer-group me-2"></i>Inner Section</div>
+                <div class="component-item" draggable="true" data-type="text-images"><i class="fas fa-align-left me-2"></i>Text & Images</div>
+                <div class="component-item" draggable="true" data-type="section-title"><i class="fas fa-heading me-2"></i>Section Title</div>
+                <div class="component-item" draggable="true" data-type="text"><i class="fas fa-font me-2"></i>Text Box</div>
+                <div class="component-item" draggable="true" data-type="divider"><i class="fas fa-minus me-2"></i>Divider</div>
+                <div class="component-item" draggable="true" data-type="custom-banner"><i class="fas fa-flag me-2"></i>Custom Banner</div>
+                <div class="component-item" draggable="true" data-type="gallery"><i class="fas fa-images me-2"></i>Gallery</div>
+                <div class="component-item" draggable="true" data-type="slider"><i class="fas fa-sliders-h me-2"></i>Slider</div>
+                <div class="component-item" draggable="true" data-type="video"><i class="fas fa-video me-2"></i>Video</div>
+                <div class="component-item" draggable="true" data-type="faq"><i class="fas fa-question-circle me-2"></i>FAQ</div>
+                <div class="component-item" draggable="true" data-type="button"><i class="fas fa-square me-2"></i>Buttons</div>
+                <div class="component-item" draggable="true" data-type="full-width-text-image"><i class="fas fa-image me-2"></i>Full Width Text & Image</div>
+                <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
+                <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div>
+                </div>
+            </div>
+
+            <div id="featuresTab" class="tab-section" style="display: none;">
+                <h3><i class="bi bi-lightning"></i> Features</h3>
+                <div class="component-list">
+                <div class="component-item" draggable="true" data-type="auction-list"><i class="fas fa-gavel me-2"></i>Auction List</div>
+                <div class="component-item" draggable="true" data-type="event-countdown"><i class="fas fa-clock me-2"></i>Event Countdown</div>
+                <div class="component-item" draggable="true" data-type="event-information"><i class="fas fa-calendar me-2"></i>Event Information</div>
+                <div class="component-item" draggable="true" data-type="sell-tickets"><i class="fas fa-ticket-alt me-2"></i>Sell Tickets</div>
+                <div class="component-item" draggable="true" data-type="whos-coming"><i class="fas fa-users me-2"></i>Who's Coming</div>
+                <div class="component-item" draggable="true" data-type="donation-form"><i class="fas fa-heart me-2"></i>Donation Form</div>
+                <div class="component-item" draggable="true" data-type="donor-list"><i class="fas fa-list me-2"></i>Donor List</div>
+                {{-- <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div> --}}
+                <div class="component-item" draggable="true" data-type="custom-form"><i class="fas fa-wpforms me-2"></i>Custom Form</div>
+                <div class="component-item" draggable="true" data-type="contact-form"><i class="fas fa-envelope me-2"></i>Contact Form</div>
+                <div class="component-item" draggable="true" data-type="social-share"><i class="fas fa-share-alt me-2"></i>Sharing Buttons</div>
+                <div class="component-item" draggable="true" data-type="auth-form"><i class="fas fa-user-plus me-2"></i>Registration Form</div>
+                <div class="component-item" draggable="true" data-type="student-leaderboard"><i class="fas fa-trophy me-2"></i>Leaderboard</div>
+                <div class="component-item" draggable="true" data-type="student-listing"><i class="fas fa-graduation-cap me-2"></i>Registered User Listing</div>
+                {{-- <div class="component-item" draggable="true" data-type="updates">Updates</div> --}}
+                {{-- <div class="component-item" draggable="true" data-type="facebook-comments">Facebook Comments</div> --}}
+                <div class="component-item" draggable="true" data-type="sponsorships"><i class="fas fa-handshake me-2"></i>Sponsorships</div>
+                <div class="component-item" draggable="true" data-type="site-goal"><i class="fas fa-thermometer-half me-2"></i>Site Goal</div>
+                <div class="component-item" draggable="true" data-type="image"><i class="fas fa-image me-2"></i>Image</div>
+                </div>
             </div>
         </div>
     </div>
-
 
     <div class="canvas" id="canvas">
       <div class="page" id="page">
@@ -330,7 +1261,40 @@ button a:hover {
 
     <div class="properties" id="properties">
       <h3>Properties</h3>
-      <div id="propertyControls"></div>
+      <div id="property-panel-content">Select a component to edit its properties</div>
+    </div>
+
+    <!-- Floating Structure Panel -->
+    <div id="floating-structure-panel" class="floating-structure-panel" style="display: none;">
+      <div class="floating-panel-header">
+        <h4><i class="bi bi-diagram-3"></i> Page Structure</h4>
+        <button class="close-panel-btn" onclick="toggleStructurePanel()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="floating-panel-content">
+        <div class="structure-header">
+          <small class="text-muted">Click any element to select it on the page</small>
+        </div>
+        <div id="page-structure-tree" class="structure-tree">
+          <div class="structure-item" data-level="0">
+            <i class="fas fa-file-alt me-2"></i>
+            <span>Page Root</span>
+          </div>
+          <!-- Dynamic structure will be populated here -->
+        </div>
+        <div class="structure-actions">
+          <button class="btn btn-sm btn-outline-primary" onclick="refreshStructure()">
+            <i class="fas fa-sync-alt me-1"></i>Refresh
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="expandAllStructure()">
+            <i class="fas fa-expand-alt me-1"></i>Expand All
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="collapseAllStructure()">
+            <i class="fas fa-compress-alt me-1"></i>Collapse All
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -350,7 +1314,6 @@ button a:hover {
     </div>
   </div>
 
-    <!-- File Manager Modal -->
     <div id="fileManagerModal" style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000; width:600px; max-height:80vh; overflow:auto;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3>Select a File</h3>
@@ -359,6 +1322,27 @@ button a:hover {
         <input type="file" accept="image/*,video/*" onchange="handleFileUpload(event)">
         <p id="uploadStatus"></p>
         <div id="fileGallery" style="display:flex; flex-wrap:wrap; margin-top:10px; gap:10px;"></div>
+    </div>
+
+    <!-- Gallery Large Image Modal -->
+    <div id="galleryLargeModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
+        <div class="modal-content" style="position:relative; max-width:90vw; max-height:90vh; background:#fff; border-radius:8px; padding:20px;">
+            <span style="position:absolute; top:10px; right:20px; cursor:pointer; font-size:24px; color:#333;" onclick="closeGalleryLargeModal()">&times;</span>
+            <img id="galleryLargeModalImg" style="max-width:100%; max-height:80vh; object-fit:contain;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                <button id="galleryPrevBtn" class="btn" style="font-size:18px;">&#8249; Previous</button>
+                <button id="galleryNextBtn" class="btn" style="font-size:18px;">Next &#8250;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Large Image Modal -->
+    <div id="largeImageModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#fff; border-radius:10px; padding:20px; position:relative; max-width:90vw; max-height:90vh;">
+            <span class="close" onclick="closeLargeImageModal()" style="position:absolute; top:10px; right:20px; cursor:pointer; font-size:32px; color:#333;">&times;</span>
+            <img id="largeImageModalImg" style="max-width:100%; max-height:80vh; object-fit:contain;">
+            <p id="largeImageModalAlt" style="text-align:center; margin-top:10px; color:#666;"></p>
+        </div>
     </div>
 
   <style>
@@ -392,6 +1376,128 @@ button a:hover {
 
 
   <script>
+
+    // Responsive Preview Header Functions
+    function initDevicePreview() {
+      const deviceBtns = document.querySelectorAll('.device-btn');
+      const canvas = document.getElementById('canvas');
+      
+      deviceBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Remove active from all buttons
+          deviceBtns.forEach(b => b.classList.remove('active'));
+          // Add active to clicked button
+          this.classList.add('active');
+          
+          // Remove all device classes
+          canvas.classList.remove('tablet-view', 'mobile-view');
+          
+          // Add appropriate class based on selected device
+          const device = this.dataset.device;
+          if (device === 'tablet') {
+            canvas.classList.add('tablet-view');
+          } else if (device === 'mobile') {
+            canvas.classList.add('mobile-view');
+          }
+          
+          // Add visual feedback
+          showDeviceNotification(device);
+          
+          // Refresh layout to ensure proper responsive behavior
+          setTimeout(() => {
+            triggerLayoutRefresh();
+          }, 100);
+        });
+      });
+    }
+    
+    function showDeviceNotification(device) {
+      // Remove existing notification
+      const existingNotification = document.querySelector('.device-notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+      
+      // Create new notification
+      const notification = document.createElement('div');
+      notification.className = 'device-notification';
+      notification.textContent = `Preview: ${device.charAt(0).toUpperCase() + device.slice(1)} View`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        z-index: 1000;
+        font-size: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: opacity 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 2 seconds
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
+      }, 2000);
+    }
+    
+    function triggerLayoutRefresh() {
+      // Force a reflow to ensure responsive classes are applied correctly
+      const innerSections = document.querySelectorAll('.inner-section-component');
+      innerSections.forEach(section => {
+        const columns = section.querySelectorAll('.inner-column');
+        columns.forEach(column => {
+          // Force reflow by reading offsetHeight
+          const height = column.offsetHeight;
+        });
+      });
+    }
+
+    function undoLastAction() {
+      // TODO: Implement undo functionality
+      console.log('Undo action');
+    }
+
+    function redoLastAction() {
+      // TODO: Implement redo functionality
+      console.log('Redo action');
+    }
+
+    function previewPage() {
+      // Get the current page content
+      const pageContent = document.getElementById('page').innerHTML;
+      
+      // Create preview window
+      const previewWindow = window.open('', '_blank', 'width=1200,height=800');
+      previewWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Page Preview</title>
+          <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+          <link rel="stylesheet" href="{{ asset('auction.css') }}">
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; }
+            .dropzone { display: none; }
+            .component-controls { display: none !important; }
+          </style>
+        </head>
+        <body>
+          ${pageContent}
+        </body>
+        </html>
+      `);
+      previewWindow.document.close();
+    }
 
     window.currentSponsors = @json($sponsors->map(function($s) {
         return [
@@ -455,8 +1561,12 @@ button a:hover {
           dropzone.remove();
         }
 
-        // Select the new component
-        selectComponent(component);
+        // Select the new component after a brief delay to ensure DOM is updated
+        setTimeout(() => {
+          selectComponent(component);
+          // Update structure panel when a new component is added
+          updateStructurePanel();
+        }, 10);
       }
     });
 
@@ -543,6 +1653,261 @@ break;
 
         //     content = wrapper; // Important!
         //     break;
+
+        case 'heading':
+            content = document.createElement('h2');
+            content.textContent = 'New Heading';
+            content.contentEditable = true;
+            content.style.fontSize = '24px';
+            content.setAttribute('data-style-fontSize', '24px');
+            content.style.fontWeight = 'bold';
+        break;
+
+        case 'text':
+            content = document.createElement('p');
+            content.textContent = 'New text block. Click to edit.';
+            content.contentEditable = true;
+            content.style.fontSize = '16px';
+        break;
+
+        case 'inner-section':
+            content = document.createElement('div');
+            content.className = 'inner-section-component';
+            content.style.border = '2px dashed #ddd';
+            content.style.borderRadius = '8px';
+            content.style.padding = '20px';
+            content.style.margin = '10px 0';
+            content.style.backgroundColor = '#f8f9fa';
+            content.style.minHeight = '100px';
+            content.style.position = 'relative';
+            
+            // Add section label
+            const label = document.createElement('div');
+            label.textContent = 'Inner Section (2 Columns)';
+            label.className = 'section-label';
+            label.style.position = 'absolute';
+            label.style.top = '5px';
+            label.style.left = '10px';
+            label.style.fontSize = '12px';
+            label.style.color = '#6c757d';
+            label.style.backgroundColor = '#fff';
+            label.style.padding = '2px 6px';
+            label.style.borderRadius = '4px';
+            label.style.border = '1px solid #ddd';
+            label.style.zIndex = '10';
+            
+            // Create column container using Bootstrap row
+            const columnContainer = document.createElement('div');
+            columnContainer.className = 'column-container row';
+            columnContainer.style.marginTop = '25px';
+            columnContainer.style.minHeight = '60px';
+            
+            // Function to create columns
+            const createColumns = (numColumns) => {
+                columnContainer.innerHTML = '';
+                
+                // Calculate Bootstrap column classes based on number of columns
+                const getBootstrapClasses = (totalCols) => {
+                    switch(totalCols) {
+                        case 1: return 'col-12';
+                        case 2: return 'col-lg-6 col-md-6 col-sm-12';
+                        case 3: return 'col-lg-4 col-md-6 col-sm-12';
+                        case 4: return 'col-lg-3 col-md-6 col-sm-12';
+                        case 5: return 'col-lg-2 col-md-4 col-sm-6 col-12';
+                        case 6: return 'col-lg-2 col-md-4 col-sm-6 col-12';
+                        default: return 'col-lg-4 col-md-6 col-sm-12';
+                    }
+                };
+                
+                const bootstrapClass = getBootstrapClasses(numColumns);
+                
+                for (let i = 0; i < numColumns; i++) {
+                    const column = document.createElement('div');
+                    column.className = `inner-column ${bootstrapClass}`;
+                    column.style.border = '1px dashed #adb5bd';
+                    column.style.borderRadius = '4px';
+                    column.style.backgroundColor = '#ffffff';
+                    column.style.minHeight = '60px';
+                    column.style.padding = '10px';
+                    column.style.position = 'relative';
+                    column.style.transition = 'all 0.3s ease';
+                    column.style.marginBottom = '15px';
+                    
+                    // Add column dropzone
+                    const columnDropzone = document.createElement('div');
+                    columnDropzone.className = 'column-dropzone';
+                    columnDropzone.textContent = `Column ${i + 1}`;
+                    columnDropzone.style.textAlign = 'center';
+                    columnDropzone.style.color = '#6c757d';
+                    columnDropzone.style.fontSize = '12px';
+                    columnDropzone.style.padding = '20px 5px';
+                    columnDropzone.style.position = 'absolute';
+                    columnDropzone.style.top = '50%';
+                    columnDropzone.style.left = '50%';
+                    columnDropzone.style.transform = 'translate(-50%, -50%)';
+                    columnDropzone.style.width = '80%';
+                    columnDropzone.style.pointerEvents = 'none';
+                    
+                    column.appendChild(columnDropzone);
+                    
+                    // Enable drag and drop for each column
+                    column.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        column.style.backgroundColor = '#e3f2fd';
+                        column.style.borderColor = '#007bff';
+                    });
+                    
+                    column.addEventListener('dragleave', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        column.style.backgroundColor = '#ffffff';
+                        column.style.borderColor = '#adb5bd';
+                    });
+                    
+                    column.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        column.style.backgroundColor = '#ffffff';
+                        column.style.borderColor = '#adb5bd';
+                        
+                        const componentType = e.dataTransfer.getData('type');
+                        if (componentType) {
+                            const newComponent = createComponent(componentType);
+                            newComponent.style.margin = '5px 0';
+                            newComponent.style.width = '100%';
+                            
+                            // Add component to column
+                            column.appendChild(newComponent);
+                            
+                            // Hide dropzone text if column has components
+                            const hasComponents = column.querySelectorAll('.component').length > 0;
+                            columnDropzone.style.display = hasComponents ? 'none' : 'block';
+                            
+                            // Update structure panel and select the new component
+                            setTimeout(() => {
+                                updateStructurePanel();
+                                selectComponent(newComponent);
+                            }, 10);
+                        }
+                    });
+                    
+                    columnContainer.appendChild(column);
+                }
+            };
+            
+            content.appendChild(label);
+            content.appendChild(columnContainer);
+            
+            // Store component data with default 2 columns
+            content._innerSectionData = {
+                backgroundColor: '#f8f9fa',
+                borderColor: '#ddd',
+                borderStyle: 'dashed',
+                borderWidth: '2px',
+                borderRadius: '8px',
+                padding: '20px',
+                margin: '10px 0',
+                columns: 2,
+                gap: '15px'
+            };
+            
+            // Function to update columns
+            content.updateColumns = function(numColumns) {
+                content._innerSectionData.columns = numColumns;
+                createColumns(numColumns);
+                
+                // Update label
+                const sectionLabel = content.querySelector('.section-label');
+                if (sectionLabel) {
+                    sectionLabel.textContent = `Inner Section (${numColumns} Column${numColumns > 1 ? 's' : ''})`;
+                }
+            };
+            
+            // Function to update column gap
+            content.updateGap = function(gap) {
+                content._innerSectionData.gap = gap;
+                
+                // Convert gap value to number for Bootstrap spacing
+                const gapValue = parseInt(gap.replace(/[^\d]/g, '')) || 15;
+                const gapUnit = gap.replace(/[\d]/g, '') || 'px';
+                
+                // Update margin-bottom for all columns to create visual gap
+                const columns = content.querySelectorAll('.inner-column');
+                columns.forEach(column => {
+                    column.style.marginBottom = `${gapValue}${gapUnit}`;
+                });
+                
+                // Update the row to use custom CSS variables for gap if needed
+                const container = content.querySelector('.column-container');
+                if (container) {
+                    container.style.setProperty('--bs-gutter-x', gap);
+                    container.style.setProperty('--bs-gutter-y', gap);
+                }
+            };
+            
+            // Initialize with 2 columns
+            createColumns(2);
+        break;
+
+        case 'button':
+            const wrapper = document.createElement('div');
+            const button = document.createElement('button');
+            button.textContent = 'Click Me';
+            button.style.padding = '10px 20px';
+            button.style.fontSize = '16px';
+            button.style.backgroundColor = '#007bff';
+            button.style.color = '#fff';
+            button.style.border = 'none';
+            button.style.borderRadius = '4px';
+            button.style.cursor = 'pointer';
+
+            wrapper.appendChild(button);
+            wrapper.style.textAlign = 'center';
+
+            content = wrapper;
+        break;
+
+        case 'auction-list':
+            content = document.createElement('div');
+            content.innerHTML = `
+                <div class="auction-list-component">
+                    <h4>Live Auction Items</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Auction Item">
+                                <div class="card-body">
+                                    <h5 class="card-title">Auction Item 1</h5>
+                                    <p class="card-text">Starting bid: $100</p>
+                                    <a href="#" class="btn btn-primary">Bid Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Auction Item">
+                                <div class="card-body">
+                                    <h5 class="card-title">Auction Item 2</h5>
+                                    <p class="card-text">Starting bid: $150</p>
+                                    <a href="#" class="btn btn-primary">Bid Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Auction Item">
+                                <div class="card-body">
+                                    <h5 class="card-title">Auction Item 3</h5>
+                                    <p class="card-text">Starting bid: $200</p>
+                                    <a href="#" class="btn btn-primary">Bid Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        break;
 
         case 'section-title':
             content = document.createElement('h3');
@@ -1789,7 +3154,27 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
     // Delete a component
     function deleteComponent(btn) {
       const component = btn.closest('.component');
+      const parentColumn = component.closest('.inner-column');
+      const parentSection = component.closest('.inner-section-component');
+      
       component.remove();
+
+      // If this component was inside a column, check if we need to show the dropzone
+      if (parentColumn) {
+        const columnDropzone = parentColumn.querySelector('.column-dropzone');
+        const hasComponents = parentColumn.querySelectorAll('.component').length > 0;
+        if (columnDropzone) {
+          columnDropzone.style.display = hasComponents ? 'none' : 'block';
+        }
+      }
+      // Legacy support: If this component was inside an inner section (old style), check if we need to show the dropzone
+      else if (parentSection) {
+        const innerDropzone = parentSection.querySelector('.inner-dropzone');
+        const hasComponents = parentSection.querySelectorAll('.component').length > 0;
+        if (innerDropzone) {
+          innerDropzone.style.display = hasComponents ? 'none' : 'block';
+        }
+      }
 
       // If there's no dropzone after this component, add one
       const dropzones = document.querySelectorAll('.dropzone');
@@ -1803,10 +3188,19 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         selectedComponent = null;
         updatePropertyPanel();
       }
+
+      // Update structure panel
+      updateStructurePanel();
     }
 
     // Select a component
     function selectComponent(component) {
+      // Safety check
+      if (!component) {
+        console.warn('No component provided to selectComponent');
+        return;
+      }
+
       // Deselect previous component
       if (selectedComponent) {
         selectedComponent.classList.remove('selected');
@@ -1818,13 +3212,68 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
       selectedComponent = component;
       component.classList.add('selected');
 
-      // Update property panel
-      updatePropertyPanel();
+      // Update property panel with error handling
+      try {
+        updatePropertyPanel();
+      } catch (error) {
+        console.error('Error updating property panel:', error);
+      }
+    }
+
+    // Get component icon and name
+    function getComponentInfo(type) {
+        const componentInfo = {
+            'inner-section': { icon: 'fa-layer-group', name: 'Inner Section' },
+            'text': { icon: 'fa-font', name: 'Text' },
+            'heading': { icon: 'fa-heading', name: 'Heading' },
+            'button': { icon: 'fa-square', name: 'Button' },
+            'image': { icon: 'fa-image', name: 'Image' },
+            'video': { icon: 'fa-video', name: 'Video' },
+            'divider': { icon: 'fa-minus', name: 'Divider' },
+            'gallery': { icon: 'fa-images', name: 'Gallery' },
+            'slider': { icon: 'fa-sliders-h', name: 'Slider' },
+            'section-title': { icon: 'fa-heading', name: 'Section Title' },
+            'visitor-upload': { icon: 'fa-upload', name: 'Visitor Upload' },
+            'faq': { icon: 'fa-question-circle', name: 'FAQ' },
+            'display-assets': { icon: 'fa-folder-open', name: 'Display Assets' },
+            'cards': { icon: 'fa-th-large', name: 'Cards' },
+            'site-banner': { icon: 'fa-flag', name: 'Site Banner' },
+            'custom-banner': { icon: 'fa-flag', name: 'Custom Banner' },
+            'full-width-text-image': { icon: 'fa-image', name: 'Full Width Text Image' },
+            'alert-message': { icon: 'fa-exclamation-triangle', name: 'Alert Message' },
+            'auction-list': { icon: 'fa-gavel', name: 'Auction List' },
+            'event-countdown': { icon: 'fa-clock', name: 'Event Countdown' },
+            'event-information': { icon: 'fa-calendar', name: 'Event Information' },
+            'sell-tickets': { icon: 'fa-ticket-alt', name: 'Sell Tickets' },
+            'whos-coming': { icon: 'fa-users', name: 'Who\'s Coming' },
+            'donation-form': { icon: 'fa-heart', name: 'Donation Form' },
+            'donor-list': { icon: 'fa-list', name: 'Donor List' },
+            'donation-slider': { icon: 'fa-sliders-h', name: 'Donation Slider' },
+            'custom-form': { icon: 'fa-wpforms', name: 'Custom Form' },
+            'contact-form': { icon: 'fa-envelope', name: 'Contact Form' },
+            'social-share': { icon: 'fa-share-alt', name: 'Social Share' },
+            'auth-form': { icon: 'fa-user-plus', name: 'Auth Form' },
+            'student-leaderboard': { icon: 'fa-trophy', name: 'Student Leaderboard' },
+            'student-listing': { icon: 'fa-graduation-cap', name: 'Student Listing' },
+            'updates': { icon: 'fa-bullhorn', name: 'Updates' },
+            'facebook-comments': { icon: 'fa-facebook', name: 'Facebook Comments' },
+            'sponsorships': { icon: 'fa-handshake', name: 'Sponsorships' },
+            'contact-us': { icon: 'fa-phone', name: 'Contact Us' },
+            'site-goal': { icon: 'fa-thermometer-half', name: 'Site Goal' },
+            'text-images': { icon: 'fa-align-left', name: 'Text & Images' }
+        };
+        
+        return componentInfo[type] || { icon: 'fa-cube', name: 'Component' };
     }
 
     // Update property panel based on component type
     function updatePropertyPanel() {
-        const propertyControls = document.getElementById('propertyControls');
+        const propertyControls = document.getElementById('property-panel-content');
+
+        if (!propertyControls) {
+            console.warn('Property panel element not found');
+            return;
+        }
 
         if (!selectedComponent) {
             propertyControls.innerHTML = '<p>Select a component to edit its properties</p>';
@@ -1833,6 +3282,15 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
         const content = getContentElement(selectedComponent);
         const type = selectedComponent.dataset.type;
+        
+        if (!content) {
+            propertyControls.innerHTML = '<p>Component content not ready. Please try selecting again.</p>';
+            return;
+        }
+
+        // Get component info for header
+        const componentInfo = getComponentInfo(type);
+        
         let specificControls = '';
 
 
@@ -1877,25 +3335,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             `;
         break;
 
-
-            case 'image':
-            specificControls = `
-                <div class="form-group">
-                <label>Upload Image</label>
-                <input type="file" accept="image/*" onchange="uploadImage(event)">
-                <img src="${content.src}" class="image-preview">
-                </div>
-                <div class="form-group">
-                <label>Object Fit</label>
-                <select oninput="updateStyle(this, 'objectFit')">
-                    <option value="cover" ${content.style.objectFit === 'cover' ? 'selected' : ''}>Cover</option>
-                    <option value="contain" ${content.style.objectFit === 'contain' ? 'selected' : ''}>Contain</option>
-                    <option value="fill" ${content.style.objectFit === 'fill' ? 'selected' : ''}>Fill</option>
-                </select>
-                </div>
-            `;
-            break;
-
             case 'button':
             specificControls = `
                 <div class="form-group">
@@ -1918,6 +3357,65 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             `;
             break;
 
+            case 'inner-section':
+            const innerSectionData = content._innerSectionData || {};
+            specificControls = `
+                <div class="form-group">
+                    <label>Number of Columns</label>
+                    <select oninput="updateInnerSectionColumns(this.value)">
+                        <option value="1" ${innerSectionData.columns === 1 ? 'selected' : ''}>1 Column</option>
+                        <option value="2" ${innerSectionData.columns === 2 ? 'selected' : ''}>2 Columns</option>
+                        <option value="3" ${innerSectionData.columns === 3 ? 'selected' : ''}>3 Columns</option>
+                        <option value="4" ${innerSectionData.columns === 4 ? 'selected' : ''}>4 Columns</option>
+                        <option value="5" ${innerSectionData.columns === 5 ? 'selected' : ''}>5 Columns</option>
+                        <option value="6" ${innerSectionData.columns === 6 ? 'selected' : ''}>6 Columns</option>
+                    </select>
+                    <small class="text-muted">Responsive breakpoints:</small>
+                    <small class="text-muted">• Desktop (lg): Full columns</small>
+                    <small class="text-muted">• Tablet (md): 2 columns max</small>
+                    <small class="text-muted">• Mobile (sm): 1 column stacked</small>
+                </div>
+                <div class="form-group">
+                    <label>Column Gap</label>
+                    <input type="text" value="${innerSectionData.gap || '15px'}" oninput="updateInnerSectionGap(this.value)">
+                    <small>Spacing between columns (e.g., 10px, 1rem, 20px)</small>
+                </div>
+                <div class="form-group">
+                    <label>Section Background Color</label>
+                    <input type="color" value="${innerSectionData.backgroundColor || '#f8f9fa'}" oninput="updateInnerSectionField(this.value, 'backgroundColor')">
+                </div>
+                <div class="form-group">
+                    <label>Border Color</label>
+                    <input type="color" value="${innerSectionData.borderColor || '#ddd'}" oninput="updateInnerSectionField(this.value, 'borderColor')">
+                </div>
+                <div class="form-group">
+                    <label>Border Style</label>
+                    <select oninput="updateInnerSectionField(this.value, 'borderStyle')">
+                        <option value="solid" ${innerSectionData.borderStyle === 'solid' ? 'selected' : ''}>Solid</option>
+                        <option value="dashed" ${innerSectionData.borderStyle === 'dashed' ? 'selected' : ''}>Dashed</option>
+                        <option value="dotted" ${innerSectionData.borderStyle === 'dotted' ? 'selected' : ''}>Dotted</option>
+                        <option value="none" ${innerSectionData.borderStyle === 'none' ? 'selected' : ''}>None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Border Width</label>
+                    <input type="text" value="${innerSectionData.borderWidth || '2px'}" oninput="updateInnerSectionField(this.value, 'borderWidth')">
+                </div>
+                <div class="form-group">
+                    <label>Border Radius</label>
+                    <input type="text" value="${innerSectionData.borderRadius || '8px'}" oninput="updateInnerSectionField(this.value, 'borderRadius')">
+                </div>
+                <div class="form-group">
+                    <label>Padding</label>
+                    <input type="text" value="${innerSectionData.padding || '20px'}" oninput="updateInnerSectionField(this.value, 'padding')">
+                </div>
+                <div class="form-group">
+                    <label>Margin</label>
+                    <input type="text" value="${innerSectionData.margin || '10px 0'}" oninput="updateInnerSectionField(this.value, 'margin')">
+                </div>
+            `;
+            break;
+
             case 'heading':
             specificControls = `
                 <div class="form-group">
@@ -1928,6 +3426,28 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <option value="h3" ${content.tagName === 'H3' ? 'selected' : ''}>H3</option>
                     <option value="h4" ${content.tagName === 'H4' ? 'selected' : ''}>H4</option>
                 </select>
+                </div>
+            `;
+            break;
+
+            case 'auction-list':
+            specificControls = `
+                <div class="form-group">
+                    <label>Auction List Settings</label>
+                    <p>This component displays live auction items from your auction system.</p>
+                </div>
+                <div class="form-group">
+                    <label>Items per Row</label>
+                    <select oninput="updateAuctionListColumns(this.value)">
+                        <option value="1">1 Column</option>
+                        <option value="2">2 Columns</option>
+                        <option value="3" selected>3 Columns</option>
+                        <option value="4">4 Columns</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Show Starting Bid</label>
+                    <input type="checkbox" checked onchange="toggleAuctionStartingBid(this.checked)">
                 </div>
             `;
             break;
@@ -2447,6 +3967,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
         // Common styling controls
         propertyControls.innerHTML = `
+            <div class="component-header mb-3" style="border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+                <h5 class="mb-0" style="color: #495057; font-weight: 600;">
+                    <i class="fas ${componentInfo.icon} me-2" style="color: #007bff;"></i>
+                    ${componentInfo.name}
+                </h5>
+            </div>
             ${specificControls}
             <div class="form-group">
             <label>Font Size</label>
@@ -2680,6 +4206,9 @@ function deleteSliderModalImage() {
 
 // 3. Attach navigation for slider modal (and gallery modal) after DOM loaded
 window.addEventListener('DOMContentLoaded', function() {
+    // Initialize device preview functionality
+    initDevicePreview();
+    
     document.getElementById('galleryPrevBtn').onclick = function(e) {
         e.stopPropagation();
         if (sliderModalComponent && sliderModalImages.length) {
@@ -2880,6 +4409,57 @@ function updateImageField(value, field) {
     updatePropertyPanel();
 }
 
+function updateInnerSectionField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._innerSectionData) return;
+    
+    content._innerSectionData[field] = value;
+    
+    // Apply the style changes to the component
+    switch (field) {
+        case 'backgroundColor':
+            content.style.backgroundColor = value;
+            break;
+        case 'borderColor':
+            content.style.borderColor = value;
+            break;
+        case 'borderStyle':
+            content.style.borderStyle = value;
+            break;
+        case 'borderWidth':
+            content.style.borderWidth = value;
+            break;
+        case 'borderRadius':
+            content.style.borderRadius = value;
+            break;
+        case 'padding':
+            content.style.padding = value;
+            break;
+        case 'margin':
+            content.style.margin = value;
+            break;
+    }
+}
+
+function updateInnerSectionColumns(numColumns) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content.updateColumns) return;
+    
+    content.updateColumns(parseInt(numColumns));
+    updatePropertyPanel();
+}
+
+function updateInnerSectionGap(gap) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content.updateGap) return;
+    
+    content.updateGap(gap);
+    content._innerSectionData.gap = gap;
+}
+
     // helper function for full width text and image
 
 
@@ -3077,6 +4657,11 @@ function uploadFWTIImage(event) {
     }
 
     function getContentElement(component) {
+        if (!component || !component.children) {
+            console.warn('Invalid component passed to getContentElement');
+            return null;
+        }
+        
         // return Array.from(component.children).find(child => !child.classList.contains('component-controls'));
         return Array.from(component.children).find(child =>
             !child.classList.contains('component-controls') &&
@@ -3118,6 +4703,51 @@ function uploadFWTIImage(event) {
                 const wrapper = getContentElement(selectedComponent); // This returns your wrapper div
                 if (wrapper) {
                 wrapper.style.textAlign = select.value;
+                }
+            }
+        }
+
+        function updateAuctionListColumns(columns) {
+            if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
+                const content = getContentElement(selectedComponent);
+                const cards = content.querySelectorAll('.col-md-4');
+                cards.forEach(card => {
+                    card.className = `col-md-${12/columns}`;
+                });
+            }
+        }
+
+        function toggleAuctionStartingBid(show) {
+            if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
+                const content = getContentElement(selectedComponent);
+                const bidElements = content.querySelectorAll('.card-text');
+                bidElements.forEach(el => {
+                    el.style.display = show ? 'block' : 'none';
+                });
+            }
+        }
+
+        function uploadSingleImage(event) {
+            const file = event.target.files[0];
+            if (file && selectedComponent && selectedComponent.dataset.type === 'image') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = getContentElement(selectedComponent);
+                    if (content && content._imageData) {
+                        content._imageData.src = e.target.result;
+                        content.renderImage();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateImageField(value, field) {
+            if (selectedComponent && selectedComponent.dataset.type === 'image') {
+                const content = getContentElement(selectedComponent);
+                if (content && content._imageData) {
+                    content._imageData[field] = value;
+                    content.renderImage();
                 }
             }
         }
@@ -4159,6 +5789,33 @@ function uploadFWTIImage(event) {
           case 'custom-form':
             data.customFormFields = content._customFormFields;
             break;
+          case 'inner-section':
+            data.innerSectionData = content._innerSectionData;
+            // Also save the nested components structure
+            const columns = content.querySelectorAll('.inner-column');
+            data.nestedComponents = Array.from(columns).map(column => {
+              const columnComponents = Array.from(column.querySelectorAll('.component'));
+              return columnComponents.map(comp => {
+                const compType = comp.dataset.type;
+                const compContent = getContentElement(comp);
+                let compData = { type: compType };
+                
+                // Save basic component data (simplified serialization for nested components)
+                if (compContent) {
+                  compData.html = compContent.innerHTML;
+                  compData.style = {
+                    color: compContent.style.color || '',
+                    backgroundColor: compContent.style.backgroundColor || '',
+                    fontSize: compContent.style.fontSize || '',
+                    padding: compContent.style.padding || '',
+                    textAlign: compContent.style.textAlign || ''
+                  };
+                }
+                
+                return compData;
+              });
+            });
+            break;
           // ...add other types as needed...
           default:
             data.html = content.innerHTML;
@@ -4329,6 +5986,59 @@ function uploadFWTIImage(event) {
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             break;
+          case 'inner-section':
+            // Restore inner section data
+            content._innerSectionData = data.innerSectionData || {
+              backgroundColor: '#f8f9fa',
+              borderColor: '#ddd',
+              borderStyle: 'dashed',
+              borderWidth: '2px',
+              borderRadius: '8px',
+              padding: '20px',
+              margin: '10px 0',
+              columns: 2,
+              gap: '15px'
+            };
+            
+            // Update the section with saved data
+            content.updateColumns(content._innerSectionData.columns);
+            content.updateGap(content._innerSectionData.gap);
+            
+            // Restore nested components if they exist
+            if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
+              const columns = content.querySelectorAll('.inner-column');
+              data.nestedComponents.forEach((columnData, columnIndex) => {
+                if (columns[columnIndex] && Array.isArray(columnData)) {
+                  columnData.forEach(compData => {
+                    const nestedComponent = createComponent(compData.type);
+                    const nestedContent = getContentElement(nestedComponent);
+                    
+                    // Restore component content
+                    if (nestedContent && compData.html) {
+                      nestedContent.innerHTML = compData.html;
+                    }
+                    
+                    // Restore styles
+                    if (nestedContent && compData.style) {
+                      Object.assign(nestedContent.style, compData.style);
+                    }
+                    
+                    // Add to column
+                    columns[columnIndex].appendChild(nestedComponent);
+                    
+                    // Hide dropzone text
+                    const dropzone = columns[columnIndex].querySelector('.column-dropzone');
+                    if (dropzone) dropzone.style.display = 'none';
+                  });
+                }
+              });
+            }
+            
+            if (data.style) {
+              Object.assign(content.style, data.style);
+            }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            break;
           // ...add other types as needed...
           default:
             content.innerHTML = data.html;
@@ -4392,15 +6102,400 @@ function uploadFWTIImage(event) {
             tab.style.display = 'none';
         });
         // Remove active class from all tab buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         // Show the selected tab content
         const tabContent = document.getElementById(tabId);
         if (tabContent) tabContent.style.display = 'block';
-        // Add active class to the selected tab button
-        const tabBtn = document.querySelector(`[data-tab='${tabId}']`);
-        if (tabBtn) tabBtn.classList.add('active');
+        // Add active class to the clicked button
+        event.target.classList.add('active');
+    }
+
+    // Floating Structure Panel Functions
+    function toggleStructurePanel() {
+        const panel = document.getElementById('floating-structure-panel');
+        
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            showStructurePanel();
+        } else {
+            hideStructurePanel();
+        }
+    }
+
+    function showStructurePanel() {
+        const panel = document.getElementById('floating-structure-panel');
+        
+        // Reset panel position to center when opening
+        panel.style.left = '';
+        panel.style.top = '';
+        panel.style.transform = 'translate(-50%, -50%)';
+        
+        // Show panel
+        panel.style.display = 'block';
+        
+        // Refresh structure when showing
+        refreshStructure();
+        
+        // Initialize draggable functionality
+        initDraggablePanel();
+    }
+
+    function hideStructurePanel() {
+        const panel = document.getElementById('floating-structure-panel');
+        
+        // Hide panel
+        panel.style.display = 'none';
+    }
+
+    // Structure Panel Functions
+    function refreshStructure() {
+        const treeContainer = document.getElementById('page-structure-tree');
+        const page = document.getElementById('page');
+        
+        if (!treeContainer || !page) return;
+        
+        // Clear existing structure
+        treeContainer.innerHTML = `
+            <div class="structure-item" data-level="0">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Page Root</span>
+            </div>
+        `;
+        
+        // Get all components on the page (only direct children, not nested ones)
+        const components = page.querySelectorAll(':scope > .component');
+        
+        components.forEach((component, index) => {
+            const type = component.dataset.type || 'unknown';
+            const componentInfo = getComponentInfo(type);
+            
+            const structureItem = document.createElement('div');
+            structureItem.className = 'structure-item';
+            structureItem.setAttribute('data-level', '1');
+            structureItem.setAttribute('data-component-id', component.id || index);
+            structureItem.setAttribute('data-component-index', index);
+            structureItem.draggable = true;
+            structureItem.innerHTML = `
+                <i class="fas fa-grip-vertical me-2" style="color: #9ca3af; cursor: grab;"></i>
+                <i class="fas ${componentInfo.icon} me-2" style="color: #6366f1;"></i>
+                <span>${componentInfo.name}</span>
+                <small class="ms-auto text-muted">#${index + 1}</small>
+            `;
+            
+            // Add click handler to select component
+            structureItem.addEventListener('click', (e) => {
+                // Don't trigger click if dragging the grip handle
+                if (e.target.classList.contains('fa-grip-vertical')) return;
+                e.stopPropagation();
+                selectComponentFromStructure(component);
+                highlightStructureItem(structureItem);
+            });
+            
+            // Add drag and drop handlers
+            structureItem.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', index);
+                structureItem.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            
+            structureItem.addEventListener('dragend', (e) => {
+                structureItem.classList.remove('dragging');
+                // Remove drag-over class from all items
+                document.querySelectorAll('.structure-item').forEach(item => {
+                    item.classList.remove('drag-over');
+                });
+            });
+            
+            structureItem.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                structureItem.classList.add('drag-over');
+            });
+            
+            structureItem.addEventListener('dragleave', (e) => {
+                structureItem.classList.remove('drag-over');
+            });
+            
+            structureItem.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                const dropIndex = index;
+                
+                if (draggedIndex !== dropIndex) {
+                    reorderComponents(draggedIndex, dropIndex);
+                }
+                
+                structureItem.classList.remove('drag-over');
+            });
+            
+            treeContainer.appendChild(structureItem);
+            
+            // Check if this is an inner-section component and add its nested components
+            if (type === 'inner-section') {
+                const columns = component.querySelectorAll('.inner-column');
+                const totalComponents = Array.from(columns).reduce((total, col) => total + col.querySelectorAll('.component').length, 0);
+                
+                if (totalComponents > 0) {
+                    // Add collapsible section header
+                    const sectionHeader = document.createElement('div');
+                    sectionHeader.className = 'structure-item section-header';
+                    sectionHeader.setAttribute('data-level', '2');
+                    sectionHeader.style.paddingLeft = '30px';
+                    sectionHeader.style.cursor = 'pointer';
+                    sectionHeader.innerHTML = `
+                        <i class="fas fa-chevron-down me-2 collapse-icon" style="color: #8b5cf6; transition: transform 0.2s;"></i>
+                        <i class="fas fa-layer-group me-2" style="color: #8b5cf6;"></i>
+                        <span style="color: #6b7280; font-weight: 500;">Columns (${totalComponents} items)</span>
+                    `;
+                    
+                    const columnsContainer = document.createElement('div');
+                    columnsContainer.className = 'columns-container';
+                    columnsContainer.style.display = 'block';
+                    
+                    // Toggle functionality
+                    sectionHeader.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const icon = sectionHeader.querySelector('.collapse-icon');
+                        const container = columnsContainer;
+                        
+                        if (container.style.display === 'none') {
+                            container.style.display = 'block';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            container.style.display = 'none';
+                            icon.style.transform = 'rotate(-90deg)';
+                        }
+                    });
+                    
+                    treeContainer.appendChild(sectionHeader);
+                    
+                    columns.forEach((column, columnIndex) => {
+                        const columnComponents = column.querySelectorAll('.component');
+                        if (columnComponents.length > 0) {
+                            // Add column header
+                            const columnHeader = document.createElement('div');
+                            columnHeader.className = 'structure-item nested-column';
+                            columnHeader.setAttribute('data-level', '3');
+                            columnHeader.style.paddingLeft = '50px';
+                            columnHeader.innerHTML = `
+                                <i class="fas fa-columns me-2" style="color: #8b5cf6;"></i>
+                                <span style="color: #6b7280;">Column ${columnIndex + 1}</span>
+                                <small class="ms-auto text-muted">${columnComponents.length} item${columnComponents.length !== 1 ? 's' : ''}</small>
+                            `;
+                            columnsContainer.appendChild(columnHeader);
+                            
+                            // Add components in this column
+                            columnComponents.forEach((nestedComponent, nestedIndex) => {
+                                const nestedType = nestedComponent.dataset.type || 'unknown';
+                                const nestedComponentInfo = getComponentInfo(nestedType);
+                                
+                                const nestedStructureItem = document.createElement('div');
+                                nestedStructureItem.className = 'structure-item nested-component';
+                                nestedStructureItem.setAttribute('data-level', '4');
+                                nestedStructureItem.setAttribute('data-component-id', nestedComponent.id || nestedIndex);
+                                nestedStructureItem.style.paddingLeft = '70px';
+                                
+                                nestedStructureItem.innerHTML = `
+                                    <i class="fas fa-level-up-alt me-2" style="color: #9ca3af; transform: rotate(90deg); font-size: 10px;"></i>
+                                    <i class="fas ${nestedComponentInfo.icon} me-2" style="color: #10b981;"></i>
+                                    <span style="color: #374151;">${nestedComponentInfo.name}</span>
+                                    <small class="ms-auto text-muted">#${nestedIndex + 1}</small>
+                                `;
+                                
+                                nestedStructureItem.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    selectComponentFromStructure(nestedComponent);
+                                    highlightStructureItem(nestedStructureItem);
+                                });
+                                
+                                columnsContainer.appendChild(nestedStructureItem);
+                            });
+                        }
+                    });
+                    
+                    treeContainer.appendChild(columnsContainer);
+                }
+            }
+        });
+        
+        // Show empty message if no components
+        if (components.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'text-center text-muted';
+            emptyMessage.style.padding = '20px';
+            emptyMessage.innerHTML = '<i class="fas fa-inbox me-2"></i>No components added yet';
+            treeContainer.appendChild(emptyMessage);
+        }
+    }
+
+    function selectComponentFromStructure(component) {
+        // Don't hide the floating panel anymore - keep it open
+        
+        // Scroll component into view
+        component.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Select the component
+        selectComponent(component);
+        
+        // Update property panel to show component properties
+        updatePropertyPanel();
+    }
+
+    function highlightStructureItem(item) {
+        // Remove previous highlights
+        document.querySelectorAll('.structure-item').forEach(el => {
+            el.classList.remove('selected');
+        });
+        
+        // Highlight current item
+        item.classList.add('selected');
+    }
+
+    function expandAllStructure() {
+        // Future implementation for collapsible structure items
+        console.log('Expand all structure items');
+    }
+
+    function collapseAllStructure() {
+        // Future implementation for collapsible structure items
+        console.log('Collapse all structure items');
+    }
+
+    // Update structure when components are added/removed/moved
+    function updateStructurePanel() {
+        const panel = document.getElementById('floating-structure-panel');
+        if (panel && panel.style.display !== 'none') {
+            refreshStructure();
+        }
+    }
+
+    // Reorder components in the page
+    function reorderComponents(fromIndex, toIndex) {
+        const page = document.getElementById('page');
+        const components = Array.from(page.querySelectorAll('.component'));
+        const dropzones = Array.from(page.querySelectorAll('.dropzone'));
+        
+        if (fromIndex < 0 || fromIndex >= components.length || toIndex < 0 || toIndex >= components.length) {
+            return;
+        }
+        
+        const draggedComponent = components[fromIndex];
+        const targetComponent = components[toIndex];
+        
+        // Remove the dragged component and its associated dropzone
+        const draggedDropzone = draggedComponent.nextElementSibling;
+        draggedComponent.remove();
+        if (draggedDropzone && draggedDropzone.classList.contains('dropzone')) {
+            draggedDropzone.remove();
+        }
+        
+        // Insert the dragged component at the new position
+        if (fromIndex < toIndex) {
+            // Moving down - insert after target
+            if (targetComponent.nextElementSibling && targetComponent.nextElementSibling.classList.contains('dropzone')) {
+                page.insertBefore(draggedComponent, targetComponent.nextElementSibling.nextElementSibling);
+            } else {
+                page.insertBefore(draggedComponent, targetComponent.nextElementSibling);
+            }
+        } else {
+            // Moving up - insert before target
+            page.insertBefore(draggedComponent, targetComponent);
+        }
+        
+        // Add a new dropzone after the moved component
+        const newDropzone = createDropzone();
+        page.insertBefore(newDropzone, draggedComponent.nextElementSibling);
+        
+        // Refresh the structure panel to reflect new order
+        refreshStructure();
+        
+        // Select the moved component
+        selectComponent(draggedComponent);
+    }
+
+    // Close panel with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideStructurePanel();
+        }
+    });
+
+    // Draggable Panel Functionality
+    function initDraggablePanel() {
+        const panel = document.getElementById('floating-structure-panel');
+        const header = panel.querySelector('.floating-panel-header');
+        
+        if (!header || header.dataset.draggableInit) return; // Avoid duplicate initialization
+        header.dataset.draggableInit = 'true';
+        
+        let isDragging = false;
+        let startX, startY, startLeft, startTop;
+
+        header.addEventListener('mousedown', function(e) {
+            // Don't start drag if clicking on close button
+            if (e.target.classList.contains('close-panel-btn') || e.target.closest('.close-panel-btn')) {
+                return;
+            }
+            
+            isDragging = true;
+            panel.classList.add('dragging');
+            
+            // Get initial mouse position
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            // Get panel's current position
+            const rect = panel.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+            
+            // Remove transform to use absolute positioning
+            panel.style.transform = 'none';
+            panel.style.left = startLeft + 'px';
+            panel.style.top = startTop + 'px';
+            
+            // Add event listeners
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            
+            // Prevent text selection
+            e.preventDefault();
+        });
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            
+            // Calculate new position
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
+            
+            // Keep panel within viewport bounds
+            const panelRect = panel.getBoundingClientRect();
+            const maxLeft = window.innerWidth - panelRect.width;
+            const maxTop = window.innerHeight - panelRect.height;
+            
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            
+            // Apply new position
+            panel.style.left = newLeft + 'px';
+            panel.style.top = newTop + 'px';
+        }
+
+        function handleMouseUp() {
+            if (isDragging) {
+                isDragging = false;
+                panel.classList.remove('dragging');
+                
+                // Remove event listeners
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            }
+        }
     }
 </script>
 

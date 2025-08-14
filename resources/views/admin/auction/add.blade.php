@@ -61,7 +61,7 @@
                                         Deadline
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
-                                    <input type="date" name="deadline" class="form-control">
+                                    <input type="datetime-local" name="deadline" class="form-control">
                                 </div>
 
                                 <div class="col-md-12 col-lg-12">
@@ -69,8 +69,22 @@
                                         Images
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"></i>
-                                    <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*" onchange="previewAuctionImages(event)">
+                                    <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*" onchange="previewAuctionImages(event)" required>
                                     <div id="auction-images-preview" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12">
+                                    <label for="timezone" class="form-label text-capitalize">
+                                        Timezone
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                    data-title="Timezone"
+                                    data-description="Select the timezone for this auction."></i>
+                                    <select class="form-select" id="timezone" name="timezone" required>
+                                        @foreach(timezone_identifiers_list() as $tz)
+                                            <option value="{{ $tz }}">{{ $tz }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
 

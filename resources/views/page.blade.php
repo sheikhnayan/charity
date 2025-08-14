@@ -11,6 +11,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>body{background:#f9fafb;}</style>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('auction.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -49,96 +50,1297 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     .non-float{
         margin-bottom: -111px;
     }
+
+    .c-node-ap__auction-results{
+        margin-right: 36px;
+        margin-bottom: 24px;
+        display: inline-block;
+        background-color: #f8f9fa;
+        border-color: #DBDCDD;
+        border: 1px solid;
+        border-radius: 4px;
+        padding: 24px;
+        font-size: 1rem;
+    }
+
+    .c-node-ap__fundraising-target{
+        margin-bottom: 12px;
+    }
+
+    .c-node-ap__auction-total-label {
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #355159
+    }
+    .c-node-ap__auction-total-amount {
+        font-size: 2rem;
+        line-height: 1.5;
+        color: #d9b730;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+    }
+
+    .c-node-ap__totalizer{
+        height: 18px;
+        border-radius: 12px;
+        --color-ui: #d9b730;
+    }
+
+    .c-node-ap__auction-total-component-label{
+        color: #6d6e71
+    }
+
+    .c-node-ap__auction-total-component-amount{
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #000
+    }
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
+
+    .c-content__bottom{
+        background-color: #f9fafb;
+    }
+    .gallery-img-preview {
+        height: 421px !important;
+    }
+
+    .owl-item .item img{
+        height: 425px !important;
+    }
+
+    .footer-socials .nav-item {
+        margin-right: 1rem !important;
+    }
+
+    .footer-socials .nav-item a i {
+        font-size: 1.5rem;
+    }
+
+    footer{
+        position: relative;
+        width: 100%;
+        bottom: 0;
+        margin-top: 2rem;
+    }
+
+    .ticket-mask {
+        --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
+        -webkit-mask: var(--mask);
+        mask: var(--mask);
+        padding: 1.5rem;
+        background-color: #eee;
+        border: unset;
+    }
 </style>
 </head>
-<body>
+<body style="overflow: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
     @php
         $url = url()->current();
         $doamin = parse_url($url, PHP_URL_HOST);
         $check = \App\Models\Website::where('domain', $doamin)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
+        $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
+
     @endphp
     @if ($header->status == 1)
         @include('layouts.nav')
     @endif
-    <main style="margin-top: 7rem;">
-        @foreach($state as $data)
+    {{-- @php
+        dd($state);
+    @endphp --}}
+    <main style="margin-top: 6.9rem;">
+        @session('success')
+            <div class="alert alert-success mt-4" role="alert">
+                Purchase Pending
+            </div>
+        @endsession
+
+        @session('error')
+            <div class="alert alert-danger mt-4" role="alert">
+                {{ $value }}
+            </div>
+        @endsession
+        @session('errors')
+            <div class="alert alert-danger mt-4" role="alert">
+                @foreach($errors->all() as $value)
+                    <div>{{ $value }}</div>
+                @endforeach
+            </div>
+        @endsession
+        @foreach($state as $key => $data)
                 @php $type = $data['type'] ?? ''; @endphp
-                @switch($type)
-                    @case('site-banner')
-                        <img src="{{ $data['src'] ?? '' }}" alt="{{ $data['alt'] ?? '' }}" style="width:100%;height:auto;">
-                    @break
-                    @case('custom-banner')
-                        <div style="position:relative;">
-                            <img src="{{ $data['imgSrc'] ?? '' }}" style="width:100%;height:auto;">
-                            <h3 style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;text-shadow:1px 1px 4px #000;
-                             @foreach($data['style'] as $key => $style)
-                                {{ strtolower(preg_replace('/([A-Z])/', '-$1', $key)) }}:{{ $style ?? 'unset'}};
-                            @endforeach
-                        ">{{ $data['text'] ?? '' }}</h3>
+                @if($key == 0 && $data['type'] == 'custom-banner')
+                    @switch($type)
+                        @case('custom-banner')
+                        @php
+                            $banner = $data['customBannerData'] ?? [];
+                        @endphp
+                        <div style="position:relative; text-align:{{ $banner['textAlign'] ?? 'center' }};
+                        @if($header->floating == 1)
+                            margin-top: -7px;
+                        @endif
+                        ">
+                            @if(!empty($banner['imgSrc']))
+                                <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;">
+                            @endif
+                            @if(!empty($banner['title']))
+                                <h3 style="
+                                    position:absolute;
+                                    top:40%;
+                                    left:50%;
+                                    transform:translate(-50%,-50%);
+                                    color:{{ $banner['titleColor'] ?? '#fff' }};
+                                    text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
+                                    font-size:{{ $banner['titleFontSize'] ?? '2em' }};
+                                    width: 90%;
+                                    text-align:{{ $banner['textAlign'] ?? 'center' }};
+                                " class="custom-banner-title">
+                                    {{ $banner['title'] }}
+                                </h3>
+                            @endif
+                            @if(!empty($banner['subtitle']))
+                                <p style="
+                                    position:absolute;
+                                    top:45%;
+                                    left:50%;
+                                    transform:translate(-50%,-50%);
+                                    color:{{ $banner['subtitleColor'] ?? '#fff' }};
+                                    text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
+                                    font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }};
+                                    width: 90%;
+                                    text-align:{{ $banner['textAlign'] ?? 'center' }};
+                                    margin-top: {{ $data['customBannerData']['subtitleMarginTop'] }}
+                                ">
+                                    {{ $banner['subtitle'] }}
+                                </p>
+                            @endif
                         </div>
-                    @break
-                @endswitch
+                        @break
+                    @endswitch
+                @endif
         @endforeach
     <div class="container my-5" id="rendered-page">
         <div class="row">
-            @foreach($state as $data)
+            @foreach($state as $k =>  $data)
                 @php $type = $data['type'] ?? ''; @endphp
                 <div class="col-md-12">
                     <div class="component mb-4" data-type="{{ $type }}">
                         <div class="component-content">
                             @switch($type)
+
+                                @case('custom-banner')
+
+                                    @if($k != 0)
+                                        @php
+                                            $banner = $data['customBannerData'] ?? [];
+                                        @endphp
+                                        <div style="position:relative; text-align:{{ $banner['textAlign'] ?? 'center' }};">
+                                            @if(!empty($banner['imgSrc']))
+                                                <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;">
+                                            @endif
+                                            @if(!empty($banner['title']))
+                                                <h3 style="
+                                                    position:absolute;
+                                                    top:40%;
+                                                    left:50%;
+                                                    transform:translate(-50%,-50%);
+                                                    color:{{ $banner['titleColor'] ?? '#fff' }};
+                                                    text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
+                                                    font-size:{{ $banner['titleFontSize'] ?? '2em' }};
+                                                    width: 90%;
+                                                    text-align:{{ $banner['textAlign'] ?? 'center' }};
+                                                " class="custom-banner-title">
+                                                    {{ $banner['title'] }}
+                                                </h3>
+                                            @endif
+                                            @if(!empty($banner['subtitle']))
+                                                <p style="
+                                                    position:absolute;
+                                                    top:45%;
+                                                    left:50%;
+                                                    transform:translate(-50%,-50%);
+                                                    color:{{ $banner['subtitleColor'] ?? '#fff' }};
+                                                    text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
+                                                    font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }};
+                                                    width: 90%;
+                                                    text-align:{{ $banner['textAlign'] ?? 'center' }};
+                                                    margin-top: {{ $data['customBannerData']['subtitleMarginTop'] }}
+                                                ">
+                                                    {{ $banner['subtitle'] }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                @break
+
+                                @case('donor-list')
+                                @php
+                                        $style = $data['style'] ?? [];
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        $alertStyleStr = '';
+                                        foreach ($style as $k => $v) {
+                                            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        // dd($alertStyleStr);
+                                    @endphp
+                                    @php
+                                            // Ensure background color is applied to the wrapper
+                                            if (!empty($style['backgroundColor'])) {
+                                                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                            }
+                                        @endphp
+                                    <div style="{{ $alertStyleStr }} {{ $wrapperStyleStr }}">
+                                        <div class="col-12 mt-4 donor-list-component">
+                                            <div class="col-12 mt-4">
+                                                <div class="table-responsive">
+                                                    <table id="studentTable" class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Grade</th>
+                                                                <th>Grade</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody style="background-color: {{ $style['backgroundColor'] ?? '#fff'}} !important;">
+                                                            @php
+                                                                $donation = App\Models\Donation::where('website_id', $check->id)->get();
+                                                            @endphp
+                                                            @foreach($donation->chunk(3) as $donate)
+                                                                <tr>
+                                                                    @foreach($donate as $don)
+                                                                        <td data-label="Donor Info" style="background-color: {{ $style['backgroundColor'] ?? '#fff'}} !important;">
+                                                                            <div class="col-lg-12" style="font-size: 12px;">
+                                                                                <div class="p-3 rounded text-center position-relative" style="background: #ebebeb">
+                                                                                    <h4 class="fw-semibold">
+                                                                                        $ {{ $don->amount }}
+                                                                                    </h4>
+                                                                                    <small class="d-block opacity-75 mt-2">
+                                                                                        @if($don->hide == 0)
+                                                                                            <span title="Donor">{{ $don->first_name }} {{ $don->last_name }}</span>
+                                                                                        @endif
+                                                                                        <i class="fa-solid fa-arrow-right-long fa-fw mx-1 text-success" aria-hidden="true"></i>
+                                                                                        @if($don->type == 'student')
+                                                                                            <span title="Participant">{{ $don->user->name }}</span>
+                                                                                        @else
+                                                                                            <span title="Participant">{{ $check->name }}</span>
+                                                                                        @endif
+                                                                                    </small>
+                                                                                    <small class="d-block opacity-75 mt-3 p-2 rounded" style="backdrop-filter: brightness(1.5);">
+                                                                                        <i class="fa-solid fa-calendar-days me-1" aria-hidden="true"></i>
+                                                                                        {{ $don->created_at->format('M d, Y') }}
+                                                                                    </small>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    @endforeach
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
                                 @case('section-title')
-                                    <h2 style="
-                                    @foreach($data['style'] as $key => $style)
-                                        {{ strtolower(preg_replace('/([A-Z])/', '-$1', $key)) }}:{{ $style ?? 'unset'}};
-                                    @endforeach
-                                    ">{{ $data['text'] ?? '' }}</h2>
+                                @php
+                                        $style = $data['style'] ?? [];
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        $alertStyleStr = '';
+                                        foreach ($style as $k => $v) {
+                                            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        // dd($alertStyleStr);
+                                    @endphp
+                                    @php
+                                            // Ensure background color is applied to the wrapper
+                                            if (!empty($style['backgroundColor'])) {
+                                                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                            }
+                                        @endphp
+                                    <h2 style="{{ $alertStyleStr }} {{ $wrapperStyleStr }}">{{ $data['text'] ?? '' }}</h2>
                                     @break
                                 @case('divider')
                                     <hr style="height:{{ $data['style']['height'] ?? '2px' }};background:{{ $data['style']['backgroundColor'] ?? '#eee' }};border:none;">
                                     @break
-                                @case('faq')
-                                    @if(isset($data['faqData']) && is_array($data['faqData']))
-                                        <div class="faq-list">
-                                        @foreach($data['faqData'] as $entry)
-                                            <div class="mb-3">
-                                                <strong>{{ $entry['question'] ?? '' }}</strong>
-                                                <div>{!! nl2br(e($entry['answer'] ?? '')) !!}</div>
-                                            </div>
-                                        @endforeach
+
+                                @case('alert-message')
+                                    @php
+                                        $style = $data['style'] ?? [];
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        $alertStyleStr = '';
+                                        foreach ($style as $k => $v) {
+                                            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                    @endphp
+                                    <div class="alert-message-component mb-3" style="{{ $wrapperStyleStr }}">
+                                        <div style="{{ $alertStyleStr }}">
+                                            {{ $data['html'] ?? '' }}
                                         </div>
-                                    @endif
-                                    @break
+                                    </div>
+                                @break
+
+@case('social-share')
+    @php
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        $platforms = $data['socialPlatforms'] ?? [
+            'facebook' => ['enabled' => true, 'url' => '#'],
+            'x' => ['enabled' => false, 'url' => '#'],
+            'linkedin' => ['enabled' => false, 'url' => '#'],
+            'pinterest' => ['enabled' => false, 'url' => '#'],
+            'instagram' => ['enabled' => false, 'url' => '#'],
+        ];
+        // Build wrapper style string (for margin, etc.)
+        $wrapperStyleStr = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build card style string (for background, etc.)
+        $cardStyleStr = '';
+        foreach ($style as $k => $v) {
+            if ($v) $cardStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+    @endphp
+    <section class="social-share-component" style="{{ $wrapperStyleStr }}">
+        <div class="row gy-3 gy-md-5 justify-content-center align-items-center" style="{{ $cardStyleStr }}">
+            @if(!empty($platforms['facebook']['enabled']))
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a class="text-center btn-facebook-share" href="{{ $platforms['facebook']['url'] ?? '#' }}" target="_blank" style="color: #3b5998">
+                            <i class="fab fa-facebook-square fs-4 text-facebook" style="font-size: 4rem !important"></i>
+                            <h4 style="color: {{ $style['color'] ?? '#000'}} !important" class="text-dark mt-2 mt-md-3 fs-1.5">Share on Facebook</h4>
+                        </a>
+                    </div>
+                </div>
+            @endif
+            @if(!empty($platforms['x']['enabled']))
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a class="text-center btn-x-share" href="{{ $platforms['x']['url'] ?? '#' }}" target="_blank" style="color: #000">
+                            <img src="{{ asset('x.png') }}" width="64px">
+                            <h4 style="color: {{ $style['color'] ?? '#000'}} !important" class="text-dark mt-2 mt-md-3 fs-1.5">Share on X</h4>
+                        </a>
+                    </div>
+                </div>
+            @endif
+            @if(!empty($platforms['linkedin']['enabled']))
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a class="text-center btn-linkedin-share" href="{{ $platforms['linkedin']['url'] ?? '#' }}" target="_blank" style="color: #0077b5">
+                            <i class="fab fa-linkedin fs-4 text-linkedin" style="font-size: 4rem !important"></i>
+                            <h4 style="color: {{ $style['color'] ?? '#000'}} !important" class="text-dark mt-2 mt-md-3 fs-1.5">Share on LinkedIn</h4>
+                        </a>
+                    </div>
+                </div>
+            @endif
+            @if(!empty($platforms['pinterest']['enabled']))
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a class="text-center btn-pinterest-share" href="{{ $platforms['pinterest']['url'] ?? '#' }}" target="_blank" style="color: #e60023">
+                            <i class="fab fa-pinterest fs-4" style="font-size: 4rem !important"></i>
+                            <h4 style="color: {{ $style['color'] ?? '#000'}} !important" class="text-dark mt-2 mt-md-3 fs-1.5">Share on Pinterest</h4>
+                        </a>
+                    </div>
+                </div>
+            @endif
+            @if(!empty($platforms['instagram']['enabled']))
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a class="text-center btn-instagram-share" href="{{ $platforms['instagram']['url'] ?? '#' }}" target="_blank" style="color: #e1306c">
+                            <i class="fab fa-instagram fs-4" style="font-size: 4rem !important"></i>
+                            <h4 style="color: {{ $style['color'] ?? '#000'}} !important" class="text-dark mt-2 mt-md-3 fs-1.5">Share on Instagram</h4>
+                        </a>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </section>
+@break
+
+@case('auction-list')
+@php
+    // $data: array of auction items
+    // $style: array of CSS properties for inner content
+    // $wrapperStyle: array of CSS properties for outer wrapper
+
+    // Build wrapper style string (for margin, etc.)
+    $wrapperStyleStr = '';
+    foreach (($wrapperStyle ?? []) as $k => $v) {
+        if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+    }
+    // Build card style string (for background, etc.)
+    $cardStyleStr = '';
+    foreach (($style ?? []) as $k => $v) {
+        if ($v) $cardStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+    }
+@endphp
+
+<div class="c-content__bottom" style="{{ $wrapperStyleStr }}">
+    <div class="u-wrap--auction-main">
+        <div id="ai-display" class="c-ai-display c-ai-display--full"><span></span>
+            <div class="o-wrapper c-ai-display__items c-ai-display__items--full" style="{{ $cardStyleStr }}">
+                <div class="view-dom-id-ad4934c196a50f6f72cd5a8f4b22c874 js-view js-view-air-auction-items c-view c-view--air-auction-items c-view--display_teaser c-view--display-handler_block c-view--style_default jquery-once-2-processed jqo-vr-processed"
+                    data-view-name="air_auction_items" data-view-display="teaser" data-view-page="0">
+                    <div class="row">
+                            @foreach ($auction as $item)
+                            <div class="col-md-4 mt-4 mb-4">
+                                <div class="c-view__item c-view__item--teaser">
+                                    <div id="node-{{ $item->id }}"
+                                        class="c-node-ai c-node-ai--teaser js-ai js-ai--teaser js-eq js-ai--teaser-view c-node-ai--teaser-view"
+                                        about="/auction/{{ $item->id }}" typeof="sioc:Item foaf:Document"
+                                        data-entity-id="{{ $item->id }}" data-unmet-reserve="0" data-live-id="{{ $item->id }}"
+                                        data-updated="{{ \Carbon\Carbon::parse($item->updated_at)->timestamp }}"
+                                        data-leader="{{ $item->leader_id ?? '' }}" data-status="bidding" data-lec="false"
+                                        data-expiry="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}">
+                                        <div class="c-node-ai__content">
+                                            <div id="air-ai-status-indicator-{{ $item->id }}"
+                                                class="js-ai-status-indicator c-node-ai__status c-node-ai__status--teaser c-tooltip c-tooltip--n"
+                                                aria-label="Bidding is under way."></div>
+                                            <div class="c-node-ai__image-wrap">
+                                                <div class="c-node-ai__image">
+                                                    <svg viewBox="0 0 100 100"></svg>
+                                                    <a href="/auction/{{ $item->id }}" class="">
+                                                        <img alt="{{ $item->title }}"
+                                                            sizes="(min-width: 110em) 420px, (min-width: 90em) 25vw, (min-width: 60em) 33vw, (min-width: 30em) 50vw, 100vw"
+                                                            data-src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                            data-srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                            class="jqo-io-processed"
+                                                            src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                            srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="c-node-ai__details-wrap">
+                                                <h3 class="c-node-ai__title c-heading--gamma">
+                                                    <a href="/auction/{{ $item->id }}" data-mousetrap-trigger="4">
+                                                        {{ $item->title }}
+                                                    </a>
+                                                </h3>
+                                                <div class="c-node-ai__bidding-details">
+                                                    <div class="o-layout">
+                                                        <div class="o-layout__item u-7/12">
+                                                            <div class="c-node-ai__timer">
+                                                                <div id="ai-timer-{{ $item->id }}"
+                                                                    class="js-timer-wrapper c-timer c-timer--small-block u-hide-no-js">
+                                                                    <div class="c-timer__title"><span class="js-timer-title">Time remaining</span></div>
+                                                                    <span class="c-timer__body">
+                                                                        <span class="js-timer"
+                                                                            data-timer_id="ai-{{ $item->id }}-long-small-block"
+                                                                            data-type="expiry"
+                                                                            data-timeout="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}"
+                                                                            data-format_num="long"
+                                                                            data-deadline="{{ $item->dead_line }}"
+                                                                            id="auction-timer-{{ $item->id }}">
+                                                                            <span class="js-timer-element-days c-timer__element">
+                                                                                <span class="c-timer__value" id="days-{{ $item->id }}">0</span>
+                                                                                <span class="c-timer__period">Days</span>
+                                                                            </span>
+                                                                            <span class="c-timer__element">
+                                                                                <span class="c-timer__value" id="hours-{{ $item->id }}">0</span>
+                                                                                <span class="c-timer__period">Hrs</span>
+                                                                            </span>
+                                                                            <span class="c-timer__element">
+                                                                                <span class="c-timer__value" id="minutes-{{ $item->id }}">0</span>
+                                                                                <span class="c-timer__period">Mins</span>
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o-layout__item u-5/12">
+                                                            <div class="c-node-ai__price">
+                                                                <div id="ai-price-{{ $item->id }}" class="c-price  c-price--small-block">
+                                                                    <div class="c-price__title"><span class="js-price-title">Current bid</span></div>
+                                                                    <div class="c-price__wrapper">
+                                                                        <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
+                                                                            id="auction-price-{{ $item->id }}"
+                                                                            data-live-item="price"
+                                                                            data-tcid="{{ $item->id }}:price"
+                                                                            style="font-size: 16px;">
+                                                                            ${{ $item->starting_price ?? 0 }}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@break
+
+@case('whos-coming')
+    @php
+        // Build wrapper style (for margin, etc.)
+        $wrapperStyle = '';
+        foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+            if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build inner style (for color, background, padding, etc.)
+        $innerStyle = '';
+        foreach (($data['style'] ?? []) as $k => $v) {
+            if ($v) $innerStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        $people = $data['whosComingData'] ?? [];
+    @endphp
+    <div class="whos-coming-component mb-3" style="{{ $wrapperStyle }}">
+        <div class="whos-coming-list p-4" style="{{ $innerStyle }}">
+            {{-- <h4 class="mb-3" style="font-weight:bold;">Who's Coming</h4> --}}
+            <ol class="mb-0" style="list-style: disc;">
+                @foreach($people as $person)
+                    <li class="mb-2" style="font-size:1.1em;">
+                        {{ $person }}
+                    </li>
+                @endforeach
+            </ol>
+        </div>
+    </div>
+@break
+
+@case('faq')
+    @php
+        // Build wrapper style (for margin, etc.)
+        $wrapperStyle = '';
+        foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+            if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build FAQ box style (for border, padding, background, etc.)
+        $faqStyle = '';
+        foreach (($data['style'] ?? []) as $k => $v) {
+            if ($v) $faqStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+    @endphp
+    <div class="faq-component mb-3" style="{{ $wrapperStyle }}">
+        <div class="faq-list" style="{{ $faqStyle }}">
+            @if(isset($data['faqData']) && is_array($data['faqData']))
+                @foreach($data['faqData'] as $entry)
+                    @php
+                        $qColor = $entry['labelColor'] ?? null;
+                        $aColor = $entry['textColor'] ?? null;
+                        $entryBg = $entry['backgroundColor'] ?? null;
+                    @endphp
+                    <div class="mb-3" style="@if($entryBg)background-color:{{ $entryBg }};@endif">
+                        <strong style="@if($qColor)color:{{ $qColor }};@endif">{{ $entry['question'] ?? '' }}</strong>
+                        <div style="@if($aColor)color:{{ $aColor }};@endif">{!! nl2br(e($entry['answer'] ?? '')) !!}</div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </div>
+@break
+
+@case('video')
+    @php
+        $wrapperStyle = '';
+        foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+            if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        $style = '';
+        foreach (($data['style'] ?? []) as $k => $v) {
+            if ($v) $style .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        $videoHtml = $data['videoHtml'] ?? '';
+        $videoWidth = $data['videoWidth'] ?? '100%';
+    @endphp
+    <div class="video-component mb-3" style="{{ $wrapperStyle }}">
+        <div class="video-container" style="width:{{ $videoWidth }};{{ $style }}">
+            {!! $videoHtml !!}
+        </div>
+    </div>
+@break
+
+@case('button')
+    @php
+        // Merge style and buttonStyle for the button
+        $btnStyleArr = array_merge(
+            ($data['style'] ?? []),
+            ($data['buttonStyle'] ?? [])
+        );
+        $btnStyle = '';
+        $wrapperStyle = '';
+        $textAlign = $btnStyleArr['textAlign'] ?? null;
+        foreach ($btnStyleArr as $k => $v) {
+            if ($k === 'textAlign') continue; // skip textAlign for button itself
+            if ($v) $btnStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+            if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        if ($textAlign) $wrapperStyle .= "text-align:$textAlign;";
+        $href = $data['buttonHref'] ?? '#';
+        $target = $data['buttonTarget'] ?? '_self';
+        $text = $data['buttonText'] ?? 'Click Me';
+        // dd($data);
+    @endphp
+    <div class="button-component mb-3" style="{{ $wrapperStyle }}">
+        <a href="{{ $href }}" target="{{ $target }}" style="text-decoration:none;">
+            <button type="button" class="btn btn-primary"
+                style="{{ $btnStyle }}">
+                {{ $text }}
+            </button>
+        </a>
+    </div>
+@break
+
+        @case('custom-html')
+            @php
+                $style = $data['style'] ?? [];
+                $wrapperStyle = $data['wrapperStyle'] ?? [];
+                $wrapperStyleStr = '';
+                foreach ($wrapperStyle as $k => $v) {
+                    if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                }
+            @endphp
+            <div class="custom-html-component mb-3" style="{{ $wrapperStyleStr }}">
+                <iframe width="100%" style="min-height:300px;border:none;" srcdoc="{{ $data['customHtml'] ?? '' }}"></iframe>
+            </div>
+        @break
+        @case('faq')
+            @if(isset($data['faqData']) && is_array($data['faqData']))
+                <div class="faq-list">
+                @foreach($data['faqData'] as $entry)
+                    <div class="mb-3">
+                        <strong>{{ $entry['question'] ?? '' }}</strong>
+                        <div>{!! nl2br(e($entry['answer'] ?? '')) !!}</div>
+                    </div>
+                @endforeach
+                </div>
+            @endif
+            @break
+
+
+    @case('contact-form')
+    @php
+        $emails = $data['contactEmails'] ?? [];
+    @endphp
+    @php
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        $wrapperStyleStr = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        $alertStyleStr = '';
+        foreach ($style as $k => $v) {
+            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // dd($alertStyleStr);
+    @endphp
+    @php
+            // Ensure background color is applied to the wrapper
+            if (!empty($style['backgroundColor'])) {
+                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+            }
+        @endphp
+    <form method="POST" action="/contact-form" class="contact-form-component" style="{{ $wrapperStyleStr }}  {{ $alertStyleStr }}">
+        @csrf
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <div class="row gy-3">
+                    <div class="col-12">
+                        <label for="name" class="form-label fw-semibold">
+                            Your name
+                        </label>
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="col-12">
+                        <label for="email" class="form-label fw-semibold">
+                            Email address
+                        </label>
+                        <input type="text" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="col-12">
+                        <label for="message" class="form-label fw-semibold">
+                            Message
+                        </label>
+                        <textarea class="form-control" id="message" name="message" rows="8"></textarea>
+                    </div>
+                    <input type="hidden" name="template" value="e7d0b613d125406ea714907d6507c2a9">
+                    @foreach($emails as $email)
+                        <input type="hidden" name="notification_emails[]" value="{{ $email }}">
+                    @endforeach
+                    <div class="col-12">
+                        <small class="text-muted">This form is protected by reCAPTCHA and the Google <a
+                                href="https://policies.google.com/privacy" style="color: #2e4053">Privacy Policy</a>
+                            and <a href="https://policies.google.com/terms" style="color: #2e4053">Terms of Service</a>
+                            apply.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center mt-3 mt-md-4">
+            <button type="submit" class="btn btn-primary btn-lg text-white" style="background-color: #2e4053; border-color: #2e4053">
+                Submit
+            </button>
+        </div>
+    </form>
+@break
+
+@case('student-leaderboard')
+                @php
+                    $st = App\Models\User::limit(5)->whereIn('role',['individual','group_leader','member'])->where('website_id',$check->id)->get();
+                    $sortedStudents = $st->sortByDesc(function($student) {
+                        return $student->donations->sum('amount');
+                    });
+                    $key = 0 ;
+                @endphp
+                @php
+                    $style = $data['style'] ?? [];
+                    $wrapperStyle = $data['wrapperStyle'] ?? [];
+                    $wrapperStyleStr = '';
+                    foreach ($wrapperStyle as $k => $v) {
+                        if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    $alertStyleStr = '';
+                    foreach ($style as $k => $v) {
+                        if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    // dd($alertStyleStr);
+                @endphp
+                @php
+                        // Ensure background color is applied to the wrapper
+                        if (!empty($style['backgroundColor'])) {
+                            $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                        }
+                        // dd($style);
+                    @endphp
+<div class="col-md-12 mt-4" style="{{ $alertStyleStr }} {{ $wrapperStyleStr }}">
+
+                @foreach($sortedStudents as $student)
+                    <div class="col-lg-12" style="font-size: 12px; margin-bottom: 1rem; ">
+                        <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
+                            style="width: 100%; max-width: 580px; margin-inline: auto; background: #ebebeb;">
+                            <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
+                            <div class="row gy-3 ">
+                                <div class="col-lg-3 d-flex align-items-center">
+                                    <span class="jk" style="font-size: 1.5rem !important; font-weight: bold; margin-right: 1rem;">{{ $key + 1}}</span>
+                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important">
+                                        <img src="{{ asset($student->photo) }}" style="border-radius: 50%; width: 70px; min-width: 70px; height: 70px; min-height: 70px;">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-7 d-flex flex-column justify-content-center" style="margin-top: 0px !important;">
+                                    <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                        {{ $student->name }}
+                                    </h2>
+
+                                    {{-- <span class="opacity-75 text-center text-lg-start mt-2"></span> --}}
+
+                                    <div class="progress" role="progressbar" aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                        aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
+                                        data-secondary-color="#28a745" data-duration="5"
+                                        data-goal-reached="true" style="height: 14px; border: 1px solid #28a745">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
+                                            style="width:@if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal)*100 }}@else 1 @endif%; background-color: #28a745 !important;" > <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal)*100) }}@else 1 @endif% </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 opacity-50 small">
+                                <i class="fa-solid fa-award fa-2xl fa-fw position-absolute" aria-hidden="true" style="
+                                @if($key == 0)
+                                    color: #FFDf01;
+                                @elseif($key == 1)
+                                    color: #c0c0c0;
+                                @elseif($key == 2)
+                                    color: #996515;
+                                @else
+                                    display: none;
+                                @endif
+                                    top: 30px; right: 25px; font-size: 2.5rem !important;"></i>
+                                <span class="small fw-bold" style="top: 57px; position: relative; left: -36px; right: unset; font-size: 0.74rem; color: #000;">
+                                    $ {{ $student->donations->sum('amount') }}
+                                </span>
+                            </span>
+                            </a>
+                        </div>
+                    </div>
+                    @php
+                        $key +=1;
+                    @endphp
+                @endforeach
+            </div>
+            <div class="col-md-12 mt-4">
+                <p class="lead text-center mt-3" style="color: {{ $style['color'] }} !important">
+                    @php
+                        $count = App\Models\Donation::where('website_id',$check->id)->count();
+                    @endphp
+                    {{ $count }} donations have been made to this site
+                </p>
+            </div>
+
+@break
+
+@case('student-listing')
+@php
+                    $style = $data['style'] ?? [];
+                    $wrapperStyle = $data['wrapperStyle'] ?? [];
+                    $wrapperStyleStr = '';
+                    foreach ($wrapperStyle as $k => $v) {
+                        if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    $alertStyleStr = '';
+                    foreach ($style as $k => $v) {
+                        if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                @endphp
+                @php
+                        // Ensure background color is applied to the wrapper
+                        if (!empty($style['backgroundColor'])) {
+                            $alertStyleStr .= 'background-color:' . $style['backgroundColor'] . ' !important;';
+                        }
+                    // dd($alertStyleStr);
+
+                    @endphp
+        <div class="row" style="{{ $wrapperStyleStr }}">
+                <div class="col-12 col-md-11 col-lg-9 col-xl-7 d-flex align-items-center" style="margin: auto;">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" class="form-control" id="search" name="search" placeholder="Search">
+                    </div>
+                </div>
+                <div class="col-12 mt-4">
+                        <table id="studentTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+    @php
+        $students = App\Models\User::limit(10)->whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
+    @endphp
+
+    @foreach ($students->chunk(2) as $item)
+        <tr>
+            @foreach ($item as $key => $student)
+                <td style="{{ $alertStyleStr }}">
+                    <!-- full student content here -->
+                    <div class="row">
+                        <div class="col-lg-12 klklklk" style="font-size: 12px;">
+                            <div class="position-relative rounded-3 shadow-sm border listingg"
+                                style="width: 100%; max-width: 580px; margin-inline: auto;">
+                                <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
+                                    <div class="row lsls gy-3" style="padding: 0.5rem;">
+                                        <div class="col-lg-2 d-flex align-items-center">
+                                            <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
+                                                <img src="{{ asset($student->photo) }}" style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-8 d-flex flex-column justify-content-center">
+                                            <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                                {{ $student->name }}
+                                            </h2>
+                                            <span class="opacity-75 text-center text-lg-start mt-2"></span>
+                                            <div class="progress mt-3" role="progressbar"
+                                                aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="{{ $student->goal }}"
+                                                data-primary-color="#2e4053"
+                                                data-secondary-color="#b7bcc4"
+                                                data-duration="5"
+                                                data-goal-reached="true"
+                                                style="height: 14px">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
+                                                    style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}@else 0 @endif%;">
+                                                    <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@else 1 @endif%</span>
+                                                </div>
+                                            </div>
+                                            <span class="fw-semibold d-block text-center mt-2">
+                                                @php $to = $student->donations->sum('amount'); @endphp
+                                                ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">raised</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- {{ $key }} --}}
+                </td>
+            @endforeach
+
+            {{-- Add one empty <td> only if this is the last row and has only one student --}}
+            @if ($loop->last && count($item) < 2)
+                <td></td>
+            @endif
+        </tr>
+    @endforeach
+</tbody>
+
+                        </table>
+                </div>
+            </div>
+@break
+
+@case('donation-form')
+    @php
+        // Extract styles
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        $donationColors = $data['donationFormColors'] ?? [
+            'headerBg' => '#2e4053',
+            'headerText' => '#ffffff',
+            'footerBg' => '#2e4053',
+            'footerText' => '#ffffff',
+        ];
+        // Build wrapper style string (for margin, padding, etc.)
+        $wrapperStyleStr = '';
+        $backgroundColor = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build card style string (for background, etc.)
+        $cardStyleStr = '';
+        foreach ($style as $k => $v) {
+            if ($v) {
+                $cssKey = strtolower(preg_replace('/([A-Z])/', '-$1', $k));
+                $cardStyleStr .= "$cssKey:$v;";
+                if ($cssKey === 'background-color') $backgroundColor = $v;
+                if (in_array($cssKey, ['margin', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right', 'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right'])) {
+                    $wrapperStyleStr .= "$cssKey:$v;";
+                }
+            }
+        }
+        // Ensure background color is applied to the wrapper if set in style
+        if ($backgroundColor) {
+            $wrapperStyleStr .= 'background-color:' . $backgroundColor . ';';
+        }
+    @endphp
+    <section class="donation-form-component" style="{{ $wrapperStyleStr }}">
+        <div class="block-container container" style="{{ $cardStyleStr }}">
+            <form method="POST" action="/donation-general" class="donation-form-block">
+                @csrf
+                <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
+                    <div class="card border-primary shadow" style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important;">
+                        <div class="card-header bg-primary border-primary rounded-0 text-center fs-2"
+                            style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; background-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; color: {{ $donationColors['headerText'] ?? '#ffffff' }} !important;">
+                            Make a general donation to {{ $check->name }}
+                        </div>
+                        <div class="card-body">
+                            <input type="hidden" name="profile_uuid" value="">
+
+                            <input type="hidden" name="team_uuid" value="">
+
+                            <div class="row gy-3">
+                                <div
+                                    class="col-12 d-flex flex-column justify-content-center align-items-center">
+                                    <input type="hidden" name="type" id="type" value="general">
+                                    <div></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                            style="border-width: 2px; border-right-width: 0; border-color: #2e4053 !important;">$</span>
+                                        <input type="number" placeholder="0"
+                                            class="form-control fs-2 fs-lg-4 text-center border-primary"
+                                            style="border-width: 2px; border-color: #2e4053 !important;" name="donation_amount" value="" required>
+                                        <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                            style="border-width: 2px; border-left-width: 0; border-color: #2e4053 !important;">.00</span>
+                                    </div>
+                                    <input type="hidden" name="amount" value="">
+                                    <div class="text-center">
+                                        <small class="form-text text-muted">
+                                            * The minimum donation amount is 8.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-center align-items-center">
+                                    <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: #2e4053 !important;">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                id="pay_fees" name="pay_fees" checked="">
+                                            <label class="form-check-label fw-semibold" for="pay_fees">
+                                                I elect to pay the fees
+                                            </label>
+                                            <i role="button"
+                                                class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step."></i>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <label for="first_name" class="form-label fw-semibold required">
+                                        First name
+                                    </label>
+                                    <input type="text" class="form-control" id="first_name"
+                                        name="first_name" value="" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="last_name" class="form-label fw-semibold required">
+                                        Last name
+                                    </label>
+                                    <input type="text" class="form-control" id="last_name"
+                                        name="last_name" value="" required>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <label for="email" class="form-label fw-semibold required">
+                                        Email address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        value="" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="anonymous_donation" name="anonymous_donation">
+                                        <label class="form-check-label fw-semibold" for="anonymous_donation">
+                                            Anonymous
+                                        </label>
+                                        <i role="button"
+                                            class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Selecting this option will hide your name from everyone but the organizer."></i>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="leave_comment" class="form-label fw-semibold text-capitalize">
+                                        comment
+                                    </label>
+                                    <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
+                                </div>
+
+
+                                <div class="col-12">
+                                                <small class="text-muted">This form is protected by reCAPTCHA and the
+                                                    Google <a href="https://policies.google.com/privacy">Privacy Policy</a>
+                                                    and <a href="https://policies.google.com/terms">Terms of Service</a>
+                                                    apply.</small>
+                                            </div>
+
+
+
+
+                            </div>
+                        </div>
+                        <div class="card-footer bg-primary border-primary rounded-0 p-0"
+                            style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; background-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important;">
+                            <button type="submit"
+                                class="btn btn-primary btn-lg w-100 h-100 rounded-0 shadow-none"
+                                style="background: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; color: {{ $donationColors['headerText'] ?? '#ffffff' }} !important;">
+                                Donate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+@break
+
+@case('sell-tickets')
+    @php
+        // Extract styles
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        // Build wrapper style string (for margin, etc.)
+        $wrapperStyleStr = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build card style string (for background, etc.)
+        $cardStyleStr = '';
+        foreach ($style as $k => $v) {
+            if ($v) $cardStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+    @endphp
+     <section style="{{ $wrapperStyleStr }} {{ $cardStyleStr }}" class="mt-2 mb-2">
+            @php
+                $tickets = \App\Models\Ticket::where('website_id',$check->id)->where('status',1)->latest()->get();
+            @endphp
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <form action="/tickets" method="POST">
+                        @csrf
+                            @foreach ($tickets as $item)
+                            <div class="card ticket-mask mt-2 mb-2">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-2 col-2">
+                                                <img src="{{ asset($item->image) }}" width="64px" height="64px;">
+                                            </div>
+                                            <div class="col-md-10 col-10">
+                                                <h4 style="margin-bottom: 2px;">{{ $item->name }} (${{ $item->price }})</h4>
+                                                <p style="margin-bottom: 2px;">{{ $item->description }}</p>
+                                                <span>Only {{ $item->quantity }} left!</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="hidden" name="ticket[{{ $item->id }}][id]" value="{{ $item->id }}">
+                                        <select name="ticket[{{ $item->id }}][quantity]" class="form-control tickets">
+                                            <option value="null">Select a option</option>
+                                            @for ($i = 1; $i <= $item->quantity; $i++)
+                                                <option value="{{ $i }}">You selected a total of {{ $i }} {{ $item->name }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="col-md-12 text-center mt-4 mb-4">
+                            <button type="submit" class="btn btn-primary"> Buy </button>
+                        </div>
+                    </form>
+            </div>
+        </section>
+@break
+
+            @case('full-width-text-image')
+    @php
+        $fwti = $data['fwtiData'] ?? [];
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        $wrapperStyleStr = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+    @endphp
+    <div class="full-width-text-image-component mb-4" style="width:100%;{{ $wrapperStyleStr }};">
+        <div style="width:100%;display:flex;flex-direction:column;">
+            @if(!empty($fwti['text1']))
+                <div style="color:{{ $fwti['color1'] ?? '#222' }};font-size:{{ $fwti['fontSize1'] ?? '60px' }};font-weight:bold;margin-top:24px;text-align: {{ $style['textAlign'] }};">
+                    {{ $fwti['text1'] }}
+                </div>
+            @endif
+            @if(!empty($fwti['text2']))
+                <div style="color:{{ $fwti['color2'] ?? '#444' }};font-size:{{ $fwti['fontSize2'] ?? '18px' }};margin-top:12px;text-align: {{ $style['textAlign'] }};">
+                    {{ $fwti['text2'] }}
+                </div>
+            @endif
+            @if(!empty($fwti['imgSrc']) && $fwti['imgSrc'] != 'https://via.placeholder.com/1200x400')
+                <img
+                    src="{{ $fwti['imgSrc'] }}"
+                    alt="{{ $fwti['imgAlt'] ?? '' }}"
+                    style="width:{{ $fwti['imgCustomWidth'] ?? '100%' }};height:{{ $fwti['imgCustomHeight'] ?? 'auto' }};margin-top:12px; object-fit:{{ $fwti['imgObjectFit'] ?? 'cover' }};max-height:{{ $fwti['imgHeight'] ?? '400' }}px;border-radius:8px;">
+            @endif
+        </div>
+    </div>
+@break
                                 @case('event-countdown')
                                     @if(isset($data['countdownData']))
                                         @php
                                             $label = $data['countdownData']['label'] ?? '';
                                             $date = $data['countdownData']['date'] ?? '';
+                                            $fontWeight = $data['countdownData']['fontWeight'] ?? 'bold';
+                                            // Build wrapper style (for margin, etc.)
+                                            $wrapperStyle = '';
+                                            $backgroundColor = '';
+                                            foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+                                                if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            // Build countdown style (for color, background, padding, etc.)
+                                            $countdownStyle = '';
+                                            $color = '#000';
+                                            foreach (($data['style'] ?? []) as $k => $v) {
+                                                if ($v) {
+                                                    $cssKey = strtolower(preg_replace('/([A-Z])/', '-$1', $k));
+                                                    $countdownStyle .= "$cssKey:$v;";
+                                                    if ($cssKey === 'color') $color = $v;
+                                                    if ($cssKey === 'background-color') $backgroundColor = $v;
+                                                }
+                                            }
+                                            // Ensure background color is applied to the wrapper
+                                            if ($backgroundColor) {
+                                                $wrapperStyle .= 'background-color:' . $backgroundColor . ';';
+                                            }
                                         @endphp
-                                        <div class="event-countdown" style="padding:24px 16px;border-radius:8px;text-align:center;margin-bottom:24px;">
-                                            <div class="timer text-center mt-5">
+                                        <div class="event-countdown" style="padding:24px 16px;border-radius:8px;text-align:center;margin-bottom:24px;{{ $wrapperStyle }}">
+                                            <div class="timer text-center mt-5" style="{{ $countdownStyle }}">
                                                 <div class="d-flex justify-content-center align-items-center">
-                                                    <div class="mx-3"><h1 id="months" class="display-4">0</h1><p>Months</p></div>
-                                                    <div class="mx-3"><h1 id="days" class="display-4">0</h1><p>Days</p></div>
-                                                    <div class="mx-3"><h1 id="hours" class="display-4">0</h1><p>Hours</p></div>
-                                                    <div class="mx-3"><h1 id="minutes" class="display-4">0</h1><p>Minutes</p></div>
-                                                    <div class="mx-3"><h1 id="seconds" class="display-4">0</h1><p>Seconds</p></div>
+                                                    <div class="mx-3 counters">
+                                                        <h1 id="months" class="display-4" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }};color:{{ $color }}">0</h1>
+                                                        <p style="color:{{ $color }}">Months</p>
+                                                    </div>
+                                                    <div class="mx-3 counters">
+                                                        <h1 id="days" class="display-4" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }};color:{{ $color }}">0</h1>
+                                                        <p style="color:{{ $color }}">Days</p>
+                                                    </div>
+                                                    <div class="mx-3 counters">
+                                                        <h1 id="hours" class="display-4" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }};color:{{ $color }}">0</h1>
+                                                        <p style="color:{{ $color }}">Hours</p>
+                                                    </div>
+                                                    <div class="mx-3 counters">
+                                                        <h1 id="minutes" class="display-4" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }};color:{{ $color }}">0</h1>
+                                                        <p style="color:{{ $color }}">Minutes</p>
+                                                    </div>
+                                                    <div class="mx-3 counters">
+                                                        <h1 id="seconds" class="display-4" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }};color:{{ $color }}">0</h1>
+                                                        <p style="color:{{ $color }}">Seconds</p>
+                                                    </div>
                                                 </div>
-                                                <p style="font-size: .8em;">{{ $label }}</p>
+                                                <p style="font-size: .8em; font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }}; color:{{ $color }}">{{ $label }}</p>
                                             </div>
-                                            <input type="hidden" id="timer" class="date-countdown" value="{{ $date }}">
+                                            <input type="hidden" id="timer" class="date-countdown" value="{{ $date }}" style="font-weight:{{ $fontWeight == 'normal' ? 400 : 600 }}">
                                         </div>
-
                                         <script>
                                             da = document.getElementById("timer").value;
-                                            // Set the target date for the countdown
                                             const targetDate = new Date(da).getTime();
-
                                             function updateCountdown() {
                                                 const now = new Date().getTime();
                                                 const timeLeft = targetDate - now;
-
                                                 if (timeLeft <= 0) {
                                                     document.getElementById("months").textContent = 0;
                                                     document.getElementById("days").textContent = 0;
@@ -147,134 +1349,249 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                                     document.getElementById("seconds").textContent = 0;
                                                     return;
                                                 }
-
-                                                // Calculate time components
                                                 const months = Math.floor(timeLeft / (1000 * 60 * 60 * 24 * 30));
                                                 const days = Math.floor((timeLeft % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
                                                 const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                                                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                                                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                                                // Update the HTML
                                                 document.getElementById("months").textContent = months;
                                                 document.getElementById("days").textContent = days;
                                                 document.getElementById("hours").textContent = hours;
                                                 document.getElementById("minutes").textContent = minutes;
                                                 document.getElementById("seconds").textContent = seconds;
                                             }
-
-                                            // Update the countdown every second
                                             setInterval(updateCountdown, 1000);
                                         </script>
                                     @endif
-                                    @break
-                                @case('event-information')
-                                    @if(isset($data['eventInfoData']))
+                                @break
+                                   @case('image')
                                         @php
-                                            $info = $data['eventInfoData'];
-                                        @endphp
-                                        <div class="event-information" style="padding:20px 16px;border-radius:8px;margin-bottom:24px;">
-                                            <div class="icons">
-                                                <div class="row gy-3 gy-md-4 row-cols-1 flex-column">
-                                                    <div class="col">
-                                                        <div class="row gy-3 justify-content-center text-center text-">
-                                                            <div class="col-md-4 col-xl-2">
-                                                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
-                                                                    <i class="fa-solid fa-calendar-days fa-fw fs-3 text-primary mb-3" aria-hidden="true"></i>
-                                                                    <h4 class="fs-1.5 fw-light mb-1">When</h4>
-                                                                    <p class="fs-.75 opacity-75 fw-light">{{ $info['date'] }}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4 col-xl-3">
-                                                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
-                                                                    <i class="fa-solid fa-signs-post fa-fw fs-3 text-primary mb-3" aria-hidden="true"></i>
-                                                                    <h4 class="fs-1.5 fw-light mb-1">Where</h4>
-                                                                    <p class="fs-.75 opacity-75 fw-light">{{ $info['address'] }}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4 col-xl-2">
-                                                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
-                                                                    <i class="fa-solid fa-clock fa-fw fs-3 text-primary mb-3" aria-hidden="true"></i>
-                                                                    <h4 class="fs-1.5 fw-light mb-1">Time</h4>
-                                                                    <p class="fs-.75 opacity-75 fw-light">{{ $info['time'] }} PST</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <script>
-                                            content = document.querySelector('.event-information');
-                                            const mapEmbed = "{{ $info['mapEmbed'] ?? '' }}";
-                                            const showMap = "{{ $data['eventInfoData']['showMap'] }}";
-                                            const mapPosition = "{{ $info['mapPosition'] ?? 'down' }}";
-                                            const infoHtml = document.querySelector('.event-information').innerHTML;
-                                            // Map HTML
-                                            const mapHtml = showMap ? `<div class="event-map" style="margin:16px 0;"><iframe class="map embed-responsive-item rounded border border-2 border-" style="height: 300px; width: 100%; position: relative; overflow: hidden;" src="${mapEmbed}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>` : '';
-                                            // Layout by mapPosition
-                                            let finalHtml = '';
-                                            if (showMap) {
-                                                if (mapPosition === 'up') {
-                                                    finalHtml = mapHtml + infoHtml;
-                                                } else if (mapPosition === 'down') {
-                                                    finalHtml = infoHtml + mapHtml;
-                                                } else if (mapPosition === 'left') {
-                                                    finalHtml = `<div style='display:flex;gap:24px;align-items:flex-start;'><div style='flex:1;max-width:50%'>${mapHtml}</div><div style='flex:1;'>${infoHtml}</div></div>`;
-                                                } else {
-                                                    finalHtml = `<div style='display:flex;gap:24px;align-items:flex-start;'><div style='flex:1;'>${infoHtml}</div><div style='flex:1;max-width:50%'>${mapHtml}</div></div>`;
-                                                }
-                                            } else {
-                                                finalHtml = infoHtml;
+                                            $img = $data['imageData'] ?? [];
+                                            $displayMode = $img['displayMode'] ?? 'preview'; // default to preview
+                                            $style = $data['style'] ?? [];
+                                            $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                            $wrapperStyleStr = '';
+                                            foreach ($wrapperStyle as $k => $v) {
+                                                if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
                                             }
-                                            content.innerHTML = finalHtml;
-                                        </script>
-                                    @endif
+                                            $imgStyle = '';
+                                            foreach ($style as $k => $v) {
+                                                if ($v) $imgStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            if (!empty($img['width'])) $imgStyle .= "width:{$img['width']};";
+                                            if (!empty($img['height'])) $imgStyle .= "height:{$img['height']};";
+                                            if (!empty($img['objectFit'])) $imgStyle .= "object-fit:{$img['objectFit']};";
+                                        @endphp
+                                        @php
+                                            // Ensure background color is applied to the wrapper
+                                            if (!empty($style['backgroundColor'])) {
+                                                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                            }
+                                        @endphp
+                                        <div class="single-image-component mb-3" style="{{ $wrapperStyleStr }} @if($data['style']['textAlign'] == 'center') text-align: center @endif">
+                                            @if($displayMode === 'link' && !empty($img['link']))
+                                                <a href="{{ $img['link'] }}" @if(!empty($img['openInNewTab'])) target="_blank" @endif>
+                                                    <img src="{{ $img['src'] ?? '' }}"
+                                                        alt="{{ $img['alt'] ?? '' }}"
+                                                        style="{{ $imgStyle }}border-radius:8px;cursor:pointer;transition:box-shadow .2s;"
+                                                        data-img="{{ $img['src'] ?? '' }}"
+                                                    />
+                                                </a>
+                                            @else
+                                                <a href="javascript:void(0);" class="image-link" style="display:inline-block;">
+                                                    <img src="{{ $img['src'] ?? '' }}"
+                                                        alt="{{ $img['alt'] ?? '' }}"
+                                                        style="{{ $imgStyle }}border-radius:8px;cursor:pointer;transition:box-shadow .2s;"
+                                                        class="img-preview"
+                                                        data-img="{{ $img['src'] ?? '' }}"
+                                                    />
+                                                </a>
+                                            @endif
+                                        </div>
                                     @break
+                               @case('event-information')
+    @if(isset($data['eventInfoData']))
+        @php
+            $info = $data['eventInfoData'];
+            // Get color from style array
+            $color = '#3B82F6'; // default fallback
+            if (!empty($data['style']['color'])) {
+                $color = $data['style']['color'];
+            }
+            // Build wrapper style if needed
+            $wrapperStyle = '';
+            $backgroundColor = '';
+            foreach (($data['wrapperStyle'] ?? []) as $k => $v) {
+                if ($v) $wrapperStyle .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+            }
+            foreach (($data['style'] ?? []) as $k => $v) {
+                if ($v) {
+                    $cssKey = strtolower(preg_replace('/([A-Z])/', '-$1', $k));
+                    if ($cssKey === 'background-color') $backgroundColor = $v;
+                }
+            }
+            // Ensure background color is applied to the wrapper
+            if ($backgroundColor) {
+                $wrapperStyle .= 'background-color:' . $backgroundColor . ';';
+            }
+        @endphp
+        <div class="event-information" style="padding:20px 16px;border-radius:8px;margin-bottom:24px;{{ $wrapperStyle }}">
+            <div class="icons">
+                <div class="row gy-3 gy-md-4 row-cols-1 flex-column">
+                    <div class="col">
+                        <div class="row gy-3 justify-content-center text-center text-">
+                            <div class="col-md-4 col-xl-2">
+                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <i class="fa-solid fa-calendar-days fa-fw fs-3 mb-3" aria-hidden="true" style="color:{{ $color }} !important"></i>
+                                    <h4 class="fs-1.5 fw-light mb-1" style="color:{{ $color }}">When</h4>
+                                    <p class="fs-.75 opacity-75 fw-light" style="color:{{ $color }}">{{ $info['date'] }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3">
+                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <i class="fa-solid fa-signs-post fa-fw fs-3 mb-3" aria-hidden="true" style="color:{{ $color }} !important"></i>
+                                    <h4 class="fs-1.5 fw-light mb-1" style="color:{{ $color }}">Where</h4>
+                                    <p class="fs-.75 opacity-75 fw-light" style="color:{{ $color }}">{{ $info['address'] }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-2">
+                                <div class="bg- py-3 rounded h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <i class="fa-solid fa-clock fa-fw fs-3 mb-3" aria-hidden="true" style="color:{{ $color }} !important"></i>
+                                    <h4 class="fs-1.5 fw-light mb-1" style="color:{{ $color }}">Time</h4>
+                                    <p class="fs-.75 opacity-75 fw-light" style="color:{{ $color }}">{{ $info['time'] }} PST</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            content = document.querySelector('.event-information');
+            const mapEmbed = "{{ $info['mapEmbed'] ?? '' }}";
+            const showMap = "{{ $data['eventInfoData']['showMap'] }}";
+            const mapPosition = "{{ $info['mapPosition'] ?? 'down' }}";
+            const infoHtml = document.querySelector('.event-information').innerHTML;
+            // Map HTML
+            const mapHtml = showMap ? `<div class="event-map" style="margin:16px 0;"><iframe class="map embed-responsive-item rounded border border-2 border-" style="height: 300px; width: 100%; position: relative; overflow: hidden;" src="${mapEmbed}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>` : '';
+            // Layout by mapPosition
+            let finalHtml = '';
+            if (showMap) {
+                if (mapPosition === 'up') {
+                    finalHtml = mapHtml + infoHtml;
+                } else if (mapPosition === 'down') {
+                    finalHtml = infoHtml + mapHtml;
+                } else if (mapPosition === 'left') {
+                    finalHtml = `<div style='display:flex;gap:24px;align-items:flex-start;'><div style='flex:1;max-width:50%'>${mapHtml}</div><div style='flex:1;'>${infoHtml}</div></div>`;
+                } else {
+                    finalHtml = `<div style='display:flex;gap:24px;align-items:flex-start;'><div style='flex:1;'>${infoHtml}</div><div style='flex:1;max-width:50%'>${mapHtml}</div></div>`;
+                }
+            } else {
+                finalHtml = infoHtml;
+            }
+            content.innerHTML = finalHtml;
+        </script>
+    @endif
+@break
                                 @case('site-goal')
                                     @if(isset($data['goalData']))
                                         @php
-                                            $goal = (float)($data['goalData']['goal'] ?? 0);
-                                            $raised = (float)($data['goalData']['raised'] ?? 0);
-                                            $percent = $goal > 0 ? min(100, round(($raised / $goal) * 100)) : 0;
-                                            $ticks = $data['goalData']['ticks'] ?? [];
+                                        // Example data for the new site-goal component (replace with your dynamic data as needed)
+                                        $goal = isset($data['goalData']['goal']) ? (float)$data['goalData']['goal'] : 10000;
+                                        $raised = isset($data['goalData']['raised']) ? (float)$data['goalData']['raised'] : 3500;
+                                        $percent = $goal > 0 ? min(100, round(($raised / $goal) * 100, 2)) : 0;
+                                        $label = $data['goalData']['label'] ?? 'Fundraising Goal';
+                                        $showTicks = true;
+                                        $ticks = $data['goalData']['ticks'] ?? [0, 0.25, 0.5, 0.75, 1];
                                         @endphp
-                                        <div class="site-goal" style="padding:20px 16px;border-radius:8px;margin-bottom:24px;">
-                                            <div class="thermometer-wrapper">
-                                                <div class="bulb"><div class="bulb-inner"></div></div>
-                                                <div class="bar" style="width:100%;position:relative;min-width:120px;max-width:100%;">
-                                                    <div class="fill" id="fill" style="height: 16px; position: absolute; left: 0px; top: 8px; margin-left: 2rem; width: 69.8px; background: rgb(111, 124, 139); border-radius: 8px; transition: width 0.4s;"></div>
-                                                    <div class="label goal-label" id="goal-label" style="top: -50px">Goal: {{ $goal }}</div>
-                                                    <div class="label raised-label" id="raised-label" style="top: 50px">Raised: {{ $raised }}</div>
+
+                                        @php
+                                            $style = $data['style'] ?? [];
+                                            $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                            $wrapperStyleStr = '';
+                                            foreach ($wrapperStyle as $k => $v) {
+                                                if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            $alertStyleStr = '';
+                                            foreach ($style as $k => $v) {
+                                                if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            // dd($alertStyleStr);
+                                        @endphp
+                                        @php
+                                                // Ensure background color is applied to the wrapper
+                                                if (!empty($style['backgroundColor'])) {
+                                                    $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                                }
+                                            @endphp
+
+                                        <div class="site-goal-modernmb-4" style="{{ $wrapperStyleStr }} {{ $alertStyleStr }}">
+                                            <div class="p-4">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    {{-- <button type="button" class="btn-close" style="font-size: 1.1rem; opacity: 0.7;" aria-label="Close" onclick="this.closest('.site-goal-modern').style.display='none';"></button> --}}
                                                 </div>
-                                                <div class="ticks">
-                                                    @foreach ($ticks as $item)
-                                                        <div class='tick'>{{ $item }}</div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="fw-semibold" style="color: {{ $data['style']['color'] }};">${{ number_format($raised, 2) }}</span>
+                                                    <span class="mx-2" style="color: {{ $data['style']['color'] }};">/</span>
+                                                    <span style="color: {{ $data['style']['color'] }};">${{ number_format($goal, 2) }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="text-muted small"></span>
+                                                    <span class="text-muted small" style="font-weight: bold; padding-bottom: 10px; color: {{ $data['style']['color'] }} !important">${{ $raised }} Raised</span>
+                                                </div>
+                                                <div class="progress position-relative" style="height: 35px; background: #e5e7eb; border-radius: 9px;">
+                                                @php $barId = 'siteGoalProgressBar_' . uniqid(); @endphp
+                                                <div class="progress-bar" role="progressbar"
+                                                    style="background-color: {{ $data['goalData']['barColor'] ?? '#0d6efd'}}; width:0%; border-radius: 9px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1);"
+                                                    aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"
+                                                    id="{{ $barId }}">
+                                                </div>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                    var bar = document.getElementById('{{ $barId }}');
+                                                    if (bar) {
+                                                        setTimeout(function() {
+                                                        bar.style.width = '{{ $percent }}%';
+                                                        }, 150);
+                                                    }
+                                                    });
+                                                </script>
+                                                <div class="site-goal-ticks position-absolute w-100" style="top: 100%; left: 0; height: 24px; pointer-events: none; z-index: 10;">
+                                                    @foreach($ticks as $tick)
+                                                        @php
+                                                            $tickPercent = 0;
+                                                            $tickValue = 0;
+                                                            if (is_numeric($tick)) {
+                                                                if ($tick <= 1) {
+                                                                    $tickPercent = $tick * 100;
+                                                                    $tickValue = $tick * $goal;
+                                                                } else {
+                                                                    $tickPercent = min($tick / $goal, 1) * 100;
+                                                                    $tickValue = $tick;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        @if($tickPercent >= 0 && $tickPercent <= 100)
+                                                        <div class="site-goal-tick" style="position: absolute; left: {{ $tickPercent }}%; top: 0; width: 2px; height: 24px; background: #6f7c8b; z-index: 11;">
+                                                            <div class="site-goal-tick-label" style="position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 12px; color: {{ $data['style']['color'] ?? '#222' }}; white-space: nowrap; background: #fff; padding: 0 2px; border-radius: 2px; z-index: 12;">
+                                                                ${{ number_format($tickValue, 0) }}
+                                                            </div>
+                                                        </div>
+                                                        @endif
                                                     @endforeach
                                                 </div>
+{{-- @if($showTicks && !empty($ticks) && $goal > 0)
+@endif --}}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="text-muted small"></span>
+                                                    <span class="text-muted small" style="font-weight: bold; color: {{ $data['style']['color'] }} !important">${{ $goal }} Goal</span>
+                                                </div>
+                                                <div class="mt-3" style="font-size: 1.1rem; color: {{ $data['style']['color'] }};">
+                                                    <span class="fw-bold">{{ $percent }}%</span> of goal reached
+                                                </div>
                                             </div>
-                                            <input type="hidden" id="goal" value="{{ $goal }}">
-                                            <input type="hidden" id="raised" value="{{ $raised }}">
                                         </div>
-                                        <script>
-                                            const goal = document.getElementById('goal').value;
-                                            const raised = document.getElementById('raised').value;
-
-                                            const fill = document.getElementById('fill');
-                                            const bar = document.querySelector('.bar');
-
-                                            function updateFill() {
-                                            const barWidth = bar.clientWidth;
-                                            const fillWidth = Math.min(raised / goal, 1) * barWidth;
-                                            fill.style.width = `${fillWidth}px`;
-                                            }
-
-                                            updateFill();
-                                            window.addEventListener('resize', updateFill);
-
-                                            document.getElementById('goal-label').textContent = `Goal: $${goal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                                            document.getElementById('raised-label').textContent = `Raised: $${raised.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                                        </script>
                                     @endif
                                     @break
                                 @case('text-images')
@@ -286,148 +1603,238 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                             $text = $data['textImagesData']['text'] ?? '';
                                             $showImage = array_key_exists('showImage', $data['textImagesData']) ? (bool)$data['textImagesData']['showImage'] : true;
                                         @endphp
-                                        <div style="display:flex;align-items:center;flex-direction:{{ in_array($imgPosition,['up','down']) ? 'column' : ($imgPosition=='right'?'row-reverse':'row') }};">
+                                        @php
+                                            $style = $data['style'] ?? [];
+                                            $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                            $wrapperStyleStr = '';
+                                            foreach ($wrapperStyle as $k => $v) {
+                                                if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            $alertStyleStr = '';
+                                            foreach ($style as $k => $v) {
+                                                if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            // dd($alertStyleStr);
+                                        @endphp
+                                        @php
+                                            // Ensure background color is applied to the wrapper
+                                            if (!empty($style['backgroundColor'])) {
+                                                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                            }
+                                        @endphp
+                                        <div class="text-images-component" style="{{ $wrapperStyleStr }} {{ $alertStyleStr }}display:flex;align-items:center;flex-direction:{{ in_array($imgPosition,['up','down']) ? 'column' : ($imgPosition=='right'?'row-reverse':'row') }};">
                                             @if($showImage && $img)
-                                                <img src="{{ $img }}" style="width:{{ $imgSize }}px;margin:8px;">
+                                                <img src="{{ $img }}" class="text-images-img" style="width:{{ $imgSize }}px;margin:8px;">
                                             @endif
-                                            <div style="
-                                            @foreach($data['style'] as $key => $style)
-                                                {{ strtolower(preg_replace('/([A-Z])/', '-$1', $key)) }}:{{ $style ?? 'unset'}};
-                                            @endforeach
-                                            width: 100%;
+                                            <div class="responsive-text-block" style="
+                                                font-size : {{ $data['style']['fontSize'] ? $data['style']['fontSize'] : '16px'}};
+                                                width: 100%;
+                                                word-break: break-word;
+                                                overflow-wrap: break-word;
+                                                line-height:1.5;
+                                                padding: 0.5rem 1rem;
+                                                color : {{ $data['style']['color'] ? $data['style']['color'] : '#000'}};
                                             ">{!! nl2br(e($text)) !!}</div>
+                                            <style>
+                                            @media (max-width: 768px) {
+                                                .text-images-component {
+                                                    flex-direction: column !important;
+                                                    align-items: stretch !important;
+                                                    /* Remove any margin from wrapper in mobile */
+                                                    margin: 0 !important;
+                                                }
+                                                .text-images-img {
+                                                    margin: 0 auto 8px auto !important;
+                                                    display: block;
+                                                }
+                                                .responsive-text-block {
+                                                    font-size: clamp(0.95rem, 4vw, 1.1rem) !important;
+                                                    padding: 0.5rem 0.5rem !important;
+                                                    /* Always put text below image */
+                                                    order: 2 !important;
+                                                    text-align: center !important;
+                                                }
+                                                .text-images-img {
+                                                    order: 1 !important;
+                                                }
+                                            }
+                                            @media (max-width: 480px) {
+                                                .responsive-text-block {
+                                                    font-size: clamp(0.9rem, 5vw, 1rem) !important;
+                                                    padding: 0.25rem 0.25rem !important;
+                                                    text-align: center !important;
+                                                }
+                                            }
+                                            </style>
                                         </div>
                                     @endif
                                     @break
                                 @case('auth-form')
-                                    <div class="row">
-                                        <div class="col-md-12 mt-4 mb-4 text-center">
-                                            <i class="fa-solid fa-circle-user fa-fw text-primary mb-3" aria-hidden="true" style="font-size: 8rem; color: #2e4053 !important;"></i>
-                                            <h2 class="display-6 tit">Register</h2>
-                                        </div>
-                                    </div>
-                                    <div class="register">
-                                        <div class="container">
-                                            <form action="/register" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="website_id" value="{{ $check->id }}">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">First name</label>
-                                                        <input type="text" class="form-control" id="first_name" name="name">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Last name</label>
-                                                        <input type="text" class="form-control" id="first_name" name="last_name">
-                                                    </div>
-                                                </div>
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Email address</label>
-                                                        <input type="email" class="form-control" id="first_name" name="email">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Confirm email address</label>
-                                                        <input type="email" class="form-control" id="first_name" name="confirm_email">
-                                                    </div>
-                                                </div>
-                                                <!-- Add this to your register form in the auth-form component -->
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-4">
-                                                        <label for="register_as" class="form-label">Register as</label>
-                                                        <select class="form-select" id="register_as" name="register_as" onchange="toggleGroupSelect(this)">
-                                                            <option value="individual">Individual</option>
-                                                            <option value="member">Group Member</option>
-                                                            <option value="group_leader">Group Leader</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4" id="group_select_wrapper" style="display:none;">
-                                                        <label for="group_id" class="form-label">Select Group</label>
-                                                        <select class="form-select" id="group_id" name="group_id">
-                                                            <option value="">Select a group</option>
-                                                            <!-- Dynamically populate this with your groups -->
-                                                            @foreach($groups as $group)
-                                                                <option value="{{ $group->id }}">{{ $group->group_name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4" id="group_name_wrapper" style="display:none;">
-                                                        <label for="group_name" class="form-label">Group Name</label>
-                                                        <input type="text" class="form-control" id="group_name" name="group_name">
-                                                    </div>
-                                                </div>
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Password</label>
-                                                        <input type="password" class="form-control" id="first_name" name="password">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Confirm password</label>
-                                                        <input type="password" class="form-control" id="first_name" name="confirm_password">
-                                                    </div>
-                                                </div>
-                                                <div class="row justify-content-center">
-                                                    <div class="col-8">
-                                                        <div class="d-grid gap-3 mt-2">
-                                                            <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
-                                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                                Register
-                                                            </button>
-                                                            <button class="btn text-primary btn-lg p-0 shadow-none view-login-form" type="button" style="color: #2e4053 !important;">
-                                                                Login
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="login" style="display: none;">
-                                        <div class="container">
-                                            <form action="/login" method="POST">
-                                                @csrf
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Email address</label>
-                                                        <input type="email" class="form-control" id="first_name" name="email">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="first_name" class="form-label">Password</label>
-                                                        <input type="password" class="form-control" id="first_name" name="password">
-                                                    </div>
-                                                </div>
-                                                <div class="row justify-content-center">
-                                                    <div class="col-8">
-                                                        <div class="d-grid gap-3 mt-2">
-                                                            <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
-                                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                                Login
-                                                            </button>
-                                                            <button class="btn text-primary btn-lg p-0 shadow-none view-register-form" type="button" style="color: #2e4053 !important;">
-                                                                Register
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <script>
-                                        $('.view-login-form').click(function() {
-                                            $('.register').toggle();
-                                            $('.login').toggle();
-                                            $('.tit').html('Login');
-                                        });
-                                        $('.view-register-form').click(function() {
-                                            $('.login').toggle();
-                                            $('.register').toggle();
-                                            $('.tit').html('Register');
-                                        });
-                                    </script>
-                                    @break
+    @php
+        $style = $data['style'] ?? [];
+        $wrapperStyle = $data['wrapperStyle'] ?? [];
+        $titles = $data['authFormTitles'] ?? ['register' => 'Register', 'login' => 'Login'];
+        // Build wrapper style string (for margin, etc.)
+        $wrapperStyleStr = '';
+        foreach ($wrapperStyle as $k => $v) {
+            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+        // Build inner style string (for color, background, etc.)
+        $innerStyleStr = '';
+        foreach ($style as $k => $v) {
+            if ($v) $innerStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+        }
+    @endphp
+    <div class="auth-form-component mb-4" style="{{ $wrapperStyleStr }} {{ $innerStyleStr }}">
+        <div class="row">
+            <div class="col-md-12 mt-4 mb-4 text-center">
+                <i class="fa-solid fa-circle-user fa-fw text-primary mb-3" aria-hidden="true" style="font-size: 8rem; color: #2e4053 !important;"></i>
+                <h2 class="display-6 tit">{{ $titles['register'] ?? 'Register' }}</h2>
+            </div>
+        </div>
+        <div class="register">
+            <div class="container">
+                <form action="/register" method="POST">
+                    @csrf
+                    <input type="hidden" name="website_id" value="{{ $check->id }}">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">First name</label>
+                            <input type="text" class="form-control" id="first_name" name="name">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Last name</label>
+                            <input type="text" class="form-control" id="first_name" name="last_name">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="first_name" name="email">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Confirm email address</label>
+                            <input type="email" class="form-control" id="first_name" name="confirm_email">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <label for="register_as" class="form-label">Register as</label>
+                            <select class="form-select" id="register_as" name="register_as" onchange="toggleGroupSelect(this)">
+                                <option value="individual">Individual</option>
+                                <option value="member">Group Member</option>
+                                <option value="group_leader">Group Leader</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="group_select_wrapper" style="display:none;">
+                            <label for="group_id" class="form-label">Select Group</label>
+                            <select class="form-select" id="group_id" name="group_id">
+                                <option value="">Select a group</option>
+                                @foreach($groups as $group)
+                                    <option value="{{ $group->id }}">{{ $group->group_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="group_name_wrapper" style="display:none;">
+                            <label for="group_name" class="form-label">Group Name</label>
+                            <input type="text" class="form-control" id="group_name" name="group_name">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="first_name" name="password">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Confirm password</label>
+                            <input type="password" class="form-control" id="first_name" name="confirm_password">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-8">
+                            <div class="d-grid gap-3 mt-2">
+                                <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
+                                    <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                    {{ $titles['register'] ?? 'Register' }}
+                                </button>
+                                <button class="btn text-primary btn-lg p-0 shadow-none view-login-form" type="button" style="color: #2e4053 !important;">
+                                    {{ $titles['login'] ?? 'Login' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="login" style="display: none;">
+            <div class="container">
+                <form action="/login" method="POST">
+                    @csrf
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="first_name" name="email">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="first_name" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="first_name" name="password">
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-8">
+                            <div class="d-grid gap-3 mt-2">
+                                <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
+                                    <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                    {{ $titles['login'] ?? 'Login' }}
+                                </button>
+                                <button class="btn text-primary btn-lg p-0 shadow-none view-register-form" type="button" style="color: #2e4053 !important;">
+                                    {{ $titles['register'] ?? 'Register' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            $('.view-login-form').click(function() {
+                $('.register').toggle();
+                $('.login').toggle();
+                $('.tit').html(`{{ $titles['login'] ?? 'Login' }}`);
+            });
+            $('.view-register-form').click(function() {
+                $('.login').toggle();
+                $('.register').toggle();
+                $('.tit').html(`{{ $titles['register'] ?? 'Register' }}`);
+            });
+        </script>
+    </div>
+@break
                                 @case('custom-form')
+                                @php
+                                    $emails = $data['contactEmails'] ?? [];
+                                @endphp
+                                @php
+                                        $style = $data['style'] ?? [];
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        $alertStyleStr = '';
+                                        foreach ($style as $k => $v) {
+                                            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        // dd($alertStyleStr);
+                                    @endphp
+                                    @php
+                                            // Ensure background color is applied to the wrapper
+                                            if (!empty($style['backgroundColor'])) {
+                                                $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                            }
+                                        @endphp
                                     @if(isset($data['customFormFields']) && is_array($data['customFormFields']))
-                                        <form method="POST" action="#" class="custom-form-component">
+                                        <form method="POST" action="/custom-form" class="custom-form-component" style="{{ $wrapperStyleStr }} {{ $alertStyleStr }}">
                                             @csrf
                                             @foreach($data['customFormFields'] as $field)
                                                 <div class="mb-3">
@@ -439,10 +1846,92 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                                     @endif
                                                 </div>
                                             @endforeach
+                                            @foreach($emails as $email)
+                                                <input type="hidden" name="notification_emails[]" value="{{ $email }}">
+                                            @endforeach
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                         </form>
                                     @endif
                                     @break
+                                @case('gallery')
+                                    @php
+                                        $gallery = $data['galleryData'] ?? [];
+                                        $images = $gallery['images'] ?? [];
+                                        $columns = $gallery['columns'] ?? 3;
+                                        $style = $data['style'] ?? [];
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        // Build inline style for the gallery wrapper
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        // Ensure background color is applied to the wrapper
+                                        if (!empty($style['backgroundColor'])) {
+                                            $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                        }
+                                    @endphp
+                                    <div class="desktop gallery-component mb-4" style="display:grid;grid-template-columns:repeat({{ $columns }},1fr);gap:16px;{{ $wrapperStyleStr }}">
+                                        @foreach($images as $img)
+                                            <div style="width:100%;overflow:hidden;border-radius:8px;">
+                                                <img src="{{ $img }}" alt="Gallery Image" class="gallery-img-preview" data-img="{{ $img }}" style="width:100%;height:auto;display:block;object-fit:cover;cursor:pointer;">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mobile row gallery-component mb-4" style="display:none;grid-template-columns:repeat({{ $columns }},1fr);gap:16px;{{ $wrapperStyleStr }}">
+                                        @foreach($images as $img)
+                                            <div class="col-md-12 mt-4" style="width:100%;overflow:hidden;border-radius:8px;">
+                                                <img src="{{ $img }}" alt="Gallery Image" class="gallery-img-preview" data-img="{{ $img }}" style="width:100%;height:auto;display:block;object-fit:cover;cursor:pointer;">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @break
+                                @case('slider')
+                                    @php
+                                        $slider = $data['sliderData'] ?? [];
+                                        $images = $slider['images'] ?? [];
+                                        $slidesToShow = $slider['slidesToShow'] ?? 1;
+                                        $slideSpeed = $slider['slideSpeed'] ?? 2000;
+                                        $sliderId = 'sliderPreview_' . uniqid();
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $wrapperStyleStr = '';
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                    @endphp
+                                    <div class="slider-component mb-4" style="{{ $wrapperStyleStr }}">
+                                        <div id="{{ $sliderId }}" class="owl-carousel owl-theme" data-slides-to-show="{{ $slidesToShow }}" data-slide-speed="{{ $slideSpeed }}">
+                                            @foreach($images as $img)
+                                                <div class="item">
+                                                    <img src="{{ $img }}" alt="Slider Image" style="width:100%;height:auto;object-fit:cover;border-radius:8px;">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            $('#{{ $sliderId }}').owlCarousel({
+                                                items: {{ $slidesToShow }},
+                                                loop: true,
+                                                margin: 10,
+                                                autoplay: true,
+                                                autoplayTimeout: {{ $slideSpeed }},
+                                                responsive: {
+                                                    0: {
+                                                        items: 1
+                                                    },
+                                                    600: {
+                                                        items: Math.max(1, Math.min({{ $slidesToShow }}, 2))
+                                                    },
+                                                    1000: {
+                                                        items: {{ $slidesToShow }}
+                                                    }
+                                                }
+                                                // dots: true,
+                                                // nav: true
+                                            });
+                                        });
+                                    </script>
+                                @break
                                 @default
                                     {!! $data['html'] ?? '' !!}
                             @endswitch
@@ -453,6 +1942,147 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         </div>
     </div>
     </main>
+    <!-- Gallery Image Modal -->
+<div class="modal" id="galleryImageModal" tabindex="-1" aria-labelledby="galleryImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center p-0">
+        <img id="galleryImageModalImg" src="" alt="Gallery Preview" style="max-width:100%;max-height:80vh;border-radius:12px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+@if ($footer->status == 1)
+<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
+background-color: {{ $footer->background }} !important;
+">
+    <div class="container">
+
+                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
+                {{ $footer->message }}
+            </p>
+                    @if ($footer->menu == 1)
+                        <div class="nav justify-content-center">
+                            @foreach ($check->pages->sortBy('position') as $item)
+
+                            @if($item->status == 1)
+
+                            <div class="nav-item">
+                                <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $footer->color }} !important" aria-current="page">
+                                {{ $item->name }}
+                                </a>
+                            </div>
+                            @endif
+
+                            @endforeach
+                                                    </div>
+                    @endif
+
+                    @if ($footer->social == 1)
+                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
+                            @if ($footer->facebook)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->facebook }}" target="_blank">
+                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">facebook</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->instagram)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->instagram }}" target="_blank">
+                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">instagram</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->linkedin)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->linkedin }}" target="_blank">
+                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">linkedin</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->pinterest)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->pinterest }}" target="_blank">
+                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">pinterest</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->x)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->x }}" target="_blank">
+                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">x</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->youtube)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->youtube }}" target="_blank">
+                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">youtube</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->blue_sky)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->blue_sky }}" target="_blank">
+                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">blue sky</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->tiktok)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->tiktok }}" target="_blank">
+                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">tiktok</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    @endif
+
+                @if ($footer->copy_right != null)
+                    <p class="text-center" style="margin-bottom: 0px;">
+                        <small style="color: {{ $footer->color }}">
+                            {{ $footer->copy_right }}
+                        </small>
+                    </p>
+                @endif
+    </div>
+    @if ($footer->privacy == 1)
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+    @endif
+</footer>
+@endif
+
 </body>
 
 
@@ -772,19 +2402,43 @@ setInterval(updateCountdown, 1000);
 
 <script>
     $(document).ready(function() {
+        $.fn.dataTable.ext.errMode = 'none';
         // Initialize DataTable with default search disabled
         const table = $('#studentTable').DataTable({
             paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
+            searching: false, // disable default search
+            ordering: false,
+            info: false
         });
 
         // Link the custom search input to the DataTable search
-        $('#search').on('keyup', function() {
-            const value = $(this).val();
-            table.search(value).draw();
+        $('#search').on('input', function () {
+            const keyword = $(this).val().toLowerCase();
+
+            $('#studentTable tbody tr').each(function () {
+                let visibleTDs = 0;
+
+                $(this).find('td').each(function () {
+                    const text = $(this).text().toLowerCase();
+                    const match = text.includes(keyword);
+
+                    if (match) {
+                        $(this).show();
+                        visibleTDs++;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // Hide the entire <tr> if no <td> matches
+                if (visibleTDs === 0) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
         });
+
     });
 </script>
 
@@ -797,6 +2451,17 @@ setInterval(updateCountdown, 1000);
         // nav: true,
         // dots: true,
         autoplay: true,
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: Math.max(1, Math.min(slidesToShow, 2))
+            },
+            1000: {
+                items: slidesToShow
+            }
+        }
     });
 </script>
 
@@ -804,7 +2469,7 @@ setInterval(updateCountdown, 1000);
     function toggleGroupSelect(sel) {
         var wrapper = document.getElementById('group_select_wrapper');
         var wrapper_name = document.getElementById('group_name_wrapper');
-        if (sel.value === 'group') {
+        if (sel.value === 'member') {
             wrapper.style.display = '';
             wrapper_name.style.display = 'none';
         }else if (sel.value === 'group_leader') {
@@ -815,6 +2480,109 @@ setInterval(updateCountdown, 1000);
             wrapper_name.style.display = 'none';
         }
     }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.gallery-img-preview').forEach(function(img) {
+        img.addEventListener('click', function() {
+            var src = this.getAttribute('data-img');
+            var modalImg = document.getElementById('galleryImageModalImg');
+            modalImg.src = src;
+            var modal = new bootstrap.Modal(document.getElementById('galleryImageModal'));
+            modal.show();
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.img-preview').forEach(function(img) {
+        img.addEventListener('click', function() {
+            var src = this.getAttribute('data-img');
+            var modalImg = document.getElementById('galleryImageModalImg');
+            modalImg.src = src;
+            var modal = new bootstrap.Modal(document.getElementById('galleryImageModal'));
+            modal.show();
+        });
+    });
+});
+</script>
+
+<script>
+function startAuctionTimer(deadline, id) {
+    function update() {
+        const now = new Date().getTime();
+        const target = new Date(deadline).getTime();
+        let timeLeft = target - now;
+
+        if (timeLeft <= 0) {
+            document.getElementById('days-' + id).textContent = 0;
+            document.getElementById('hours-' + id).textContent = 0;
+            document.getElementById('minutes-' + id).textContent = 0;
+            return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        document.getElementById('days-' + id).textContent = days;
+        document.getElementById('hours-' + id).textContent = hours;
+        document.getElementById('minutes-' + id).textContent = minutes;
+    }
+    update();
+    setInterval(update, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    @foreach ($auction as $item)
+        startAuctionTimer("{{ $item->dead_line }}", "{{ $item->id }}");
+    @endforeach
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+// Your Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
+    authDomain: "charity-390ca.firebaseapp.com",
+    projectId: "charity-390ca",
+    storageBucket: "charity-390ca.firebasestorage.app",
+    messagingSenderId: "875958450032",
+    appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
+    measurementId: "G-FC73HL5XF3"
+};
+
+const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', async function() {
+    @foreach ($auction as $item)
+        {
+            const auctionId = "{{ $item->id }}";
+            const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
+            if (priceDiv) {
+                const bidsRef = collection(firestore, "bid");
+                const q = query(
+                    bidsRef,
+                    where("auction_id", "==", auctionId),
+                    orderBy("amount", "desc"),
+                    limit(1)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    const latestAmount = doc.data().amount;
+                    priceDiv.textContent = '$' + latestAmount;
+                }
+            }
+        }
+    @endforeach
+});
 </script>
 
 

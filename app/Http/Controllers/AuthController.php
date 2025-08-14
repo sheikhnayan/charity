@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
+use App\Models\Website;
 use Hash;
 
 class AuthController extends Controller
@@ -50,6 +51,13 @@ class AuthController extends Controller
             $group_name = null;
         }
 
+        $url = url()->current();
+        if( $url == 'fundably.org' || $url == 'https://fundably.org' || $url == 'http://fundably.org' || $url == 'http://127.0.0.1:8000') {
+            return redirect()->route('admin.index', 1);
+        }
+        $doamin = parse_url($url, PHP_URL_HOST);
+        $check = Website::where('domain', $doamin)->first();
+
         User::create([
             'name' => $request->name,
             'last_name' => $request->last_name,
@@ -58,6 +66,7 @@ class AuthController extends Controller
             'role' => $request->register_as,
             'group_id' => $group_id,
             'group_name' => $group_name,
+            'website_id' => $check->id,
         ]);
 
         return redirect('login')->with('success', 'Registration successful');

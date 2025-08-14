@@ -60,7 +60,7 @@
                                         Deadline
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
-                                    <input type="date" name="deadline" value="{{ $data->dead_line }}" class="form-control">
+                                    <input type="datetime-local" name="deadline" value="{{ $data->dead_line }}" class="form-control">
                                 </div>
 
                                 <div class="col-md-12 col-lg-12">
@@ -81,6 +81,20 @@
                                             @endforeach
                                         @endif
                                     </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12">
+                                    <label for="timezone" class="form-label text-capitalize">
+                                        Timezone
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                    data-title="Timezone"
+                                    data-description="Select the timezone for this auction."></i>
+                                    <select class="form-select" id="timezone" name="timezone" required>
+                                        @foreach(timezone_identifiers_list() as $tz)
+                                            <option {{ $data->timezone === $tz ? 'selected' : '' }} value="{{ $tz }}">{{ $tz }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
 

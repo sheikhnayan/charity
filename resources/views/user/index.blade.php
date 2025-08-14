@@ -45,7 +45,7 @@
                                         <hr class="my-4">
 
                             <p class="mb-0">
-                                Your personal fundraising page is: <a href="http://{{ Auth::user()->website->domain }}/student/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}">{{ Auth::user()->website->domain }}/student/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}</a>.
+                                Your personal fundraising page is: <a href="http://{{ Auth::user()->website->domain }}/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}">{{ Auth::user()->website->domain }}/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}</a>.
                             </p>
 
 

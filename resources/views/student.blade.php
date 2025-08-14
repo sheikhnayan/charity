@@ -1,8 +1,31 @@
-@extends('layouts.main')
+@php
+    $url = url()->current();
+    $doamin = parse_url($url, PHP_URL_HOST);
+    $check = \App\Models\Website::where('domain', $doamin)->first();
+    $header = \App\Models\Header::where('website_id', $check->id)->first();
+    $footer = \App\Models\Footer::where('website_id', $check->id)->first();
+    $setting = \App\Models\Setting::where('user_id', $check->user_id)->first();
 
-@section('content')
-
-<style>
+@endphp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $check->name ?? 'Page' }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>body{background:#f9fafb;}</style>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('auction.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <style>
     #studentTable {
         background-color: #fff !important; /* Set the table background to white */
         border: none !important; /* Remove the table border */
@@ -28,31 +51,131 @@
     #studentTable thead {
         display: none; /* Hide the table header */
     }
+
+    .non-float{
+        margin-bottom: -111px;
+    }
+
+    .c-node-ap__auction-results{
+        margin-right: 36px;
+        margin-bottom: 24px;
+        display: inline-block;
+        background-color: #f8f9fa;
+        border-color: #DBDCDD;
+        border: 1px solid;
+        border-radius: 4px;
+        padding: 24px;
+        font-size: 1rem;
+    }
+
+    .c-node-ap__fundraising-target{
+        margin-bottom: 12px;
+    }
+
+    .c-node-ap__auction-total-label {
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #355159
+    }
+    .c-node-ap__auction-total-amount {
+        font-size: 2rem;
+        line-height: 1.5;
+        color: #d9b730;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+    }
+
+    .c-node-ap__totalizer{
+        height: 18px;
+        border-radius: 12px;
+        --color-ui: #d9b730;
+    }
+
+    .c-node-ap__auction-total-component-label{
+        color: #6d6e71
+    }
+
+    .c-node-ap__auction-total-component-amount{
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #000
+    }
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
+
+    .c-content__bottom{
+        background-color: #f9fafb;
+    }
+    .gallery-img-preview {
+        height: 421px !important;
+    }
+
+    .owl-item .item img{
+        height: 425px !important;
+    }
+
+    .footer-socials .nav-item {
+        margin-right: 1rem !important;
+    }
+
+    .footer-socials .nav-item a i {
+        font-size: 1.5rem;
+    }
+
+    footer{
+        position: relative;
+        width: 100%;
+        bottom: 0;
+        margin-top: 2rem;
+    }
+
+    .ticket-mask {
+        --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
+        -webkit-mask: var(--mask);
+        mask: var(--mask);
+        padding: 1.5rem;
+        background-color: #eee;
+        border: unset;
+    }
 </style>
+</head>
+<body>
+    @if ($header->status == 1)
+        @include('layouts.nav')
+    @endif
 
     <main style="margin-top: 6.5rem">
-        <div class="banner" style="background: url({{ asset('images/banner.png') }}); min-height: 480px;">
+        <div class="banner" style="background: url({{ asset('/uploads/'.$check->user->setting->banner) }}); background-size: cover; min-height: 480px;">
             <div class="client-banner-content">
                 <h1 class="display-3 fw-semibold text-shadow">
                     <a href="/" class="text-light">
-                        The SHPS PTO Fundraiser 2025
+                        {{ $check->user->setting->title }}
                     </a>
                 </h1>
                 <h2 class="text-light text-shadow mt-2">
-                    Presented by Gear Me Up™
+                    {{ $check->user->setting->sub_title }}
                 </h2>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12 mt-4 mb-4" style="font-size: 12px;">
+            <div class="col-lg-12 mt-4 mb-4" style="font-size: 12px; padding-left: 20px; padding-right: 20px;">
                 <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
                     style="width: 100%; max-width: 930px; margin-inline: auto;">
                     <div class="row gy-3 ">
                         <div class="col-lg-3 d-flex align-items-center">
                             <div class="rounded-profile-picture border border-3 border-primary mx-auto"
-                                style="border-radius: 50%; border-color: #2e4053 !important">
-                                <img src="{{ asset($data->photo) }}"
+                                style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
+                                <img src="{{ asset($data->photo ?? null) }}"
                                     style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
                             </div>
                         </div>
@@ -66,9 +189,10 @@
                                 aria-valuenow="{{ $data->donations->sum('amount') }}" aria-valuemin="0"
                                 aria-valuemax="{{ $data->goal }}" data-primary-color="#2e4053"
                                 data-secondary-color="#b7bcc4" data-duration="5" data-goal-reached="true"
-                                style="height: 6px">
+                                style="height: 14px">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
-                                    style="width: 100%">
+                                    style="width: @if($data->goal > 0){{ ($data->donations->sum('amount') / $data->goal)*100 }}@else 1 @endif%">
+                                    <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($data->goal > 0){{ round(($data->donations->sum('amount') / $data->goal)*100) }}@else 1 @endif% </span>
                                 </div>
                             </div>
                             <span class="fw-semibold d-block text-center mt-2">
@@ -83,8 +207,8 @@
                     <span class="position-absolute top-0 end-0 m-2 opacity-50 small">
                         Last updated {{ $data->updated_at->diffForHumans() }}
                     </span>
-                    <a href="{{ env('APP_URL') }}/student/{{ $data->id }}-{{ $data->name }}-{{ $data->last_name }}"
-                        class="stretched-link" target="_blank"></a>
+                    <a href="/profile/{{ $data->id }}-{{ $data->name }}-{{ $data->last_name }}"
+                        class="" target="_blank"></a>
                 </div>
             </div>
         </div>
@@ -122,10 +246,8 @@
                     </div>
                 </div>
                 <div
-                    class="d-flex flex-column justify-content-center p-5 h-100 text-dark rounded-4 bg-light lead w-md-85 mx-auto break-all">
-                    <p>Hi!! Thanks for your donation!</p>
-                    <p>I am raising money for the Gear Me Up Fest Fun Run!</p>
-                    <p>Deadline is Feb 21st!</p>
+                    class="d-flex flex-column justify-content-center text-center p-5 h-100 text-dark rounded-4 bg-light lead w-md-85 mx-auto break-all" style="background-color: #ebebeb !important;">
+                    {!! $data->description !!}
                 </div>
             </div>
         </section>
@@ -134,17 +256,17 @@
                     style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
                     <div class="block-container container " id="block-086fc842-f2e9-4d56-af2e-be42317d11e7"
                         data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
-                        data-action="https://gmu-events.com/ajax/block/b2dd141f-e084-45c7-ba93-d8b6158d65af/086fc842-f2e9-4d56-af2e-be42317d11e7"
+                        data-action=""
                         style="margin-top: 3rem;">
 
 
-                        <form method="POST" action="/donation" class="donation-form-block" method="POST">
+                        <form method="POST" action="/donations" class="donation-form-block" method="POST">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
                                 <div class="card border-primary shadow" style="border-width: 3px; border-color: #2e4053 !important;">
                                     <div class="card-header bg-primary border-primary rounded-0 text-center text-white fs-2"
                                         style="border-width: 3px; border-color: #2e4053 !important; background-color: #2e4053 !important;">
-                                        Make a general donation
+                                        Make a donation
                                     </div>
                                     <div class="card-body">
                                         <input type="hidden" name="profile_uuid" value="">
@@ -157,7 +279,7 @@
                                                 <label
                                                     for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b2"
                                                     class="form-label " style="color: #000; font-weight: bold;">
-                                                    Donate To the SHPS PTO
+                                                    Donate To {{$data->name}}
                                                 </label>
                                                 <div></div>
 
@@ -168,10 +290,10 @@
                                                         name="user_id"
                                                         id="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b24479f3e5-aac8-4044-ac77-7c3192197e63"
                                                         value="{{ $data->id }}" autocomplete="off">
-                                                    <label class="btn btn-outline-primary m-1"
+                                                    {{-- <label class="btn btn-outline-primary m-1"
                                                     style="color: #2e4053 !important; border-color: #2e4053 !important;"
                                                         for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b24479f3e5-aac8-4044-ac77-7c3192197e63">Donate
-                                                        to the PTO</label>
+                                                        to the PTO</label> --}}
                                                 </div>
                                             </div>
 
@@ -202,9 +324,18 @@
                                                             I elect to pay the fees
                                                         </label>
                                                         <i role="button"
-                                                            class="fa-solid fa-circle-info text-info  btn-modal-info  "
-                                                            data-title="I elect to pay the fees"
-                                                            data-description="By selecting this option, you elect to pay the credit card and transaction fees for this donation.The fees will be displayed in the next step."></i>
+                                                class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step."></i>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
                                                     </div>
                                                 </div>
                                             </div>
@@ -231,7 +362,7 @@
                                                 <label for="email" class="form-label fw-semibold required">
                                                     Email address
                                                 </label>
-                                                <input type="text" class="form-control" id="email" name="email"
+                                                <input type="email" class="form-control" id="email" name="email"
                                                     value="">
                                             </div>
 
@@ -243,9 +374,10 @@
                                                         Anonymous
                                                     </label>
                                                     <i role="button"
-                                                        class="fa-solid fa-circle-info text-info  btn-modal-info  "
-                                                        data-title="Anonymous"
-                                                        data-description="Selecting this option will hide your name from everyone but the organizer."></i>
+                                            class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Selecting this option will hide your name from everyone but the organizer."></i>
                                                 </div>
                                             </div>
 
@@ -254,22 +386,6 @@
                                                     comment
                                                 </label>
                                                 <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" role="switch"
-                                                        id="hear_from_myevent_086fc842-f2e9-4d56-af2e-be42317d11e7"
-                                                        name="hear_from_myevent">
-                                                    <label class="form-check-label"
-                                                        for="hear_from_myevent_086fc842-f2e9-4d56-af2e-be42317d11e7">Hear
-                                                        from MyEvent</label>
-                                                    <i role="button"
-                                                        class="fa-solid fa-circle-info text-info  btn-modal-info  "
-                                                        data-title="Hear from MyEvent"
-                                                        data-description="In compliance with the new Anti-Spam CASL legislation, we need your permission to continue communicating
-with you. Please confirm your interest in hearing from MyEvent."></i>
-                                                </div>
                                             </div>
 
 
@@ -302,56 +418,195 @@ with you. Please confirm your interest in hearing from MyEvent."></i>
         <div class="row justify-content-center">
             <div class="col-md-8 mt-4">
                 <p class="lead text-center mt-3">
-                    {{ $donations->count() }} donations have been made to this site
+                    {{ $donations->count() }} donations have been made to this User
                 </p>
             </div>
             <div class="col-8 mt-4">
-                <table id="studentTable" class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Grade</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($donations->chunk(3) as $item)
-                            <tr>
-                                @foreach ($item as $i)
-                                    <td>
-                                        <div class="col-lg-12" style="font-size: 12px;">
-                                            <div class="p-3 rounded text-center position-relative" style="background: #ebebeb">
+                <div class="row">
+                    @foreach ($donations as $item)
+                        <div class="col-lg-4 mt-2" style="font-size: 12px;">
+                            <div class="p-3 rounded text-center position-relative" style="background: #ebebeb">
+                                <h4 class="fw-semibold">
+                                    ${{ $item->amount }}
+                                </h4>
 
+                                <small class="d-block opacity-75 mt-2">
+                                    @if ($item->hide != 1)
+                                    <span title="Donor">{{ $item->first_name }} {{ $item->last_name }}</span>
+                                    @endif
+                                    <i class="fa-solid fa-arrow-right-long fa-fw mx-1 text-success" aria-hidden="true"></i>
+                                    <span title="Participant">{{ $item->user->name }} {{ $item->user->last_name }}</span>
+                                </small>
 
-                                                <h4 class="fw-semibold">
-                                                    ${{ $i->amount }}
-                                                </h4>
-
-                                                <small class="d-block opacity-75 mt-2">
-                                                    <span title="Donor">{{ $i->first_name }} {{ $i->last_name }}</span>
-                                                                            <i class="fa-solid fa-arrow-right-long fa-fw mx-1 text-success" aria-hidden="true"></i>
-                                                        <span title="Participant">{{ $i->user->name }} {{ $i->user->last_name }}</span>
-                                                                    </small>
-
-
-                                                <small class="d-block opacity-75 mt-3 p-2 rounded" style="backdrop-filter: brightness(1.5);">
-                                                    <i class="fa-solid fa-calendar-days me-1" aria-hidden="true"></i>
-                                                     {{ $i->created_at->diffForHumans() }}
-                                                </small>
-
-                                            </div>
+                                @if ($item->comment)
+                                    <span style="position: absolute; top: 10px; right: 10px; font-size: 17px; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#donationMessageModal-{{ $item->id }}">
+                                        <i style="color: #000 !important" class="fa-solid fa-message fa-fw mx-1 text-primary" aria-hidden="true" title="Message"></i>
+                                    </span>
+                                    <!-- Modal for donation message -->
+                                    <div class="modal" id="donationMessageModal-{{ $item->id }}" tabindex="-1" aria-labelledby="donationMessageModalLabel-{{ $item->id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="donationMessageModalLabel-{{ $item->id }}">
+                                            {{ $item->first_name }} {{ $item->last_name }} - ${{ number_format($item->amount, 2) }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                        <div class="modal-body">
+                                            <h5>{{ $item->comment ?? 'No message.' }}</h5>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                @endif
+
+
+                                <small class="d-block opacity-75 mt-3 p-2 rounded" style="backdrop-filter: brightness(1.5);">
+                                    <i class="fa-solid fa-calendar-days me-1" aria-hidden="true"></i>
+                                        {{ $item->created_at->diffForHumans() }}
+                                </small>
+
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
 
     </main>
+
+    @if ($footer->status == 1)
+<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
+background-color: {{ $footer->background }} !important;
+max-width: 100%;
+">
+    <div class="container">
+
+                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
+                {{ $footer->message }}
+            </p>
+                    @if ($footer->menu == 1)
+                        <div class="nav justify-content-center">
+                            @foreach ($check->pages->sortBy('position') as $item)
+
+                            @if($item->status == 1)
+
+                            <div class="nav-item">
+                                <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $header->color }} !important" aria-current="page">
+                                {{ $item->name }}
+                                </a>
+                            </div>
+                            @endif
+
+                            @endforeach
+                                                    </div>
+                    @endif
+
+                    @if ($footer->social == 1)
+                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
+                            @if ($footer->facebook)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->facebook }}" target="_blank">
+                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">facebook</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->instagram)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->instagram }}" target="_blank">
+                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">instagram</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->linkedin)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->linkedin }}" target="_blank">
+                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">linkedin</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->pinterest)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->pinterest }}" target="_blank">
+                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">pinterest</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->x)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->x }}" target="_blank">
+                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">x</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->youtube)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->youtube }}" target="_blank">
+                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">youtube</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->blue_sky)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->blue_sky }}" target="_blank">
+                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">blue sky</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->tiktok)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->tiktok }}" target="_blank">
+                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">tiktok</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    @endif
+
+                @if ($footer->copy_right != null)
+                    <p class="text-center">
+                        <small style="color: {{ $footer->color }}">
+                            {{ $footer->copy_right }}
+                        </small>
+                    </p>
+                @endif
+
+    </div>
+    @if ($footer->privacy == 1)
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+    @endif
+</footer>
+@endif
 
     <!-- Include DataTables and jQuery CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -360,6 +615,7 @@ with you. Please confirm your interest in hearing from MyEvent."></i>
 
 <script>
     $(document).ready(function() {
+        $.fn.dataTable.ext.errMode = 'none';
         // Initialize DataTable with default search disabled
         const table = $('#studentTable').DataTable({
             paging: true,
@@ -375,4 +631,4 @@ with you. Please confirm your interest in hearing from MyEvent."></i>
         });
     });
 </script>
-@endsection
+

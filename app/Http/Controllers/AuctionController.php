@@ -30,7 +30,7 @@ class AuctionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
@@ -38,7 +38,9 @@ class AuctionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = Auction::find($id);
+
+        return view('product', compact('data'));
     }
 
     /**

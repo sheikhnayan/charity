@@ -23,6 +23,10 @@
 .forms-wizard li.done em {
   font-family: Linearicons-Free;
 }
+
+label{
+    color: #000 !important;
+}
 </style>
     <!-- Content wrapper -->
     <div class="content-wrapper">
@@ -117,6 +121,57 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="name" class="form-label">Make Homepage</label>
+                                                        <select name="default" class="form-control" required>
+                                                            <option {{ $data->default == 1 ? 'selected' : '' }} value="1">Yes</option>
+                                                            <option {{ $data->default == 0 ? 'selected' : '' }} value="0">No</option>
+                                                        </select>
+                                                    </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="name" class="form-label">Meta Title</label>
+                                                        <input type="text" name="meta_title" class="form-control" id="meta_title" value="{{ $data->meta_title }}" placeholder="Meta Title">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="name" class="form-label">Meta Description</label>
+                                                        <textarea name="meta_description" class="form-control" id="meta_description" placeholder="Meta Description">{{ $data->meta_description }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-lg-4" data-step="3" data-title="Header text color"
+                                                data-intro="Choose a color for the header text." bis_skin_checked="1">
+                                                <label for="text_color" class="form-label">
+                                                    Page Background
+                                                </label>
+                                                <div class="input-group">
+                                                    <input type="color" class="form-control form-control-color" id="text_color_picker"
+                                                        value="{{ $data->background_color ?? '#000000' }}" title="Choose your color"
+                                                        style="max-width: 3rem;">
+                                                    <input type="text" class="form-control" id="text_color" name="background_color"
+                                                        value="{{ $data->background_color ?? '#000000' }}" placeholder="#000000 or color name">
+                                                </div>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        const colorInput = document.getElementById('text_color_picker');
+                                                        const textInput = document.getElementById('text_color');
+                                                        // Sync color picker to text
+                                                        colorInput.addEventListener('input', function() {
+                                                            textInput.value = colorInput.value;
+                                                        });
+                                                        // Sync text to color picker if valid hex
+                                                        textInput.addEventListener('input', function() {
+                                                            const val = textInput.value.trim();
+                                                            if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                                colorInput.value = val;
+                                                            }
+                                                        });
+                                                    });
+                                                </script>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Submit</button>

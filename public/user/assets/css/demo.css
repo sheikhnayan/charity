@@ -37,6 +37,14 @@
   z-index: auto;
 }
 
+.dt-button span {
+    color: #000 !important;
+  }
+
+  .paginate_button{
+    color: #000 !important;
+  }
+
 /*
 * Content
 ******************************************************************************/

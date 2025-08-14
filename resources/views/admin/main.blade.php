@@ -11,7 +11,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Charity</title>
+    <title>James' Masterpiece</title>
 
     <meta name="description" content="" />
 
@@ -31,7 +31,6 @@
     <!-- build:css assets/vendor/css/theme.css  -->
 
     <link rel="stylesheet" href="{{asset('user/assets/vendor/css/core.css')}}" />
-    <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
 
     <!-- Vendors CSS -->
 
@@ -112,7 +111,7 @@
                   </svg>
                 </span>
               </span>
-              <span class="app-brand-text demo menu-text fw-bold ms-2">Charity</span>
+              <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size: 1rem;">James' Masterpiece</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -125,117 +124,120 @@
           <div class="menu-inner-shadow"></div>
 
           <ul class="menu-inner py-1">
+  <li class="menu-header small text-uppercase">
+    <span class="menu-header-text">Site Settings</span>
+  </li>
 
-            <!-- Dashboard -->
-            <li class="menu-header small text-uppercase ">
-              <span class="menu-header-text">Setting</span>
-            </li>
-            <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}">
-              <a
-                href="/admins"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Setting</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}">
+    <a href="/admins" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-cog"></i>
+      <div class="text-truncate">Settings</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}">
-              <a
-                href="/admins/payment"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Payment Setting</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}">
+    <a href="/admins/payment" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-credit-card"></i>
+      <div class="text-truncate">Payment Setting</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}">
-              <a
-                href="/admins/website"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Website</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/payout-methods') ? 'active' : '' }}">
+    <a href="/admins/payout-methods" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-wallet"></i>
+      <div class="text-truncate">Payout Methods</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}">
-              <a
-                href="/admins/ticket"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Ticket</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}">
+    <a href="/admins/website" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-globe"></i>
+      <div class="text-truncate">Website</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}">
-              <a
-                href="/admins/auction"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Auction</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}">
+    <a href="/admins/ticket" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-support"></i>
+      <div class="text-truncate">Ticket</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}">
-              <a
-                href="/admins/sponsor"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Sponsor</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}">
+    <a href="/admins/auction" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-badge-check"></i>
+      <div class="text-truncate">Auction</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
-              <a
-                href="/admins/page"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Page</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}">
+    <a href="/admins/sponsor" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-user-check"></i>
+      <div class="text-truncate">Sponsor</div>
+    </a>
+  </li>
 
-            <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}">
-              <a
-                href="/admins/menu"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Header</div>
-              </a>
-            </li>
+  <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
+    <a href="/admins/page" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-file"></i>
+      <div class="text-truncate">Page</div>
+    </a>
+  </li>
 
-              <!-- Reports -->
-            <li class="menu-header small text-uppercase ">
-                <span class="menu-header-text">Reports</span>
-              </li>
-              <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}">
-                <a
-                  href="/admins/donation"
-                  class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-envelope"></i>
-                  <div class="text-truncate" data-i18n="Email">Donation</div>
-                </a>
-              </li>
+  <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}">
+    <a href="/admins/menu" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-layout"></i>
+      <div class="text-truncate">Header</div>
+    </a>
+  </li>
 
-              <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}">
-                <a
-                  href="/admins/student"
-                  class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-envelope"></i>
-                  <div class="text-truncate" data-i18n="Email">Students</div>
-                </a>
-              </li>
+  <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}">
+    <a href="/admins/footer" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-layout"></i>
+      <div class="text-truncate">Footer</div>
+    </a>
+  </li>
 
+  <li class="menu-header small text-uppercase">
+    <span class="menu-header-text">Reports</span>
+  </li>
 
-              <li class="menu-item" style="position: absolute; bottom: 0px;">
-                <a
-                  href="/logout"
-                  class="menu-link"
-                  style="background: red; color: #fff;">
-                  {{-- <i class="menu-icon tf-icons bx bx-envelope"></i> --}}
-                  <div class="text-truncate" data-i18n="Email">Logout</div>
-                </a>
-              </li>
+  <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}">
+    <a href="/admins/donation" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-transfer"></i>
+      <div class="text-truncate">Transactions</div>
+    </a>
+  </li>
 
-          </ul>
+  <li class="menu-item {{ request()->is('admins/tax-list') ? 'active' : '' }}">
+    <a href="/admins/tax-list" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-file-find"></i>
+      <div class="text-truncate">1099-K Tax</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('admins/tax-receipt') ? 'active' : '' }}">
+    <a href="/admins/tax-receipt-list" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-receipt"></i>
+      <div class="text-truncate">Tax Receipt</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}">
+    <a href="/admins/student" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-group"></i>
+      <div class="text-truncate">Registrations</div>
+    </a>
+  </li>
+
+  <li class="menu-item" style="position: absolute; bottom: 0px;">
+    <a href="/logout" class="menu-link" style="background: red; color: #fff;">
+      <i class="menu-icon tf-icons bx bx-power-off"></i>
+      <div class="text-truncate">Logout</div>
+    </a>
+  </li>
+</ul>
+
         </aside>
         <!-- / Menu -->
 
@@ -391,6 +393,9 @@
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
+
   </body>
 </html>
 

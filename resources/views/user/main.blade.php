@@ -11,7 +11,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Charity</title>
+    <title>James' Masterpiece</title>
 
     <meta name="description" content="" />
 
@@ -112,7 +112,7 @@
                   </svg>
                 </span>
               </span>
-              <span class="app-brand-text demo menu-text fw-bold ms-2">Charity</span>
+              <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size: 1rem;">James' Masterpiece</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -136,7 +136,7 @@
                     <a
                     href="/users"
                     class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-envelope"></i>
+                    <i class="menu-icon tf-icons bx bx-home"></i>
                     <div class="text-truncate" data-i18n="Email">Dashboard</div>
                     </a>
                 </li>
@@ -148,7 +148,7 @@
                     <a
                     href="/users/profile"
                     class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-envelope"></i>
+                    <i class="menu-icon tf-icons bx bx-user-circle"></i>
                     <div class="text-truncate" data-i18n="Email">Profile</div>
                     </a>
                 </li>
@@ -163,52 +163,87 @@
                 <a
                   href="/users/donation"
                   class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-envelope"></i>
-                  <div class="text-truncate" data-i18n="Email">Donation</div>
+                  <i class="menu-icon tf-icons bx bx-transfer"></i>
+                  <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
-
-              <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
-                <a
-                  href="/users/student"
-                  class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-envelope"></i>
-                  <div class="text-truncate" data-i18n="Email">Student</div>
-                </a>
-              </li>
+              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader')
+                <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
+                    <a
+                    href="/users/student"
+                    class="menu-link">
+                    <i class="menu-icon tf-icons bx bx bx-group"></i>
+                    <div class="text-truncate" data-i18n="Email">
+                        @if (Auth::user()->role == 'user')
+                        {{ Auth::user()->setting->participant_name }}
+                        @else
+                        Group Member
+                        @endif
+                    </div>
+                    </a>
+                </li>
+              @endif
             @if (Auth::user()->role == 'user')
                 <!-- Setting -->
                 <li class="menu-header small text-uppercase ">
-                    <span class="menu-header-text">Setting</span>
+                    <span class="menu-header-text">Site Settings</span>
                 </li>
 
                 <li class="menu-item {{ request()->is('users/setting') ? 'active' : '' }}">
                     <a
                     href="/users/setting"
                     class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-envelope"></i>
-                    <div class="text-truncate" data-i18n="Email">Setting</div>
+                    <i class="menu-icon tf-icons bx bx-cog"></i>
+                    <div class="text-truncate" data-i18n="Email">Settings</div>
                     </a>
+                </li>
+
+                <li class="menu-item {{ request()->is('users/tax') ? 'active' : '' }}">
+                    <a
+                    href="/users/tax"
+                    class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-file-find"></i>
+                    <div class="text-truncate" data-i18n="Email">1099-K Tax</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ request()->is('users/tax-receipt') ? 'active' : '' }}">
+                    <a
+                    href="/users/tax-receipt"
+                    class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-receipt"></i>
+                    <div class="text-truncate" data-i18n="Email">Tax Receipt</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ request()->is('users/direct_deposit') ? 'active' : '' }}">
+                        <a
+                        href="/users/direct_deposit"
+                        class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                        <div class="text-truncate" data-i18n="Email">Direct Deposit Settings</div>
+                        </a>
+                </li>
+
+                <li class="menu-item {{ request()->is('users/mailed_deposit') ? 'active' : '' }}">
+                        <a
+                        href="/users/mailed_deposit"
+                        class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-envelope"></i>
+                        <div class="text-truncate" data-i18n="Email">Mailed Check Settings</div>
+                        </a>
+                </li>
+
+                <li class="menu-item {{ request()->is('users/wire_transfer') ? 'active' : '' }}">
+                        <a
+                        href="/users/wire_transfer"
+                        class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-wallet"></i>
+                        <div class="text-truncate" data-i18n="Email">Wire Transfer Setting</div>
+                        </a>
                 </li>
             @endif
 
-            <li class="menu-item {{ request()->is('users/direct_deposit') ? 'active' : '' }}">
-                    <a
-                    href="/users/direct_deposit"
-                    class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-envelope"></i>
-                    <div class="text-truncate" data-i18n="Email">Direct Deposit Setting</div>
-                    </a>
-            </li>
-
-            <li class="menu-item {{ request()->is('users/mailed_deposit') ? 'active' : '' }}">
-                    <a
-                    href="/users/mailed_deposit"
-                    class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-envelope"></i>
-                    <div class="text-truncate" data-i18n="Email">Mailed Deposit Setting</div>
-                    </a>
-            </li>
 
               <li class="menu-item" style="position: absolute; bottom: 0px;">
                 <a

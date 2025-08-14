@@ -17,7 +17,7 @@
 
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        Logo
+                        Logo<span class="text-danger">*</span>
                     </label>
                     <br>
 
@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        Banner
+                        Banner<span class="text-danger">*</span>
                     </label>
                     <br>
                     <img src="{{ asset('uploads/'.$data->banner) ?? null}}" alt="" width="200px">
@@ -63,6 +63,24 @@
                     </label>
 
                     <input type="date" class="form-control" id="last_name" name="date" value="{{ $data->date ?? null}}">
+                </div>
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Goal
+                    </label>
+
+                    <input type="number" class="form-control" id="last_name" name="goal" value="{{ $data->goal ?? null}}">
+                </div>
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Payout Method
+                    </label>
+
+                    <select class="form-select" name="payout_method">
+                        <option value="direct_deposits" {{ ($data->payout_method ?? null) == 'direct_deposits' ? 'selected' : '' }}>Direct Deposits</option>
+                        <option value="mailed_checks" {{ ($data->payout_method ?? null) == 'mailed_checks' ? 'selected' : '' }}>Mailed Checks</option>
+                        <option value="wire_transfers" {{ ($data->payout_method ?? null) == 'wire_transfers' ? 'selected' : '' }}>Wire Transfers</option>
+                    </select>
                 </div>
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
@@ -109,7 +127,7 @@
                         Organization Name
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="organization" value="{{ $data->organization ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="organization" value="{{ $data->organization ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
@@ -117,7 +135,7 @@
                         Phone
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="phone" value="{{ $data->phone ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="phone" value="{{ $data->phone ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
@@ -133,15 +151,15 @@
                         Address
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="address" value="{{ $data->address ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="address" value="{{ $data->address ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        ZIP
+                        ZIP / Postal Code
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="zip" value="{{ $data->zip ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="zip" value="{{ $data->zip ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
@@ -149,7 +167,7 @@
                         City
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="city" value="{{ $data->city ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="city" value="{{ $data->city ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
@@ -157,15 +175,96 @@
                         Country
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="country" value="{{ $data->country ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="country" value="{{ $data->country ?? null}}" required>
                 </div>
 
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        State
+                        State / Province
                     </label>
 
-                    <input type="text" class="form-control" id="last_name" name="state" value="{{ $data->state ?? null}}">
+                    <input type="text" class="form-control" id="last_name" name="state" value="{{ $data->state ?? null}}" required>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Site Status
+                    </label>
+
+                    <select class="form-select" name="site_status">
+                        <option value="1" {{ ($data->site_status ?? null) == 1 ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ ($data->site_status ?? null) == 0 ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Payment Method
+                    </label>
+
+                    <select class="form-select" name="payment_method">
+                        <option value="authorize" {{ ($data->payment_method ?? null) == 'authorize' ? 'selected' : '' }}>Authorize.net</option>
+                        <option value="stripe" {{ ($data->payment_method ?? null) == 'stripe' ? 'selected' : '' }}>Stripe</option>
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Stripe api key
+                    </label>
+
+                    <input type="text" class="form-control" id="last_name" name="api_key" value="{{ $data->api_key ?? null}}">
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Stripe api secret
+                    </label>
+
+                    <input type="text" class="form-control" id="last_name" name="api_secret" value="{{ $data->api_secret ?? null}}">
+                </div>
+
+                @php
+                    $pages = \App\Models\Page::where('website_id',$data->user->website_id)->where('status',1)->get();
+                @endphp
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Privacy Policy Page
+                    </label>
+
+                    <select class="form-select" name="privacy">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->privacy == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Terms & Condition Page
+                    </label>
+
+                    <select class="form-select" name="terms">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->terms == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Refund Policy
+                    </label>
+
+                    <select class="form-select" name="refund">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->refund == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="col-12 mt-4">

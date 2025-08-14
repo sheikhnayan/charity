@@ -73,6 +73,17 @@
                 </div>
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
+                        Payout Method
+                    </label>
+
+                    <select class="form-select" name="payout_method">
+                        <option value="direct_deposits" {{ ($data->payout_method ?? null) == 'direct_deposits' ? 'selected' : '' }}>Direct Deposits</option>
+                        <option value="mailed_checks" {{ ($data->payout_method ?? null) == 'mailed_checks' ? 'selected' : '' }}>Mailed Checks</option>
+                        <option value="wire_transfers" {{ ($data->payout_method ?? null) == 'wire_transfers' ? 'selected' : '' }}>Wire Transfers</option>
+                    </select>
+                </div>
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
                         Location
                     </label>
 
@@ -145,7 +156,7 @@
 
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        ZIP
+                        ZIP / Postal Code
                     </label>
 
                     <input type="text" class="form-control" id="last_name" name="zip" value="{{ $data->zip ?? null}}">
@@ -169,10 +180,91 @@
 
                 <div class="col-12" style="order: -1;">
                     <label for="last_name" class="form-label required">
-                        State
+                        State / Province
                     </label>
 
                     <input type="text" class="form-control" id="last_name" name="state" value="{{ $data->state ?? null}}">
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Site Status
+                    </label>
+
+                    <select class="form-select" name="site_status">
+                        <option value="1" {{ ($data->site_status ?? null) == 1 ? 'selected' : '' }}>Active</option>
+                        <option value="0" {{ ($data->site_status ?? null) == 0 ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Payment Method
+                    </label>
+
+                    <select class="form-select" name="payment_method">
+                        <option value="authorize" {{ ($data->payment_method ?? null) == 'authorize' ? 'selected' : '' }}>Authorize.net</option>
+                        <option value="stripe" {{ ($data->payment_method ?? null) == 'stripe' ? 'selected' : '' }}>Stripe</option>
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Stripe api key
+                    </label>
+
+                    <input type="text" class="form-control" id="last_name" name="api_key" value="{{ $data->api_key ?? null}}">
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Stripe api secret
+                    </label>
+
+                    <input type="text" class="form-control" id="last_name" name="api_secret" value="{{ $data->api_secret ?? null}}">
+                </div>
+
+                @php
+                    $pages = \App\Models\Page::where('website_id',$data->user->website_id)->where('status',1)->get();
+                @endphp
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Privacy Policy Page
+                    </label>
+
+                    <select class="form-select" name="privacy">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->privacy == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Terms & Condition Page
+                    </label>
+
+                    <select class="form-select" name="terms">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->terms == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="last_name" class="form-label required">
+                        Refund Policy
+                    </label>
+
+                    <select class="form-select" name="refund">
+                        <option value="null" disabled selected>Select Page</option>
+                        @foreach ($pages as $item)
+                            <option {{ $data->refund == $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="col-12 mt-4">
