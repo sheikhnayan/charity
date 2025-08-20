@@ -22,7 +22,7 @@ class FrontendController extends Controller
     {
 
         $url = url()->current();
-        if( $url == 'fundably.org' || $url == 'https://fundably.org' || $url == 'http://fundably.org' || $url == 'http://127.0.0.1:8000') {
+        if( $url == 'http://ifundup.com' || $url == 'ifundup.com' || $url == 'https://ifundup.com' || $url == 'fundably.org' || $url == 'https://fundably.org' || $url == 'http://fundably.org' || $url == 'http://127.0.0.1:8000') {
             return redirect()->route('admin.index', 1);
         }
         $doamin = parse_url($url, PHP_URL_HOST);
