@@ -801,6 +801,105 @@ button a:hover {
       min-height: 100px;
       resize: vertical;
     }
+
+    /* Responsive Spacing Controls */
+    .responsive-spacing-group {
+        margin-bottom: 20px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        background: #f8f9fa;
+    }
+
+    .spacing-header {
+        font-size: 14px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .device-tabs {
+        display: flex;
+        margin-bottom: 12px;
+        background: #fff;
+        border-radius: 6px;
+        padding: 3px;
+        border: 1px solid #dee2e6;
+    }
+
+    .device-tab {
+        flex: 1;
+        padding: 8px 12px;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #6c757d;
+        font-size: 12px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .device-tab:hover {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    .device-tab.active {
+        background: #007bff;
+        color: white;
+        box-shadow: 0 1px 3px rgba(0, 123, 255, 0.3);
+    }
+
+    .spacing-controls {
+        position: relative;
+    }
+
+    .device-content {
+        display: none;
+    }
+
+    .device-content.active {
+        display: block;
+    }
+
+    .spacing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .spacing-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .spacing-item label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .spacing-item input {
+        padding: 6px 8px;
+        font-size: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background: white;
+    }
+
+    .spacing-item input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    }
     
     .image-preview {
       width: 100%;
@@ -1403,6 +1502,12 @@ button a:hover {
           // Add visual feedback
           showDeviceNotification(device);
           
+          // Apply responsive styles for the new device
+          setTimeout(() => {
+            applyResponsiveStyles();
+            updateResponsiveCSS();
+          }, 50);
+          
           // Refresh layout to ensure proper responsive behavior
           setTimeout(() => {
             triggerLayoutRefresh();
@@ -1575,6 +1680,10 @@ button a:hover {
       const component = document.createElement('div');
       component.className = 'component';
       component.dataset.type = type;
+      
+      // Assign unique ID to component
+      const existingComponents = document.querySelectorAll('.component').length;
+      component.id = `component-${existingComponents}`;
 
       const controls = document.createElement('div');
       controls.className = 'component-controls';
@@ -1601,15 +1710,16 @@ button a:hover {
     content.renderImage = function() {
         const d = content._imageData;
         content.innerHTML = `
-            <a href="${d.link || '#'}" ${d.link ? (d.openInNewTab ? 'target="_blank"' : '') : ''} class="image-link" style="display:inline-block;">
-                <img src="${d.src}" alt="${d.alt}" style="width:${d.width};height:${d.height};object-fit:${d.objectFit};border-radius:8px;cursor:pointer;transition:box-shadow .2s;" class="img-preview"/>
-            </a>
+            <div class="image-link" style="display:inline-block;">
+                <img src="${d.src}" alt="${d.alt}" style="width:${d.width};height:${d.height};object-fit:${d.objectFit};border-radius:8px;cursor:default;transition:box-shadow .2s;" class="img-preview"/>
+            </div>
         `;
-        // Click to open modal
+        // Disable click events in page builder - no modal, no links
         const img = content.querySelector('img');
         img.onclick = function(e) {
             e.preventDefault();
-            openLargeImageModal(d.src, d.alt);
+            e.stopPropagation();
+            // Do nothing in page builder
         };
     };
     content.renderImage();
@@ -3279,8 +3389,13 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             propertyControls.innerHTML = '<p>Select a component to edit its properties</p>';
             return;
         }
-
+        
         const content = getContentElement(selectedComponent);
+        console.log('UpdatePropertyPanel called for component:', selectedComponent.id);
+        console.log('Content element:', content);
+        console.log('Responsive styles data:', content ? content._responsiveStyles : 'No content');
+        console.log('Current active device:', document.querySelector('.device-tabs .device-tab.active')?.dataset?.device || 'none');
+
         const type = selectedComponent.dataset.type;
         
         if (!content) {
@@ -3986,10 +4101,215 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             <label>Background Color</label>
             <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
             </div>
-            <div class="form-group">
-            <label>Padding</label>
-            <input type="text" value="${content.style.padding || '0px'}" oninput="updateStyle(this, 'padding')">
+            
+            <!-- Responsive Margin Controls -->
+            <div class="responsive-spacing-group">
+                <h6 class="spacing-header">
+                    <i class="fas fa-arrows-alt"></i> Responsive Margin
+                </h6>
+                <div class="device-tabs">
+                    <button type="button" class="device-tab active" data-device="desktop" onclick="switchSpacingDevice(this, 'margin')">
+                        <i class="fas fa-desktop"></i> Desktop
+                    </button>
+                    <button type="button" class="device-tab" data-device="tablet" onclick="switchSpacingDevice(this, 'margin')">
+                        <i class="fas fa-tablet-alt"></i> Tablet
+                    </button>
+                    <button type="button" class="device-tab" data-device="mobile" onclick="switchSpacingDevice(this, 'margin')">
+                        <i class="fas fa-mobile-alt"></i> Mobile
+                    </button>
+                </div>
+                <div class="spacing-controls margin-controls">
+                    <div class="device-content active" data-device="desktop">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-top', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-top', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-right', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-right', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-bottom', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-bottom', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-left', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-left', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="tablet">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-top', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-top', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-right', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-right', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-bottom', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-bottom', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-left', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-left', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="mobile">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-top', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-top', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-right', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-right', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-bottom', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-bottom', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'margin-left', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'margin-left', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Responsive Padding Controls -->
+            <div class="responsive-spacing-group">
+                <h6 class="spacing-header">
+                    <i class="fas fa-expand-arrows-alt"></i> Responsive Padding
+                </h6>
+                <div class="device-tabs">
+                    <button type="button" class="device-tab active" data-device="desktop" onclick="switchSpacingDevice(this, 'padding')">
+                        <i class="fas fa-desktop"></i> Desktop
+                    </button>
+                    <button type="button" class="device-tab" data-device="tablet" onclick="switchSpacingDevice(this, 'padding')">
+                        <i class="fas fa-tablet-alt"></i> Tablet
+                    </button>
+                    <button type="button" class="device-tab" data-device="mobile" onclick="switchSpacingDevice(this, 'padding')">
+                        <i class="fas fa-mobile-alt"></i> Mobile
+                    </button>
+                </div>
+                <div class="spacing-controls padding-controls">
+                    <div class="device-content active" data-device="desktop">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-top', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-top', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-right', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-right', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-bottom', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-bottom', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-left', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-left', 'desktop')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="tablet">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-top', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-top', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-right', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-right', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-bottom', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-bottom', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-left', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-left', 'tablet')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="mobile">
+                        <div class="spacing-grid">
+                            <div class="spacing-item">
+                                <label>Top</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-top', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-top', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Right</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-right', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-right', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Bottom</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-bottom', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-bottom', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                            <div class="spacing-item">
+                                <label>Left</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'padding-left', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'padding-left', 'mobile')" 
+                                       placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="form-group">
             <label>Text Align</label>
             <select oninput="updateStyle(this, 'textAlign')">
@@ -3997,22 +4317,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 <option value="center" ${content.style.textAlign === 'center' ? 'selected' : ''}>Center</option>
                 <option value="right" ${content.style.textAlign === 'right' ? 'selected' : ''}>Right</option>
             </select>
-            </div>
-            <div class="form-group">
-                <label>Margin Left</label>
-                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginLeft) || 0}" oninput="updateStyleWithUnit(this, 'marginLeft')">
-            </div>
-            <div class="form-group">
-                <label>Margin Right</label>
-                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginRight) || 0}" oninput="updateStyleWithUnit(this, 'marginRight')">
-            </div>
-            <div class="form-group">
-                <label>Margin Top</label>
-                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginTop) || 0}" oninput="updateStyleWithUnit(this, 'marginTop')">
-            </div>
-            <div class="form-group">
-                <label>Margin Bottom</label>
-                <input type="number" min="0" step="1" value="${parseInt(selectedComponent.style.marginBottom) || 0}" oninput="updateStyleWithUnit(this, 'marginBottom')">
             </div>
         `;
 
@@ -4025,6 +4329,9 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 renderFaqEntries(numSelect.value || 1);
             }
         }
+        
+        // Update responsive CSS after property panel is updated
+        updateResponsiveCSS();
     }
 
 // helper function for sell tickets
@@ -4584,6 +4891,267 @@ function uploadFWTIImage(event) {
     }, 0);
 }
 
+// Responsive Spacing Functions
+function getResponsiveStyle(element, property, device) {
+    if (!element || !element._responsiveStyles) {
+        return '';
+    }
+    
+    console.log(`GetResponsiveStyle debug - device: ${device}, property: ${property}`);
+    console.log(`  element._responsiveStyles:`, element._responsiveStyles);
+    console.log(`  element._responsiveStyles[${device}]:`, element._responsiveStyles[device]);
+    console.log(`  Type of element._responsiveStyles[${device}]:`, typeof element._responsiveStyles[device]);
+    console.log(`  Is array:`, Array.isArray(element._responsiveStyles[device]));
+    
+    // Fix: Ensure device property is an object, not an array
+    if (Array.isArray(element._responsiveStyles[device])) {
+        console.log(`  Converting ${device} from array to object`);
+        element._responsiveStyles[device] = {};
+    }
+    
+    const value = element._responsiveStyles[device] ? element._responsiveStyles[device][property] || '' : '';
+    console.log(`Getting responsive style: ${device}.${property} = "${value}"`);
+    return value;
+}
+
+function updateResponsiveStyle(input, property, device) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize responsive styles object if it doesn't exist
+    if (!content._responsiveStyles) {
+        content._responsiveStyles = {
+            desktop: {},
+            tablet: {},
+            mobile: {}
+        };
+    }
+    
+    // Ensure each device property is an object, not an array
+    if (!content._responsiveStyles[device] || Array.isArray(content._responsiveStyles[device])) {
+        console.log(`Fixing ${device} structure - was:`, content._responsiveStyles[device]);
+        content._responsiveStyles[device] = {};
+    }
+    
+    console.log(`UpdateResponsiveStyle: ${device}.${property} = "${input.value}"`);
+    
+    // Store the responsive style (only if not empty)
+    if (input.value && input.value.trim() !== '') {
+        content._responsiveStyles[device][property] = input.value.trim();
+    } else {
+        // Remove the property if value is empty
+        delete content._responsiveStyles[device][property];
+    }
+    
+    // Apply the style based on current preview mode
+    const currentDevice = getCurrentPreviewDevice();
+    if (currentDevice === device) {
+        // Apply margin properties to wrapper, padding to content
+        if (property.startsWith('margin-')) {
+            if (input.value && input.value.trim() !== '') {
+                selectedComponent.style[property] = input.value.trim();
+            } else {
+                selectedComponent.style[property] = '';
+            }
+        } else if (property.startsWith('padding-')) {
+            if (input.value && input.value.trim() !== '') {
+                content.style[property] = input.value.trim();
+            } else {
+                content.style[property] = '';
+            }
+        }
+    }
+    
+    // Update responsive CSS
+    updateResponsiveCSS();
+    
+    // Auto-save removed - manual save only
+}
+
+function switchSpacingDevice(button, spacingType) {
+    const group = button.closest('.responsive-spacing-group');
+    const tabs = group.querySelectorAll('.device-tab');
+    const contents = group.querySelectorAll('.device-content');
+    const device = button.dataset.device;
+    
+    // Update tab states
+    tabs.forEach(tab => tab.classList.remove('active'));
+    button.classList.add('active');
+    
+    // Update content visibility
+    contents.forEach(content => {
+        content.classList.remove('active');
+        if (content.dataset.device === device) {
+            content.classList.add('active');
+        }
+    });
+    
+    // Update input values for the selected device
+    if (selectedComponent) {
+        const content = getContentElement(selectedComponent);
+        const activeContent = group.querySelector(`.device-content[data-device="${device}"]`);
+        
+        if (activeContent && content) {
+            const inputs = activeContent.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                const oninputAttr = input.getAttribute('oninput');
+                if (oninputAttr) {
+                    // Extract property name from oninput attribute
+                    const match = oninputAttr.match(/updateResponsiveStyle\(this,\s*'([^']+)'/);
+                    if (match) {
+                        const property = match[1];
+                        const value = getResponsiveStyle(content, property, device);
+                        input.value = value;
+                        console.log(`Switched to ${device}, updating ${property} input to: "${value}"`);
+                    }
+                }
+            });
+        }
+    }
+}
+
+function getCurrentPreviewDevice() {
+    const canvas = document.querySelector('.canvas');
+    if (canvas.classList.contains('mobile-view')) return 'mobile';
+    if (canvas.classList.contains('tablet-view')) return 'tablet';
+    return 'desktop';
+}
+
+function updateResponsiveCSS() {
+    // Remove existing responsive style element
+    const existingStyle = document.getElementById('responsive-spacing-styles');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+    
+    // Create new style element
+    const style = document.createElement('style');
+    style.id = 'responsive-spacing-styles';
+    
+    let css = '';
+    
+    // Collect all components with responsive styles
+    const componentsWithStyles = document.querySelectorAll('.component');
+    componentsWithStyles.forEach((component, index) => {
+        const content = getContentElement(component);
+        if (content && content._responsiveStyles) {
+            const componentId = component.id || `component-${index}`;
+            if (!component.id) {
+                component.id = componentId;
+            }
+            
+            const styles = content._responsiveStyles;
+            
+            // Desktop styles (default)
+            if (styles.desktop && Object.keys(styles.desktop).length > 0) {
+                const desktopMargins = Object.entries(styles.desktop)
+                    .filter(([prop, value]) => prop.startsWith('margin-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value}`)
+                    .join('; ');
+                const desktopPaddings = Object.entries(styles.desktop)
+                    .filter(([prop, value]) => prop.startsWith('padding-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value}`)
+                    .join('; ');
+                
+                if (desktopMargins) {
+                    css += `#${componentId} { ${desktopMargins}; }\n`;
+                }
+                if (desktopPaddings) {
+                    // Apply padding directly to the content element, not a generic .component-content
+                    css += `#${componentId} > *:not(.component-controls) { ${desktopPaddings}; }\n`;
+                }
+            }
+            
+            // Tablet styles
+            if (styles.tablet && Object.keys(styles.tablet).length > 0) {
+                const tabletMargins = Object.entries(styles.tablet)
+                    .filter(([prop, value]) => prop.startsWith('margin-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value} !important`)
+                    .join('; ');
+                const tabletPaddings = Object.entries(styles.tablet)
+                    .filter(([prop, value]) => prop.startsWith('padding-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value} !important`)
+                    .join('; ');
+                
+                if (tabletMargins) {
+                    css += `@media screen and (max-width: 991px) and (min-width: 768px) {\n`;
+                    css += `  #${componentId} { ${tabletMargins}; }\n`;
+                    css += `}\n`;
+                }
+                if (tabletPaddings) {
+                    css += `@media screen and (max-width: 991px) and (min-width: 768px) {\n`;
+                    css += `  #${componentId} > *:not(.component-controls) { ${tabletPaddings}; }\n`;
+                    css += `}\n`;
+                }
+                
+                // Also apply to tablet preview mode
+                if (tabletMargins) {
+                    css += `.canvas.tablet-view #${componentId} { ${tabletMargins}; }\n`;
+                }
+                if (tabletPaddings) {
+                    css += `.canvas.tablet-view #${componentId} > *:not(.component-controls) { ${tabletPaddings}; }\n`;
+                }
+            }
+            
+            // Mobile styles
+            if (styles.mobile && Object.keys(styles.mobile).length > 0) {
+                const mobileMargins = Object.entries(styles.mobile)
+                    .filter(([prop, value]) => prop.startsWith('margin-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value} !important`)
+                    .join('; ');
+                const mobilePaddings = Object.entries(styles.mobile)
+                    .filter(([prop, value]) => prop.startsWith('padding-') && value && value.trim() !== '')
+                    .map(([prop, value]) => `${prop}: ${value} !important`)
+                    .join('; ');
+                
+                if (mobileMargins) {
+                    css += `@media screen and (max-width: 767px) {\n`;
+                    css += `  #${componentId} { ${mobileMargins}; }\n`;
+                    css += `}\n`;
+                }
+                if (mobilePaddings) {
+                    css += `@media screen and (max-width: 767px) {\n`;
+                    css += `  #${componentId} > *:not(.component-controls) { ${mobilePaddings}; }\n`;
+                    css += `}\n`;
+                }
+                
+                // Also apply to mobile preview mode
+                if (mobileMargins) {
+                    css += `.canvas.mobile-view #${componentId} { ${mobileMargins}; }\n`;
+                }
+                if (mobilePaddings) {
+                    css += `.canvas.mobile-view #${componentId} > *:not(.component-controls) { ${mobilePaddings}; }\n`;
+                }
+            }
+        }
+    });
+    
+    style.textContent = css;
+    document.head.appendChild(style);
+}
+
+// Apply responsive styles when device view changes
+function applyResponsiveStyles() {
+    const currentDevice = getCurrentPreviewDevice();
+    const components = document.querySelectorAll('.component');
+    
+    components.forEach(component => {
+        const content = getContentElement(component);
+        if (content && content._responsiveStyles && content._responsiveStyles[currentDevice]) {
+            const styles = content._responsiveStyles[currentDevice];
+            
+            // Apply margin styles to component wrapper
+            Object.entries(styles).forEach(([property, value]) => {
+                if (property.startsWith('margin-')) {
+                    component.style[property] = value;
+                } else if (property.startsWith('padding-')) {
+                    content.style[property] = value;
+                }
+            });
+        }
+    });
+}
+
 
     // Update image source
     function updateImage(src) {
@@ -4662,11 +5230,23 @@ function uploadFWTIImage(event) {
             return null;
         }
         
-        // return Array.from(component.children).find(child => !child.classList.contains('component-controls'));
-        return Array.from(component.children).find(child =>
+        const content = Array.from(component.children).find(child =>
             !child.classList.contains('component-controls') &&
             !child.classList.contains('compo') // add more classes as needed
         );
+        
+        // Ensure proper responsive styles structure
+        if (content && content._responsiveStyles) {
+            // Fix any arrays that should be objects
+            ['desktop', 'tablet', 'mobile'].forEach(device => {
+                if (Array.isArray(content._responsiveStyles[device])) {
+                    console.log(`Fixing ${device} structure in getContentElement - converting array to object`);
+                    content._responsiveStyles[device] = {};
+                }
+            });
+        }
+        
+        return content;
     }
 
     // Clear selection when clicking outside
@@ -5699,7 +6279,10 @@ function uploadFWTIImage(event) {
     // --- SERIALIZATION & DB SAVE/LOAD LOGIC ---
     function serializeBuilder() {
       const page = document.getElementById('page');
-      const components = Array.from(page.querySelectorAll('.component'));
+      // Only select direct component children, not nested ones inside inner-sections
+      const components = Array.from(page.children).filter(child => 
+        child.classList.contains('component')
+      );
       return components.map(component => {
         const type = component.dataset.type;
         const content = getContentElement(component);
@@ -5732,6 +6315,14 @@ function uploadFWTIImage(event) {
             marginTop: component.style.marginTop || '',
             marginBottom: component.style.marginBottom || ''
             };
+            
+          // Save responsive styles
+          if (content._responsiveStyles) {
+            data.responsiveStyles = content._responsiveStyles;
+            console.log(`Saving responsive styles for component ${type}:`, content._responsiveStyles);
+          } else {
+            console.log(`No responsive styles found for component ${type}`);
+          }
         }
         // Serialize per type
         switch (type) {
@@ -5800,7 +6391,7 @@ function uploadFWTIImage(event) {
                 const compContent = getContentElement(comp);
                 let compData = { type: compType };
                 
-                // Save basic component data (simplified serialization for nested components)
+                // Save complete component data (same as main components)
                 if (compContent) {
                   compData.html = compContent.innerHTML;
                   compData.style = {
@@ -5808,8 +6399,95 @@ function uploadFWTIImage(event) {
                     backgroundColor: compContent.style.backgroundColor || '',
                     fontSize: compContent.style.fontSize || '',
                     padding: compContent.style.padding || '',
-                    textAlign: compContent.style.textAlign || ''
+                    textAlign: compContent.style.textAlign || '',
+                    border: compContent.style.border || '',
+                    borderRadius: compContent.style.borderRadius || '',
+                    margin: compContent.style.margin || '',
+                    width: compContent.style.width || '',
+                    height: compContent.style.height || '',
+                    boxShadow: compContent.style.boxShadow || '',
+                    fontWeight: compContent.style.fontWeight || '',
+                    fontFamily: compContent.style.fontFamily || '',
+                    letterSpacing: compContent.style.letterSpacing || '',
+                    lineHeight: compContent.style.lineHeight || '',
+                    textDecoration: compContent.style.textDecoration || ''
                   };
+                  compData.wrapperStyle = {
+                    margin: comp.style.margin || '',
+                    marginLeft: comp.style.marginLeft || '',
+                    marginRight: comp.style.marginRight || '',
+                    marginTop: comp.style.marginTop || '',
+                    marginBottom: comp.style.marginBottom || ''
+                  };
+                  
+                  // Save component-specific data based on type
+                  switch (compType) {
+                    case 'image':
+                      if (compContent._imageData) {
+                        compData.imageData = compContent._imageData;
+                      }
+                      break;
+                    case 'gallery':
+                      if (compContent._galleryData) {
+                        compData.galleryData = compContent._galleryData;
+                      }
+                      break;
+                    case 'slider':
+                      if (compContent._sliderData) {
+                        compData.sliderData = compContent._sliderData;
+                      }
+                      break;
+                    case 'text-images':
+                      if (compContent._textImagesData) {
+                        compData.textImagesData = compContent._textImagesData;
+                      }
+                      break;
+                    case 'custom-form':
+                      if (compContent._customFormFields) {
+                        compData.customFormFields = compContent._customFormFields;
+                      }
+                      break;
+                    case 'event-countdown':
+                      if (compContent._countdownData) {
+                        compData.countdownData = compContent._countdownData;
+                      }
+                      break;
+                    case 'event-information':
+                      if (compContent._eventInfoData) {
+                        compData.eventInfoData = compContent._eventInfoData;
+                      }
+                      break;
+                    case 'site-goal':
+                      if (compContent._goalData) {
+                        compData.goalData = compContent._goalData;
+                      }
+                      break;
+                    case 'custom-banner':
+                      if (compContent._customBannerData) {
+                        compData.customBannerData = compContent._customBannerData;
+                      }
+                      break;
+                    case 'faq':
+                      if (compContent._faqData) {
+                        compData.faqData = compContent._faqData;
+                      }
+                      break;
+                    case 'sell-tickets':
+                      if (compContent._sellTicketsData) {
+                        compData.sellTicketsData = compContent._sellTicketsData;
+                      }
+                      break;
+                    case 'full-width-text-image':
+                      if (compContent._fwtiData) {
+                        compData.fwtiData = compContent._fwtiData;
+                      }
+                      break;
+                  }
+                  
+                  // Save responsive styles for nested components
+                  if (compContent._responsiveStyles) {
+                    compData.responsiveStyles = compContent._responsiveStyles;
+                  }
                 }
                 
                 return compData;
@@ -5825,10 +6503,13 @@ function uploadFWTIImage(event) {
     }
 
     function deserializeBuilder(state) {
+      console.log('DeserializeBuilder called with state:', state);
       const page = document.getElementById('page');
       page.innerHTML = '';
       state.forEach((data, idx) => {
+        console.log(`Loading component ${idx}:`, data.type, 'responsiveStyles:', data.responsiveStyles);
         const component = createComponent(data.type);
+        component.id = `component-${idx}`;
         const content = getContentElement(component);
         // Restore per type
         switch (data.type) {
@@ -5845,6 +6526,7 @@ function uploadFWTIImage(event) {
                 content.renderSellTickets();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
             case 'slider':
@@ -5852,6 +6534,7 @@ function uploadFWTIImage(event) {
                 content.renderSlider();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
             case 'gallery':
@@ -5859,6 +6542,7 @@ function uploadFWTIImage(event) {
                 content.renderGallery();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
 
@@ -5867,6 +6551,7 @@ function uploadFWTIImage(event) {
                 content.renderImage();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
             // case 'image':
@@ -5905,6 +6590,7 @@ function uploadFWTIImage(event) {
                 content.renderFWTI();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
 
@@ -5914,6 +6600,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'divider':
             if (data.style) {
@@ -5921,6 +6608,7 @@ function uploadFWTIImage(event) {
               content.style.backgroundColor = data.style.backgroundColor;
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'site-banner':
             content.src = data.src;
@@ -5929,6 +6617,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'custom-banner':
             content._customBannerData = data.customBannerData || {
@@ -5941,9 +6630,11 @@ function uploadFWTIImage(event) {
             content.renderCustomBanner();
             if (data.style) Object.assign(content.style, data.style);
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'faq':
             content._faqData = data.faqData;
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             // ...re-render FAQ if needed...
             break;
           case 'event-countdown':
@@ -5953,6 +6644,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'event-information':
             content._eventInfoData = data.eventInfoData;
@@ -5961,6 +6653,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'site-goal':
             content._goalData = data.goalData;
@@ -5969,6 +6662,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'text-images':
             content._textImagesData = data.textImagesData;
@@ -5977,6 +6671,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'custom-form':
             content._customFormFields = data.customFormFields || [];
@@ -5985,6 +6680,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'inner-section':
             // Restore inner section data
@@ -6009,18 +6705,107 @@ function uploadFWTIImage(event) {
               const columns = content.querySelectorAll('.inner-column');
               data.nestedComponents.forEach((columnData, columnIndex) => {
                 if (columns[columnIndex] && Array.isArray(columnData)) {
-                  columnData.forEach(compData => {
+                  columnData.forEach((compData, compIndex) => {
                     const nestedComponent = createComponent(compData.type);
                     const nestedContent = getContentElement(nestedComponent);
                     
-                    // Restore component content
-                    if (nestedContent && compData.html) {
-                      nestedContent.innerHTML = compData.html;
+                    // Set unique ID for nested component
+                    nestedComponent.id = `nested-${columnIndex}-${compIndex}`;
+                    
+                    // Restore component-specific data based on type
+                    switch (compData.type) {
+                      case 'image':
+                        if (compData.imageData) {
+                          nestedContent._imageData = compData.imageData;
+                          nestedContent.renderImage();
+                        }
+                        break;
+                      case 'gallery':
+                        if (compData.galleryData) {
+                          nestedContent._galleryData = compData.galleryData;
+                          nestedContent.renderGallery();
+                        }
+                        break;
+                      case 'slider':
+                        if (compData.sliderData) {
+                          nestedContent._sliderData = compData.sliderData;
+                          nestedContent.renderSlider();
+                        }
+                        break;
+                      case 'text-images':
+                        if (compData.textImagesData) {
+                          nestedContent._textImagesData = compData.textImagesData;
+                          nestedContent.renderTextImages();
+                        }
+                        break;
+                      case 'custom-form':
+                        if (compData.customFormFields) {
+                          nestedContent._customFormFields = compData.customFormFields;
+                          nestedContent.renderCustomForm();
+                        }
+                        break;
+                      case 'event-countdown':
+                        if (compData.countdownData) {
+                          nestedContent._countdownData = compData.countdownData;
+                          nestedContent.renderCountdown();
+                        }
+                        break;
+                      case 'event-information':
+                        if (compData.eventInfoData) {
+                          nestedContent._eventInfoData = compData.eventInfoData;
+                          nestedContent.renderEventInfo();
+                        }
+                        break;
+                      case 'site-goal':
+                        if (compData.goalData) {
+                          nestedContent._goalData = compData.goalData;
+                          nestedContent.renderThermometer();
+                        }
+                        break;
+                      case 'custom-banner':
+                        if (compData.customBannerData) {
+                          nestedContent._customBannerData = compData.customBannerData;
+                          nestedContent.renderCustomBanner();
+                        }
+                        break;
+                      case 'faq':
+                        if (compData.faqData) {
+                          nestedContent._faqData = compData.faqData;
+                        }
+                        break;
+                      case 'sell-tickets':
+                        if (compData.sellTicketsData) {
+                          nestedContent._sellTicketsData = compData.sellTicketsData;
+                          nestedContent.renderSellTickets();
+                        }
+                        break;
+                      case 'full-width-text-image':
+                        if (compData.fwtiData) {
+                          nestedContent._fwtiData = compData.fwtiData;
+                          nestedContent.renderFWTI();
+                        }
+                        break;
+                      default:
+                        // For basic components like text, heading, etc., just restore HTML
+                        if (nestedContent && compData.html) {
+                          nestedContent.innerHTML = compData.html;
+                        }
+                        break;
                     }
                     
-                    // Restore styles
-                    if (nestedContent && compData.style) {
+                    // Restore styles (only if not already handled by component-specific rendering)
+                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'text-images', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image'].includes(compData.type)) {
                       Object.assign(nestedContent.style, compData.style);
+                    }
+                    
+                    // Restore wrapper styles
+                    if (compData.wrapperStyle) {
+                      Object.assign(nestedComponent.style, compData.wrapperStyle);
+                    }
+                    
+                    // Restore responsive styles
+                    if (compData.responsiveStyles) {
+                      nestedContent._responsiveStyles = compData.responsiveStyles;
                     }
                     
                     // Add to column
@@ -6038,6 +6823,7 @@ function uploadFWTIImage(event) {
               Object.assign(content.style, data.style);
             }
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           // ...add other types as needed...
           default:
@@ -6045,8 +6831,24 @@ function uploadFWTIImage(event) {
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) {
+              Object.assign(component.style, data.wrapperStyle);
+            }
+            if (data.responsiveStyles) {
+              content._responsiveStyles = data.responsiveStyles;
+            }
         }
+        
+        // Restore responsive styles for all component types (fallback)
+        if (data.responsiveStyles) {
+          content._responsiveStyles = data.responsiveStyles;
+          console.log(`Fallback: Restored responsive styles for component ${idx}:`, content._responsiveStyles);
+        } else {
+          console.log(`No responsive styles to restore for component ${idx}`);
+        }
+        
         page.appendChild(component);
+        console.log(`Component ${idx} final responsive styles:`, content._responsiveStyles);
         // Add dropzone after each component except the last
         if (idx < state.length - 1) {
           page.appendChild(createDropzone());
@@ -6054,6 +6856,11 @@ function uploadFWTIImage(event) {
       });
       // Always ensure a dropzone at the end
       page.appendChild(createDropzone());
+      
+      // Apply responsive CSS after all components are loaded
+      setTimeout(() => {
+        updateResponsiveCSS();
+      }, 100);
     }
 
     function saveBuilderState() {
@@ -6077,22 +6884,29 @@ function uploadFWTIImage(event) {
         fetch('/admins/page/load/'+id)
             .then(res => res.json())
             .then(data => {
+            console.log('Raw page data loaded:', data);
             if (data && data.state) {
                 let state = data.state;
                 if (typeof state === 'string') {
                     try {
                         state = JSON.parse(state);
+                        console.log('Parsed state:', state);
                     } catch (e) {
                         alert('Failed to parse saved page data.');
                         return;
                     }
                 }
                 deserializeBuilder(state);
+                // Apply responsive CSS after loading
+                updateResponsiveCSS();
             } else {
-                alert('No saved page found.');
+                console.log('No saved page found.');
             }
             })
-            .catch(() => alert('Load failed'));
+            .catch(err => {
+                console.error('Load failed:', err);
+                alert('Load failed');
+            });
     };
 
     // Restore the showTab function (regression fix)

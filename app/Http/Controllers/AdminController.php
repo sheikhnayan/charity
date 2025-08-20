@@ -442,6 +442,8 @@ class AdminController extends Controller
     {
         $data = Footer::where('user_id',$id)->first();
 
+        // dd($id);
+
         return view('admin.footer.footer', compact('data'));
     }
 

@@ -26,6 +26,7 @@ class FrontendController extends Controller
             return redirect()->route('admin.index', 1);
         }
         $doamin = parse_url($url, PHP_URL_HOST);
+        // dd($doamin);
         $check = Website::where('domain', $doamin)->first();
         $user_id = $check->user_id;
         $setting = Setting::where('user_id', $user_id)->first();

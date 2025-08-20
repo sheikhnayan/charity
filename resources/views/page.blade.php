@@ -141,6 +141,253 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         background-color: #eee;
         border: unset;
     }
+
+    /* Inner Section Component Responsive Styles */
+    .inner-section-component {
+        min-height: 60px;
+        position: relative;
+    }
+
+    .inner-section-component .inner-column {
+        /* Remove transitions and hover effects */
+    }
+
+    .inner-section-component .nested-component {
+        background: rgba(255,255,255,0.9);
+        border-radius: 4px;
+        padding: 10px;
+        /* Remove transitions and hover effects */
+        position: relative;
+    }
+
+    .inner-section-component .column-dropzone {
+        opacity: 0.7;
+        /* Remove transitions */
+    }
+
+    .inner-section-component .inner-column:hover .column-dropzone {
+        opacity: 1;
+    }
+
+    .inner-section-component .section-label {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 500;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .inner-section-component {
+            padding: 15px !important;
+        }
+        
+        .inner-section-component .nested-component {
+            margin-bottom: 10px !important;
+        }
+        
+        .inner-section-component .inner-column {
+            margin-bottom: 10px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .inner-section-component {
+            padding: 10px !important;
+            margin: 5px 0 !important;
+        }
+        
+        .inner-section-component .section-label {
+            font-size: 10px !important;
+        }
+    }
+
+    /* Responsive Spacing Styles */
+    @php
+        // Generate responsive CSS for all components
+        if (isset($state) && is_array($state)) {
+            foreach ($state as $index => $component) {
+                if (isset($component['responsiveStyles'])) {
+                    $componentId = "component-{$index}";
+                    $styles = $component['responsiveStyles'];
+                    
+                    echo "/* Component {$index} responsive styles */\n";
+                    
+                    // Desktop styles (default)
+                    if (isset($styles['desktop']) && is_array($styles['desktop'])) {
+                        $desktopMargins = [];
+                        $desktopPaddings = [];
+                        
+                        foreach ($styles['desktop'] as $prop => $value) {
+                            if (!empty($value) && trim($value) !== '') {
+                                if (strpos($prop, 'margin-') === 0) {
+                                    $desktopMargins[] = "{$prop}: {$value}";
+                                } elseif (strpos($prop, 'padding-') === 0) {
+                                    $desktopPaddings[] = "{$prop}: {$value}";
+                                }
+                            }
+                        }
+                        
+                        if (!empty($desktopMargins)) {
+                            echo "#{$componentId} { " . implode('; ', $desktopMargins) . "; }\n";
+                        }
+                        if (!empty($desktopPaddings)) {
+                            echo "#{$componentId} > *:not(.component-controls) { " . implode('; ', $desktopPaddings) . "; }\n";
+                        }
+                    }
+                    
+                    // Tablet styles
+                    if (isset($styles['tablet']) && is_array($styles['tablet'])) {
+                        $tabletMargins = [];
+                        $tabletPaddings = [];
+                        
+                        foreach ($styles['tablet'] as $prop => $value) {
+                            if (!empty($value) && trim($value) !== '') {
+                                if (strpos($prop, 'margin-') === 0) {
+                                    $tabletMargins[] = "{$prop}: {$value} !important";
+                                } elseif (strpos($prop, 'padding-') === 0) {
+                                    $tabletPaddings[] = "{$prop}: {$value} !important";
+                                }
+                            }
+                        }
+                        
+                        if (!empty($tabletMargins)) {
+                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
+                            echo "  #{$componentId} { " . implode('; ', $tabletMargins) . "; }\n";
+                            echo "}\n";
+                        }
+                        if (!empty($tabletPaddings)) {
+                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
+                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $tabletPaddings) . "; }\n";
+                            echo "}\n";
+                        }
+                    }
+                    
+                    // Mobile styles
+                    if (isset($styles['mobile']) && is_array($styles['mobile'])) {
+                        $mobileMargins = [];
+                        $mobilePaddings = [];
+                        
+                        foreach ($styles['mobile'] as $prop => $value) {
+                            if (!empty($value) && trim($value) !== '') {
+                                if (strpos($prop, 'margin-') === 0) {
+                                    $mobileMargins[] = "{$prop}: {$value} !important";
+                                } elseif (strpos($prop, 'padding-') === 0) {
+                                    $mobilePaddings[] = "{$prop}: {$value} !important";
+                                }
+                            }
+                        }
+                        
+                        if (!empty($mobileMargins)) {
+                            echo "@media screen and (max-width: 767px) {\n";
+                            echo "  #{$componentId} { " . implode('; ', $mobileMargins) . "; }\n";
+                            echo "}\n";
+                        }
+                        if (!empty($mobilePaddings)) {
+                            echo "@media screen and (max-width: 767px) {\n";
+                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $mobilePaddings) . "; }\n";
+                            echo "}\n";
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Generate responsive CSS for nested components inside inner-sections
+        if (isset($state) && is_array($state)) {
+            foreach ($state as $index => $component) {
+                if (isset($component['nestedComponents']) && is_array($component['nestedComponents'])) {
+                    foreach ($component['nestedComponents'] as $columnIndex => $columnComponents) {
+                        if (is_array($columnComponents)) {
+                            foreach ($columnComponents as $nestedIndex => $nestedComponent) {
+                                if (isset($nestedComponent['responsiveStyles'])) {
+                                    $componentId = "nested-{$columnIndex}-{$nestedIndex}";
+                                    $styles = $nestedComponent['responsiveStyles'];
+                                    
+                                    echo "/* Nested Component {$componentId} responsive styles */\n";
+                                    
+                                    // Desktop styles (default)
+                                    if (isset($styles['desktop']) && is_array($styles['desktop'])) {
+                                        $desktopMargins = [];
+                                        $desktopPaddings = [];
+                                        
+                                        foreach ($styles['desktop'] as $prop => $value) {
+                                            if (!empty($value) && trim($value) !== '') {
+                                                if (strpos($prop, 'margin-') === 0) {
+                                                    $desktopMargins[] = "{$prop}: {$value}";
+                                                } elseif (strpos($prop, 'padding-') === 0) {
+                                                    $desktopPaddings[] = "{$prop}: {$value}";
+                                                }
+                                            }
+                                        }
+                                        
+                                        if (!empty($desktopMargins)) {
+                                            echo "#{$componentId} { " . implode('; ', $desktopMargins) . "; }\n";
+                                        }
+                                        if (!empty($desktopPaddings)) {
+                                            echo "#{$componentId} > *:not(.component-controls) { " . implode('; ', $desktopPaddings) . "; }\n";
+                                        }
+                                    }
+                                    
+                                    // Tablet styles
+                                    if (isset($styles['tablet']) && is_array($styles['tablet'])) {
+                                        $tabletMargins = [];
+                                        $tabletPaddings = [];
+                                        
+                                        foreach ($styles['tablet'] as $prop => $value) {
+                                            if (!empty($value) && trim($value) !== '') {
+                                                if (strpos($prop, 'margin-') === 0) {
+                                                    $tabletMargins[] = "{$prop}: {$value} !important";
+                                                } elseif (strpos($prop, 'padding-') === 0) {
+                                                    $tabletPaddings[] = "{$prop}: {$value} !important";
+                                                }
+                                            }
+                                        }
+                                        
+                                        if (!empty($tabletMargins)) {
+                                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
+                                            echo "  #{$componentId} { " . implode('; ', $tabletMargins) . "; }\n";
+                                            echo "}\n";
+                                        }
+                                        if (!empty($tabletPaddings)) {
+                                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
+                                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $tabletPaddings) . "; }\n";
+                                            echo "}\n";
+                                        }
+                                    }
+                                    
+                                    // Mobile styles
+                                    if (isset($styles['mobile']) && is_array($styles['mobile'])) {
+                                        $mobileMargins = [];
+                                        $mobilePaddings = [];
+                                        
+                                        foreach ($styles['mobile'] as $prop => $value) {
+                                            if (!empty($value) && trim($value) !== '') {
+                                                if (strpos($prop, 'margin-') === 0) {
+                                                    $mobileMargins[] = "{$prop}: {$value} !important";
+                                                } elseif (strpos($prop, 'padding-') === 0) {
+                                                    $mobilePaddings[] = "{$prop}: {$value} !important";
+                                                }
+                                            }
+                                        }
+                                        
+                                        if (!empty($mobileMargins)) {
+                                            echo "@media screen and (max-width: 767px) {\n";
+                                            echo "  #{$componentId} { " . implode('; ', $mobileMargins) . "; }\n";
+                                            echo "}\n";
+                                        }
+                                        if (!empty($mobilePaddings)) {
+                                            echo "@media screen and (max-width: 767px) {\n";
+                                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $mobilePaddings) . "; }\n";
+                                            echo "}\n";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    @endphp
 </style>
 </head>
 <body style="overflow: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
@@ -231,12 +478,18 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         @endforeach
     <div class="container my-5" id="rendered-page">
         <div class="row">
-            @foreach($state as $k =>  $data)
-                @php $type = $data['type'] ?? ''; @endphp
-                <div class="col-md-12">
-                    <div class="component mb-4" data-type="{{ $type }}">
-                        <div class="component-content">
-                            @switch($type)
+            @foreach($state as $index =>  $data)
+                @php 
+                    $type = $data['type'] ?? ''; 
+                    // Skip if this component is nested inside an inner-section
+                    $isNested = isset($data['isNested']) && $data['isNested'];
+                @endphp
+                
+                @if(!$isNested)
+                    <div class="col-md-12">
+                        <div class="component mb-4" data-type="{{ $type }}" id="component-{{ $index }}">
+                            <div class="component-content">
+                                @switch($type)
 
                                 @case('custom-banner')
 
@@ -1932,12 +2185,479 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                         });
                                     </script>
                                 @break
+
+                                @case('inner-section')
+                                    @php
+                                        $innerSectionData = $data['innerSectionData'] ?? [];
+                                        $nestedComponents = $data['nestedComponents'] ?? [];
+                                        $columns = $innerSectionData['columns'] ?? 2;
+                                        
+                                        // Calculate Bootstrap column classes
+                                        $bootstrapClass = '';
+                                        switch($columns) {
+                                            case 1: $bootstrapClass = 'col-12'; break;
+                                            case 2: $bootstrapClass = 'col-lg-6 col-md-6 col-sm-12'; break;
+                                            case 3: $bootstrapClass = 'col-lg-4 col-md-6 col-sm-12'; break;
+                                            case 4: $bootstrapClass = 'col-lg-3 col-md-6 col-sm-12'; break;
+                                            case 5: $bootstrapClass = 'col-lg-2 col-md-4 col-sm-6 col-12'; break;
+                                            case 6: $bootstrapClass = 'col-lg-2 col-md-4 col-sm-6 col-12'; break;
+                                            default: $bootstrapClass = 'col-lg-4 col-md-6 col-sm-12';
+                                        }
+                                    @endphp
+                                    
+                                    {{-- Clean structural container with Bootstrap grid - no styling --}}
+                                    <div class="inner-section-component">
+                                        <div class="row">
+                                            @for($i = 0; $i < $columns; $i++)
+                                                <div class="inner-column {{ $bootstrapClass }}">
+                                                    {{-- Render nested components for this column with their normal styling --}}
+                                                    @if(isset($nestedComponents[$i]) && is_array($nestedComponents[$i]))
+                                                        @foreach($nestedComponents[$i] as $nestedIndex => $nestedComponent)
+                                                            @if(isset($nestedComponent['type']))
+                                                                @php $nestedComponentId = "nested-{$i}-{$nestedIndex}"; @endphp
+                                                                {{-- Each component renders with its own styling like any other component --}}
+                                                                <div class="component mb-4" data-type="{{ $nestedComponent['type'] }}" id="{{ $nestedComponentId }}">
+                                                                    <div class="component-content">
+                                                                @switch($nestedComponent['type'])
+                                                                    @case('heading')
+                                                                        @php
+                                                                            $headingLevel = $nestedComponent['data']['level'] ?? 'h2';
+                                                                            $headingText = $nestedComponent['data']['html'] ?? 'Heading';
+                                                                            $headingStyle = '';
+                                                                            if(isset($nestedComponent['data']['style'])) {
+                                                                                foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                    $headingStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <{{ $headingLevel }} style="{{ $headingStyle }}">
+                                                                            {!! $headingText !!}
+                                                                        </{{ $headingLevel }}>
+                                                                    @break
+                                                                    
+                                                                    @case('text')
+                                                                        @php
+                                                                            $textContent = $nestedComponent['data']['html'] ?? 'Text content';
+                                                                            $textStyle = '';
+                                                                            if(isset($nestedComponent['data']['style'])) {
+                                                                                foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                    $textStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <div style="{{ $textStyle }}">
+                                                                            {!! $textContent !!}
+                                                                        </div>
+                                                                    @break
+                                                                    
+                                                                    @case('button')
+                                                                        @php
+                                                                            $buttonText = $nestedComponent['data']['text'] ?? 'Button';
+                                                                            $buttonHref = $nestedComponent['data']['href'] ?? '#';
+                                                                            $buttonTarget = $nestedComponent['data']['target'] ?? '_self';
+                                                                            $buttonStyle = '';
+                                                                            if(isset($nestedComponent['data']['style'])) {
+                                                                                foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                    $buttonStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <button 
+                                                                            class="btn btn-primary"
+                                                                            style="{{ $buttonStyle }}"
+                                                                            data-href="{{ $buttonHref }}"
+                                                                            data-target="{{ $buttonTarget }}"
+                                                                        >
+                                                                            {{ $buttonText }}
+                                                                        </button>
+                                                                    @break
+                                                                    
+                                                                    @case('image')
+                                                                        @php
+                                                                            // Use imageData structure like the main image component
+                                                                            $imageData = $nestedComponent['imageData'] ?? [];
+                                                                            $imageSrc = $imageData['src'] ?? '';
+                                                                            $imageAlt = $imageData['alt'] ?? 'Image';
+                                                                            $imageWidth = $imageData['width'] ?? '';
+                                                                            $imageHeight = $imageData['height'] ?? '';
+                                                                            $imageObjectFit = $imageData['objectFit'] ?? '';
+                                                                            $imageLink = $imageData['link'] ?? '';
+                                                                            $imageOpenInNewTab = $imageData['openInNewTab'] ?? false;
+                                                                            $displayMode = $imageData['displayMode'] ?? 'preview';
+                                                                            
+                                                                            $imageStyle = '';
+                                                                            if(isset($nestedComponent['style'])) {
+                                                                                foreach($nestedComponent['style'] as $key => $value) {
+                                                                                    if($value) $imageStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                            if($imageWidth) $imageStyle .= "width:{$imageWidth};";
+                                                                            if($imageHeight) $imageStyle .= "height:{$imageHeight};";
+                                                                            if($imageObjectFit) $imageStyle .= "object-fit:{$imageObjectFit};";
+                                                                            $imageStyle .= "border-radius:8px;cursor:pointer;transition:box-shadow .2s;";
+                                                                        @endphp
+                                                                        @if($imageSrc)
+                                                                            @if($displayMode === 'link' && $imageLink)
+                                                                                <a href="{{ $imageLink }}" @if($imageOpenInNewTab) target="_blank" @endif>
+                                                                                    <img 
+                                                                                        src="{{ $imageSrc }}" 
+                                                                                        alt="{{ $imageAlt }}" 
+                                                                                        style="{{ $imageStyle }}"
+                                                                                        data-img="{{ $imageSrc }}"
+                                                                                    >
+                                                                                </a>
+                                                                            @else
+                                                                                <a href="javascript:void(0);" class="image-link" style="display:inline-block;">
+                                                                                    <img 
+                                                                                        src="{{ $imageSrc }}" 
+                                                                                        alt="{{ $imageAlt }}" 
+                                                                                        class="img-preview"
+                                                                                        style="{{ $imageStyle }}"
+                                                                                        data-img="{{ $imageSrc }}"
+                                                                                    >
+                                                                                </a>
+                                                                            @endif
+                                                                        @endif
+                                                                    @break
+                                                                    
+                                                                    @case('section-title')
+                                                                        @php
+                                                                            $titleText = $nestedComponent['data']['text'] ?? 'Section Title';
+                                                                            $titleStyle = '';
+                                                                            if(isset($nestedComponent['data']['style'])) {
+                                                                                foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                    $titleStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <h3 style="{{ $titleStyle }}">
+                                                                            {{ $titleText }}
+                                                                        </h3>
+                                                                    @break
+                                                                    
+                                                                    @case('divider')
+                                                                        @php
+                                                                            $dividerStyle = '';
+                                                                            if(isset($nestedComponent['data']['style'])) {
+                                                                                foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                    $dividerStyle .= $key . ':' . $value . ';';
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <hr style="{{ $dividerStyle }}">
+                                                                    @break
+                                                                    
+                                                                    @default
+                                                                        {{-- Render any other component type with full styling --}}
+                                                                        <div class="component-wrapper">
+                                                                            @switch($nestedComponent['type'])
+                                                                                @case('site-banner')
+                                                                                    @php
+                                                                                        $bannerSrc = $nestedComponent['data']['src'] ?? '';
+                                                                                        $bannerAlt = $nestedComponent['data']['alt'] ?? 'Site Banner';
+                                                                                        $bannerStyle = '';
+                                                                                        if(isset($nestedComponent['data']['style'])) {
+                                                                                            foreach($nestedComponent['data']['style'] as $key => $value) {
+                                                                                                $bannerStyle .= $key . ':' . $value . ';';
+                                                                                            }
+                                                                                        }
+                                                                                    @endphp
+                                                                                    @if($bannerSrc)
+                                                                                        <div class="site-banner" style="{{ $bannerStyle }}">
+                                                                                            <img src="{{ $bannerSrc }}" alt="{{ $bannerAlt }}" class="img-fluid w-100">
+                                                                                        </div>
+                                                                                    @endif
+                                                                                @break
+                                                                                
+                                                                                @case('gallery')
+                                                                                    @php
+                                                                                        $gallery = $nestedComponent['data']['galleryData'] ?? [];
+                                                                                        $images = $gallery['images'] ?? [];
+                                                                                        $columns = $gallery['columns'] ?? 3;
+                                                                                        $wrapperStyle = $nestedComponent['data']['wrapperStyle'] ?? [];
+                                                                                        $wrapperStyleStr = '';
+                                                                                        foreach ($wrapperStyle as $k => $v) {
+                                                                                            if ($v) $wrapperStyleStr .= $k . ':' . $v . ';';
+                                                                                        }
+                                                                                    @endphp
+                                                                                    <div class="gallery-component mb-4" style="display:grid;grid-template-columns:repeat({{ $columns }},1fr);gap:16px;{{ $wrapperStyleStr }}">
+                                                                                        @foreach($images as $img)
+                                                                                            <div style="width:100%;overflow:hidden;border-radius:8px;">
+                                                                                                <img src="{{ $img['src'] ?? '' }}" alt="{{ $img['alt'] ?? 'Gallery Image' }}" class="img-fluid">
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                @break
+                                                                                
+                                                                                @default
+                                                                                    {{-- Default fallback --}}
+                                                                                    <div>{{ ucfirst($nestedComponent['type']) }} Component</div>
+                                                                            @endswitch
+                                                                        </div>
+                                                                @endswitch
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('heading')
+                                    @php
+                                        $headingLevel = 'h2'; // Default heading level
+                                        $headingText = $data['html'] ?? 'Heading';
+                                        $headingStyle = '';
+                                        if(isset($data['style'])) {
+                                            $styleArray = [];
+                                            foreach($data['style'] as $key => $value) {
+                                                $styleArray[] = $key . ':' . $value;
+                                            }
+                                            $headingStyle = implode(';', $styleArray);
+                                        }
+                                    @endphp
+                                    <{{ $headingLevel }} style="{{ $headingStyle }}">
+                                        {!! $headingText !!}
+                                    </{{ $headingLevel }}>
+                                @break
+
+                                @case('text')
+                                    @php
+                                        $textContent = $data['html'] ?? 'Text content';
+                                        $textStyle = '';
+                                        if(isset($data['style'])) {
+                                            $styleArray = [];
+                                            foreach($data['style'] as $key => $value) {
+                                                $styleArray[] = $key . ':' . $value;
+                                            }
+                                            $textStyle = implode(';', $styleArray);
+                                        }
+                                    @endphp
+                                    <p style="{{ $textStyle }}">
+                                        {!! $textContent !!}
+                                    </p>
+                                @break
+
+                                @case('site-banner')
+                                    @php
+                                        $bannerSrc = $data['src'] ?? '';
+                                        $bannerAlt = $data['alt'] ?? 'Site Banner';
+                                        $bannerStyle = '';
+                                        if(isset($data['style'])) {
+                                            $styleArray = [];
+                                            foreach($data['style'] as $key => $value) {
+                                                $styleArray[] = $key . ':' . $value;
+                                            }
+                                            $bannerStyle = implode(';', $styleArray);
+                                        }
+                                    @endphp
+                                    @if($bannerSrc)
+                                        <div class="site-banner" style="{{ $bannerStyle }}">
+                                            <img src="{{ $bannerSrc }}" alt="{{ $bannerAlt }}" class="img-fluid w-100">
+                                        </div>
+                                    @endif
+                                @break
+
+                                @case('visitor-upload')
+                                    <div class="visitor-upload-component">
+                                        <h4>Upload Your Photos</h4>
+                                        <form method="POST" enctype="multipart/form-data" action="/upload-visitor-photo">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <input type="file" class="form-control" name="visitor_photo" accept="image/*" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Upload Photo</button>
+                                        </form>
+                                    </div>
+                                @break
+
+                                @case('display-assets')
+                                    <div class="display-assets-component">
+                                        <h4>Assets & Downloads</h4>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body text-center">
+                                                        <i class="fas fa-file-pdf fa-3x text-danger mb-2"></i>
+                                                        <h5>Document 1</h5>
+                                                        <a href="#" class="btn btn-outline-primary">Download</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body text-center">
+                                                        <i class="fas fa-file-image fa-3x text-success mb-2"></i>
+                                                        <h5>Image 1</h5>
+                                                        <a href="#" class="btn btn-outline-primary">Download</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body text-center">
+                                                        <i class="fas fa-file-video fa-3x text-info mb-2"></i>
+                                                        <h5>Video 1</h5>
+                                                        <a href="#" class="btn btn-outline-primary">Download</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('cards')
+                                    <div class="cards-component">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="card mb-3">
+                                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Card Image">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Card Title 1</h5>
+                                                        <p class="card-text">Some quick example text to build on the card title.</p>
+                                                        <a href="#" class="btn btn-primary">Learn More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card mb-3">
+                                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Card Image">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Card Title 2</h5>
+                                                        <p class="card-text">Some quick example text to build on the card title.</p>
+                                                        <a href="#" class="btn btn-primary">Learn More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card mb-3">
+                                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Card Image">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Card Title 3</h5>
+                                                        <p class="card-text">Some quick example text to build on the card title.</p>
+                                                        <a href="#" class="btn btn-primary">Learn More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('donation-slider')
+                                    <div class="donation-slider-component">
+                                        <h4>Recent Donations</h4>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <p class="text-muted">Donation tracking slider would be displayed here.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('updates')
+                                    <div class="updates-component">
+                                        <h4>Latest Updates</h4>
+                                        <div class="list-group">
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h5 class="mb-1">Update Title 1</h5>
+                                                    <small>3 days ago</small>
+                                                </div>
+                                                <p class="mb-1">Some placeholder content for the update.</p>
+                                                <small>Posted by Admin</small>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h5 class="mb-1">Update Title 2</h5>
+                                                    <small>1 week ago</small>
+                                                </div>
+                                                <p class="mb-1">Some placeholder content for another update.</p>
+                                                <small>Posted by Admin</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('facebook-comments')
+                                    <div class="facebook-comments-component">
+                                        <h4>Comments</h4>
+                                        <div class="fb-comments" data-href="{{ url()->current() }}" data-width="100%" data-numposts="5"></div>
+                                        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0"></script>
+                                    </div>
+                                @break
+
+                                @case('sponsorships')
+                                    <div class="sponsorships-component">
+                                        <h4>Our Sponsors</h4>
+                                        <div class="row">
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="sponsor-logo text-center">
+                                                    <img src="https://via.placeholder.com/150x100" class="img-fluid" alt="Sponsor 1">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="sponsor-logo text-center">
+                                                    <img src="https://via.placeholder.com/150x100" class="img-fluid" alt="Sponsor 2">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="sponsor-logo text-center">
+                                                    <img src="https://via.placeholder.com/150x100" class="img-fluid" alt="Sponsor 3">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-6 mb-3">
+                                                <div class="sponsor-logo text-center">
+                                                    <img src="https://via.placeholder.com/150x100" class="img-fluid" alt="Sponsor 4">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
+                                @case('contact-us')
+                                    <div class="contact-us-component">
+                                        <h4>Contact Us</h4>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="contact-info">
+                                                    <h5>Get in Touch</h5>
+                                                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                                                    <p><i class="fas fa-envelope"></i> contact@example.com</p>
+                                                    <p><i class="fas fa-map-marker-alt"></i> 123 Main St, City, State 12345</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <form>
+                                                    <div class="mb-3">
+                                                        <input type="text" class="form-control" placeholder="Your Name" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <input type="email" class="form-control" placeholder="Your Email" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @break
+
                                 @default
                                     {!! $data['html'] ?? '' !!}
                             @endswitch
                         </div>
                     </div>
                 </div>
+                @endif
             @endforeach
         </div>
     </div>
@@ -2582,6 +3302,135 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
     @endforeach
+});
+
+// Inner Section and Component Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize responsive behavior for inner sections
+    initializeInnerSections();
+    
+    // Handle image clicks for galleries
+    initializeImageGalleries();
+    
+    // Handle button clicks
+    initializeButtons();
+});
+
+function initializeInnerSections() {
+    const innerSections = document.querySelectorAll('.inner-section-component');
+    
+    innerSections.forEach(section => {
+        // Add hover effects for columns
+        const columns = section.querySelectorAll('.inner-column');
+        columns.forEach(column => {
+            const dropzone = column.querySelector('.column-dropzone');
+            const nestedComponents = column.querySelectorAll('.nested-component');
+            
+            // Hide dropzone if column has components
+            if (nestedComponents.length > 0 && dropzone) {
+                dropzone.style.display = 'none';
+            }
+            
+            // Add interactive hover effects
+            column.addEventListener('mouseenter', function() {
+                if (nestedComponents.length === 0 && dropzone) {
+                    dropzone.style.opacity = '1';
+                }
+            });
+            
+            column.addEventListener('mouseleave', function() {
+                if (nestedComponents.length === 0 && dropzone) {
+                    dropzone.style.opacity = '0.7';
+                }
+            });
+        });
+        
+        // Add hover effects for nested components
+        const nestedComponents = section.querySelectorAll('.nested-component');
+        nestedComponents.forEach(component => {
+            component.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-1px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            });
+            
+            component.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            });
+        });
+    });
+}
+
+function initializeImageGalleries() {
+    // Handle images in nested components and regular galleries
+    const galleryImages = document.querySelectorAll('.nested-component img, .gallery img, .img-preview, .gallery-img-preview');
+    
+    galleryImages.forEach(img => {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', function() {
+            const src = this.src || this.getAttribute('data-img');
+            const alt = this.alt || 'Image Preview';
+            openImageModal(src, alt);
+        });
+    });
+}
+
+function initializeButtons() {
+    // Handle buttons in nested components and regular buttons
+    const componentButtons = document.querySelectorAll('.nested-component button, .component button');
+    
+    componentButtons.forEach(button => {
+        if (button.dataset.href) {
+            button.style.cursor = 'pointer';
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.dataset.href;
+                const target = this.dataset.target || '_self';
+                
+                if (url) {
+                    if (target === '_blank') {
+                        window.open(url, '_blank');
+                    } else {
+                        window.location.href = url;
+                    }
+                }
+            });
+        }
+    });
+}
+
+function openImageModal(src, alt) {
+    const modal = document.getElementById('galleryImageModal');
+    if (modal && src) {
+        const modalImg = document.getElementById('galleryImageModalImg');
+        if (modalImg) {
+            modalImg.src = src;
+            modalImg.alt = alt || 'Image Preview';
+        }
+        
+        // Use Bootstrap modal if available
+        if (typeof bootstrap !== 'undefined') {
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        } else {
+            modal.style.display = 'block';
+        }
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('galleryImageModal');
+    if (e.target === modal) {
+        if (typeof bootstrap !== 'undefined') {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) {
+                bsModal.hide();
+            }
+        } else {
+            modal.style.display = 'none';
+        }
+    }
 });
 </script>
 

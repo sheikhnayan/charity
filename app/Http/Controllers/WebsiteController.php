@@ -90,6 +90,7 @@ class WebsiteController extends Controller
             $header->save();
 
             $footer = new Footer;
+            $footer->user_id = $user->id;
             $footer->status = 0;
             $footer->color = '#000';
             $footer->privacy = 1;

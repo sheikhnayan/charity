@@ -12,6 +12,11 @@ class Page extends Model
         'website_id',
         'name',
         'state',
+        'status',
+    ];
+
+    protected $casts = [
+        'state' => 'array',
     ];
 
     public function website()
