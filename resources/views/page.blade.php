@@ -21,36 +21,34 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <style>
+    /* Base Styles for Components */
     #studentTable {
-        background-color: #fff !important; /* Set the table background to white */
-        border: none !important; /* Remove the table border */
+        background-color: #fff !important;
+        border: none !important;
     }
 
     #studentTable th, #studentTable td {
-        background-color: #fff !important; /* Set the background of table cells to white */
-        border: none !important; /* Remove borders from table cells */
+        background-color: #fff !important;
+        border: none !important;
     }
 
     #studentTable tbody tr {
-        background-color: #fff !important; /* Set the background of table rows to white */
+        background-color: #fff !important;
     }
 
-    #studentTable_filter {
-        display: none;
-    }
-
-    #studentTable_length {
+    #studentTable_filter, #studentTable_length {
         display: none;
     }
 
     #studentTable thead {
-        display: none; /* Hide the table header */
+        display: none;
     }
 
     .non-float{
         margin-bottom: -111px;
     }
 
+    /* Auction Components Styles */
     .c-node-ap__auction-results{
         margin-right: 36px;
         margin-bottom: 24px;
@@ -142,269 +140,210 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border: unset;
     }
 
-    /* Inner Section Component Responsive Styles */
-    .inner-section-component {
-        min-height: 60px;
+    /* Universal Inner Section Wrapper - Clean & Invisible */
+    .page-inner-section {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-sizing: border-box;
+    }
+
+    .page-inner-section .inner-column {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    /* Component Styling - All components get consistent spacing */
+    .page-component {
+        width: 100%;
+        box-sizing: border-box;
         position: relative;
     }
 
-    .inner-section-component .inner-column {
-        /* Remove transitions and hover effects */
+    /* Responsive Grid System for Inner Sections */
+    .inner-section-grid {
+        display: grid;
+        width: 100%;
+        gap: 0;
+        grid-template-columns: 1fr;
     }
 
-    .inner-section-component .nested-component {
-        background: rgba(255,255,255,0.9);
-        border-radius: 4px;
-        padding: 10px;
-        /* Remove transitions and hover effects */
-        position: relative;
+    .inner-section-grid.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 
-    .inner-section-component .column-dropzone {
-        opacity: 0.7;
-        /* Remove transitions */
+    .inner-section-grid.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
     }
 
-    .inner-section-component .inner-column:hover .column-dropzone {
-        opacity: 1;
+    .inner-section-grid.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
     }
 
-    .inner-section-component .section-label {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-weight: 500;
+    .inner-section-grid.cols-5 {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
     }
 
-    /* Responsive adjustments */
+    .inner-section-grid.cols-6 {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+    }
+
+    /* Responsive breakpoints for grid columns */
+    @media (max-width: 1200px) {
+        .inner-section-grid.cols-6 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .inner-section-grid.cols-5 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .inner-section-grid.cols-6,
+        .inner-section-grid.cols-5,
+        .inner-section-grid.cols-4 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .inner-section-grid.cols-3 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
     @media (max-width: 768px) {
-        .inner-section-component {
-            padding: 15px !important;
-        }
-        
-        .inner-section-component .nested-component {
-            margin-bottom: 10px !important;
-        }
-        
-        .inner-section-component .inner-column {
-            margin-bottom: 10px !important;
+        .inner-section-grid.cols-6,
+        .inner-section-grid.cols-5,
+        .inner-section-grid.cols-4,
+        .inner-section-grid.cols-3,
+        .inner-section-grid.cols-2 {
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
     }
 
     @media (max-width: 576px) {
-        .inner-section-component {
-            padding: 10px !important;
-            margin: 5px 0 !important;
-        }
-        
-        .inner-section-component .section-label {
-            font-size: 10px !important;
+        .inner-section-grid {
+            gap: 10px;
         }
     }
 
-    /* Responsive Spacing Styles */
     @php
-        // Generate responsive CSS for all components
-        if (isset($state) && is_array($state)) {
+        // Generate comprehensive responsive CSS for all components and nested components
+        function generateResponsiveStyles($state) {
+            $css = '';
+            
+            if (!is_array($state)) return $css;
+            
             foreach ($state as $index => $component) {
+                // Handle main components (including auto-wrapped ones)
                 if (isset($component['responsiveStyles'])) {
                     $componentId = "component-{$index}";
-                    $styles = $component['responsiveStyles'];
-                    
-                    echo "/* Component {$index} responsive styles */\n";
-                    
-                    // Desktop styles (default)
-                    if (isset($styles['desktop']) && is_array($styles['desktop'])) {
-                        $desktopMargins = [];
-                        $desktopPaddings = [];
-                        
-                        foreach ($styles['desktop'] as $prop => $value) {
-                            if (!empty($value) && trim($value) !== '') {
-                                if (strpos($prop, 'margin-') === 0) {
-                                    $desktopMargins[] = "{$prop}: {$value}";
-                                } elseif (strpos($prop, 'padding-') === 0) {
-                                    $desktopPaddings[] = "{$prop}: {$value}";
+                    $css .= generateComponentResponsiveCSS($componentId, $component['responsiveStyles']);
+                }
+                
+                // Handle auto-wrapped components
+                if (isset($component['type']) && $component['type'] === 'inner-section') {
+                    // Check for nested components in auto-wrapped inner-sections
+                    if (isset($component['nestedComponents']) && is_array($component['nestedComponents'])) {
+                        foreach ($component['nestedComponents'] as $columnIndex => $columnComponents) {
+                            if (is_array($columnComponents)) {
+                                foreach ($columnComponents as $nestedIndex => $nestedComponent) {
+                                    if (isset($nestedComponent['responsiveStyles'])) {
+                                        $nestedId = "nested-{$columnIndex}-{$nestedIndex}";
+                                        $css .= generateComponentResponsiveCSS($nestedId, $nestedComponent['responsiveStyles']);
+                                    }
                                 }
                             }
-                        }
-                        
-                        if (!empty($desktopMargins)) {
-                            echo "#{$componentId} { " . implode('; ', $desktopMargins) . "; }\n";
-                        }
-                        if (!empty($desktopPaddings)) {
-                            echo "#{$componentId} > *:not(.component-controls) { " . implode('; ', $desktopPaddings) . "; }\n";
                         }
                     }
-                    
-                    // Tablet styles
-                    if (isset($styles['tablet']) && is_array($styles['tablet'])) {
-                        $tabletMargins = [];
-                        $tabletPaddings = [];
-                        
-                        foreach ($styles['tablet'] as $prop => $value) {
-                            if (!empty($value) && trim($value) !== '') {
-                                if (strpos($prop, 'margin-') === 0) {
-                                    $tabletMargins[] = "{$prop}: {$value} !important";
-                                } elseif (strpos($prop, 'padding-') === 0) {
-                                    $tabletPaddings[] = "{$prop}: {$value} !important";
-                                }
-                            }
-                        }
-                        
-                        if (!empty($tabletMargins)) {
-                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
-                            echo "  #{$componentId} { " . implode('; ', $tabletMargins) . "; }\n";
-                            echo "}\n";
-                        }
-                        if (!empty($tabletPaddings)) {
-                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
-                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $tabletPaddings) . "; }\n";
-                            echo "}\n";
-                        }
-                    }
-                    
-                    // Mobile styles
-                    if (isset($styles['mobile']) && is_array($styles['mobile'])) {
-                        $mobileMargins = [];
-                        $mobilePaddings = [];
-                        
-                        foreach ($styles['mobile'] as $prop => $value) {
-                            if (!empty($value) && trim($value) !== '') {
-                                if (strpos($prop, 'margin-') === 0) {
-                                    $mobileMargins[] = "{$prop}: {$value} !important";
-                                } elseif (strpos($prop, 'padding-') === 0) {
-                                    $mobilePaddings[] = "{$prop}: {$value} !important";
-                                }
-                            }
-                        }
-                        
-                        if (!empty($mobileMargins)) {
-                            echo "@media screen and (max-width: 767px) {\n";
-                            echo "  #{$componentId} { " . implode('; ', $mobileMargins) . "; }\n";
-                            echo "}\n";
-                        }
-                        if (!empty($mobilePaddings)) {
-                            echo "@media screen and (max-width: 767px) {\n";
-                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $mobilePaddings) . "; }\n";
-                            echo "}\n";
-                        }
+                } else {
+                    // Handle legacy components that might have been auto-wrapped
+                    if (isset($component['responsiveStyles'])) {
+                        $autoWrappedId = "auto-wrapped-{$index}";
+                        $css .= generateComponentResponsiveCSS($autoWrappedId, $component['responsiveStyles']);
                     }
                 }
             }
+            
+            return $css;
         }
         
-        // Generate responsive CSS for nested components inside inner-sections
-        if (isset($state) && is_array($state)) {
-            foreach ($state as $index => $component) {
-                if (isset($component['nestedComponents']) && is_array($component['nestedComponents'])) {
-                    foreach ($component['nestedComponents'] as $columnIndex => $columnComponents) {
-                        if (is_array($columnComponents)) {
-                            foreach ($columnComponents as $nestedIndex => $nestedComponent) {
-                                if (isset($nestedComponent['responsiveStyles'])) {
-                                    $componentId = "nested-{$columnIndex}-{$nestedIndex}";
-                                    $styles = $nestedComponent['responsiveStyles'];
-                                    
-                                    echo "/* Nested Component {$componentId} responsive styles */\n";
-                                    
-                                    // Desktop styles (default)
-                                    if (isset($styles['desktop']) && is_array($styles['desktop'])) {
-                                        $desktopMargins = [];
-                                        $desktopPaddings = [];
-                                        
-                                        foreach ($styles['desktop'] as $prop => $value) {
-                                            if (!empty($value) && trim($value) !== '') {
-                                                if (strpos($prop, 'margin-') === 0) {
-                                                    $desktopMargins[] = "{$prop}: {$value}";
-                                                } elseif (strpos($prop, 'padding-') === 0) {
-                                                    $desktopPaddings[] = "{$prop}: {$value}";
-                                                }
-                                            }
-                                        }
-                                        
-                                        if (!empty($desktopMargins)) {
-                                            echo "#{$componentId} { " . implode('; ', $desktopMargins) . "; }\n";
-                                        }
-                                        if (!empty($desktopPaddings)) {
-                                            echo "#{$componentId} > *:not(.component-controls) { " . implode('; ', $desktopPaddings) . "; }\n";
-                                        }
-                                    }
-                                    
-                                    // Tablet styles
-                                    if (isset($styles['tablet']) && is_array($styles['tablet'])) {
-                                        $tabletMargins = [];
-                                        $tabletPaddings = [];
-                                        
-                                        foreach ($styles['tablet'] as $prop => $value) {
-                                            if (!empty($value) && trim($value) !== '') {
-                                                if (strpos($prop, 'margin-') === 0) {
-                                                    $tabletMargins[] = "{$prop}: {$value} !important";
-                                                } elseif (strpos($prop, 'padding-') === 0) {
-                                                    $tabletPaddings[] = "{$prop}: {$value} !important";
-                                                }
-                                            }
-                                        }
-                                        
-                                        if (!empty($tabletMargins)) {
-                                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
-                                            echo "  #{$componentId} { " . implode('; ', $tabletMargins) . "; }\n";
-                                            echo "}\n";
-                                        }
-                                        if (!empty($tabletPaddings)) {
-                                            echo "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
-                                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $tabletPaddings) . "; }\n";
-                                            echo "}\n";
-                                        }
-                                    }
-                                    
-                                    // Mobile styles
-                                    if (isset($styles['mobile']) && is_array($styles['mobile'])) {
-                                        $mobileMargins = [];
-                                        $mobilePaddings = [];
-                                        
-                                        foreach ($styles['mobile'] as $prop => $value) {
-                                            if (!empty($value) && trim($value) !== '') {
-                                                if (strpos($prop, 'margin-') === 0) {
-                                                    $mobileMargins[] = "{$prop}: {$value} !important";
-                                                } elseif (strpos($prop, 'padding-') === 0) {
-                                                    $mobilePaddings[] = "{$prop}: {$value} !important";
-                                                }
-                                            }
-                                        }
-                                        
-                                        if (!empty($mobileMargins)) {
-                                            echo "@media screen and (max-width: 767px) {\n";
-                                            echo "  #{$componentId} { " . implode('; ', $mobileMargins) . "; }\n";
-                                            echo "}\n";
-                                        }
-                                        if (!empty($mobilePaddings)) {
-                                            echo "@media screen and (max-width: 767px) {\n";
-                                            echo "  #{$componentId} > *:not(.component-controls) { " . implode('; ', $mobilePaddings) . "; }\n";
-                                            echo "}\n";
-                                        }
-                                    }
-                                }
-                            }
-                        }
+        function generateComponentResponsiveCSS($componentId, $styles) {
+            $css = "/* Component {$componentId} responsive styles */\n";
+            
+            // Desktop styles (default - 992px and up)
+            if (isset($styles['desktop']) && is_array($styles['desktop'])) {
+                $desktopStyles = [];
+                foreach ($styles['desktop'] as $prop => $value) {
+                    if (!empty($value) && trim($value) !== '') {
+                        $desktopStyles[] = "{$prop}: {$value}";
                     }
                 }
+                if (!empty($desktopStyles)) {
+                    $css .= "#{$componentId} { " . implode('; ', $desktopStyles) . "; }\n";
+                }
             }
+            
+            // Tablet styles (768px to 991px)
+            if (isset($styles['tablet']) && is_array($styles['tablet'])) {
+                $tabletStyles = [];
+                foreach ($styles['tablet'] as $prop => $value) {
+                    if (!empty($value) && trim($value) !== '') {
+                        $tabletStyles[] = "{$prop}: {$value} !important";
+                    }
+                }
+                if (!empty($tabletStyles)) {
+                    $css .= "@media screen and (max-width: 991px) and (min-width: 768px) {\n";
+                    $css .= "  #{$componentId} { " . implode('; ', $tabletStyles) . "; }\n";
+                    $css .= "}\n";
+                }
+            }
+            
+            // Mobile styles (up to 767px)
+            if (isset($styles['mobile']) && is_array($styles['mobile'])) {
+                $mobileStyles = [];
+                foreach ($styles['mobile'] as $prop => $value) {
+                    if (!empty($value) && trim($value) !== '') {
+                        $mobileStyles[] = "{$prop}: {$value} !important";
+                    }
+                }
+                if (!empty($mobileStyles)) {
+                    $css .= "@media screen and (max-width: 767px) {\n";
+                    $css .= "  #{$componentId} { " . implode('; ', $mobileStyles) . "; }\n";
+                    $css .= "}\n";
+                }
+            }
+            
+            return $css;
         }
+        
+        echo generateResponsiveStyles($state);
     @endphp
 </style>
 </head>
-<body style="overflow: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
+<body style="overflow-x: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
     @php
         $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = \App\Models\Website::where('domain', $doamin)->first();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $check = \App\Models\Website::where('domain', $domain)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
 
+        $header = \App\Models\Header::where('website_id', $check->id)->first();
+        $footer = \App\Models\Footer::where('website_id', $check->id)->first();
     @endphp
-    @if ($header->status == 1)
+    
+    @if ($header && $header->status == 1)
         @include('layouts.nav')
     @endif
-    {{-- @php
-        dd($state);
-    @endphp --}}
+    
     <main style="margin-top: 6.9rem;">
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
@@ -2672,7 +2611,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     </div>
   </div>
 </div>
-
+@if ($footer)
 @if ($footer->status == 1)
 <footer class="standard-client-footer text-white bg-primary" data-footer="" style="
 background-color: {{ $footer->background }} !important;
@@ -2801,7 +2740,9 @@ background-color: {{ $footer->background }} !important;
         </div>
     @endif
 </footer>
+@endif 
 @endif
+
 
 </body>
 

@@ -35,10 +35,10 @@ class FrontendController extends Controller
         $data = Page::where('user_id', $user_id)->where('default', 1)->first();
 
         if($setting->site_status == 1){
-            return view('page', compact('setting', 'header', 'data', 'check','footer'));
+            return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
         }else{
             $data = null;
-            return view('page', compact('setting', 'header', 'data', 'check','footer'));
+            return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
         }
     }
 
@@ -277,6 +277,6 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = footer::where('user_id', $user_id)->first();
 
-        return view('page', compact('setting', 'header', 'data', 'check','footer'));
+        return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
     }
 }

@@ -1346,6 +1346,7 @@ button a:hover {
                 {{-- <div class="component-item" draggable="true" data-type="facebook-comments">Facebook Comments</div> --}}
                 <div class="component-item" draggable="true" data-type="sponsorships"><i class="fas fa-handshake me-2"></i>Sponsorships</div>
                 <div class="component-item" draggable="true" data-type="site-goal"><i class="fas fa-thermometer-half me-2"></i>Site Goal</div>
+                <div class="component-item" draggable="true" data-type="invest-cta"><i class="fas fa-dollar-sign me-2"></i>Investment CTA</div>
                 <div class="component-item" draggable="true" data-type="image"><i class="fas fa-image me-2"></i>Image</div>
                 </div>
             </div>
@@ -1651,10 +1652,50 @@ button a:hover {
       if (dropzone) {
         dropzone.classList.remove('dragover');
         const type = e.dataTransfer.getData('type');
-        const component = createComponent(type);
+        
+        let componentToAdd;
+        
+        // Check if this is an inner-section component
+        if (type === 'inner-section') {
+          // Create inner-section normally
+          componentToAdd = createComponent(type);
+        } else {
+          // For any other component, create an inner-section wrapper with 1 column
+          // and place the component inside it
+          const innerSection = createComponent('inner-section');
+          const innerContent = getContentElement(innerSection);
+          
+          // Set to 1 column
+          innerContent.updateColumns(1);
+          innerContent._innerSectionData.columns = 1;
+          
+          // Update the label to indicate it's auto-created
+          const sectionLabel = innerContent.querySelector('.section-label');
+          if (sectionLabel) {
+            sectionLabel.textContent = 'Auto Section (1 Column)';
+            sectionLabel.style.display = 'none'; // Hide label for auto sections
+          }
+          
+          // Create the actual component
+          const actualComponent = createComponent(type);
+          
+          // Add the component to the first (and only) column
+          const firstColumn = innerContent.querySelector('.inner-column');
+          if (firstColumn) {
+            firstColumn.appendChild(actualComponent);
+            
+            // Hide the dropzone text
+            const columnDropzone = firstColumn.querySelector('.column-dropzone');
+            if (columnDropzone) {
+              columnDropzone.style.display = 'none';
+            }
+          }
+          
+          componentToAdd = innerSection;
+        }
 
-        // Insert the component before the dropzone
-        dropzone.parentNode.insertBefore(component, dropzone);
+        // Insert the component (either inner-section or wrapped component) before the dropzone
+        dropzone.parentNode.insertBefore(componentToAdd, dropzone);
 
         // Create a new dropzone after the component
         const newDropzone = createDropzone();
@@ -1666,9 +1707,20 @@ button a:hover {
           dropzone.remove();
         }
 
-        // Select the new component after a brief delay to ensure DOM is updated
+        // Select the appropriate component
+        let componentToSelect;
+        if (type === 'inner-section') {
+          componentToSelect = componentToAdd;
+        } else {
+          // Select the actual component inside the auto-created inner-section
+          componentToSelect = componentToAdd.querySelector('.inner-column .component');
+        }
+
+        // Select the component after a brief delay to ensure DOM is updated
         setTimeout(() => {
-          selectComponent(component);
+          if (componentToSelect) {
+            selectComponent(componentToSelect);
+          }
           // Update structure panel when a new component is added
           updateStructurePanel();
         }, 10);
@@ -1976,6 +2028,37 @@ break;
             wrapper.style.textAlign = 'center';
 
             content = wrapper;
+        break;
+
+        case 'invest-cta':
+            content = document.createElement('div');
+            content.innerHTML = `
+                <div class="invest-cta-wrapper" style="background-color: transparent; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0 auto;">
+                    <div class="invest-cta-button-wrap">
+                        <a href="#" 
+                           target="_self" 
+                           class="invest-cta-button"
+                           style="display: inline-block; background-color: #2e7d3e; color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 4px; font-size: 14px; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0;"
+                           aria-label="INVEST NOW">
+                            INVEST NOW
+                        </a>
+                    </div>
+                    
+                    <div class="investment-info-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 20px; flex: 1;">
+                        <div class="investment-info-item" style="text-align: center; flex: 1;">
+                            <div class="investment-value" style="color: #333333; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">$2.13</div>
+                            <div class="investment-label" style="color: #666666; font-size: 14px; font-weight: 400; line-height: 1.2;">Share Price</div>
+                        </div>
+                        
+                        <div class="investment-divider" style="width: 1px; height: 40px; background-color: #e0e0e0; flex-shrink: 0;"></div>
+                        
+                        <div class="investment-info-item" style="text-align: center; flex: 1;">
+                            <div class="investment-value" style="color: #333333; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">$1001.10</div>
+                            <div class="investment-label" style="color: #666666; font-size: 14px; font-weight: 400; line-height: 1.2;">Min. Investment</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         break;
 
         case 'auction-list':
@@ -3370,6 +3453,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             'sponsorships': { icon: 'fa-handshake', name: 'Sponsorships' },
             'contact-us': { icon: 'fa-phone', name: 'Contact Us' },
             'site-goal': { icon: 'fa-thermometer-half', name: 'Site Goal' },
+            'invest-cta': { icon: 'fa-dollar-sign', name: 'Investment CTA' },
             'text-images': { icon: 'fa-align-left', name: 'Text & Images' }
         };
         
@@ -4078,6 +4162,76 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                 `;
             break;
+
+            case 'invest-cta':
+                const investCtaData = content._investCtaData || {
+                    buttonText: 'INVEST NOW',
+                    buttonUrl: '#',
+                    buttonTarget: '_self',
+                    leftValue: '$2.13',
+                    leftLabel: 'Share Price',
+                    rightValue: '$1001.10',
+                    rightLabel: 'Min. Investment',
+                    buttonBgColor: '#2e7d3e',
+                    buttonTextColor: '#ffffff',
+                    valueColor: '#333333',
+                    labelColor: '#666666',
+                    dividerColor: '#e0e0e0'
+                };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" value="${investCtaData.buttonText}" oninput="updateInvestCtaField(this.value, 'buttonText')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button URL</label>
+                        <input type="text" value="${investCtaData.buttonUrl}" oninput="updateInvestCtaField(this.value, 'buttonUrl')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Target</label>
+                        <select oninput="updateInvestCtaField(this.value, 'buttonTarget')">
+                            <option value="_self" ${investCtaData.buttonTarget === '_self' ? 'selected' : ''}>Same Window</option>
+                            <option value="_blank" ${investCtaData.buttonTarget === '_blank' ? 'selected' : ''}>New Window</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Left Value</label>
+                        <input type="text" value="${investCtaData.leftValue}" oninput="updateInvestCtaField(this.value, 'leftValue')">
+                    </div>
+                    <div class="form-group">
+                        <label>Left Label</label>
+                        <input type="text" value="${investCtaData.leftLabel}" oninput="updateInvestCtaField(this.value, 'leftLabel')">
+                    </div>
+                    <div class="form-group">
+                        <label>Right Value</label>
+                        <input type="text" value="${investCtaData.rightValue}" oninput="updateInvestCtaField(this.value, 'rightValue')">
+                    </div>
+                    <div class="form-group">
+                        <label>Right Label</label>
+                        <input type="text" value="${investCtaData.rightLabel}" oninput="updateInvestCtaField(this.value, 'rightLabel')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Background Color</label>
+                        <input type="color" value="${investCtaData.buttonBgColor}" oninput="updateInvestCtaField(this.value, 'buttonBgColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <input type="color" value="${investCtaData.buttonTextColor}" oninput="updateInvestCtaField(this.value, 'buttonTextColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Value Text Color</label>
+                        <input type="color" value="${investCtaData.valueColor}" oninput="updateInvestCtaField(this.value, 'valueColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Label Text Color</label>
+                        <input type="color" value="${investCtaData.labelColor}" oninput="updateInvestCtaField(this.value, 'labelColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Divider Color</label>
+                        <input type="color" value="${investCtaData.dividerColor}" oninput="updateInvestCtaField(this.value, 'dividerColor')">
+                    </div>
+                `;
+            break;
         }
 
         // Common styling controls
@@ -4714,6 +4868,63 @@ function updateImageField(value, field) {
     content._imageData[field] = value;
     content.renderImage();
     updatePropertyPanel();
+}
+
+function updateInvestCtaField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize invest CTA data if it doesn't exist
+    if (!content._investCtaData) {
+        content._investCtaData = {
+            buttonText: 'INVEST NOW',
+            buttonUrl: '#',
+            buttonTarget: '_self',
+            leftValue: '$2.13',
+            leftLabel: 'Share Price',
+            rightValue: '$1001.10',
+            rightLabel: 'Min. Investment',
+            buttonBgColor: '#2e7d3e',
+            buttonTextColor: '#ffffff',
+            valueColor: '#333333',
+            labelColor: '#666666',
+            dividerColor: '#e0e0e0'
+        };
+    }
+    
+    // Update the field
+    content._investCtaData[field] = value;
+    
+    // Re-render the component
+    const wrapper = content.querySelector('.invest-cta-wrapper');
+    if (wrapper) {
+        const d = content._investCtaData;
+        wrapper.innerHTML = `
+            <div class="invest-cta-button-wrap">
+                <a href="${d.buttonUrl}" 
+                   target="${d.buttonTarget}" 
+                   class="invest-cta-button"
+                   style="display: inline-block; background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; text-decoration: none; padding: 15px 30px; border-radius: 4px; font-size: 14px; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0;"
+                   aria-label="${d.buttonText}">
+                    ${d.buttonText}
+                </a>
+            </div>
+            
+            <div class="investment-info-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 20px; flex: 1;">
+                <div class="investment-info-item" style="text-align: center; flex: 1;">
+                    <div class="investment-value" style="color: ${d.valueColor}; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">${d.leftValue}</div>
+                    <div class="investment-label" style="color: ${d.labelColor}; font-size: 14px; font-weight: 400; line-height: 1.2;">${d.leftLabel}</div>
+                </div>
+                
+                <div class="investment-divider" style="width: 1px; height: 40px; background-color: ${d.dividerColor}; flex-shrink: 0;"></div>
+                
+                <div class="investment-info-item" style="text-align: center; flex: 1;">
+                    <div class="investment-value" style="color: ${d.valueColor}; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">${d.rightValue}</div>
+                    <div class="investment-label" style="color: ${d.labelColor}; font-size: 14px; font-weight: 400; line-height: 1.2;">${d.rightLabel}</div>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function updateInnerSectionField(value, field) {
@@ -6345,6 +6556,10 @@ function applyResponsiveStyles() {
                 data.imageData = content._imageData;
                 break;
 
+            case 'invest-cta':
+                data.investCtaData = content._investCtaData;
+                break;
+
             case 'full-width-text-image':
                 data.fwtiData = content._fwtiData;
                 break;
@@ -6508,11 +6723,264 @@ function applyResponsiveStyles() {
       page.innerHTML = '';
       state.forEach((data, idx) => {
         console.log(`Loading component ${idx}:`, data.type, 'responsiveStyles:', data.responsiveStyles);
-        const component = createComponent(data.type);
-        component.id = `component-${idx}`;
+        
+        let component;
+        
+        // Check if this is a legacy component (not wrapped in inner-section)
+        if (data.type !== 'inner-section') {
+          // Create an auto inner-section wrapper for legacy components
+          component = createComponent('inner-section');
+          const innerContent = getContentElement(component);
+          
+          // Set to 1 column for auto-section
+          innerContent.updateColumns(1);
+          innerContent._innerSectionData.columns = 1;
+          
+          // Update the label to indicate it's auto-created and hide it
+          const sectionLabel = innerContent.querySelector('.section-label');
+          if (sectionLabel) {
+            sectionLabel.textContent = 'Auto Section (1 Column)';
+            sectionLabel.style.display = 'none'; // Hide label for auto sections
+          }
+          
+          // Create the actual component and add it to the auto-section
+          const actualComponent = createComponent(data.type);
+          actualComponent.id = `component-${idx}`;
+          const actualContent = getContentElement(actualComponent);
+          
+          // Restore the component data based on type
+          switch (data.type) {
+            case 'sell-tickets':
+                actualContent._sellTicketsData = data.sellTicketsData || {
+                    title: 'Buy Tickets',
+                    buttonText: 'Buy Now',
+                    buttonBg: '#007bff',
+                    buttonColor: '#fff',
+                    buttonPadding: '10px 20px',
+                    buttonRadius: '4px'
+                };
+                actualContent.renderSellTickets();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'slider':
+                actualContent._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                actualContent.renderSlider();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'gallery':
+                actualContent._galleryData = data.galleryData || { images: [], columns: 3 };
+                actualContent.renderGallery();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'image':
+                actualContent._imageData = data.imageData;
+                actualContent.renderImage();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'invest-cta':
+                actualContent._investCtaData = data.investCtaData || {
+                    buttonText: 'INVEST NOW',
+                    buttonUrl: '#',
+                    buttonTarget: '_self',
+                    leftValue: '$2.13',
+                    leftLabel: 'Share Price',
+                    rightValue: '$1001.10',
+                    rightLabel: 'Min. Investment',
+                    buttonBgColor: '#2e7d3e',
+                    buttonTextColor: '#ffffff',
+                    valueColor: '#333333',
+                    labelColor: '#666666',
+                    dividerColor: '#e0e0e0'
+                };
+                // Re-render the component with saved data
+                const investWrapper = actualContent.querySelector('.invest-cta-wrapper');
+                if (investWrapper) {
+                    const d = actualContent._investCtaData;
+                    investWrapper.innerHTML = `
+                        <div class="invest-cta-button-wrap">
+                            <a href="${d.buttonUrl}" 
+                               target="${d.buttonTarget}" 
+                               class="invest-cta-button"
+                               style="display: inline-block; background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; text-decoration: none; padding: 15px 30px; border-radius: 4px; font-size: 14px; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0;"
+                               aria-label="${d.buttonText}">
+                                ${d.buttonText}
+                            </a>
+                        </div>
+                        
+                        <div class="investment-info-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 20px; flex: 1;">
+                            <div class="investment-info-item" style="text-align: center; flex: 1;">
+                                <div class="investment-value" style="color: ${d.valueColor}; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">${d.leftValue}</div>
+                                <div class="investment-label" style="color: ${d.labelColor}; font-size: 14px; font-weight: 400; line-height: 1.2;">${d.leftLabel}</div>
+                            </div>
+                            
+                            <div class="investment-divider" style="width: 1px; height: 40px; background-color: ${d.dividerColor}; flex-shrink: 0;"></div>
+                            
+                            <div class="investment-info-item" style="text-align: center; flex: 1;">
+                                <div class="investment-value" style="color: ${d.valueColor}; font-size: 16px; font-weight: 600; line-height: 1.2; margin-bottom: 5px;">${d.rightValue}</div>
+                                <div class="investment-label" style="color: ${d.labelColor}; font-size: 14px; font-weight: 400; line-height: 1.2;">${d.rightLabel}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'full-width-text-image':
+                actualContent._fwtiData = data.fwtiData;
+                actualContent.renderFWTI();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'section-title':
+                actualContent.textContent = data.text;
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'divider':
+                if (data.style) {
+                  actualContent.style.height = data.style.height;
+                  actualContent.style.backgroundColor = data.style.backgroundColor;
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'site-banner':
+                actualContent.src = data.src;
+                actualContent.alt = data.alt;
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'custom-banner':
+                actualContent._customBannerData = data.customBannerData || {
+                    imgSrc: '',
+                    title: 'Custom Banner Title',
+                    subtitle: 'Custom Banner Subtitle',
+                    titleShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    subtitleShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                };
+                actualContent.renderCustomBanner();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'faq':
+                actualContent._faqData = data.faqData;
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'event-countdown':
+                actualContent._countdownData = data.countdownData;
+                actualContent.renderCountdown();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'event-information':
+                actualContent._eventInfoData = data.eventInfoData;
+                actualContent.renderEventInfo();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'site-goal':
+                actualContent._goalData = data.goalData;
+                actualContent.renderThermometer();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'text-images':
+                actualContent._textImagesData = data.textImagesData;
+                actualContent.renderTextImages();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'custom-form':
+                actualContent._customFormFields = data.customFormFields || [];
+                actualContent.renderCustomForm();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            default:
+                actualContent.innerHTML = data.html;
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) {
+                  Object.assign(actualComponent.style, data.wrapperStyle);
+                }
+                if (data.responsiveStyles) {
+                  actualContent._responsiveStyles = data.responsiveStyles;
+                }
+          }
+          
+          // Add the actual component to the first column
+          const firstColumn = innerContent.querySelector('.inner-column');
+          if (firstColumn) {
+            firstColumn.appendChild(actualComponent);
+            
+            // Hide the dropzone text
+            const columnDropzone = firstColumn.querySelector('.column-dropzone');
+            if (columnDropzone) {
+              columnDropzone.style.display = 'none';
+            }
+          }
+        } else {
+          // This is already an inner-section, create it normally
+          component = createComponent(data.type);
+          component.id = `component-${idx}`;
+        }
+        
+        // Define content variable for both cases
         const content = getContentElement(component);
-        // Restore per type
-        switch (data.type) {
+        
+        // Only run this switch for existing inner-sections
+        if (data.type === 'inner-section') {
+          // Restore per type
+          switch (data.type) {
 
             case 'sell-tickets':
                 content._sellTicketsData = data.sellTicketsData || {
@@ -6837,6 +7305,7 @@ function applyResponsiveStyles() {
             if (data.responsiveStyles) {
               content._responsiveStyles = data.responsiveStyles;
             }
+          }
         }
         
         // Restore responsive styles for all component types (fallback)

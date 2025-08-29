@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment CTA Component Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Investment CTA Component Test</h1>
+        
+        <?php
+        // Simulate the component data structure
+        $component = [
+            'properties' => [
+                'button_text' => 'INVEST NOW',
+                'button_url' => '/invest',
+                'button_target' => '_blank',
+                'left_value' => '$2.13',
+                'left_label' => 'Share Price',
+                'right_value' => '$1001.10',
+                'right_label' => 'Min. Investment',
+                'button_bg_color' => '#2e7d3e',
+                'button_text_color' => '#ffffff',
+                'value_color' => '#333333',
+                'label_color' => '#666666',
+                'divider_color' => '#e0e0e0',
+                'background_color' => 'transparent',
+                'border_radius' => '8',
+                'padding' => '20'
+            ]
+        ];
+        
+        // Mock the generateComponentResponsiveCSS function
+        function generateComponentResponsiveCSS($componentId, $properties) {
+            return '/* Responsive CSS would be generated here */';
+        }
+        
+        // Include the component
+        include 'invest-cta-component.php';
+        ?>
+    </div>
+</body>
+</html>
