@@ -121,6 +121,20 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
+                                                        <label for="type" class="form-label">Website Type</label>
+                                                        <select name="type" class="form-control" id="type" required>
+                                                            <option value="">Select Website Type</option>
+                                                            <option value="fundraiser">Fundraiser</option>
+                                                            <option value="investment">Investment</option>
+                                                        </select>
+                                                        <small class="form-text text-muted">Choose whether this website is for fundraising or investment purposes.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
                                                         <label for="name" class="form-label">Domain</label>
                                                         <input type="text" name="domain" class="form-control" id="name" placeholder="Enter Domain" required>
                                                     </div>

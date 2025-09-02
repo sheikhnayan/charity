@@ -561,6 +561,80 @@ class AdminController extends Controller
 
     }
 
+    public function uploadImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            ]);
 
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            
+            // Store in public/uploads directory
+            $image->move(public_path('uploads'), $imageName);
+            
+            $imageUrl = asset('uploads/' . $imageName);
+
+            return response()->json([
+                'success' => true,
+                'url' => $imageUrl,
+                'message' => 'Image uploaded successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function uploadVideo(Request $request)
+    {
+        // Set runtime upload limits
+        ini_set('upload_max_filesize', '10M');
+        ini_set('post_max_size', '12M');
+        ini_set('max_execution_time', '300');
+        ini_set('memory_limit', '256M');
+        
+        try {
+            // Log for debugging
+            \Log::info('Video upload attempt', [
+                'has_file' => $request->hasFile('video'),
+                'request_size' => $request->header('Content-Length'),
+                'files' => array_keys($request->allFiles())
+            ]);
+            
+            $request->validate([
+                'video' => 'required|file|mimes:mp4,webm,ogg,avi,mov,wmv|max:10240', // 10MB max
+            ]);
+
+            $video = $request->file('video');
+            $videoName = time() . '_' . uniqid() . '.' . $video->getClientOriginalExtension();
+            
+            // Store in public/uploads directory
+            $video->move(public_path('uploads'), $videoName);
+            
+            $videoUrl = asset('uploads/' . $videoName);
+
+            return response()->json([
+                'success' => true,
+                'url' => $videoUrl,
+                'message' => 'Video uploaded successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Video upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 400);
+        }
+    }
 
 }

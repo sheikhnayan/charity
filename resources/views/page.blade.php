@@ -560,7 +560,15 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                         }
                                         $alertStyleStr = '';
                                         foreach ($style as $k => $v) {
-                                            if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            if ($v) {
+                                                $cssKey = strtolower(preg_replace('/([A-Z])/', '-$1', $k));
+                                                // Add !important to text-align to override any default styles
+                                                if ($cssKey === 'text-align') {
+                                                    $alertStyleStr .= $cssKey . ":" . $v . " !important;";
+                                                } else {
+                                                    $alertStyleStr .= $cssKey . ":" . $v . ";";
+                                                }
+                                            }
                                         }
                                         // dd($alertStyleStr);
                                     @endphp
@@ -2265,7 +2273,12 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                                                             $titleStyle = '';
                                                                             if(isset($nestedComponent['data']['style'])) {
                                                                                 foreach($nestedComponent['data']['style'] as $key => $value) {
-                                                                                    $titleStyle .= $key . ':' . $value . ';';
+                                                                                    // Add !important to text-align to override any default styles
+                                                                                    if ($key === 'text-align') {
+                                                                                        $titleStyle .= $key . ':' . $value . ' !important;';
+                                                                                    } else {
+                                                                                        $titleStyle .= $key . ':' . $value . ';';
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         @endphp

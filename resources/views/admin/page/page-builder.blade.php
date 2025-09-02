@@ -11,6 +11,166 @@
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+
+<!-- Quill Rich Text Editor with Font Controls -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<style>
+/* Custom Quill styles for better font size and family support */
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  content: '14px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+  content: '10px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+  content: '12px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+  content: '14px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+  content: '16px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+  content: '18px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+  content: '20px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+  content: '24px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
+  content: '28px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+  content: '32px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
+  content: '36px';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+  content: '48px';
+}
+
+/* Font family dropdown styles */
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: 'Sans Serif';
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+  content: 'Arial';
+  font-family: Arial, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="helvetica"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="helvetica"]::before {
+  content: 'Helvetica';
+  font-family: Helvetica, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times"]::before {
+  content: 'Times New Roman';
+  font-family: 'Times New Roman', serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="georgia"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"]::before {
+  content: 'Georgia';
+  font-family: Georgia, serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"]::before {
+  content: 'Verdana';
+  font-family: Verdana, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="courier"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="courier"]::before {
+  content: 'Courier New';
+  font-family: 'Courier New', monospace;
+}
+
+/* Apply font families to content */
+.ql-font-arial {
+  font-family: Arial, sans-serif !important;
+}
+.ql-font-helvetica {
+  font-family: Helvetica, sans-serif !important;
+}
+.ql-font-times {
+  font-family: 'Times New Roman', serif !important;
+}
+.ql-font-georgia {
+  font-family: Georgia, serif !important;
+}
+.ql-font-verdana {
+  font-family: Verdana, sans-serif !important;
+}
+.ql-font-courier {
+  font-family: 'Courier New', monospace !important;
+}
+
+/* Apply font sizes to content */
+.ql-size-10px { font-size: 10px !important; }
+.ql-size-12px { font-size: 12px !important; }
+.ql-size-14px { font-size: 14px !important; }
+.ql-size-16px { font-size: 16px !important; }
+.ql-size-18px { font-size: 18px !important; }
+.ql-size-20px { font-size: 20px !important; }
+.ql-size-24px { font-size: 24px !important; }
+.ql-size-28px { font-size: 28px !important; }
+.ql-size-32px { font-size: 32px !important; }
+.ql-size-36px { font-size: 36px !important; }
+.ql-size-48px { font-size: 48px !important; }
+
+/* Custom toolbar styles */
+.ql-toolbar {
+    border: 1px solid #ccc;
+    border-bottom: none;
+}
+
+.ql-container {
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+</style>
+
+<script>
+// Add global flag to track Quill loading
+window.quillReady = false;
+
+// Custom Quill font size configuration using classes (better compatibility)
+var SizeClass = Quill.import('attributors/class/size');
+SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+Quill.register(SizeClass, true);
+
+// Custom font family configuration using classes
+var FontClass = Quill.import('attributors/class/font');
+FontClass.whitelist = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier'];
+Quill.register(FontClass, true);
+
+window.addEventListener('load', function() {
+    if (typeof Quill !== 'undefined') {
+        window.quillReady = true;
+        console.log('Quill is ready');
+    }
+});
+</script>
+
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <style>
@@ -285,7 +445,7 @@
     }
 
     .page {
-      max-width: 800px;
+      max-width: 100%;
       min-height: 1000px;
       margin: 0 auto;
       background: white;
@@ -327,6 +487,34 @@
       outline: 2px solid var(--primary-color);
     }
 
+    /* Video component specific styling in page builder */
+    .component[data-type="video"] {
+      cursor: pointer;
+      border: 2px dashed transparent;
+      transition: all 0.3s ease;
+    }
+
+    .component[data-type="video"]:hover {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .component[data-type="video"].selected {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    /* Disable video interaction in page builder */
+    .component[data-type="video"] video,
+    .component[data-type="video"] iframe {
+      pointer-events: none !important;
+      user-select: none !important;
+    }
+
+    .component[data-type="video"] .video-container {
+      position: relative;
+    }
+
     .inner-section-component {
       position: relative;
       transition: all 0.3s ease;
@@ -344,7 +532,7 @@
     .inner-column {
       border: 1px dashed #adb5bd;
       border-radius: 4px;
-      background-color: #ffffff;
+      background-color: transparent;
       min-height: 60px;
       padding: 10px;
       position: relative;
@@ -494,6 +682,28 @@
       resize: vertical;
     }
 
+    .page-settings-controls {
+      padding: 15px 0;
+    }
+
+    .page-settings-controls .form-group {
+      margin-bottom: 20px;
+    }
+
+    .page-settings-controls label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    .page-settings-controls input[type="color"] {
+      height: 40px;
+      padding: 2px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     .image-preview {
       width: 100%;
       margin-top: 10px;
@@ -503,6 +713,97 @@
     .component[data-type="gallery"] img:hover {
         opacity: 0.6;
         outline: 2px dashed red;
+    }
+
+    /* Numbered Timeline Component Styles */
+    .numbered-timeline-component {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .timeline-container {
+        position: relative;
+    }
+
+    .timeline-item {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 40px;
+    }
+
+    .timeline-number {
+        background-color: transparent;
+        border: 3px solid #22c55e;
+        color: #22c55e;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .timeline-content {
+        flex: 1;
+        margin-left: 20px;
+        margin-top: 5px;
+    }
+
+    .timeline-content p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .timeline-dash-top,
+    .timeline-dash-middle,
+    .timeline-dash-bottom {
+        position: absolute;
+        left: 19px;
+        width: 2px;
+        height: 10px;
+        border-left: 2px dashed #22c55e;
+    }
+
+    .timeline-dash-top {
+        top: 40px;
+    }
+
+    .timeline-dash-middle {
+        top: 55px;
+    }
+
+    .timeline-dash-bottom {
+        top: 70px;
+    }
+
+    /* Timeline responsive styles */
+    @media (max-width: 768px) {
+        .numbered-timeline-component {
+            max-width: 100%;
+        }
+        
+        .timeline-content {
+            margin-left: 15px;
+        }
+        
+        .timeline-number {
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+            border-width: 2px;
+        }
+        
+        .timeline-dash-top,
+        .timeline-dash-middle,
+        .timeline-dash-bottom {
+            left: 16px;
+        }
     }
 
     /* image modal css */
@@ -693,13 +994,14 @@ button a:hover {
     }
 
     .page {
-      max-width: 800px;
+      max-width: 100%;
       min-height: 1000px;
       margin: 0 auto;
       background: white;
       padding: 40px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
       border-radius: 8px;
+      --page-bg-color: {{ $data->background_color }}; /* CSS variable for dynamic page background */
     }
     
     .dropzone {
@@ -1243,9 +1545,10 @@ button a:hover {
 </head>
 <body>
     @php
-        $groups = \App\Models\User::where('website_id', $data->website->id)->where('role','group_leader')->get();
+        $groups = \App\Models\User::where('website_id', $data->website ? $data->website->id : 0)->where('role','group_leader')->get();
     @endphp
     <input type="hidden" name="page_id" id="page_id" value="{{ $data->id }}">
+    <input type="hidden" name="website_type" id="website_type" value="{{ $data->website ? $data->website->type : 'fundraiser' }}">
   
   <!-- Responsive Preview Header -->
   <div class="preview-header">
@@ -1295,6 +1598,9 @@ button a:hover {
                 <button class="sidebar-tab-btn" onclick="showTab('featuresTab')">
                     <i class="bi bi-star"></i> Features
                 </button>
+                <button class="sidebar-tab-btn" onclick="showTab('pageSettingsTab')">
+                    <i class="bi bi-gear"></i> Page Settings
+                </button>
             </div>
             
             <button class="structure-toggle-btn" onclick="toggleStructurePanel()">
@@ -1310,6 +1616,8 @@ button a:hover {
                 <div class="component-list">
                 <div class="component-item" draggable="true" data-type="inner-section"><i class="fas fa-layer-group me-2"></i>Inner Section</div>
                 <div class="component-item" draggable="true" data-type="text-images"><i class="fas fa-align-left me-2"></i>Text & Images</div>
+                <div class="component-item" draggable="true" data-type="feature-grid"><i class="fas fa-th-large me-2"></i>Feature Grid</div>
+                <div class="component-item" draggable="true" data-type="investment-tier"><i class="fas fa-coins me-2"></i>Investment Tier</div>
                 <div class="component-item" draggable="true" data-type="section-title"><i class="fas fa-heading me-2"></i>Section Title</div>
                 <div class="component-item" draggable="true" data-type="text"><i class="fas fa-font me-2"></i>Text Box</div>
                 <div class="component-item" draggable="true" data-type="divider"><i class="fas fa-minus me-2"></i>Divider</div>
@@ -1321,6 +1629,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="button"><i class="fas fa-square me-2"></i>Buttons</div>
                 <div class="component-item" draggable="true" data-type="full-width-text-image"><i class="fas fa-image me-2"></i>Full Width Text & Image</div>
                 <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
+                <div class="component-item" draggable="true" data-type="press-card"><i class="fas fa-newspaper me-2"></i>Press Card</div>
                 <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div>
                 </div>
             </div>
@@ -1348,13 +1657,24 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="site-goal"><i class="fas fa-thermometer-half me-2"></i>Site Goal</div>
                 <div class="component-item" draggable="true" data-type="invest-cta"><i class="fas fa-dollar-sign me-2"></i>Investment CTA</div>
                 <div class="component-item" draggable="true" data-type="image"><i class="fas fa-image me-2"></i>Image</div>
+                <div class="component-item" draggable="true" data-type="numbered-timeline"><i class="fas fa-list-ol me-2"></i>Numbered Timeline</div>
+                </div>
+            </div>
+
+            <div id="pageSettingsTab" class="tab-section" style="display: none;">
+                <h3><i class="bi bi-gear"></i> Page Settings</h3>
+                <div class="page-settings-controls">
+                    <div class="form-group">
+                        <label>Page Background Color</label>
+                        <input type="color" id="pageBackgroundColor" value="{{ $data->background_color ?? '#ffffff' }}" oninput="updatePageBackground(this.value)">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="canvas" id="canvas">
-      <div class="page" id="page">
+      <div class="page" id="page" style="background-color: {{ $data->background_color ?? '#fff' }}">
         <div class="dropzone">Drop components here</div>
       </div>
     </div>
@@ -1527,7 +1847,7 @@ button a:hover {
       // Create new notification
       const notification = document.createElement('div');
       notification.className = 'device-notification';
-      notification.textContent = `Preview: ${device.charAt(0).toUpperCase() + device.slice(1)} View`;
+      notification.textContent = `Preview: ${'${device.charAt(0).toUpperCase() + device.slice(1)}'} View`;
       notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -1598,7 +1918,7 @@ button a:hover {
           </style>
         </head>
         <body>
-          ${pageContent}
+          ${'${pageContent}'}
         </body>
         </html>
       `);
@@ -1735,7 +2055,7 @@ button a:hover {
       
       // Assign unique ID to component
       const existingComponents = document.querySelectorAll('.component').length;
-      component.id = `component-${existingComponents}`;
+      component.id = `component-${'${existingComponents}'}`;
 
       const controls = document.createElement('div');
       controls.className = 'component-controls';
@@ -1761,21 +2081,160 @@ button a:hover {
     };
     content.renderImage = function() {
         const d = content._imageData;
-        content.innerHTML = `
-            <div class="image-link" style="display:inline-block;">
-                <img src="${d.src}" alt="${d.alt}" style="width:${d.width};height:${d.height};object-fit:${d.objectFit};border-radius:8px;cursor:default;transition:box-shadow .2s;" class="img-preview"/>
-            </div>
-        `;
-        // Disable click events in page builder - no modal, no links
-        const img = content.querySelector('img');
-        img.onclick = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Do nothing in page builder
-        };
+        if (!d) return;
+        
+        // Ensure we have valid values
+        const src = d.src || 'https://via.placeholder.com/400x250';
+        const alt = d.alt || 'Image';
+        const width = d.width || '100%';
+        const height = d.height || 'auto';
+        const objectFit = d.objectFit || 'cover';
+        
+        try {
+            content.innerHTML = `
+                <div class="image-link" style="display:inline-block;">
+                    <img src="${src}" alt="${alt}" style="width:${width};height:${height};object-fit:${objectFit};border-radius:8px;cursor:default;transition:box-shadow .2s;" class="img-preview"/>
+                </div>
+            `;
+            
+            // Disable click events in page builder - no modal, no links
+            const img = content.querySelector('img');
+            if (img) {
+                img.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Do nothing in page builder
+                };
+            }
+        } catch (error) {
+            console.error('Error rendering image:', error);
+            content.innerHTML = '<div style="padding:20px;text-align:center;border:1px dashed #ccc;">Error loading image</div>';
+        }
     };
     content.renderImage();
 break;
+
+        case 'numbered-timeline':
+            content = document.createElement('div');
+            content.className = 'numbered-timeline-component';
+            // Store timeline data
+            content._timelineData = {
+                items: [
+                    {
+                        number: '1',
+                        title: 'Nashville:',
+                        description: 'Our Nashville CloseCompany project is slated for an early Q2 2025 opening a fully funded project budget.'
+                    },
+                    {
+                        number: '2',
+                        title: 'Atlanta:',
+                        description: 'In Atlanta, we\'ve secured $400 per square foot in Tenant Improvement funds for our second Close Company, coming to the city in 2025.'
+                    },
+                    {
+                        number: '3',
+                        title: 'Municipal Grand Savannah:',
+                        description: 'A44 room boutique hotel in the heart of downtown Savannah with three different F&B outlets and a rooftop'
+                    }
+                ],
+                colors: {
+                    numberBackground: '#22c55e',
+                    numberText: '#22c55e',
+                    titleColor: '#22c55e',
+                    descriptionColor: '#374151',
+                    lineColor: '#22c55e'
+                }
+            };
+            
+            content.renderTimeline = function() {
+                const d = content._timelineData;
+                if (!d || !d.items) return;
+                
+                // Group items into columns of 4
+                const itemsPerColumn = 4;
+                const columns = [];
+                for (let i = 0; i < d.items.length; i += itemsPerColumn) {
+                    columns.push(d.items.slice(i, i + itemsPerColumn));
+                }
+                
+                let columnsHtml = '';
+                
+                columns.forEach((columnItems, columnIndex) => {
+                    let itemsHtml = '';
+                    
+                    columnItems.forEach((item, index) => {
+                        const isLastInColumn = index === columnItems.length - 1;
+                        const isLastOverall = (columnIndex * itemsPerColumn + index) === d.items.length - 1;
+                        
+                        itemsHtml += `
+                            <div class="timeline-item" style="position: relative; display: flex; align-items: flex-start; margin-bottom: 60px;">
+                                <!-- Single dashed connecting line using border trick (except for last item in column) -->
+                                ${!isLastInColumn ? `
+                                    <div class="dash-green-line" style="
+                                        border-style: none dashed none none;
+                                        border-width: 1px 4px 1px 1px;
+                                        border-color: transparent ${d.colors.lineColor} transparent transparent;
+                                        width: 3px;
+                                        height: calc(100% + 60px);
+                                        position: absolute;
+                                        top: 40px;
+                                        left: 19px;
+                                        z-index: 1;
+                                    "></div>
+                                ` : ''}
+                                
+                                <!-- Number circle with dynamic background matching page background -->
+                                <div class="timeline-number" style="
+                                    background-color: var(--page-bg-color, #ffffff);
+                                    color: ${d.colors.numberText};
+                                    border: 3px solid ${d.colors.numberBackground};
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-weight: bold;
+                                    font-size: 18px;
+                                    flex-shrink: 0;
+                                    position: relative;
+                                    z-index: 2;
+                                ">
+                                    ${item.number}
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="timeline-content" style="flex: 1; margin-left: 20px; margin-top: 5px;">
+                                    <p style="margin: 0; line-height: 1.6; color: ${d.colors.descriptionColor};">
+                                        <strong style="color: ${d.colors.titleColor};">${item.title}</strong> ${item.description}
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    columnsHtml += `
+                        <div class="timeline-column" style="flex: 0 0 auto; min-width: 300px; margin-right: 0; max-width: 380px;">
+                            ${itemsHtml}
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = `
+                    <div class="numbered-timeline-wrapper" style="
+                        background: transparent;
+                        padding: 20px;
+                        border-radius: 8px;
+                        max-width: 100%;
+                    ">
+                        <div class="timeline-container" style="display: flex; flex-wrap: nowrap; gap: 40px; align-items: flex-start;">
+                            ${columnsHtml}
+                        </div>
+                    </div>
+                `;
+            };
+            
+            content.renderTimeline();
+            break;
 
         // case 'heading':
         //   content = document.createElement('h2');
@@ -1825,10 +2284,11 @@ break;
             content.style.fontWeight = 'bold';
         break;
 
+
         case 'text':
-            content = document.createElement('p');
-            content.textContent = 'New text block. Click to edit.';
-            content.contentEditable = true;
+            content = document.createElement('div');
+            const textId = 'text-content-' + Date.now();
+            content.innerHTML = `<div id="${textId}" style="min-height: 50px; padding: 10px;" oninput="updateTextImagesField(this.innerHTML, 'text')">New text block. Click to edit.</div>`;
             content.style.fontSize = '16px';
         break;
 
@@ -1839,7 +2299,7 @@ break;
             content.style.borderRadius = '8px';
             content.style.padding = '20px';
             content.style.margin = '10px 0';
-            content.style.backgroundColor = '#f8f9fa';
+            content.style.backgroundColor = 'transparent';
             content.style.minHeight = '100px';
             content.style.position = 'relative';
             
@@ -1866,8 +2326,6 @@ break;
             
             // Function to create columns
             const createColumns = (numColumns) => {
-                columnContainer.innerHTML = '';
-                
                 // Calculate Bootstrap column classes based on number of columns
                 const getBootstrapClasses = (totalCols) => {
                     switch(totalCols) {
@@ -1880,88 +2338,94 @@ break;
                         default: return 'col-lg-4 col-md-6 col-sm-12';
                     }
                 };
-                
                 const bootstrapClass = getBootstrapClasses(numColumns);
-                
-                for (let i = 0; i < numColumns; i++) {
-                    const column = document.createElement('div');
-                    column.className = `inner-column ${bootstrapClass}`;
-                    column.style.border = '1px dashed #adb5bd';
-                    column.style.borderRadius = '4px';
-                    column.style.backgroundColor = '#ffffff';
-                    column.style.minHeight = '60px';
-                    column.style.padding = '10px';
-                    column.style.position = 'relative';
-                    column.style.transition = 'all 0.3s ease';
-                    column.style.marginBottom = '15px';
-                    
-                    // Add column dropzone
-                    const columnDropzone = document.createElement('div');
-                    columnDropzone.className = 'column-dropzone';
-                    columnDropzone.textContent = `Column ${i + 1}`;
-                    columnDropzone.style.textAlign = 'center';
-                    columnDropzone.style.color = '#6c757d';
-                    columnDropzone.style.fontSize = '12px';
-                    columnDropzone.style.padding = '20px 5px';
-                    columnDropzone.style.position = 'absolute';
-                    columnDropzone.style.top = '50%';
-                    columnDropzone.style.left = '50%';
-                    columnDropzone.style.transform = 'translate(-50%, -50%)';
-                    columnDropzone.style.width = '80%';
-                    columnDropzone.style.pointerEvents = 'none';
-                    
-                    column.appendChild(columnDropzone);
-                    
-                    // Enable drag and drop for each column
-                    column.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        column.style.backgroundColor = '#e3f2fd';
-                        column.style.borderColor = '#007bff';
-                    });
-                    
-                    column.addEventListener('dragleave', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        column.style.backgroundColor = '#ffffff';
-                        column.style.borderColor = '#adb5bd';
-                    });
-                    
-                    column.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        column.style.backgroundColor = '#ffffff';
-                        column.style.borderColor = '#adb5bd';
-                        
-                        const componentType = e.dataTransfer.getData('type');
-                        if (componentType) {
-                            const newComponent = createComponent(componentType);
-                            newComponent.style.margin = '5px 0';
-                            newComponent.style.width = '100%';
-                            
-                            // Add component to column
-                            column.appendChild(newComponent);
-                            
-                            // Hide dropzone text if column has components
-                            const hasComponents = column.querySelectorAll('.component').length > 0;
-                            columnDropzone.style.display = hasComponents ? 'none' : 'block';
-                            
-                            // Update structure panel and select the new component
-                            setTimeout(() => {
-                                updateStructurePanel();
-                                selectComponent(newComponent);
-                            }, 10);
-                        }
-                    });
-                    
-                    columnContainer.appendChild(column);
+                const existingColumns = Array.from(columnContainer.querySelectorAll('.inner-column'));
+                // If increasing columns, keep existing and add new to the right
+                if (numColumns > existingColumns.length) {
+                    // Update classes for all existing columns
+                    existingColumns.forEach(col => col.className = `inner-column ${bootstrapClass}`);
+                    // Add new columns to the right
+                    for (let i = existingColumns.length; i < numColumns; i++) {
+                        const column = document.createElement('div');
+                        column.className = `inner-column ${bootstrapClass}`;
+                        column.style.border = '1px dashed #adb5bd';
+                        column.style.borderRadius = '4px';
+                        column.style.backgroundColor = 'transparent';
+                        column.style.minHeight = '60px';
+                        column.style.padding = '10px';
+                        column.style.position = 'relative';
+                        column.style.transition = 'all 0.3s ease';
+                        column.style.marginBottom = '15px';
+                        // Add column dropzone
+                        const columnDropzone = document.createElement('div');
+                        columnDropzone.className = 'column-dropzone';
+                        columnDropzone.textContent = `Column ${i + 1}`;
+                        columnDropzone.style.textAlign = 'center';
+                        columnDropzone.style.color = '#6c757d';
+                        columnDropzone.style.fontSize = '12px';
+                        columnDropzone.style.padding = '20px 5px';
+                        columnDropzone.style.position = 'absolute';
+                        columnDropzone.style.top = '50%';
+                        columnDropzone.style.left = '50%';
+                        columnDropzone.style.transform = 'translate(-50%, -50%)';
+                        columnDropzone.style.width = '80%';
+                        columnDropzone.style.pointerEvents = 'none';
+                        column.appendChild(columnDropzone);
+                        // Enable drag and drop for each column
+                        column.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            column.style.backgroundColor = '#e3f2fd';
+                            column.style.borderColor = '#007bff';
+                        });
+                        column.addEventListener('dragleave', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            column.style.backgroundColor = 'transparent';
+                            column.style.borderColor = '#adb5bd';
+                        });
+                        column.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            column.style.backgroundColor = 'transparent';
+                            column.style.borderColor = '#adb5bd';
+                            const componentType = e.dataTransfer.getData('type');
+                            if (componentType) {
+                                const newComponent = createComponent(componentType);
+                                newComponent.style.width = '100%';
+                                // Add component to column
+                                column.appendChild(newComponent);
+                                // Hide dropzone text if column has components
+                                const hasComponents = column.querySelectorAll('.component').length > 0;
+                                columnDropzone.style.display = hasComponents ? 'none' : 'block';
+                                // Update structure panel and select the new component
+                                setTimeout(() => {
+                                    updateStructurePanel();
+                                    selectComponent(newComponent);
+                                }, 10);
+                            }
+                        });
+                        columnContainer.appendChild(column);
+                    }
+                } else {
+                    // Reducing columns: keep leftmost, remove rightmost
+                    // Remove extra columns from the right
+                    for (let i = existingColumns.length - 1; i >= numColumns; i--) {
+                        columnContainer.removeChild(existingColumns[i]);
+                    }
+                    // Update classes for remaining columns
+                    for (let i = 0; i < numColumns; i++) {
+                        existingColumns[i].className = `inner-column ${bootstrapClass}`;
+                    }
                 }
             };
+
+          
             
             content.appendChild(label);
             content.appendChild(columnContainer);
             
-            // Store component data with default 2 columns
+            // Store component data with enhanced background options
             content._innerSectionData = {
                 backgroundColor: '#f8f9fa',
                 borderColor: '#ddd',
@@ -1971,7 +2435,36 @@ break;
                 padding: '20px',
                 margin: '10px 0',
                 columns: 2,
-                gap: '15px'
+                gap: '15px',
+                fullWidth: false, // Full width stretch option
+                contentWidth: 'full', // 'full' or 'boxed' for full width sections
+                // Background options
+                backgroundType: 'color', // 'color' or 'image'
+                backgroundImage: '',
+                backgroundAttachment: 'scroll', // 'scroll' or 'fixed'
+                // Menu options for investment websites
+                addToMenu: false,
+                menuTitle: '',
+                sectionId: ''
+            };
+            
+            // Function to update background
+            content.updateBackground = function() {
+                const data = content._innerSectionData;
+                if (data.backgroundType === 'color') {
+                    content.style.backgroundColor = data.backgroundColor;
+                    content.style.backgroundImage = 'none';
+                    content.style.backgroundPosition = '';
+                    content.style.backgroundSize = '';
+                    content.style.backgroundAttachment = '';
+                } else if (data.backgroundType === 'image' && data.backgroundImage) {
+                    // Fixed gradient with your exact format
+                    content.style.backgroundColor = 'transparent';
+                    content.style.backgroundImage = `linear-gradient(#000,#000c 18%),url(${data.backgroundImage})`;
+                    content.style.backgroundPosition = '0 0,0 0';
+                    content.style.backgroundSize = 'auto,cover';
+                    content.style.backgroundAttachment = `scroll,${data.backgroundAttachment}`;
+                }
             };
             
             // Function to update columns
@@ -1997,7 +2490,7 @@ break;
                 // Update margin-bottom for all columns to create visual gap
                 const columns = content.querySelectorAll('.inner-column');
                 columns.forEach(column => {
-                    column.style.marginBottom = `${gapValue}${gapUnit}`;
+                    column.style.marginBottom = `${'${gapValue}'}${'${gapUnit}'}`;
                 });
                 
                 // Update the row to use custom CSS variables for gap if needed
@@ -2008,8 +2501,43 @@ break;
                 }
             };
             
-            // Initialize with 2 columns
+            // Function to render inner section with full width support
+            content.renderInnerSection = function() {
+                const data = content._innerSectionData;
+                
+                // Update visual appearance based on full width setting
+                if (data.fullWidth) {
+                    // Visual indication that this will be full width on frontend
+                    content.style.borderStyle = 'solid';
+                    content.style.borderColor = '#007bff';
+                    content.style.backgroundColor = '#f8f9ff';
+                    
+                    // Update label to show full width
+                    const sectionLabel = content.querySelector('.section-label');
+                    if (sectionLabel) {
+                        sectionLabel.textContent = `Inner Section (${data.columns} Column${data.columns > 1 ? 's' : ''}) - FULL WIDTH`;
+                        sectionLabel.style.backgroundColor = '#007bff';
+                        sectionLabel.style.color = '#fff';
+                    }
+                } else {
+                    // Regular appearance
+                    content.style.borderStyle = 'dashed';
+                    content.style.borderColor = '#ddd';
+                    content.style.backgroundColor = 'transparent';
+                    
+                    // Update label to show regular
+                    const sectionLabel = content.querySelector('.section-label');
+                    if (sectionLabel) {
+                        sectionLabel.textContent = `Inner Section (${data.columns} Column${data.columns > 1 ? 's' : ''})`;
+                        sectionLabel.style.backgroundColor = '#fff';
+                        sectionLabel.style.color = '#6c757d';
+                    }
+                }
+            };
+            
+            // Initialize with 2 columns and apply initial background
             createColumns(2);
+            content.updateBackground();
         break;
 
         case 'button':
@@ -2032,8 +2560,24 @@ break;
 
         case 'invest-cta':
             content = document.createElement('div');
+            let investCtaData = content._investCtaData || {
+                buttonText: 'INVEST NOW',
+                buttonUrl: '#',
+                buttonTarget: '_self',
+                leftValue: '$2.13',
+                leftLabel: 'Share Price',
+                rightValue: '$1001.10',
+                rightLabel: 'Min. Investment',
+                buttonBgColor: '#2e7d3e',
+                buttonTextColor: '#ffffff',
+                valueColor: '#333333',
+                labelColor: '#666666',
+                dividerColor: '#e0e0e0',
+                bgColor: '#f8f9fa'
+            };
+            content._investCtaData = investCtaData;
             content.innerHTML = `
-                <div class="invest-cta-wrapper" style="background-color: transparent; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0 auto;">
+                <div class="invest-cta-wrapper" style="background-color: ${investCtaData.bgColor}; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0px;">
                     <div class="invest-cta-button-wrap">
                         <a href="#" 
                            target="_self" 
@@ -2227,7 +2771,7 @@ break;
                 if (images.length === 1) {
                     content.innerHTML = `
                         <div style="display:flex;justify-content:center;">
-                            <img src="${images[0]}" data-idx="0" class="gallery-img" style="width:auto;max-width:100%;height:220px;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                            <img src="${'${images[0]}'}" data-idx="0" class="gallery-img" style="width:auto;max-width:100%;height:220px;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
                         </div>
                     `;
                     return;
@@ -2236,8 +2780,8 @@ break;
                 let html = `<div class="gallery-row" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
                 images.forEach((src, idx) => {
                     html += `
-                        <div class="gallery-img-col" style="flex: 0 0 calc(${100/columns}% - 10px); max-width: calc(${100/columns}% - 10px); display: flex; justify-content: center;">
-                            <img src="${src}" data-idx="${idx}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                        <div class="gallery-img-col" style="flex: 0 0 calc(${'${100/columns}'}% - 10px); max-width: calc(${'${100/columns}'}% - 10px); display: flex; justify-content: center;">
+                            <img src="${'${src}'}" data-idx="${'${idx}'}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
                         </div>
                     `;
                 });
@@ -2273,8 +2817,8 @@ break;
         for (let s = 0; s < showCount; s++) {
             const idx = (startIdx + s) % images.length;
             html += `
-                <div class="slider-img-col" style="flex: 0 0 calc(${100/showCount}% - 10px); max-width: calc(${100/showCount}% - 10px); display: flex; justify-content: center;">
-                    <img src="${images[idx]}" data-idx="${idx}" class="slider-img"
+                <div class="slider-img-col" style="flex: 0 0 calc(${'${100/showCount}'}% - 10px); max-width: calc(${'${100/showCount}'}% - 10px); display: flex; justify-content: center;">
+                    <img src="${'${images[idx]}'}" data-idx="${'${idx}'}" class="slider-img"
                         style="display:block;width:auto;max-width:100%;height:220px;max-height:100%;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);"
                         onclick="openSliderModal(this)">
                 </div>
@@ -2306,11 +2850,76 @@ break;
         case 'video':
             content = document.createElement('div');
             content.innerHTML = `
-                <div class="component-controls">
-                <button class="btn" onclick="deleteComponent(this)">Delete</button>
-                </div>
                 <div class="video-container"></div>
             `;
+            
+            // Store video data
+            content._videoData = {
+                url: '',
+                type: 'youtube',
+                isUploadedFile: false,
+                autoplay: false,
+                width: null,
+                height: null
+            };
+            
+            // Function to update video embed
+            content.updateVideo = function(url, type = 'youtube') {
+                console.log('updateVideo called with URL:', url, 'type:', type);
+                content._videoData.url = url;
+                content._videoData.type = type;
+                const container = content.querySelector('.video-container');
+                console.log('Container found:', container);
+                
+                // Get custom dimensions
+                const customWidth = content._videoData.width ? content._videoData.width + 'px' : '100%';
+                const customHeight = content._videoData.height ? content._videoData.height + 'px' : '200';
+                
+                if (url) {
+                    console.log('URL is valid, updating video display');
+                    if (type === 'uploaded') {
+                        // Handle uploaded video files - disable interaction in page builder
+                        const autoplayAttr = content._videoData.autoplay ? 'autoplay muted' : '';
+                        const videoHTML = `
+                            <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} style="border-radius: 8px; max-width: 100%; pointer-events: none; opacity: 0.8;" preload="metadata">
+                                <source src="${url}" type="video/mp4">
+                                <source src="${url}" type="video/webm">
+                                <source src="${url}" type="video/ogg">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none;">Video Preview (Click to Edit)</div>
+                        `;
+                        console.log('Setting video HTML:', videoHTML);
+                        container.innerHTML = videoHTML;
+                        container.style.position = 'relative'; // For overlay positioning
+                    } else {
+                        // Handle YouTube videos
+                        let videoId = '';
+                        if (url.includes('youtu.be/')) {
+                            videoId = url.split('/').pop().split('?')[0];
+                        } else if (url.includes('youtube.com/watch?v=')) {
+                            const urlParams = new URLSearchParams(url.split('?')[1]);
+                            videoId = urlParams.get('v');
+                        } else if (url.includes('youtube.com/embed/')) {
+                            videoId = url.split('/embed/')[1].split('?')[0];
+                        }
+                        
+                        if (videoId) {
+                            const autoplayParam = content._videoData.autoplay ? '&autoplay=1&mute=1' : '';
+                            container.innerHTML = `
+                                <iframe width="${customWidth}" height="${customHeight}" src="https://www.youtube.com/embed/${videoId}?rel=0${autoplayParam}" frameborder="0" allowfullscreen style="max-width: 100%; pointer-events: none; opacity: 0.8;"></iframe>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none;">YouTube Video Preview (Click to Edit)</div>
+                            `;
+                            container.style.position = 'relative'; // For overlay positioning
+                        } else {
+                            container.innerHTML = `<div style="padding: 20px; background: #f3f4f6; text-align: center;">Invalid video URL</div>`;
+                        }
+                    }
+                } else {
+                    console.log('No URL provided, showing placeholder');
+                    container.innerHTML = `<div style="padding: 20px; background: #f3f4f6; text-align: center;">No video provided</div>`;
+                }
+            };
         break;
 
         case 'faq':
@@ -2337,6 +2946,130 @@ break;
             content.style.textAlign = 'center';
         break;
 
+        case 'press-card':
+            content = document.createElement('div');
+            content.className = 'press-card-component';
+            
+            // Store press card data
+            content._pressCardData = {
+                logoSrc: 'https://via.placeholder.com/200x80?text=Press+Logo',
+                logoAlt: 'Press Logo',
+                title: 'Savannah Gets a Stunning New Hotel and "Living Room" in Municipal Grand',
+                url: '#',
+                date: 'July 8, 2025',
+                target: '_blank',
+                cardBackgroundColor: '#ffffff',
+                cardBorderRadius: '8px',
+                cardBoxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                overlayOpacity: '0.1',
+                logoBackgroundColor: '#f8f9fa',
+                titleColor: '#1a1a1a',
+                dateColor: '#666666'
+            };
+            
+            content.renderPressCard = function() {
+                const d = content._pressCardData;
+                content.innerHTML = `
+                    <div class="press-card-2" style="
+                        position: relative;
+                        background: ${d.cardBackgroundColor || '#fff'};
+                        border-radius: ${d.cardBorderRadius || '8px'};
+                        overflow: hidden;
+                        box-shadow: ${d.cardBoxShadow || '0 2px 8px rgba(0,0,0,0.1)'};
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                        max-width: 400px;
+                        margin: 0 auto;
+                    ">
+                        <!-- Press Logo -->
+                        <div style="padding: 20px; text-align: center; background: ${d.logoBackgroundColor || '#f8f9fa'};">
+                            <img src="${d.logoSrc}" 
+                                 alt="${d.logoAlt}" 
+                                 style="max-width: 150px; height: auto; filter: brightness(0);" 
+                                 class="press-logo">
+                        </div>
+                        
+                        <!-- Press Content -->
+                        <a href="${d.url}" 
+                           target="${d.target}" 
+                           style="
+                               display: block;
+                               text-decoration: none;
+                               color: inherit;
+                               padding: 20px;
+                               position: relative;
+                           "
+                           class="press-link">
+                            <div class="press-text-wrapper" style="margin-bottom: 15px;">
+                                <div style="
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                    line-height: 1.4;
+                                    color: ${d.titleColor || '#1a1a1a'};
+                                    margin-bottom: 10px;
+                                    display: flex;
+                                    align-items: flex-start;
+                                    justify-content: space-between;
+                                    gap: 10px;
+                                ">
+                                    <span>${d.title}</span>
+                                    <div style="
+                                        width: 16px;
+                                        height: 16px;
+                                        flex-shrink: 0;
+                                        margin-top: 2px;
+                                        color: ${d.titleColor || '#1a1a1a'};
+                                    ">
+                                        <svg xmlns="http://www.w3.org/2000/svg" 
+                                             width="100%" height="100%" 
+                                             viewBox="0 0 32 32" 
+                                             fill="currentColor">
+                                            <path d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="press-date" style="
+                                color: ${d.dateColor || '#666'};
+                                font-size: 14px;
+                                font-weight: 400;
+                            ">${d.date}</div>
+                        </a>
+                        
+                        <!-- Black Overlay (Always visible with adjustable opacity) -->
+                        <div class="black-overlay" style="
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(0,0,0,${d.overlayOpacity || '0.1'});
+                            transition: opacity 0.3s ease;
+                            pointer-events: none;
+                        "></div>
+                    </div>
+                    
+                    <style>
+                        .press-card-2:hover .black-overlay {
+                            opacity: 1;
+                            background: rgba(0,0,0,${(parseFloat(d.overlayOpacity || '0.1') + 0.1).toFixed(1)});
+                        }
+                        
+                        .press-card-2:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                        }
+                        
+                        .press-link:hover {
+                            text-decoration: none !important;
+                        }
+                    </style>
+                `;
+            };
+            
+            content.renderPressCard();
+        break;
+
         case 'full-width-text-image':
             content = document.createElement('div');
             content.className = 'text-images-component';
@@ -2359,13 +3092,13 @@ break;
                 const d = content._fwtiData;
                 content.innerHTML = `
                     <h3
-                        style="margin-bottom: 10px; font-size:${d.fontSize1}; color:${d.color1};"
-                    >${d.text1}</h3>
+                        style="margin-bottom: 10px; font-size:${'${d.fontSize1}'}; color:${'${d.color1}'};"
+                    >${'${d.text1}'}</h3>
                     <p
-                        style="font-size:${d.fontSize2}; color:${d.color2};"
-                    >${d.text2}</p>
-                    <img src="${d.imgSrc}" alt="${d.imgAlt}"
-                        style="width:${d.imgCustomWidth};height:${d.imgCustomHeight};object-fit:${d.imgObjectFit};max-width:100%;margin-top:10px;${d.imgSrc ? '' : 'display:none;'}" />
+                        style="font-size:${'${d.fontSize2}'}; color:${'${d.color2}'};"
+                    >${'${d.text2}'}</p>
+                    <img src="${'${d.imgSrc}'}" alt="${'${d.imgAlt}'}"
+                        style="width:${'${d.imgCustomWidth}'};height:${'${d.imgCustomHeight}'};object-fit:${'${d.imgObjectFit}'};max-width:100%;margin-top:10px;${'${d.imgSrc ? \'\' : \'display:none;\'}'}" />
                 `;
             };
             content.renderFWTI();
@@ -3301,27 +4034,181 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             content._textImagesData = {
                 text: 'Your text here',
                 imgSrc: 'https://via.placeholder.com/400x250',
-                imgPosition: 'left', // up, down, left, right
-                imgSize: 200, // px
-                showImage: true // NEW: image visibility
+                imgPosition: 'left',
+                imgSize: 200,
+                imgWidth: '200',
+                imgHeight: 'auto',
+                showImage: true
             };
             content.renderTextImages = function() {
-                const { text, imgSrc, imgPosition, imgSize, showImage } = content._textImagesData;
+                const d = content._textImagesData;
+                // Ensure width/height are always valid strings for style
+                let width = d.imgWidth || d.imgSize || '200';
+                let height = d.imgHeight || 'auto';
+                // If width/height are numbers, add px
+                if (/^\d+$/.test(width)) width = width + 'px';
+                if (/^\d+$/.test(height)) height = height + 'px';
+                const imgTag = d.showImage && d.imgSrc ? `<img src='${d.imgSrc}' style='max-width:100%;width:${width};height:${height};object-fit:cover;'/>` : '';
                 let layout = '';
-                const imgTag = showImage && imgSrc ? `<img src='${imgSrc}' style='max-width:100%;width:${imgSize}px;'/>` : '';
-                if (imgPosition === 'up') {
-                    layout = `${imgTag ? `<div style='text-align:center;'>${imgTag}</div>` : ''}<div style='text-align:center;'><p contenteditable='true' oninput='updateTextImagesField(this.innerText, "text")' style='margin:0;'>${text}</p></div>`;
-                } else if (imgPosition === 'down') {
-                    layout = `<div style='text-align:center;'><p contenteditable='true' oninput='updateTextImagesField(this.innerText, "text")' style='margin:0;'>${text}</p></div>${imgTag ? `<div style='text-align:center;'>${imgTag}</div>` : ''}`;
-                } else if (imgPosition === 'right') {
-                    layout = `<div style='display:flex;align-items:center;gap:16px;'><div style='flex:1;'><p contenteditable='true' oninput='updateTextImagesField(this.innerText, "text")' style='margin:0;'>${text}</p></div>${imgTag}</div>`;
+                if (d.imgPosition === 'up') {
+                    layout = `${imgTag ? `<div style='text-align:center;'>${imgTag}</div>` : ''}<div style='text-align:center;'><div id='text-content-${Date.now()}' contenteditable='true' oninput='updateTextImagesField(this.innerHTML, "text")' style='margin:0;min-height:20px;'>${d.text}</div></div>`;
+                } else if (d.imgPosition === 'down') {
+                    layout = `<div style='text-align:center;'><div id='text-content-${Date.now()}' contenteditable='true' oninput='updateTextImagesField(this.innerHTML, "text")' style='margin:0;min-height:20px;'>${d.text}</div></div>${imgTag ? `<div style='text-align:center;'>${imgTag}</div>` : ''}`;
+                } else if (d.imgPosition === 'right') {
+                    layout = `<div style='display:flex;align-items:center;gap:16px;'><div style='flex:1;'><div id='text-content-${Date.now()}' contenteditable='true' oninput='updateTextImagesField(this.innerHTML, "text")' style='margin:0;min-height:20px;'>${d.text}</div></div>${imgTag}</div>`;
                 } else {
-                    layout = `<div style='display:flex;align-items:center;gap:16px;'>${imgTag}<div style='flex:1;'><p contenteditable='true' oninput='updateTextImagesField(this.innerText, "text")' style='margin:0;'>${text}</p></div></div>`;
+                    layout = `<div style='display:flex;align-items:center;gap:16px;'>${imgTag}<div style='flex:1;'><div id='text-content-${Date.now()}' contenteditable='true' oninput='updateTextImagesField(this.innerHTML, "text")' style='margin:0;min-height:20px;'>${d.text}</div></div></div>`;
                 }
                 content.innerHTML = layout;
             };
             content.renderTextImages();
         break;
+        case 'feature-grid':
+            content = document.createElement('div');
+            content.className = 'feature-grid-component';
+            // Default state with 6 feature items
+            content._featureGridData = {
+                iconColor: '#3b82f6',
+                titleColor: '#1f2937',
+                descriptionColor: '#6b7280',
+                features: [
+                    {
+                        icon: 'fas fa-chart-line',
+                        title: 'Exceptional Growth Potential',
+                        description: 'The scalability of our company positions us for a massive exit opportunity and an elevated, high-multiple valuation.'
+                    },
+                    {
+                        icon: 'fas fa-trophy',
+                        title: 'The Most Recognizable Brand',
+                        description: 'With years of operational excellence, industry-defining products, and award-winning services, we are the premiere brand in our industry.'
+                    },
+                    {
+                        icon: 'fas fa-expand-arrows-alt',
+                        title: 'Scalable Model',
+                        description: 'Strong partnerships and brand strength reduce initial capital requirements, enabling rapid growth in high-demand markets.'
+                    },
+                    {
+                        icon: 'fas fa-gem',
+                        title: 'Diverse Revenue Streams',
+                        description: 'Multiple income sources position us for sustained growth and an elevated, high-multiple valuation.'
+                    },
+                    {
+                        icon: 'fas fa-star',
+                        title: 'Proven Success',
+                        description: 'Long-developed systems and processes have enabled successful operations in diverse markets, generating significant annual revenue.'
+                    },
+                    {
+                        icon: 'fas fa-shield-alt',
+                        title: 'Unmatched Marketing Engines',
+                        description: 'Backed by a large social media following, powerful PR engine, industry-leading marketplace, and engagement platforms.'
+                    }
+                ]
+            };
+            content.renderFeatureGrid = function() {
+                const features = content._featureGridData.features;
+                const iconColor = content._featureGridData.iconColor || '#3b82f6';
+                const titleColor = content._featureGridData.titleColor || '#1f2937';
+                const descriptionColor = content._featureGridData.descriptionColor || '#6b7280';
+                let html = '<div class="feature-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; padding: 2rem;">';
+                
+                features.forEach((feature, index) => {
+                    html += `
+                        <div class="feature-item" style="display: block;">
+                            <div class="feature-icon" style="width: 48px; height: 48px; color: ${iconColor}; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                <i class="${feature.icon}" style="font-size: 24px;"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title" style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 600; color: ${titleColor};" contenteditable="true">${feature.title}</h3>
+                                <p class="feature-description" style="margin: 0; color: ${descriptionColor}; line-height: 1.5;" contenteditable="true">${feature.description}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                // Add responsive CSS
+                html += `
+                    <style>
+                        @media (max-width: 768px) {
+                            .feature-grid {
+                                grid-template-columns: 1fr !important;
+                                gap: 1.5rem !important;
+                                padding: 1rem !important;
+                            }
+                        }
+                    </style>
+                `;
+                
+                content.innerHTML = html;
+                
+                // Add event listeners for content editing
+                setTimeout(() => {
+                    const titles = content.querySelectorAll('.feature-title');
+                    const descriptions = content.querySelectorAll('.feature-description');
+                    
+                    titles.forEach((title, index) => {
+                        title.addEventListener('blur', () => {
+                            content._featureGridData.features[index].title = title.textContent;
+                        });
+                    });
+                    
+                    descriptions.forEach((desc, index) => {
+                        desc.addEventListener('blur', () => {
+                            content._featureGridData.features[index].description = desc.textContent;
+                        });
+                    });
+                }, 0);
+            };
+            content.renderFeatureGrid();
+        break;
+        
+        case 'investment-tier':
+                                    content = document.createElement('div');
+                                    content.className = 'investment-tier-component';
+                                    content._investmentTierData = {
+                                            tierName: 'TIER 1',
+                                            tierPrice: '$2,500',
+                                            tierDescription: 'Priority reservations at all Death & Co properties; invites to all investor events (investor happy hours held annually at each door as well as investor invite-only pre-opening events); and free access to Fashioned, Death & Co’s forthcoming cocktail education platform and community hub (to launch late July 2025).',
+                                            buttonText: 'INVEST NOW',
+                                            buttonUrl: '/portal-start?utm_source=direct&utm_medium=(none)&utm_campaign=(none)&tnames=referral&utm_content=none&utm_term=1Bnone&utm_page=home',
+                                            buttonTarget: '_self',
+                                            backgroundColor: '#111',
+                                            backgroundImage: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80', // Example image, replace as needed
+                                            backgroundType: 'image',
+                                            textColor: '#fff',
+                                            buttonBgColor: '#23b04a',
+                                            buttonTextColor: '#fff'
+                                    };
+                                    content.renderInvestmentTier = function() {
+                                            const d = content._investmentTierData;
+                                            let bg = d.backgroundType === 'image' && d.backgroundImage
+                                                    ? `background: linear-gradient(0deg, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0.85) 100%), url('${d.backgroundImage}') center/cover no-repeat;`
+                                                    : `background: ${d.backgroundColor};`;
+                                            content.innerHTML = `
+                                            <div class="perk-wrap is-full _2" style="${bg} color: ${d.textColor}; border-radius: 8px; padding: 32px 28px 24px 28px; max-width: 370px; margin: 0 auto !important; box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
+                                                <div class="z-index-1">
+                                                    <div class="cell-top-2-2" style="margin-bottom: 12px;">
+                                                        <div class="text-block-94 text-color-white" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">${d.tierName}</div>
+                                                        <div class="number-larger-2 text-color-white" style="font-size: 2rem; font-weight: 700; margin-top: 2px;">${d.tierPrice}</div>
+                                                    </div>
+                                                    <div class="cell-top-2-2 no-line" style="margin-bottom: 18px;">
+                                                        <div class="w-layout-grid grid-45">
+                                                            <div class="div-block-173 text-color-white">
+                                                                <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">Receive</div>
+                                                                <div style="font-size: 0.98rem; line-height: 1.5; color: #fff;">${d.tierDescription}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="main_cta_button_wrap" style="margin-top: 18px;">
+                                                    <a dmr-checkout-start="1" tag="button" aria-label="Proceed to checkout" href="${d.buttonUrl}" target="${d.buttonTarget}" class="button w-button is-small hide-tablet" style="display: block; width: 100%; background: ${d.buttonBgColor}; color: ${d.buttonTextColor}; font-weight: 700; font-size: 1.1rem; border-radius: 4px; padding: 13px 0 11px 0; text-align: center; letter-spacing: 1px; text-transform: uppercase; border: none;">${d.buttonText}</a>
+                                                </div>
+                                            </div>
+                                            `;
+                                    };
+                                    content.renderInvestmentTier();
+                                    break;
       }
 
       component.appendChild(controls);
@@ -3421,6 +4308,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             'heading': { icon: 'fa-heading', name: 'Heading' },
             'button': { icon: 'fa-square', name: 'Button' },
             'image': { icon: 'fa-image', name: 'Image' },
+            'numbered-timeline': { icon: 'fa-list-ol', name: 'Numbered Timeline' },
             'video': { icon: 'fa-video', name: 'Video' },
             'divider': { icon: 'fa-minus', name: 'Divider' },
             'gallery': { icon: 'fa-images', name: 'Gallery' },
@@ -3434,6 +4322,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             'custom-banner': { icon: 'fa-flag', name: 'Custom Banner' },
             'full-width-text-image': { icon: 'fa-image', name: 'Full Width Text Image' },
             'alert-message': { icon: 'fa-exclamation-triangle', name: 'Alert Message' },
+            'press-card': { icon: 'fa-newspaper', name: 'Press Card' },
             'auction-list': { icon: 'fa-gavel', name: 'Auction List' },
             'event-countdown': { icon: 'fa-clock', name: 'Event Countdown' },
             'event-information': { icon: 'fa-calendar', name: 'Event Information' },
@@ -3454,7 +4343,9 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             'contact-us': { icon: 'fa-phone', name: 'Contact Us' },
             'site-goal': { icon: 'fa-thermometer-half', name: 'Site Goal' },
             'invest-cta': { icon: 'fa-dollar-sign', name: 'Investment CTA' },
-            'text-images': { icon: 'fa-align-left', name: 'Text & Images' }
+            'text-images': { icon: 'fa-align-left', name: 'Text & Images' },
+            'feature-grid': { icon: 'fa-th-large', name: 'Feature Grid' },
+            'investment-tier': { icon: 'fa-coins', name: 'Investment Tier' }
         };
         
         return componentInfo[type] || { icon: 'fa-cube', name: 'Component' };
@@ -3509,11 +4400,13 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 </div>
                 <div class="form-group">
                     <label>Width</label>
-                    <input type="text" value="${d.width || '100%'}" oninput="updateImageField(this.value, 'width')">
+                    <input type="text" value="${d.width || '100%'}" oninput="updateImageField(this.value, 'width')" placeholder="e.g. 100%, 300px, auto">
+                    <small style="color: #666; font-size: 12px;">Use %, px, or auto</small>
                 </div>
                 <div class="form-group">
                     <label>Height</label>
-                    <input type="text" value="${d.height || 'auto'}" oninput="updateImageField(this.value, 'height')">
+                    <input type="text" value="${d.height || 'auto'}" oninput="updateImageField(this.value, 'height')" placeholder="e.g. auto, 200px, 50%">
+                    <small style="color: #666; font-size: 12px;">Use auto, px, or %</small>
                 </div>
                 <div class="form-group">
                     <label>Object Fit</label>
@@ -3534,6 +4427,64 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             `;
         break;
 
+            case 'numbered-timeline':
+            const timelineData = content._timelineData || {};
+            const colors = timelineData.colors || {};
+            let itemsHtml = '';
+            
+            if (timelineData.items) {
+                timelineData.items.forEach((item, index) => {
+                    itemsHtml += `
+                        <div class="timeline-item-editor" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                            <div class="form-group">
+                                <label>Item ${index + 1} - Number</label>
+                                <input type="text" value="${item.number || ''}" oninput="updateTimelineItem(${index}, 'number', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" value="${item.title || ''}" oninput="updateTimelineItem(${index}, 'title', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea style="min-height: 80px;" oninput="updateTimelineItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
+                            </div>
+                            <button type="button" onclick="removeTimelineItem(${index})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove Item</button>
+                        </div>
+                    `;
+                });
+            }
+            
+            specificControls = `
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Colors</h4>
+                <div class="form-group">
+                    <label>Number Border Color</label>
+                    <input type="color" value="${colors.numberBackground || '#22c55e'}" oninput="updateTimelineColor('numberBackground', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Number Text Color</label>
+                    <input type="color" value="${colors.numberText || '#22c55e'}" oninput="updateTimelineColor('numberText', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Title Color</label>
+                    <input type="color" value="${colors.titleColor || '#22c55e'}" oninput="updateTimelineColor('titleColor', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Description Color</label>
+                    <input type="color" value="${colors.descriptionColor || '#374151'}" oninput="updateTimelineColor('descriptionColor', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Line Color</label>
+                    <input type="color" value="${colors.lineColor || '#22c55e'}" oninput="updateTimelineColor('lineColor', this.value)">
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Timeline Items</h4>
+                <div id="timeline-items-container">
+                    ${itemsHtml}
+                </div>
+                <button type="button" onclick="addTimelineItem()" style="background: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Add New Item</button>
+            `;
+        break;
+
             case 'button':
             specificControls = `
                 <div class="form-group">
@@ -3548,17 +4499,51 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'text':
+            const textElement = content.querySelector('[id^="text-content-"]');
+            const textContent = textElement ? textElement.innerHTML : content.textContent;
+            const textEditorId = 'text-editor-' + Date.now();
+            ckeditorinitTextBox(textEditorId);
             specificControls = `
                 <div class="form-group">
-                <label>Content</label>
-                <textarea oninput="updateContent(this.value)">${content.textContent}</textarea>
+                    <label>Content</label>
+                    <textarea id="${textEditorId}" class="ck5-inline-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${textContent}</textarea>
                 </div>
             `;
+
             break;
 
             case 'inner-section':
             const innerSectionData = content._innerSectionData || {};
+            const websiteType = document.getElementById('website_type')?.value || 'fundraiser';
+            
+            // Add to Menu option only for investment websites
+            const menuOption = websiteType === 'investment' ? `
+                <div class="form-group" style="border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin-bottom: 20px; background-color: #f8f9ff;">
+                    <h5 style="color: #007bff; margin-bottom: 10px;">
+                        <i class="fas fa-bars"></i> Navigation Menu
+                    </h5>
+                    <label>
+                        <input type="checkbox" ${innerSectionData.addToMenu ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'addToMenu'); updateMenuSection(this.checked)">
+                        Add this section to navigation menu
+                    </label>
+                    <small class="text-muted d-block mt-2">When enabled, this section will appear in the website's navigation menu for smooth scrolling.</small>
+                    
+                    <div class="mt-3" style="display: ${innerSectionData.addToMenu ? 'block' : 'none'};" id="menuTitleGroup">
+                        <label>Menu Title</label>
+                        <input type="text" value="${innerSectionData.menuTitle || ''}" oninput="updateInnerSectionField(this.value, 'menuTitle')" placeholder="e.g., About Us, Services, Contact">
+                        <small class="text-muted">This text will appear in the navigation menu</small>
+                    </div>
+                    
+                    <div class="mt-3" style="display: ${innerSectionData.addToMenu ? 'block' : 'none'};" id="sectionIdGroup">
+                        <label>Section ID (Auto-generated)</label>
+                        <input type="text" value="${innerSectionData.sectionId || ''}" readonly style="background-color: #f8f9fa;">
+                        <small class="text-muted">This ID is used for navigation links. Auto-generated from menu title.</small>
+                    </div>
+                </div>
+            ` : '';
+            
             specificControls = `
+                ${menuOption}
                 <div class="form-group">
                     <label>Number of Columns</label>
                     <select oninput="updateInnerSectionColumns(this.value)">
@@ -3579,10 +4564,56 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <input type="text" value="${innerSectionData.gap || '15px'}" oninput="updateInnerSectionGap(this.value)">
                     <small>Spacing between columns (e.g., 10px, 1rem, 20px)</small>
                 </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Layout Settings</h4>
                 <div class="form-group">
-                    <label>Section Background Color</label>
+                    <label>
+                        <input type="checkbox" ${innerSectionData.fullWidth ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'fullWidth')">
+                        Stretch to Full Width
+                    </label>
+                    <small class="text-muted">Make this section span the full width of the page (like Elementor)</small>
+                </div>
+                <div class="form-group" style="display: ${innerSectionData.fullWidth ? 'block' : 'none'};" id="contentWidthGroup">
+                    <label>Content Width</label>
+                    <select oninput="updateInnerSectionField(this.value, 'contentWidth')">
+                        <option value="full" ${innerSectionData.contentWidth === 'full' ? 'selected' : ''}>Full Width (components spread across full width)</option>
+                        <option value="boxed" ${innerSectionData.contentWidth === 'boxed' ? 'selected' : ''}>Boxed (components stay centered)</option>
+                    </select>
+                    <small class="text-muted">Choose how content should behave within the full-width section</small>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Background Settings</h4>
+                <div class="form-group">
+                    <label>Background Type</label>
+                    <select oninput="updateInnerSectionField(this.value, 'backgroundType'); toggleInnerSectionBackgroundType(this.value)">
+                        <option value="color" ${innerSectionData.backgroundType === 'color' ? 'selected' : ''}>Color</option>
+                        <option value="image" ${innerSectionData.backgroundType === 'image' ? 'selected' : ''}>Image</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="innerSectionBackgroundColor" style="display: ${innerSectionData.backgroundType === 'image' ? 'none' : 'block'};">
+                    <label>Background Color</label>
                     <input type="color" value="${innerSectionData.backgroundColor || '#f8f9fa'}" oninput="updateInnerSectionField(this.value, 'backgroundColor')">
                 </div>
+                
+                <div id="innerSectionBackgroundImageSettings" style="display: ${innerSectionData.backgroundType === 'image' ? 'block' : 'none'};">
+                    <div class="form-group">
+                        <label>Upload Background Image</label>
+                        <input type="file" accept="image/*" onchange="uploadInnerSectionBackgroundImage(event)">
+                        ${innerSectionData.backgroundImage ? `<div style="margin-top: 8px;"><img src="${innerSectionData.backgroundImage}" style="max-width: 100%; max-height: 100px; border-radius: 4px; border: 1px solid #ddd;"></div>` : ''}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Background Attachment</label>
+                        <select oninput="updateInnerSectionField(this.value, 'backgroundAttachment')">
+                            <option value="scroll" ${innerSectionData.backgroundAttachment === 'scroll' ? 'selected' : ''}>Scroll with content</option>
+                            <option value="fixed" ${innerSectionData.backgroundAttachment === 'fixed' ? 'selected' : ''}>Fixed (parallax effect)</option>
+                        </select>
+                        <small>Fixed creates a parallax scrolling effect</small>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Border & Spacing</h4>
                 <div class="form-group">
                     <label>Border Color</label>
                     <input type="color" value="${innerSectionData.borderColor || '#ddd'}" oninput="updateInnerSectionField(this.value, 'borderColor')">
@@ -3656,6 +4687,9 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 <div class="form-group">
                 <label>Section Title</label>
                 <input type="text" value="${content.textContent}" oninput="updateContent(this.value)">
+                </div>
+                <div class="form-group">
+                <small class="text-muted">💡 Use the Color control in the Style section above to change the text color.</small>
                 </div>
             `;
             break;
@@ -3744,12 +4778,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
                         <div style="margin-top:8px;">
-                            ${galleryData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(${idx})">`).join('')}
+                            ${'${galleryData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(${idx})">`).join(\'\')}'}
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Columns</label>
-                        <input type="number" min="1" max="6" value="${galleryData.columns}" oninput="updateGalleryColumns(this.value)">
+                        <input type="number" min="1" max="6" value="${'${galleryData.columns}'}" oninput="updateGalleryColumns(this.value)">
                     </div>
                 `;
             break;
@@ -3760,16 +4794,16 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadSliderImages(event)">
                         <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
-                            ${sliderData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(${idx})">`).join('')}
+                            ${'${sliderData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(${idx})">`).join(\'\')}'}
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Slides to Show</label>
-                        <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" oninput="updateSliderSlidesToShow(this.value)">
+                        <input type="number" min="1" max="10" value="${'${sliderData.slidesToShow}'}" oninput="updateSliderSlidesToShow(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Slide Speed (ms)</label>
-                        <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" oninput="updateSliderSlideSpeed(this.value)">
+                        <input type="number" min="500" max="10000" value="${'${sliderData.slideSpeed}'}" oninput="updateSliderSlideSpeed(this.value)">
                     </div>
                 `;
             break;
@@ -3785,17 +4819,67 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
             case 'video':
                 const videoContainer = content.querySelector('.video-container');
+                const currentUrl = content._videoData ? content._videoData.url : '';
+                const currentType = content._videoData ? content._videoData.type : 'youtube';
+                const autoplayEnabled = content._videoData ? content._videoData.autoplay : false;
+                const currentWidth = content._videoData ? content._videoData.width : null;
+                const currentHeight = content._videoData ? content._videoData.height : null;
                 specificControls = `
                     <div class="form-group">
-                    <label>Video URL</label>
-                    <input type="text" value="" oninput="updateVideoEmbed(this.value)">
+                        <label>Video Type</label>
+                        <select onchange="switchVideoType(this.value)" id="videoTypeSelect">
+                            <option value="youtube" ${currentType === 'youtube' ? 'selected' : ''}>YouTube Video</option>
+                            <option value="uploaded" ${currentType === 'uploaded' ? 'selected' : ''}>Upload Video File</option>
+                        </select>
+                    </div>
+                    
+                    <div id="youtubeControls" style="display: ${currentType === 'youtube' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>YouTube Video URL</label>
+                            <input type="text" value="${currentType === 'youtube' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'youtube')" placeholder="https://www.youtube.com/watch?v=...">
+                            <small class="text-muted">Paste a YouTube video URL</small>
+                        </div>
+                    </div>
+                    
+                    <div id="uploadControls" style="display: ${currentType === 'uploaded' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Upload Video File</label>
+                            <input type="file" accept="video/*" onchange="uploadVideoFile(event)" class="form-control mb-2">
+                            <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL">
+                            <small class="text-muted">Upload a video file (MP4, WebM, OGG) up to 10MB or enter a URL</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${autoplayEnabled ? 'checked' : ''} onchange="updateVideoAutoplay(this.checked)"> 
+                            Enable Autoplay (Frontend Only)
+                        </label>
+                        <small class="text-muted">Video will autoplay when loaded on the frontend</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Width (px)</label>
+                                <input type="number" class="form-control" value="${currentWidth || ''}" onchange="updateVideoSize('width', this.value)" placeholder="Auto" min="100" max="1200">
+                                <small class="text-muted">Leave empty for responsive width</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Height (px)</label>
+                                <input type="number" class="form-control" value="${currentHeight || ''}" onchange="updateVideoSize('height', this.value)" placeholder="Auto" min="100" max="800">
+                                <small class="text-muted">Leave empty for responsive height</small>
+                            </div>
+                        </div>
                     </div>
                 `;
                 // Show current embed preview
                 specificControls += `
                     <div class="form-group">
-                    <label>Preview</label>
-                    <div class="video-preview">${videoContainer.innerHTML}</div>
+                        <label>Preview</label>
+                        <div class="video-preview">${videoContainer.innerHTML}</div>
                     </div>
                 `;
             break;
@@ -3917,6 +5001,95 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 </div>
             `;
             break;
+
+            case 'press-card':
+                const pressData = content._pressCardData || {
+                    logoSrc: '',
+                    logoAlt: 'Press Logo',
+                    title: 'Press Article Title',
+                    url: '#',
+                    date: 'Date',
+                    target: '_blank',
+                    cardBackgroundColor: '#ffffff',
+                    cardBorderRadius: '8px',
+                    cardBoxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    overlayOpacity: '0.1',
+                    logoBackgroundColor: '#f8f9fa',
+                    titleColor: '#1a1a1a',
+                    dateColor: '#666666'
+                };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Press Logo</label>
+                        <input type="file" accept="image/*" onchange="uploadPressCardImage(event)" class="form-control mb-2">
+                        <input type="text" value="${pressData.logoSrc}" oninput="updatePressCardField('logoSrc', this.value)" placeholder="Or enter image URL">
+                        <small class="text-muted">Upload an image or enter a URL</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Logo Alt Text</label>
+                        <input type="text" value="${pressData.logoAlt}" oninput="updatePressCardField('logoAlt', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Article Title</label>
+                        <textarea oninput="updatePressCardField('title', this.value)">${pressData.title}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Article URL</label>
+                        <input type="url" value="${pressData.url}" oninput="updatePressCardField('url', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Publication Date</label>
+                        <input type="text" value="${pressData.date}" oninput="updatePressCardField('date', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Link Target</label>
+                        <select oninput="updatePressCardField('target', this.value)">
+                            <option value="_blank" ${pressData.target === '_blank' ? 'selected' : ''}>New Tab</option>
+                            <option value="_self" ${pressData.target === '_self' ? 'selected' : ''}>Same Tab</option>
+                        </select>
+                    </div>
+                    
+                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Card Design</h5>
+                    <div class="form-group">
+                        <label>Card Background Color</label>
+                        <input type="color" value="${pressData.cardBackgroundColor}" oninput="updatePressCardField('cardBackgroundColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Logo Area Background</label>
+                        <input type="color" value="${pressData.logoBackgroundColor}" oninput="updatePressCardField('logoBackgroundColor', this.value)">
+                        <small class="text-muted">Background color for the logo section</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Card Border Radius</label>
+                        <input type="text" value="${pressData.cardBorderRadius}" oninput="updatePressCardField('cardBorderRadius', this.value)" placeholder="e.g., 8px, 0px, 15px">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Shadow</label>
+                        <select oninput="updatePressCardField('cardBoxShadow', this.value)">
+                            <option value="none" ${pressData.cardBoxShadow === 'none' ? 'selected' : ''}>No Shadow</option>
+                            <option value="0 2px 8px rgba(0,0,0,0.1)" ${pressData.cardBoxShadow === '0 2px 8px rgba(0,0,0,0.1)' ? 'selected' : ''}>Light Shadow</option>
+                            <option value="0 4px 16px rgba(0,0,0,0.15)" ${pressData.cardBoxShadow === '0 4px 16px rgba(0,0,0,0.15)' ? 'selected' : ''}>Medium Shadow</option>
+                            <option value="0 8px 32px rgba(0,0,0,0.2)" ${pressData.cardBoxShadow === '0 8px 32px rgba(0,0,0,0.2)' ? 'selected' : ''}>Strong Shadow</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Black Overlay Opacity</label>
+                        <input type="range" min="0" max="0.5" step="0.05" value="${pressData.overlayOpacity}" oninput="updatePressCardField('overlayOpacity', this.value)">
+                        <small class="text-muted">Current: ${(parseFloat(pressData.overlayOpacity) * 100).toFixed(0)}%</small>
+                    </div>
+                    
+                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Text Colors</h5>
+                    <div class="form-group">
+                        <label>Title Color</label>
+                        <input type="color" value="${pressData.titleColor}" oninput="updatePressCardField('titleColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Date Color</label>
+                        <input type="color" value="${pressData.dateColor}" oninput="updatePressCardField('dateColor', this.value)">
+                    </div>
+                `;
+            break;
+
             case 'event-countdown':
             const countdownData = content._countdownData || { date: '', label: '' };
             specificControls = `
@@ -4132,12 +5305,21 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 `;
             break;
             case 'text-images':
-                const textImagesData = content._textImagesData || { text: '', imgSrc: '', imgPosition: 'left', imgSize: 200, showImage: true };
+                const textImagesData = content._textImagesData || { text: '', imgSrc: '', imgPosition: 'left', imgSize: 200, imgWidth: '200', imgHeight: 'auto', showImage: true };
+                const editorId = 'text-images-editor-' + Date.now();
+
+                ckeditorinit(editorId);
+
+                // Always default select to 'left' if not set
+                let imgPosition = textImagesData.imgPosition || 'left';
+                let imgWidth = textImagesData.imgWidth || textImagesData.imgSize || '200';
+                let imgHeight = textImagesData.imgHeight || 'auto';
                 specificControls = `
                     <div class="form-group">
-                        <label>Text</label>
-                        <textarea oninput="updateTextImagesField(this.value, 'text')">${textImagesData.text}</textarea>
+                        <label>Text Content</label>
+                        <textarea oninput="updateTextImagesField(this.value, 'text')" id="${editorId}" class="ck5-inline-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${textImagesData.text || ''}</textarea>
                     </div>
+                
                     <div class="form-group">
                         <label>Upload Image</label>
                         <input type="file" accept="image/*" onchange="uploadTextImagesImage(event)">
@@ -4146,19 +5328,183 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <div class="form-group">
                         <label>Image Position</label>
                         <select oninput="updateTextImagesField(this.value, 'imgPosition')">
-                            <option value="up" ${textImagesData.imgPosition==='up'?'selected':''}>Up</option>
-                            <option value="down" ${textImagesData.imgPosition==='down'?'selected':''}>Down</option>
-                            <option value="left" ${textImagesData.imgPosition==='left'?'selected':''}>Left</option>
-                            <option value="right" ${textImagesData.imgPosition==='right'?'selected':''}>Right</option>
+                            <option value="up" ${imgPosition==='up'?'selected':''}>Up</option>
+                            <option value="down" ${imgPosition==='down'?'selected':''}>Down</option>
+                            <option value="left" ${imgPosition==='left'?'selected':''}>Left</option>
+                            <option value="right" ${imgPosition==='right'?'selected':''}>Right</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Image Size (px)</label>
-                        <input type="number" min="50" max="1000" value="${textImagesData.imgSize}" oninput="updateTextImagesField(this.value, 'imgSize')">
+                        <label>Image Width (px or %)</label>
+                        <input type="text" value="${imgWidth}" oninput="updateTextImagesField(this.value, 'imgWidth')" placeholder="200px or 100%">
+                    </div>
+                    <div class="form-group">
+                        <label>Image Height (px or auto)</label>
+                        <input type="text" value="${imgHeight}" oninput="updateTextImagesField(this.value, 'imgHeight')" placeholder="auto or 150px">
                     </div>
                     <div class="form-group">
                         <label>Show Image</label>
                         <input type="checkbox" ${textImagesData.showImage ? 'checked' : ''} onchange="toggleTextImagesShowImage(this)">
+                    </div>
+                `;
+            break;
+            case 'feature-grid':
+                const featureGridData = content._featureGridData || { 
+                    features: [],
+                    iconColor: '#3b82f6',
+                    titleColor: '#1f2937',
+                    descriptionColor: '#6b7280'
+                };
+                // Ensure color properties exist in the actual data
+                if (!content._featureGridData) {
+                    content._featureGridData = featureGridData;
+                } else {
+                    if (!content._featureGridData.iconColor) content._featureGridData.iconColor = '#3b82f6';
+                    if (!content._featureGridData.titleColor) content._featureGridData.titleColor = '#1f2937';
+                    if (!content._featureGridData.descriptionColor) content._featureGridData.descriptionColor = '#6b7280';
+                }
+                let featureItems = '';
+                featureGridData.features.forEach((feature, index) => {
+                    featureItems += `
+                        <div class="feature-item-editor" style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+                            <h4>Feature ${index + 1}</h4>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" value="${feature.title}" oninput="updateFeatureGridField(${index}, this.value, 'title')">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea oninput="updateFeatureGridField(${index}, this.value, 'description')">${feature.description}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Icon</label>
+                                <select onchange="updateFeatureGridField(${index}, this.value, 'icon')" style="width: 100%;">
+                                    <option value="fas fa-chart-line" ${feature.icon === 'fas fa-chart-line' ? 'selected' : ''}>📈 Chart Line</option>
+                                    <option value="fas fa-trophy" ${feature.icon === 'fas fa-trophy' ? 'selected' : ''}>🏆 Trophy</option>
+                                    <option value="fas fa-expand-arrows-alt" ${feature.icon === 'fas fa-expand-arrows-alt' ? 'selected' : ''}>🔄 Expand</option>
+                                    <option value="fas fa-gem" ${feature.icon === 'fas fa-gem' ? 'selected' : ''}>💎 Gem</option>
+                                    <option value="fas fa-star" ${feature.icon === 'fas fa-star' ? 'selected' : ''}>⭐ Star</option>
+                                    <option value="fas fa-shield-alt" ${feature.icon === 'fas fa-shield-alt' ? 'selected' : ''}>🛡️ Shield</option>
+                                    <option value="fas fa-rocket" ${feature.icon === 'fas fa-rocket' ? 'selected' : ''}>🚀 Rocket</option>
+                                    <option value="fas fa-lightbulb" ${feature.icon === 'fas fa-lightbulb' ? 'selected' : ''}>💡 Lightbulb</option>
+                                    <option value="fas fa-cogs" ${feature.icon === 'fas fa-cogs' ? 'selected' : ''}>⚙️ Cogs</option>
+                                    <option value="fas fa-heart" ${feature.icon === 'fas fa-heart' ? 'selected' : ''}>❤️ Heart</option>
+                                    <option value="fas fa-users" ${feature.icon === 'fas fa-users' ? 'selected' : ''}>👥 Users</option>
+                                    <option value="fas fa-dollar-sign" ${feature.icon === 'fas fa-dollar-sign' ? 'selected' : ''}>💰 Dollar</option>
+                                    <option value="fas fa-lock" ${feature.icon === 'fas fa-lock' ? 'selected' : ''}>🔒 Lock</option>
+                                    <option value="fas fa-thumbs-up" ${feature.icon === 'fas fa-thumbs-up' ? 'selected' : ''}>👍 Thumbs Up</option>
+                                    <option value="fas fa-check-circle" ${feature.icon === 'fas fa-check-circle' ? 'selected' : ''}>✅ Check Circle</option>
+                                    <option value="fas fa-fire" ${feature.icon === 'fas fa-fire' ? 'selected' : ''}>🔥 Fire</option>
+                                    <option value="fas fa-globe" ${feature.icon === 'fas fa-globe' ? 'selected' : ''}>🌍 Globe</option>
+                                    <option value="fas fa-mobile-alt" ${feature.icon === 'fas fa-mobile-alt' ? 'selected' : ''}>📱 Mobile</option>
+                                    <option value="fas fa-cloud" ${feature.icon === 'fas fa-cloud' ? 'selected' : ''}>☁️ Cloud</option>
+                                    <option value="fas fa-handshake" ${feature.icon === 'fas fa-handshake' ? 'selected' : ''}>🤝 Handshake</option>
+                                </select>
+                                <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; text-align: center;">
+                                    <i class="${feature.icon}" style="font-size: 24px; color: ${featureGridData.iconColor || '#3b82f6'};"></i>
+                                    <small style="display: block; margin-top: 4px; color: #666;">Preview</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeFeatureGridItem(${index})">Remove Feature</button>
+                        </div>
+                    `;
+                });
+                specificControls = `
+                    <div class="form-group">
+                        <label>Icon Color</label>
+                        <input type="color" value="${featureGridData.iconColor || '#3b82f6'}" onchange="updateFeatureGridColor(this.value, 'iconColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Color</label>
+                        <input type="color" value="${featureGridData.titleColor || '#1f2937'}" onchange="updateFeatureGridColor(this.value, 'titleColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Description Color</label>
+                        <input type="color" value="${featureGridData.descriptionColor || '#6b7280'}" onchange="updateFeatureGridColor(this.value, 'descriptionColor')">
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="addFeatureGridItem()">Add Feature</button>
+                    </div>
+                    <div class="feature-grid-items">
+                        ${featureItems}
+                    </div>
+                `;
+            break;
+
+            case 'investment-tier':
+                const investmentTierData = content._investmentTierData || {};
+                specificControls = `
+                    <div class="form-group">
+                        <label>Tier Name</label>
+                        <input type="text" value="${investmentTierData.tierName || 'TIER 1'}" oninput="updateInvestmentTierField(this.value, 'tierName')">
+                    </div>
+                    <div class="form-group">
+                        <label>Tier Price</label>
+                        <input type="text" value="${investmentTierData.tierPrice || '$2,500'}" oninput="updateInvestmentTierField(this.value, 'tierPrice')">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea rows="4" oninput="updateInvestmentTierField(this.value, 'tierDescription')">${investmentTierData.tierDescription || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" value="${investmentTierData.buttonText || 'INVEST NOW'}" oninput="updateInvestmentTierField(this.value, 'buttonText')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button URL</label>
+                        <input type="text" value="${investmentTierData.buttonUrl || '#'}" oninput="updateInvestmentTierField(this.value, 'buttonUrl')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Target</label>
+                        <select onchange="updateInvestmentTierField(this.value, 'buttonTarget')">
+                            <option value="_self" ${investmentTierData.buttonTarget === '_self' ? 'selected' : ''}>Same Window</option>
+                            <option value="_blank" ${investmentTierData.buttonTarget === '_blank' ? 'selected' : ''}>New Window</option>
+                        </select>
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
+                        <label>Background Type</label>
+                        <select onchange="updateInvestmentTierField(this.value, 'backgroundType')">
+                            <option value="color" ${investmentTierData.backgroundType === 'color' ? 'selected' : ''}>Background Color</option>
+                            <option value="image" ${investmentTierData.backgroundType === 'image' ? 'selected' : ''}>Background Image</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="backgroundColor-group" style="display: ${investmentTierData.backgroundType === 'image' ? 'none' : 'block'};">
+                        <label>Background Color</label>
+                        <input type="color" value="${investmentTierData.backgroundColor || '#1a1a1a'}" onchange="updateInvestmentTierField(this.value, 'backgroundColor')">
+                    </div>
+                    <div class="form-group" id="backgroundImage-group" style="display: ${investmentTierData.backgroundType === 'image' ? 'block' : 'none'};">
+                        <label>Background Image</label>
+                        <div style="border: 2px dashed #ddd; border-radius: 8px; padding: 15px; margin-bottom: 10px; text-align: center; background-color: #f9f9f9;">
+                            <input type="file" accept="image/*" onchange="uploadInvestmentTierImage(this)" style="margin-bottom: 8px; width: 100%;">
+                            <small style="display: block; color: #666; font-size: 12px;">Upload an image file (JPEG, PNG, GIF, SVG, WebP - Max: 2MB)</small>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-size: 0.9em; color: #666; margin-bottom: 5px; display: block;">Or enter image URL:</label>
+                            <input type="text" value="${investmentTierData.backgroundImage || ''}" oninput="updateInvestmentTierField(this.value, 'backgroundImage'); updateInvestmentTierBackgroundImagePreview(this.value);" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div id="backgroundImagePreview" style="margin-top: 10px; text-align: center;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Text Color</label>
+                        <input type="color" value="${'${investmentTierData.textColor || \'#ffffff\'}'}" onchange="updateInvestmentTierField(this.value, 'textColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Background Color</label>
+                        <input type="color" value="${'${investmentTierData.buttonBgColor || \'#28a745\'}'}" onchange="updateInvestmentTierField(this.value, 'buttonBgColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <input type="color" value="${investmentTierData.buttonTextColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'buttonTextColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Border Radius</label>
+                        <input type="text" value="${investmentTierData.borderRadius || '12px'}" oninput="updateInvestmentTierField(this.value, 'borderRadius')">
+                    </div>
+                    <div class="form-group">
+                        <label>Padding</label>
+                        <input type="text" value="${investmentTierData.padding || '2rem'}" oninput="updateInvestmentTierField(this.value, 'padding')">
                     </div>
                 `;
             break;
@@ -4176,9 +5522,14 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     buttonTextColor: '#ffffff',
                     valueColor: '#333333',
                     labelColor: '#666666',
-                    dividerColor: '#e0e0e0'
+                    dividerColor: '#e0e0e0',
+                    bgColor: '#f8f9fa'
                 };
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${investCtaData.bgColor}" oninput="updateInvestCtaField(this.value, 'bgColor')">
+                    </div>
                     <div class="form-group">
                         <label>Button Text</label>
                         <input type="text" value="${investCtaData.buttonText}" oninput="updateInvestCtaField(this.value, 'buttonText')">
@@ -4234,15 +5585,8 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
         }
 
-        // Common styling controls
-        propertyControls.innerHTML = `
-            <div class="component-header mb-3" style="border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
-                <h5 class="mb-0" style="color: #495057; font-weight: 600;">
-                    <i class="fas ${componentInfo.icon} me-2" style="color: #007bff;"></i>
-                    ${componentInfo.name}
-                </h5>
-            </div>
-            ${specificControls}
+        // Common styling controls - skip background color for invest-cta as it has its own
+        const commonControls = type === 'invest-cta' ? '' : `
             <div class="form-group">
             <label>Font Size</label>
             <input type="text" value="${content.style.fontSize || '16px'}" oninput="updateStyle(this, 'fontSize')">
@@ -4254,8 +5598,17 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             <div class="form-group">
             <label>Background Color</label>
             <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+            </div>`;
+        
+        propertyControls.innerHTML = `
+            <div class="component-header mb-3" style="border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+                <h5 class="mb-0" style="color: #495057; font-weight: 600;">
+                    <i class="fas ${componentInfo.icon} me-2" style="color: #007bff;"></i>
+                    ${componentInfo.name}
+                </h5>
             </div>
-            
+            ${specificControls}
+            ${commonControls}
             <!-- Responsive Margin Controls -->
             <div class="responsive-spacing-group">
                 <h6 class="spacing-header">
@@ -4359,7 +5712,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                 </div>
             </div>
-
+            
             <!-- Responsive Padding Controls -->
             <div class="responsive-spacing-group">
                 <h6 class="spacing-header">
@@ -4474,6 +5827,23 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             </div>
         `;
 
+        // After DOM update, initialize background image preview and CKEditor if needed
+        if (typeof updateInvestmentTierBackgroundImagePreview === 'function') {
+            var bgInput = propertyControls.querySelector('input[oninput*="updateInvestmentTierField"][oninput*="backgroundImage"]');
+            if (bgInput) {
+                updateInvestmentTierBackgroundImagePreview(bgInput.value);
+                bgInput.addEventListener('input', function() {
+                    updateInvestmentTierBackgroundImagePreview(this.value);
+                });
+            }
+        }
+        if (typeof initInlineCKEditors === 'function') {
+            setTimeout(initInlineCKEditors, 0);
+        }
+// Global function to initialize CKEditor for all inline editors
+// CKEditor 4 inline editor initialization removed. CKEditor 5 is now used directly where needed.
+            
+
         if (selectedComponent && selectedComponent.dataset.type === 'faq') {
             const numSelect = document.getElementById('faq_number_of_questions');
             if (numSelect) {
@@ -4486,6 +5856,17 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         
         // Update responsive CSS after property panel is updated
         updateResponsiveCSS();
+    }
+
+    // Global function to update background image preview for investment tier
+    function updateInvestmentTierBackgroundImagePreview(imageUrl) {
+        var previewDiv = document.getElementById('backgroundImagePreview');
+        if (!previewDiv) return;
+        if (imageUrl && imageUrl !== 'undefined') {
+            previewDiv.innerHTML = '<img src="' + imageUrl + '" style="max-width: 120px; max-height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd;" alt="Preview"><br><small style="color: #666; margin-top: 5px; display: block;">Current background image</small>';
+        } else {
+            previewDiv.innerHTML = '';
+        }
     }
 
 // helper function for sell tickets
@@ -4865,8 +6246,77 @@ function updateImageField(value, field) {
     if (!selectedComponent) return;
     const content = getContentElement(selectedComponent);
     if (!content._imageData) return;
+    
+    // Validate width and height values
+    if (field === 'width' || field === 'height') {
+        if (value === '') {
+            // Allow empty values for auto sizing
+            value = field === 'width' ? '100%' : 'auto';
+        } else if (value && !value.includes('%') && !value.includes('px') && !value.includes('auto') && !value.includes('em') && !value.includes('rem')) {
+            // If it's a number without units, add px
+            if (!isNaN(parseFloat(value))) {
+                value = value + 'px';
+            }
+        }
+    }
+    
     content._imageData[field] = value;
     content.renderImage();
+    updatePropertyPanel();
+}
+
+// Timeline functions
+function updateTimelineField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData) return;
+    
+    content._timelineData[field] = parseInt(value);
+    content.renderTimeline();
+    updatePropertyPanel();
+}
+
+function updateTimelineColor(colorField, value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData) return;
+    
+    content._timelineData.colors[colorField] = value;
+    content.renderTimeline();
+}
+
+function updateTimelineItem(index, field, value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData || !content._timelineData.items) return;
+    
+    content._timelineData.items[index][field] = value;
+    content.renderTimeline();
+}
+
+function addTimelineItem() {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData) return;
+    
+    const newItem = {
+        number: (content._timelineData.items.length + 1).toString(),
+        title: 'New Title:',
+        description: 'Enter description here...'
+    };
+    
+    content._timelineData.items.push(newItem);
+    content.renderTimeline();
+    updatePropertyPanel();
+}
+
+function removeTimelineItem(index) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData || !content._timelineData.items) return;
+    
+    content._timelineData.items.splice(index, 1);
+    content.renderTimeline();
     updatePropertyPanel();
 }
 
@@ -4894,11 +6344,23 @@ function updateInvestCtaField(value, field) {
     
     // Update the field
     content._investCtaData[field] = value;
+    // Also update background_color property for front-end compatibility
+    if (field === 'bgColor') {
+        // Find the component in the state and update its properties
+        if (selectedComponent && selectedComponent.dataset && selectedComponent.dataset.index) {
+            const idx = parseInt(selectedComponent.dataset.index);
+            if (!isNaN(idx) && window.state && window.state[idx]) {
+                if (!window.state[idx].properties) window.state[idx].properties = {};
+                window.state[idx].properties['background_color'] = value;
+            }
+        }
+    }
     
     // Re-render the component
     const wrapper = content.querySelector('.invest-cta-wrapper');
     if (wrapper) {
         const d = content._investCtaData;
+        wrapper.style.backgroundColor = d.bgColor;
         wrapper.innerHTML = `
             <div class="invest-cta-button-wrap">
                 <a href="${d.buttonUrl}" 
@@ -4925,6 +6387,23 @@ function updateInvestCtaField(value, field) {
             </div>
         `;
     }
+}
+
+function uploadInnerSectionBackgroundImage(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = getContentElement(selectedComponent);
+        if (!content._innerSectionData) return;
+        content._innerSectionData.backgroundImage = e.target.result;
+        if (content.updateBackground) {
+            content.updateBackground();
+        }
+        updatePropertyPanel();
+    };
+    reader.readAsDataURL(file);
 }
 
 function updateInnerSectionField(value, field) {
@@ -4957,6 +6436,54 @@ function updateInnerSectionField(value, field) {
         case 'margin':
             content.style.margin = value;
             break;
+        case 'fullWidth':
+            // Full width changes require re-rendering the inner section
+            if (content.renderInnerSection) {
+                content.renderInnerSection();
+            }
+            // Show/hide content width option
+            const contentWidthGroup = document.getElementById('contentWidthGroup');
+            if (contentWidthGroup) {
+                contentWidthGroup.style.display = value ? 'block' : 'none';
+            }
+            break;
+        case 'contentWidth':
+            // Content width changes require re-rendering
+            if (content.renderInnerSection) {
+                content.renderInnerSection();
+            }
+            break;
+        case 'backgroundType':
+        case 'backgroundImage':
+        case 'backgroundAttachment':
+            // Update background using the updateBackground function
+            if (content.updateBackground) {
+                content.updateBackground();
+            }
+            break;
+        case 'addToMenu':
+            // Handle menu addition with visual feedback
+            updateSectionVisualIndicator(content, value);
+            break;
+        case 'menuTitle':
+            // Auto-generate section ID when menu title changes
+            if (value && value.trim()) {
+                updateSectionId(value.trim());
+            }
+            break;
+    }
+}
+
+function toggleInnerSectionBackgroundType(type) {
+    const colorGroup = document.getElementById('innerSectionBackgroundColor');
+    const imageGroup = document.getElementById('innerSectionBackgroundImageSettings');
+    
+    if (type === 'color') {
+        if (colorGroup) colorGroup.style.display = 'block';
+        if (imageGroup) imageGroup.style.display = 'none';
+    } else if (type === 'image') {
+        if (colorGroup) colorGroup.style.display = 'none';
+        if (imageGroup) imageGroup.style.display = 'block';
     }
 }
 
@@ -4978,6 +6505,92 @@ function updateInnerSectionGap(gap) {
     content._innerSectionData.gap = gap;
 }
 
+// Menu section functionality for investment websites
+function updateMenuSection(addToMenu) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._innerSectionData) return;
+    
+    content._innerSectionData.addToMenu = addToMenu;
+    
+    // Show/hide menu title and section ID fields
+    const menuTitleGroup = document.getElementById('menuTitleGroup');
+    const sectionIdGroup = document.getElementById('sectionIdGroup');
+    
+    if (menuTitleGroup) menuTitleGroup.style.display = addToMenu ? 'block' : 'none';
+    if (sectionIdGroup) sectionIdGroup.style.display = addToMenu ? 'block' : 'none';
+    
+    // If adding to menu and no title set, focus on the title input
+    if (addToMenu && !content._innerSectionData.menuTitle) {
+        setTimeout(() => {
+            const titleInput = menuTitleGroup?.querySelector('input[type="text"]');
+            if (titleInput) titleInput.focus();
+        }, 100);
+    }
+    
+    // Update section ID when adding to menu
+    if (addToMenu && content._innerSectionData.menuTitle) {
+        updateSectionId(content._innerSectionData.menuTitle);
+    }
+    
+    // Add visual indicator to the section
+    updateSectionVisualIndicator(content, addToMenu);
+}
+
+function updateSectionId(menuTitle) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._innerSectionData) return;
+    
+    // Generate section ID from menu title
+    const sectionId = menuTitle.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+        .replace(/\s+/g, '-')        // Replace spaces with hyphens
+        .replace(/^-+|-+$/g, '');    // Remove leading/trailing hyphens
+    
+    content._innerSectionData.sectionId = sectionId;
+    
+    // Update the readonly input field
+    const sectionIdInput = document.querySelector('#sectionIdGroup input[readonly]');
+    if (sectionIdInput) {
+        sectionIdInput.value = sectionId;
+    }
+    
+    // Update the content element's ID for navigation
+    if (sectionId) {
+        content.setAttribute('data-section-id', sectionId);
+    }
+}
+
+function updateSectionVisualIndicator(content, addToMenu) {
+    // Remove existing indicator
+    const existingIndicator = content.querySelector('.menu-section-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    // Add indicator if this section is in menu
+    if (addToMenu) {
+        const indicator = document.createElement('div');
+        indicator.className = 'menu-section-indicator';
+        indicator.innerHTML = '<i class="fas fa-bars"></i> Menu Section';
+        indicator.style.cssText = `
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 15;
+            pointer-events: none;
+        `;
+        content.appendChild(indicator);
+    }
+}
+
     // helper function for full width text and image
 
 
@@ -4992,6 +6605,103 @@ function updateInnerSectionGap(gap) {
     }
     if (typeof content.renderFWTI === 'function') content.renderFWTI();
 }
+
+function updatePressCardField(field, value) {
+    console.log('=== updatePressCardField called ===');
+    console.log('Field:', field, 'Value:', value);
+    console.log('Selected component:', selectedComponent);
+    
+    if (!selectedComponent) {
+        console.log('No selected component');
+        return;
+    }
+    
+    const content = getContentElement(selectedComponent);
+    console.log('Content element:', content);
+    
+    if (!content._pressCardData) {
+        console.log('No _pressCardData found');
+        return;
+    }
+    
+    console.log('Current _pressCardData before update:', content._pressCardData);
+    content._pressCardData[field] = value;
+    console.log('Updated _pressCardData:', content._pressCardData);
+    
+    if (typeof content.renderPressCard === 'function') {
+        console.log('Calling renderPressCard function');
+        content.renderPressCard();
+    } else {
+        console.log('renderPressCard function not found');
+    }
+    
+    // Auto-save the page data to ensure changes persist
+    // setTimeout(() => {
+    //     console.log('Auto-saving page data after press card field change');
+    //     saveBuilderState();
+    // }, 1000);
+    
+    console.log('=== END updatePressCardField ===');
+}
+
+function uploadPressCardImage(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        updatePressCardField('logoSrc', e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+// Debug helper function for press card
+window.debugPressCard = function() {
+    if (selectedComponent) {
+        console.log('=== DEBUG PRESS CARD ===');
+        console.log('Selected component:', selectedComponent);
+        console.log('Selected component type:', selectedComponent.dataset.type);
+        
+        const content = getContentElement(selectedComponent);
+        console.log('Content element:', content);
+        console.log('Content _pressCardData:', content ? content._pressCardData : 'no content');
+        console.log('renderPressCard function exists:', content && typeof content.renderPressCard === 'function');
+        console.log('=== END DEBUG ===');
+    } else {
+        console.log('No component selected');
+    }
+};
+
+// Test serialization function
+window.testPressCardSave = function() {
+    console.log('=== TEST PRESS CARD SAVE ===');
+    const state = serializeBuilder();
+    console.log('Full serialized state:', state);
+    
+    // Look for press cards in the data
+    if (state.components) {
+        state.components.forEach((comp, idx) => {
+            console.log(`Component ${idx}: type=${comp.type}`);
+            if (comp.type === 'press-card') {
+                console.log(`  Press card data:`, comp.pressCardData);
+            }
+            if (comp.nestedComponents) {
+                comp.nestedComponents.forEach((column, colIdx) => {
+                    if (Array.isArray(column)) {
+                        column.forEach((nested, nestedIdx) => {
+                            if (nested.type === 'press-card') {
+                                console.log(`  Nested press card in column ${colIdx}, item ${nestedIdx}:`, nested.pressCardData);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    console.log('=== END TEST ===');
+    return state;
+};
 
 function uploadFWTIImage(event) {
     if (!selectedComponent) return;
@@ -5268,8 +6978,8 @@ function updateResponsiveCSS() {
                     css += `#${componentId} { ${desktopMargins}; }\n`;
                 }
                 if (desktopPaddings) {
-                    // Apply padding directly to the content element, not a generic .component-content
-                    css += `#${componentId} > *:not(.component-controls) { ${desktopPaddings}; }\n`;
+                    // Apply padding directly to the content element, but exclude investment tier components
+                    css += `#${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${desktopPaddings}; }\n`;
                 }
             }
             
@@ -5291,7 +7001,7 @@ function updateResponsiveCSS() {
                 }
                 if (tabletPaddings) {
                     css += `@media screen and (max-width: 991px) and (min-width: 768px) {\n`;
-                    css += `  #${componentId} > *:not(.component-controls) { ${tabletPaddings}; }\n`;
+                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${tabletPaddings}; }\n`;
                     css += `}\n`;
                 }
                 
@@ -5300,7 +7010,7 @@ function updateResponsiveCSS() {
                     css += `.canvas.tablet-view #${componentId} { ${tabletMargins}; }\n`;
                 }
                 if (tabletPaddings) {
-                    css += `.canvas.tablet-view #${componentId} > *:not(.component-controls) { ${tabletPaddings}; }\n`;
+                    css += `.canvas.tablet-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${tabletPaddings}; }\n`;
                 }
             }
             
@@ -5322,7 +7032,7 @@ function updateResponsiveCSS() {
                 }
                 if (mobilePaddings) {
                     css += `@media screen and (max-width: 767px) {\n`;
-                    css += `  #${componentId} > *:not(.component-controls) { ${mobilePaddings}; }\n`;
+                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${mobilePaddings}; }\n`;
                     css += `}\n`;
                 }
                 
@@ -5331,7 +7041,7 @@ function updateResponsiveCSS() {
                     css += `.canvas.mobile-view #${componentId} { ${mobileMargins}; }\n`;
                 }
                 if (mobilePaddings) {
-                    css += `.canvas.mobile-view #${componentId} > *:not(.component-controls) { ${mobilePaddings}; }\n`;
+                    css += `.canvas.mobile-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${mobilePaddings}; }\n`;
                 }
             }
         }
@@ -5403,25 +7113,28 @@ function applyResponsiveStyles() {
 
     // Update content
     function updateContent(text) {
-      if (selectedComponent) {
-        const content = getContentElement(selectedComponent);
-
-        con = getContentElement(content);
-
-        console.log(con);
-
-        if (con) {
-            if (con.type === 'file' || con.type === 'text' || con.type === 'number') {
-                document.querySelectorAll('.compo').forEach(el => el.remove());
-
-                con.insertAdjacentHTML('beforebegin', '<label class="compo">' + text + '</label> <br class="compo">');
+            if (!selectedComponent) {
+                console.warn('updateContent: No selectedComponent');
+                return;
             }
-        }else{
+            const content = getContentElement(selectedComponent);
+            if (!content) {
+                console.warn('updateContent: getContentElement returned null for', selectedComponent);
+                return;
+            }
+
+            // Try to find the text box preview element
+            const textBoxPreview = content.querySelector('[id^="text-content-"]');
+            if (textBoxPreview) {
+                console.log('updateContent: Updating text box preview', textBoxPreview, 'with', text);
+                textBoxPreview.innerHTML = text;
+                return;
+            }
+
+            // Fallback: update content.textContent (for other types)
+            console.log('updateContent: Fallback, updating content.textContent for', content, 'with', text);
             content.textContent = text;
         }
-
-      }
-    }
 
     // Update heading level
     function updateHeadingLevel(level) {
@@ -5476,18 +7189,18 @@ function applyResponsiveStyles() {
         if (file && selectedComponent) {
             const reader = new FileReader();
             reader.onload = function(e) {
-            const img = selectedComponent.querySelector('img');
-            img.src = e.target.result;
+                const img = selectedComponent.querySelector('img');
+                img.src = e.target.result;
 
-            // Update preview if exists
-            const preview = selectedComponent.closest('.properties').querySelector('.image-preview');
-            if (preview) {
-                preview.src = e.target.result;
-            }
+                // Update preview if exists
+                const preview = selectedComponent.closest('.properties').querySelector('.image-preview');
+                if (preview) {
+                    preview.src = e.target.result;
+                }
             };
             reader.readAsDataURL(file);
         }
-        }
+    }
 
         function updateButtonAlignment(select) {
             if (selectedComponent && selectedComponent.dataset.type === 'button') {
@@ -5543,32 +7256,236 @@ function applyResponsiveStyles() {
             }
         }
 
-        function updateVideoEmbed(url) {
-            if (!selectedComponent) return;
-            const container = selectedComponent.querySelector('.video-container');
-
-            if (!container) return;
-
-            // Simple YouTube embed
-            if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                let videoId = '';
-                if (url.includes('youtu.be')) {
-                videoId = url.split('/').pop();
-                } else {
-                const urlParams = new URLSearchParams(new URL(url).search);
-                videoId = urlParams.get('v');
-                }
-                if (videoId) {
-                container.innerHTML = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                } else {
-                container.innerHTML = 'Invalid YouTube URL';
-                }
+        function updateVideoEmbed(url, type = 'youtube') {
+            console.log('updateVideoEmbed called with:', { url, type, selectedComponent });
+            if (!selectedComponent) {
+                console.log('No selected component!');
+                return;
+            }
+            const content = getContentElement(selectedComponent);
+            console.log('Content element:', content);
+            if (content && content.updateVideo) {
+                // Properly update the video data
+                content._videoData.url = url;
+                content._videoData.type = type;
+                console.log('Calling content.updateVideo with:', url, type);
+                content.updateVideo(url, type);
+                console.log('Video component updated, videoData:', content._videoData);
+                
+                // Refresh properties panel to show correct type
+                updatePropertyPanel();
             } else {
-                container.innerHTML = 'Unsupported video URL';
+                console.log('Content element or updateVideo method not found');
             }
         }
 
+        function uploadVideoFile(event) {
+            if (!selectedComponent) return;
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (10MB = 10 * 1024 * 1024 bytes)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('File size must be less than 10MB');
+                event.target.value = '';
+                return;
+            }
+            
+            // Show upload progress
+            const progressDiv = document.createElement('div');
+            progressDiv.innerHTML = '<div style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; margin: 10px 0;">Uploading video... Please wait.</div>';
+            event.target.parentNode.appendChild(progressDiv);
+            
+            // Create FormData and upload to server
+            const formData = new FormData();
+            formData.append('video', file);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            
+            fetch('/test-upload-video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    // If response is not ok, read as text to see what was returned
+                    return response.text().then(text => {
+                        console.log('Error response body:', text);
+                        throw new Error(`HTTP ${response.status}: ${text}`);
+                    });
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                progressDiv.remove();
+                console.log('Upload response data:', data);
+                if (data.success) {
+                    console.log('Video URL received:', data.url);
+                    console.log('Selected component:', selectedComponent);
+                    console.log('Content element:', getContentElement(selectedComponent));
+                    updateVideoEmbed(data.url, 'uploaded');
+                    console.log('Video embed updated');
+                } else {
+                    alert('Upload failed: ' + (data.message || 'Unknown error'));
+                    event.target.value = '';
+                }
+            })
+            .catch(error => {
+                progressDiv.remove();
+                console.error('Upload error:', error);
+                alert('Upload failed: ' + error.message);
+                event.target.value = '';
+            });
+        }
 
+        function switchVideoType(type) {
+            const youtubeControls = document.getElementById('youtubeControls');
+            const uploadControls = document.getElementById('uploadControls');
+            
+            if (type === 'youtube') {
+                youtubeControls.style.display = 'block';
+                uploadControls.style.display = 'none';
+            } else {
+                youtubeControls.style.display = 'none';
+                uploadControls.style.display = 'block';
+            }
+            
+            // Only clear current video if actually switching to a different type
+            if (selectedComponent) {
+                const content = getContentElement(selectedComponent);
+                if (content && content._videoData) {
+                    const currentType = content._videoData.type;
+                    content._videoData.type = type;
+                    
+                    // Only clear URL and refresh if type actually changed
+                    if (currentType !== type) {
+                        content._videoData.url = '';
+                        content.updateVideo('', type);
+                    }
+                }
+            }
+        }
+
+        function updateVideoAutoplay(enabled) {
+            if (!selectedComponent) return;
+            const content = getContentElement(selectedComponent);
+            if (content && content._videoData) {
+                content._videoData.autoplay = enabled;
+                // Re-render video with new autoplay setting
+                content.updateVideo(content._videoData.url, content._videoData.type);
+            }
+        }
+
+        function updateVideoSize(dimension, value) {
+            console.log('=== updateVideoSize called ===');
+            console.log('updateVideoSize called with:', dimension, value);
+            
+            if (!selectedComponent) {
+                console.log('No selected component');
+                return;
+            }
+            
+            // Find the actual video component and content
+            let videoComponent = selectedComponent;
+            let videoContent = getContentElement(selectedComponent);
+            
+            // If selected component is not a video, look for video inside it
+            if (selectedComponent.dataset.type !== 'video') {
+                console.log('Selected component is not video, searching inside...');
+                const nestedVideo = selectedComponent.querySelector('[data-type="video"]');
+                if (nestedVideo) {
+                    videoComponent = nestedVideo;
+                    videoContent = getContentElement(nestedVideo);
+                    console.log('Found nested video component');
+                } else {
+                    console.log('No video component found');
+                    return;
+                }
+            }
+            
+            if (!videoContent) {
+                console.log('No video content found');
+                return;
+            }
+            
+            console.log('Working with video content:', videoContent);
+            
+            // Initialize _videoData if it doesn't exist
+            if (!videoContent._videoData) {
+                console.log('Initializing _videoData object');
+                videoContent._videoData = {
+                    url: '',
+                    type: 'youtube',
+                    autoplay: false,
+                    width: null,
+                    height: null
+                };
+            }
+            
+            console.log('Current _videoData before update:', videoContent._videoData);
+            
+            // Update the dimension
+            if (value && value > 0) {
+                // Apply to video content element
+                videoContent.style[dimension] = value + 'px';
+                videoContent._videoData[dimension] = parseInt(value);
+                console.log('Set', dimension, 'to', parseInt(value));
+                
+                // Apply to video container
+                const container = videoContent.querySelector('.video-container');
+                if (container) {
+                    container.style[dimension] = value + 'px';
+                    console.log('Applied', dimension, 'to container');
+                }
+                
+                // Apply to actual video/iframe element
+                const videoElement = videoContent.querySelector('video, iframe');
+                if (videoElement) {
+                    if (dimension === 'width') {
+                        videoElement.style.width = value + 'px';
+                        videoElement.setAttribute('width', value);
+                    } else if (dimension === 'height') {
+                        videoElement.style.height = value + 'px';
+                        videoElement.setAttribute('height', value);
+                    }
+                    console.log('Applied', dimension, 'to video element');
+                }
+            } else {
+                // Clear the dimension
+                videoContent.style[dimension] = '';
+                delete videoContent._videoData[dimension];
+                console.log('Cleared', dimension);
+                
+                const container = videoContent.querySelector('.video-container');
+                if (container) {
+                    container.style[dimension] = '';
+                }
+                
+                const videoElement = videoContent.querySelector('video, iframe');
+                if (videoElement) {
+                    videoElement.style[dimension] = '';
+                    if (dimension === 'width') {
+                        videoElement.setAttribute('width', '100%');
+                    } else if (dimension === 'height') {
+                        videoElement.setAttribute('height', 'auto');
+                    }
+                }
+            }
+            
+            console.log('Updated _videoData:', videoContent._videoData);
+            
+            // Force save the page data
+            setTimeout(() => {
+                console.log('Auto-saving page data after dimension change');
+                saveBuilderState();
+            }, 100);
+            
+            console.log('=== END updateVideoSize ===');
+        }
 
         function uploadBannerImage(event) {
             const file = event.target.files[0];
@@ -5789,7 +7706,7 @@ function applyResponsiveStyles() {
                 selectedImgs.forEach(src => {
                     const col = document.createElement('div');
                     col.className = 'col-md-4 mb-3';
-                    col.innerHTML = `<img src="${src}" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border: 1px solid #000;">`;
+                    col.innerHTML = `<img src="${'${src}'}" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border: 1px solid #000;">`;
                     row.appendChild(col);
                 });
                 if (!selectedImgs.length) {
@@ -5799,8 +7716,8 @@ function applyResponsiveStyles() {
                 // Use Owl Carousel for slider preview
                 const slidesToShow = content.dataset.slidesToShow ? parseInt(content.dataset.slidesToShow, 10) : 1;
                 content.innerHTML = `
-                    <div class="owl-carousel owl-theme" id="sliderPreview" data-slides-to-show="${slidesToShow}">
-                        ${selectedImgs.map(src => `<div class="item"><img src="${src}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;"></div>`).join('')}
+                    <div class="owl-carousel owl-theme" id="sliderPreview" data-slides-to-show="${'${slidesToShow}'}">
+                        ${'${selectedImgs.map(src => `<div class="item"><img src="${src}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;"></div>`).join(\'\')}'}
                     </div>
                 `;
                 // Initialize Owl Carousel (requires jQuery and Owl Carousel)
@@ -5861,16 +7778,16 @@ function applyResponsiveStyles() {
             const entry = data[i];
             container.innerHTML += `
                 <div class="faq-entry" style="border:1px solid #eee; padding:10px; margin-bottom:10px;">
-                    <h5>Entry ${i+1}</h5>
+                    <h5>Entry ${'${i+1}'}</h5>
                     <div class="form-group">
                         <label>Sort order</label>
-                        <select class="form-select" id="faq_order_${i}" name="faq_order_${i}">
-                            ${Array.from({length: 6}, (_, j) => `<option value="${j+1}" ${j+1===i?'selected':''}>${j+1}</option>`).join('')}
+                        <select class="form-select" id="faq_order_${'${i}'}" name="faq_order_${'${i}'}">
+                            ${'${Array.from({length: 6}, (_, j) => `<option value="${j+1}" ${j+1===i?\'selected\':\'\'}">${j+1}</option>`).join(\'\')}'}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Label color</label>
-                        <select class="form-select" id="faq_label_color_${i}" name="faq_label_color_${i}">
+                        <select class="form-select" id="faq_label_color_${'${i}'}" name="faq_label_color_${'${i}'}">
                             <option value="">Default</option>
                             <option value="primary">Primary</option>
                             <option value="secondary">Secondary</option>
@@ -5940,7 +7857,7 @@ function applyResponsiveStyles() {
                     </div>
                     <div class="form-group">
                         <label>Text color</label>
-                        <select class="form-select" id="faq_text_color_${i}" name="faq_text_color_${i}">
+                        <select class="form-select" id="faq_text_color_${'${i}'}" name="faq_text_color_${'${i}'}">
                             <option value="">Default</option>
                             <option value="primary">Primary</option>
                             <option value="secondary">Secondary</option>
@@ -5975,11 +7892,11 @@ function applyResponsiveStyles() {
                     </div>
                     <div class="form-group">
                         <label>Question</label>
-                        <input type="text" class="form-control" name="faq_question_${i}" value="">
+                        <input type="text" class="form-control" name="faq_question_${'${i}'}" value="">
                     </div>
                     <div class="form-group">
                         <label>Answer</label>
-                        <textarea class="form-control text-editor" name="faq_answer_${i}" rows="3"></textarea>
+                        <textarea class="form-control text-editor" name="faq_answer_${'${i}'}" rows="3"></textarea>
                     </div>
                 </div>
             `;
@@ -6016,16 +7933,16 @@ function applyResponsiveStyles() {
             const entry = data[i];
             container.innerHTML += `
                 <div class="faq-entry" style="border:1px solid #eee; padding:10px; margin-bottom:10px;">
-                    <h5>Entry ${i+1}</h5>
+                    <h5>Entry ${'${i+1}'}</h5>
                     <div class="form-group">
                         <label>Sort order</label>
-                        <select class="form-select" id="faq_order_${i}" name="faq_order_${i}">
-                            ${Array.from({length: 6}, (_, j) => `<option value="${j+1}" ${j+1===i?'selected':''}>${j+1}</option>`).join('')}
+                        <select class="form-select" id="faq_order_${'${i}'}" name="faq_order_${'${i}'}">
+                            ${'${Array.from({length: 6}, (_, j) => `<option value="${j+1}" ${j+1===i?\'selected\':\'\'}">${j+1}</option>`).join(\'\')}'}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Label color</label>
-                        <select class="form-select" id="faq_label_color_${i}" name="faq_label_color_${i}">
+                        <select class="form-select" id="faq_label_color_${'${i}'}" name="faq_label_color_${'${i}'}">
                             <option value="">Default</option>
                             <option value="primary">Primary</option>
                             <option value="secondary">Secondary</option>
@@ -6095,7 +8012,7 @@ function applyResponsiveStyles() {
                     </div>
                     <div class="form-group">
                         <label>Text color</label>
-                        <select class="form-select" id="faq_text_color_${i}" name="faq_text_color_${i}">
+                        <select class="form-select" id="faq_text_color_${'${i}'}" name="faq_text_color_${'${i}'}">
                             <option value="">Default</option>
                             <option value="primary">Primary</option>
                             <option value="secondary">Secondary</option>
@@ -6130,11 +8047,11 @@ function applyResponsiveStyles() {
                     </div>
                     <div class="form-group">
                         <label>Question</label>
-                        <input type="text" class="form-control" name="faq_question_${i}" value="">
+                        <input type="text" class="form-control" name="faq_question_${'${i}'}" value="">
                     </div>
                     <div class="form-group">
                         <label>Answer</label>
-                        <textarea class="form-control text-editor" name="faq_answer_${i}" rows="3"></textarea>
+                        <textarea class="form-control text-editor" name="faq_answer_${'${i}'}" rows="3"></textarea>
                     </div>
                 </div>
             `;
@@ -6178,128 +8095,85 @@ function applyResponsiveStyles() {
             const entryDiv = document.createElement('div');
             entryDiv.className = 'faq-entry';
             entryDiv.style = 'border:1px solid #eee; padding:10px; margin-bottom:10px;';
-            entryDiv.innerHTML = `
-                <h5>Entry ${i}</h5>
-                <div class="form-group">
-                    <label>Sort order</label>
-                    <select class="form-select faq-order" data-idx="${idx}">
-                        ${Array.from({length: count}, (_, j) => `<option value="${j+1}" ${entry.order===(j+1)?'selected':''}>${j+1}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Label color</label>
-                    <select class="form-select faq-label-color" data-idx="${idx}">
-                        <option value="">Default</option>
-                        <option value="primary" ${entry.labelColor==='primary'?'selected':''}>Primary</option>
-                        <option value="secondary" ${entry.labelColor==='secondary'?'selected':''}>Secondary</option>
-                        <option value="aqua" ${entry.labelColor==='aqua'?'selected':''}>Aqua</option>
-                        <option value="black" ${entry.labelColor==='black'?'selected':''}>Black</option>
-                        <option value="blue" ${entry.labelColor==='blue'?'selected':''}>Blue</option>
-                        <option value="brown" ${entry.labelColor==='brown'?'selected':''}>Brown</option>
-                        <option value="cyan" ${entry.labelColor==='cyan'?'selected':''}>Cyan</option>
-                        <option value="fuchsia" ${entry.labelColor==='fuchsia'?'selected':''}>Fuchsia</option>
-                        <option value="gray" ${entry.labelColor==='gray'?'selected':''}>Gray</option>
-                        <option value="green" ${entry.labelColor==='green'?'selected':''}>Green</option>
-                        <option value="indigo" ${entry.labelColor==='indigo'?'selected':''}>Indigo</option>
-                        <option value="lime" ${entry.labelColor==='lime'?'selected':''}>Lime</option>
-                        <option value="magenta" ${entry.labelColor==='magenta'?'selected':''}>Magenta</option>
-                        <option value="maroon" ${entry.labelColor==='maroon'?'selected':''}>Maroon</option>
-                        <option value="navy" ${entry.labelColor==='navy'?'selected':''}>Navy</option>
-                        <option value="olive" ${entry.labelColor==='olive'?'selected':''}>Olive</option>
-                        <option value="orange" ${entry.labelColor==='orange'?'selected':''}>Orange</option>
-                        <option value="pink" ${entry.labelColor==='pink'?'selected':''}>Pink</option>
-                        <option value="purple" ${entry.labelColor==='purple'?'selected':''}>Purple</option>
-                        <option value="red" ${entry.labelColor==='red'?'selected':''}>Red</option>
-                        <option value="silver" ${entry.labelColor==='silver'?'selected':''}>Silver</option>
-                        <option value="tan" ${entry.labelColor==='tan'?'selected':''}>Tan</option>
-                        <option value="teal" ${entry.labelColor==='teal'?'selected':''}>Teal</option>
-                        <option value="turquoise" ${entry.labelColor==='turquoise'?'selected':''}>Turquoise</option>
-                        <option value="violet" ${entry.labelColor==='violet'?'selected':''}>Violet</option>
-                        <option value="white" ${entry.labelColor==='white'?'selected':''}>White</option>
-                        <option value="light" ${entry.labelColor==='light'?'selected':''}>Light</option>
-                        <option value="yellow" ${entry.labelColor==='yellow'?'selected':''}>Yellow</option>
-                        <option value="gold" ${entry.labelColor==='gold'?'selected':''}>Gold</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Background color</label>
-                    <select class="form-select faq-background-color" data-idx="${idx}">
-                        <option value="">Default</option>
-                        <option value="primary" ${entry.backgroundColor==='primary'?'selected':''}>Primary</option>
-                        <option value="secondary" ${entry.backgroundColor==='secondary'?'selected':''}>Secondary</option>
-                        <option value="aqua" ${entry.backgroundColor==='aqua'?'selected':''}>Aqua</option>
-                        <option value="black" ${entry.backgroundColor==='black'?'selected':''}>Black</option>
-                        <option value="blue" ${entry.backgroundColor==='blue'?'selected':''}>Blue</option>
-                        <option value="brown" ${entry.backgroundColor==='brown'?'selected':''}>Brown</option>
-                        <option value="cyan" ${entry.backgroundColor==='cyan'?'selected':''}>Cyan</option>
-                        <option value="fuchsia" ${entry.backgroundColor==='fuchsia'?'selected':''}>Fuchsia</option>
-                        <option value="gray" ${entry.backgroundColor==='gray'?'selected':''}>Gray</option>
-                        <option value="green" ${entry.backgroundColor==='green'?'selected':''}>Green</option>
-                        <option value="indigo" ${entry.backgroundColor==='indigo'?'selected':''}>Indigo</option>
-                        <option value="lime" ${entry.backgroundColor==='lime'?'selected':''}>Lime</option>
-                        <option value="magenta" ${entry.backgroundColor==='magenta'?'selected':''}>Magenta</option>
-                        <option value="maroon" ${entry.backgroundColor==='maroon'?'selected':''}>Maroon</option>
-                        <option value="navy" ${entry.backgroundColor==='navy'?'selected':''}>Navy</option>
-                        <option value="olive" ${entry.backgroundColor==='olive'?'selected':''}>Olive</option>
-                        <option value="orange" ${entry.backgroundColor==='orange'?'selected':''}>Orange</option>
-                        <option value="pink" ${entry.backgroundColor==='pink'?'selected':''}>Pink</option>
-                        <option value="purple" ${entry.backgroundColor==='purple'?'selected':''}>Purple</option>
-                        <option value="red" ${entry.backgroundColor==='red'?'selected':''}>Red</option>
-                        <option value="silver" ${entry.backgroundColor==='silver'?'selected':''}>Silver</option>
-                        <option value="tan" ${entry.backgroundColor==='tan'?'selected':''}>Tan</option>
-                        <option value="teal" ${entry.backgroundColor==='teal'?'selected':''}>Teal</option>
-                        <option value="turquoise" ${entry.backgroundColor==='turquoise'?'selected':''}>Turquoise</option>
-                        <option value="violet" ${entry.backgroundColor==='violet'?'selected':''}>Violet</option>
-                        <option value="white" ${entry.backgroundColor==='white'?'selected':''}>White</option>
-                        <option value="light" ${entry.backgroundColor==='light'?'selected':''}>Light</option>
-                        <option value="yellow" ${entry.backgroundColor==='yellow'?'selected':''}>Yellow</option>
-                        <option value="gold" ${entry.backgroundColor==='gold'?'selected':''}>Gold</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Text color</label>
-                    <select class="form-select faq-text-color" data-idx="${idx}">
-                        <option value="">Default</option>
-                        <option value="primary" ${entry.textColor==='primary'?'selected':''}>Primary</option>
-                        <option value="secondary" ${entry.textColor==='secondary'?'selected':''}>Secondary</option>
-                        <option value="aqua" ${entry.textColor==='aqua'?'selected':''}>Aqua</option>
-                        <option value="black" ${entry.textColor==='black'?'selected':''}>Black</option>
-                        <option value="blue" ${entry.textColor==='blue'?'selected':''}>Blue</option>
-                        <option value="brown" ${entry.textColor==='brown'?'selected':''}>Brown</option>
-                        <option value="cyan" ${entry.textColor==='cyan'?'selected':''}>Cyan</option>
-                        <option value="fuchsia" ${entry.textColor==='fuchsia'?'selected':''}>Fuchsia</option>
-                        <option value="gray" ${entry.textColor==='gray'?'selected':''}>Gray</option>
-                        <option value="green" ${entry.textColor==='green'?'selected':''}>Green</option>
-                        <option value="indigo" ${entry.textColor==='indigo'?'selected':''}>Indigo</option>
-                        <option value="lime" ${entry.textColor==='lime'?'selected':''}>Lime</option>
-                        <option value="magenta" ${entry.textColor==='magenta'?'selected':''}>Magenta</option>
-                        <option value="maroon" ${entry.textColor==='maroon'?'selected':''}>Maroon</option>
-                        <option value="navy" ${entry.textColor==='navy'?'selected':''}>Navy</option>
-                        <option value="olive" ${entry.textColor==='olive'?'selected':''}>Olive</option>
-                        <option value="orange" ${entry.textColor==='orange'?'selected':''}>Orange</option>
-                        <option value="pink" ${entry.textColor==='pink'?'selected':''}>Pink</option>
-                        <option value="purple" ${entry.textColor==='purple'?'selected':''}>Purple</option>
-                        <option value="red" ${entry.textColor==='red'?'selected':''}>Red</option>
-                        <option value="silver" ${entry.textColor==='silver'?'selected':''}>Silver</option>
-                        <option value="tan" ${entry.textColor==='tan'?'selected':''}>Tan</option>
-                        <option value="teal" ${entry.textColor==='teal'?'selected':''}>Teal</option>
-                        <option value="turquoise" ${entry.textColor==='turquoise'?'selected':''}>Turquoise</option>
-                        <option value="violet" ${entry.textColor==='violet'?'selected':''}>Violet</option>
-                        <option value="white" ${entry.textColor==='white'?'selected':''}>White</option>
-                        <option value="light" ${entry.textColor==='light'?'selected':''}>Light</option>
-                        <option value="yellow" ${entry.textColor==='yellow'?'selected':''}>Yellow</option>
-                        <option value="gold" ${entry.textColor==='gold'?'selected':''}>Gold</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Question</label>
-                    <input type="text" class="form-control faq-question" data-idx="${idx}" value="${entry.question.replace(/"/g, '&quot;')}">
-                </div>
-                <div class="form-group">
-                    <label>Answer</label>
-                    <textarea class="form-control faq-answer" data-idx="${idx}" rows="3">${entry.answer}</textarea>
-                </div>
-            `;
+            
+            // Create entry header
+            const header = document.createElement('h5');
+            header.textContent = 'Entry ' + i;
+            entryDiv.appendChild(header);
+            
+            // Create sort order select
+            const orderGroup = document.createElement('div');
+            orderGroup.className = 'form-group';
+            orderGroup.innerHTML = '<label>Sort order</label>';
+            const orderSelect = document.createElement('select');
+            orderSelect.className = 'form-select faq-order';
+            orderSelect.dataset.idx = idx;
+            for(let j = 0; j < count; j++) {
+                const option = document.createElement('option');
+                option.value = j + 1;
+                option.textContent = j + 1;
+                if(entry.order === (j + 1)) option.selected = true;
+                orderSelect.appendChild(option);
+            }
+            orderGroup.appendChild(orderSelect);
+            entryDiv.appendChild(orderGroup);
+            
+            // Function to create color selects
+            function createColorSelect(label, className, currentValue, dataIdx) {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                const labelEl = document.createElement('label');
+                labelEl.textContent = label;
+                group.appendChild(labelEl);
+                
+                const select = document.createElement('select');
+                select.className = 'form-select ' + className;
+                select.dataset.idx = dataIdx;
+                
+                const colors = ['', 'primary', 'secondary', 'aqua', 'black', 'blue', 'brown', 'cyan', 'fuchsia', 'gray', 'green', 'indigo', 'lime', 'magenta', 'maroon', 'navy', 'olive', 'orange', 'pink', 'purple', 'red', 'silver', 'tan', 'teal', 'turquoise', 'violet', 'white', 'light', 'yellow', 'gold'];
+                const colorLabels = ['Default', 'Primary', 'Secondary', 'Aqua', 'Black', 'Blue', 'Brown', 'Cyan', 'Fuchsia', 'Gray', 'Green', 'Indigo', 'Lime', 'Magenta', 'Maroon', 'Navy', 'Olive', 'Orange', 'Pink', 'Purple', 'Red', 'Silver', 'Tan', 'Teal', 'Turquoise', 'Violet', 'White', 'Light', 'Yellow', 'Gold'];
+                
+                colors.forEach((color, i) => {
+                    const option = document.createElement('option');
+                    option.value = color;
+                    option.textContent = colorLabels[i];
+                    if(currentValue === color) option.selected = true;
+                    select.appendChild(option);
+                });
+                
+                group.appendChild(select);
+                return group;
+            }
+            
+            // Add color selects
+            entryDiv.appendChild(createColorSelect('Label color', 'faq-label-color', entry.labelColor, idx));
+            entryDiv.appendChild(createColorSelect('Background color', 'faq-background-color', entry.backgroundColor, idx));
+            entryDiv.appendChild(createColorSelect('Text color', 'faq-text-color', entry.textColor, idx));
+            
+            // Add question input
+            const questionGroup = document.createElement('div');
+            questionGroup.className = 'form-group';
+            questionGroup.innerHTML = '<label>Question</label>';
+            const questionInput = document.createElement('input');
+            questionInput.type = 'text';
+            questionInput.className = 'form-control faq-question';
+            questionInput.dataset.idx = idx;
+            questionInput.value = entry.question || '';
+            questionGroup.appendChild(questionInput);
+            entryDiv.appendChild(questionGroup);
+            
+            // Add answer textarea
+            const answerGroup = document.createElement('div');
+            answerGroup.className = 'form-group';
+            answerGroup.innerHTML = '<label>Answer</label>';
+            const answerTextarea = document.createElement('textarea');
+            answerTextarea.className = 'form-control faq-answer';
+            answerTextarea.dataset.idx = idx;
+            answerTextarea.rows = 3;
+            answerTextarea.value = entry.answer || '';
+            answerGroup.appendChild(answerTextarea);
+            entryDiv.appendChild(answerGroup);
+            
             container.appendChild(entryDiv);
         });
         // Attach event listeners after DOM insertion
@@ -6429,6 +8303,141 @@ function applyResponsiveStyles() {
         }
     }
 
+    // --- Feature Grid Functions ---
+    function updateFeatureGridField(index, value, field) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._featureGridData || !content._featureGridData.features[index]) return;
+        
+        content._featureGridData.features[index][field] = value;
+        if (typeof content.renderFeatureGrid === 'function') content.renderFeatureGrid();
+    }
+
+    function addFeatureGridItem() {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._featureGridData) return;
+        
+        // Initialize color properties if they don't exist
+        if (!content._featureGridData.iconColor) content._featureGridData.iconColor = '#3b82f6';
+        if (!content._featureGridData.titleColor) content._featureGridData.titleColor = '#1f2937';
+        if (!content._featureGridData.descriptionColor) content._featureGridData.descriptionColor = '#6b7280';
+        
+        const newFeature = {
+            icon: 'fas fa-star',
+            title: 'New Feature',
+            description: 'Enter feature description here'
+        };
+        
+        content._featureGridData.features.push(newFeature);
+        if (typeof content.renderFeatureGrid === 'function') content.renderFeatureGrid();
+        updatePropertyPanel(); // Refresh property panel to show new item
+    }
+
+    function removeFeatureGridItem(index) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._featureGridData || !content._featureGridData.features[index]) return;
+        
+        content._featureGridData.features.splice(index, 1);
+        if (typeof content.renderFeatureGrid === 'function') content.renderFeatureGrid();
+        updatePropertyPanel(); // Refresh property panel to remove item controls
+    }
+
+    function updateFeatureGridColor(color, field) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._featureGridData) return;
+        
+        // Initialize color properties if they don't exist
+        if (!content._featureGridData.iconColor) content._featureGridData.iconColor = '#3b82f6';
+        if (!content._featureGridData.titleColor) content._featureGridData.titleColor = '#1f2937';
+        if (!content._featureGridData.descriptionColor) content._featureGridData.descriptionColor = '#6b7280';
+        
+        console.log(`Updating feature grid color: ${field} = ${color}`);
+        console.log('Before update:', JSON.stringify(content._featureGridData));
+        
+        content._featureGridData[field] = color;
+        
+        console.log('After update:', JSON.stringify(content._featureGridData));
+        
+        if (typeof content.renderFeatureGrid === 'function') content.renderFeatureGrid();
+        
+        // Delay property panel update to ensure data is saved first
+        setTimeout(() => {
+            updatePropertyPanel();
+        }, 10);
+    }
+
+    // --- Investment Tier Functions ---
+    function updateInvestmentTierField(value, field) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._investmentTierData) return;
+        
+        content._investmentTierData[field] = value;
+        
+        // Handle background type switching
+        if (field === 'backgroundType') {
+            const backgroundColorGroup = document.getElementById('backgroundColor-group');
+            const backgroundImageGroup = document.getElementById('backgroundImage-group');
+            
+            if (backgroundColorGroup && backgroundImageGroup) {
+                if (value === 'image') {
+                    backgroundColorGroup.style.display = 'none';
+                    backgroundImageGroup.style.display = 'block';
+                } else {
+                    backgroundColorGroup.style.display = 'block';
+                    backgroundImageGroup.style.display = 'none';
+                }
+            }
+        }
+        
+        if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
+    }
+
+    // Upload image for investment tier background
+    function uploadInvestmentTierImage(input) {
+        if (!selectedComponent || !input.files || !input.files[0]) return;
+        
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        // Show loading state
+        const originalText = input.parentElement.querySelector('small').textContent;
+        input.parentElement.querySelector('small').textContent = 'Uploading...';
+        input.disabled = true;
+        
+        fetch('/admins/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the background image URL
+                updateInvestmentTierField(data.url, 'backgroundImage');
+                // Update the property panel to show the new image
+                updatePropertyPanel();
+                // Reset the file input
+                input.value = '';
+            } else {
+                alert('Upload failed: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            alert('Upload failed. Please try again.');
+        })
+        .finally(() => {
+            // Reset loading state
+            input.parentElement.querySelector('small').textContent = originalText;
+            input.disabled = false;
+        });
+    }
+
     // --- Custom Form Builder Logic ---
     // Remove add/remove field controls from the preview panel. Only allow from property panel.
     function addCustomFormField(btn) {
@@ -6494,10 +8503,19 @@ function applyResponsiveStyles() {
       const components = Array.from(page.children).filter(child => 
         child.classList.contains('component')
       );
-      return components.map(component => {
+      
+      const componentsData = components.map(component => {
         const type = component.dataset.type;
+        console.log('=== SERIALIZING COMPONENT ===');
+        console.log('Component element tagName:', component.tagName);
+        console.log('Component element className:', component.className);
+        console.log('Component dataset.type:', type);
+        console.log('Component id:', component.id);
+        console.log('Component outerHTML (first 200 chars):', component.outerHTML.substring(0, 200));
+        
         const content = getContentElement(component);
         let data = { type };
+        console.log('Initial data object type property:', data.type);
         // Save common styles using CSS property names
         if (content && content.style) {
           data.style = {
@@ -6556,16 +8574,76 @@ function applyResponsiveStyles() {
                 data.imageData = content._imageData;
                 break;
 
+            case 'numbered-timeline':
+                data.timelineData = content._timelineData;
+                break;
+
             case 'invest-cta':
                 data.investCtaData = content._investCtaData;
+                // Also save to properties for front-end compatibility
+                if (content._investCtaData) {
+                    data.properties = data.properties || {};
+                    data.properties.background_color = content._investCtaData.bgColor || '#f8f9fa';
+                    data.properties.button_text = content._investCtaData.buttonText || 'INVEST NOW';
+                    data.properties.button_url = content._investCtaData.buttonUrl || '#';
+                    data.properties.button_target = content._investCtaData.buttonTarget || '_self';
+                    data.properties.left_value = content._investCtaData.leftValue || '$2.13';
+                    data.properties.left_label = content._investCtaData.leftLabel || 'Share Price';
+                    data.properties.right_value = content._investCtaData.rightValue || '$1001.10';
+                    data.properties.right_label = content._investCtaData.rightLabel || 'Min. Investment';
+                    data.properties.button_bg_color = content._investCtaData.buttonBgColor || '#2e7d3e';
+                    data.properties.button_text_color = content._investCtaData.buttonTextColor || '#ffffff';
+                    data.properties.value_color = content._investCtaData.valueColor || '#333333';
+                    data.properties.label_color = content._investCtaData.labelColor || '#666666';
+                    data.properties.divider_color = content._investCtaData.dividerColor || '#e0e0e0';
+                }
                 break;
 
             case 'full-width-text-image':
                 data.fwtiData = content._fwtiData;
                 break;
 
+            case 'press-card':
+                console.log('Serializing press-card component');
+                console.log('Content _pressCardData:', content._pressCardData);
+                data.pressCardData = content._pressCardData;
+                console.log('Serialized pressCardData:', data.pressCardData);
+                break;
+
           case 'section-title':
             data.text = content.textContent;
+            break;
+          case 'video':
+            console.log('=== SERIALIZING VIDEO COMPONENT ===');
+            console.log('Content element:', content);
+            console.log('Content _videoData:', content._videoData);
+            console.log('Content style:', content.style.cssText);
+            
+            // Ensure _videoData exists with proper structure
+            if (!content._videoData) {
+                console.log('Creating new _videoData object');
+                content._videoData = { url: '', type: 'youtube', width: null, height: null };
+            }
+            
+            // Also try to capture dimensions from component style if _videoData is missing them
+            if (!content._videoData.width && content.style.width && content.style.width !== '100%') {
+                const widthValue = parseInt(content.style.width);
+                if (widthValue > 0) {
+                    content._videoData.width = widthValue;
+                    console.log('Captured width from style:', widthValue);
+                }
+            }
+            if (!content._videoData.height && content.style.height && content.style.height !== 'auto') {
+                const heightValue = parseInt(content.style.height);
+                if (heightValue > 0) {
+                    content._videoData.height = heightValue;
+                    console.log('Captured height from style:', heightValue);
+                }
+            }
+            
+            data.videoData = content._videoData;
+            console.log('Final serialized video data:', data.videoData);
+            console.log('=== END VIDEO SERIALIZATION ===');
             break;
           case 'divider':
             data.style = Object.assign({}, data.style, { height: content.style.height, backgroundColor: content.style.backgroundColor });
@@ -6591,6 +8669,13 @@ function applyResponsiveStyles() {
             break;
           case 'text-images':
             data.textImagesData = content._textImagesData;
+            break;
+          case 'feature-grid':
+            console.log('Serializing feature-grid with data:', content._featureGridData);
+            data.featureGridData = content._featureGridData;
+            break;
+          case 'investment-tier':
+            data.investmentTierData = content._investmentTierData;
             break;
           case 'custom-form':
             data.customFormFields = content._customFormFields;
@@ -6640,6 +8725,11 @@ function applyResponsiveStyles() {
                     case 'image':
                       if (compContent._imageData) {
                         compData.imageData = compContent._imageData;
+                      }
+                      break;
+                    case 'numbered-timeline':
+                      if (compContent._timelineData) {
+                        compData.timelineData = compContent._timelineData;
                       }
                       break;
                     case 'gallery':
@@ -6692,9 +8782,34 @@ function applyResponsiveStyles() {
                         compData.sellTicketsData = compContent._sellTicketsData;
                       }
                       break;
+                    case 'feature-grid':
+                      if (compContent._featureGridData) {
+                        console.log('Serializing nested feature-grid with data:', compContent._featureGridData);
+                        compData.featureGridData = compContent._featureGridData;
+                      }
+                      break;
+                    case 'investment-tier':
+                      if (compContent._investmentTierData) {
+                        compData.investmentTierData = compContent._investmentTierData;
+                      }
+                      break;
                     case 'full-width-text-image':
                       if (compContent._fwtiData) {
                         compData.fwtiData = compContent._fwtiData;
+                      }
+                      break;
+                    case 'press-card':
+                      console.log('Serializing nested press-card component');
+                      console.log('Nested content _pressCardData:', compContent._pressCardData);
+                      if (compContent._pressCardData) {
+                        compData.pressCardData = compContent._pressCardData;
+                        console.log('Nested pressCardData saved:', compData.pressCardData);
+                      }
+                      break;
+                    case 'video':
+                      if (compContent._videoData) {
+                        console.log('Serializing nested video with data:', compContent._videoData);
+                        compData.videoData = compContent._videoData;
                       }
                       break;
                   }
@@ -6713,15 +8828,46 @@ function applyResponsiveStyles() {
           default:
             data.html = content.innerHTML;
         }
+        console.log('Final component data type:', data.type);
+        console.log('Final component data keys:', Object.keys(data));
+        if (data.type === 'video') {
+          console.log('VIDEO COMPONENT - Final videoData:', data.videoData);
+        }
+        console.log('=== END COMPONENT SERIALIZATION ===');
         return data;
       });
+      
+      // Return both components and page settings
+      return {
+        components: componentsData,
+        pageSettings: {
+          backgroundColor: page.style.backgroundColor || '#ffffff'
+        }
+      };
     }
 
     function deserializeBuilder(state) {
       console.log('DeserializeBuilder called with state:', state);
       const page = document.getElementById('page');
       page.innerHTML = '';
-      state.forEach((data, idx) => {
+      
+      // Handle both legacy format (array) and new format (object with components and pageSettings)
+      let components = Array.isArray(state) ? state : (state.components || []);
+      let pageSettings = state.pageSettings || {};
+      
+      console.log('DeserializeBuilder - Total components to load:', components.length);
+      console.log('DeserializeBuilder - Components array:', components.map(c => ({ type: c.type, hasVideoData: !!c.videoData })));
+      
+      // Apply page settings
+      if (pageSettings.backgroundColor) {
+        updatePageBackground(pageSettings.backgroundColor);
+        const colorInput = document.getElementById('pageBackgroundColor');
+        if (colorInput) {
+          colorInput.value = pageSettings.backgroundColor;
+        }
+      }
+      
+      components.forEach((data, idx) => {
         console.log(`Loading component ${idx}:`, data.type, 'responsiveStyles:', data.responsiveStyles);
         
         let component;
@@ -6789,8 +8935,17 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'numbered-timeline':
+                actualContent._timelineData = data.timelineData;
+                actualContent.renderTimeline();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             case 'invest-cta':
-                actualContent._investCtaData = data.investCtaData || {
+                // Load from properties if available (for front-end compatibility)
+                let investCtaDefaults = {
                     buttonText: 'INVEST NOW',
                     buttonUrl: '#',
                     buttonTarget: '_self',
@@ -6802,12 +8957,33 @@ function applyResponsiveStyles() {
                     buttonTextColor: '#ffffff',
                     valueColor: '#333333',
                     labelColor: '#666666',
-                    dividerColor: '#e0e0e0'
+                    dividerColor: '#e0e0e0',
+                    bgColor: '#f8f9fa'
                 };
+                
+                // If we have properties from front-end, map them back to builder format
+                if (data.properties) {
+                    investCtaDefaults.bgColor = data.properties.background_color || investCtaDefaults.bgColor;
+                    investCtaDefaults.buttonText = data.properties.button_text || investCtaDefaults.buttonText;
+                    investCtaDefaults.buttonUrl = data.properties.button_url || investCtaDefaults.buttonUrl;
+                    investCtaDefaults.buttonTarget = data.properties.button_target || investCtaDefaults.buttonTarget;
+                    investCtaDefaults.leftValue = data.properties.left_value || investCtaDefaults.leftValue;
+                    investCtaDefaults.leftLabel = data.properties.left_label || investCtaDefaults.leftLabel;
+                    investCtaDefaults.rightValue = data.properties.right_value || investCtaDefaults.rightValue;
+                    investCtaDefaults.rightLabel = data.properties.right_label || investCtaDefaults.rightLabel;
+                    investCtaDefaults.buttonBgColor = data.properties.button_bg_color || investCtaDefaults.buttonBgColor;
+                    investCtaDefaults.buttonTextColor = data.properties.button_text_color || investCtaDefaults.buttonTextColor;
+                    investCtaDefaults.valueColor = data.properties.value_color || investCtaDefaults.valueColor;
+                    investCtaDefaults.labelColor = data.properties.label_color || investCtaDefaults.labelColor;
+                    investCtaDefaults.dividerColor = data.properties.divider_color || investCtaDefaults.dividerColor;
+                }
+                
+                actualContent._investCtaData = data.investCtaData || investCtaDefaults;
                 // Re-render the component with saved data
                 const investWrapper = actualContent.querySelector('.invest-cta-wrapper');
                 if (investWrapper) {
                     const d = actualContent._investCtaData;
+                    investWrapper.style.backgroundColor = d.bgColor;
                     investWrapper.innerHTML = `
                         <div class="invest-cta-button-wrap">
                             <a href="${d.buttonUrl}" 
@@ -6925,8 +9101,57 @@ function applyResponsiveStyles() {
                 break;
 
             case 'text-images':
-                actualContent._textImagesData = data.textImagesData;
+                actualContent._textImagesData = Object.assign({
+                    text: '',
+                    imgSrc: '',
+                    imgPosition: 'left',
+                    imgSize: 200,
+                    imgWidth: '200',
+                    imgHeight: 'auto',
+                    showImage: true
+                }, data.textImagesData || {});
                 actualContent.renderTextImages();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'feature-grid':
+                console.log('Deserializing feature-grid with data:', data.featureGridData);
+                actualContent._featureGridData = data.featureGridData || { features: [] };
+                // Ensure color properties exist
+                if (!actualContent._featureGridData.iconColor) actualContent._featureGridData.iconColor = '#3b82f6';
+                if (!actualContent._featureGridData.titleColor) actualContent._featureGridData.titleColor = '#1f2937';
+                if (!actualContent._featureGridData.descriptionColor) actualContent._featureGridData.descriptionColor = '#6b7280';
+                console.log('After initialization:', actualContent._featureGridData);
+                actualContent.renderFeatureGrid();
+                if (data.style) {
+                  Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'investment-tier':
+                actualContent._investmentTierData = Object.assign({
+                    tierName: 'TIER 1',
+                    tierPrice: '$2,500',
+                    tierDescription: 'Investment tier description',
+                    buttonText: 'INVEST NOW',
+                    buttonUrl: '#',
+                    buttonTarget: '_self',
+                    backgroundColor: '#1a1a1a',
+                    backgroundImage: '',
+                    backgroundType: 'color',
+                    textColor: '#ffffff',
+                    buttonBgColor: '#28a745',
+                    buttonTextColor: '#ffffff',
+                    borderRadius: '12px',
+                    padding: '2rem'
+                }, data.investmentTierData || {});
+                actualContent.renderInvestmentTier();
                 if (data.style) {
                   Object.assign(actualContent.style, data.style);
                 }
@@ -7061,12 +9286,115 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'press-card':
+                if (data.pressCardData) {
+                    content._pressCardData = data.pressCardData;
+                    content.renderPressCard();
+                }
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+                break;
 
           case 'section-title':
             content.textContent = data.text;
             if (data.style) {
               Object.assign(content.style, data.style);
             }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
+          case 'video':
+            console.log('=== DESERIALIZING VIDEO COMPONENT ===');
+            console.log('Deserializing video component with data:', data);
+            console.log('Content element:', content);
+            console.log('Content current style before:', content.style.cssText);
+            if (data.videoData) {
+              console.log('Video data found:', data.videoData);
+              
+              // Initialize _videoData if it doesn't exist
+              if (!content._videoData) {
+                content._videoData = {
+                  url: '',
+                  type: 'youtube',
+                  autoplay: false,
+                  width: null,
+                  height: null
+                };
+              }
+              
+              // Merge the saved data
+              Object.assign(content._videoData, data.videoData);
+              
+              // Apply custom width and height if set - DO THIS FIRST
+              if (data.videoData.width && data.videoData.width > 0) {
+                content.style.width = data.videoData.width + 'px';
+                console.log('Applied width:', data.videoData.width + 'px');
+              }
+              if (data.videoData.height && data.videoData.height > 0) {
+                content.style.height = data.videoData.height + 'px';
+                console.log('Applied height:', data.videoData.height + 'px');
+              }
+              
+              // Ensure updateVideo function exists before calling it
+              if (content.updateVideo && typeof content.updateVideo === 'function') {
+                console.log('Calling updateVideo with:', data.videoData.url, data.videoData.type);
+                content.updateVideo(data.videoData.url, data.videoData.type);
+              } else {
+                console.warn('updateVideo function not found, recreating video component functionality');
+                // Recreate video functionality if missing
+                const container = content.querySelector('.video-container');
+                if (container && data.videoData.url) {
+                  const { url, type, autoplay, width, height } = data.videoData;
+                  const customWidth = width && width > 0 ? width + 'px' : '100%';
+                  const customHeight = height && height > 0 ? height + 'px' : '200';
+                  
+                  if (type === 'uploaded') {
+                    const autoplayAttr = autoplay ? 'autoplay muted' : '';
+                    container.innerHTML = `
+                      <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} style="border-radius: 8px; max-width: 100%;">
+                        <source src="${url}" type="video/mp4">
+                        <source src="${url}" type="video/webm">
+                        <source src="${url}" type="video/ogg">
+                        Your browser does not support the video tag.
+                      </video>
+                    `;
+                  } else {
+                    // Handle YouTube videos
+                    let videoId = '';
+                    if (url.includes('youtu.be/')) {
+                      videoId = url.split('/').pop().split('?')[0];
+                    } else if (url.includes('youtube.com/watch?v=')) {
+                      const urlParams = new URLSearchParams(url.split('?')[1]);
+                      videoId = urlParams.get('v');
+                    } else if (url.includes('youtube.com/embed/')) {
+                      videoId = url.split('/embed/')[1].split('?')[0];
+                    }
+                    
+                    if (videoId) {
+                      const autoplayParam = autoplay ? '&autoplay=1&mute=1' : '';
+                      container.innerHTML = `<iframe width="${customWidth}" height="${customHeight}" src="https://www.youtube.com/embed/${videoId}?rel=0${autoplayParam}" frameborder="0" allowfullscreen style="max-width: 100%;"></iframe>`;
+                    } else {
+                      container.innerHTML = `<div style="padding: 20px; background: #f3f4f6; text-align: center;">Invalid video URL</div>`;
+                    }
+                  }
+                  
+                  // Apply dimensions to the container as well
+                  if (width && width > 0) {
+                    container.style.width = width + 'px';
+                    console.log('Applied container width:', width + 'px');
+                  }
+                  if (height && height > 0) {
+                    container.style.height = height + 'px';
+                    console.log('Applied container height:', height + 'px');
+                  }
+                }
+              }
+            } else {
+              console.log('No video data found in component data');
+            }
+            console.log('=== END VIDEO DESERIALIZATION ===');
+            if (data.style) Object.assign(content.style, data.style);
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
@@ -7141,6 +9469,28 @@ function applyResponsiveStyles() {
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
+          case 'feature-grid':
+            content._featureGridData = data.featureGridData || { features: [] };
+            // Ensure color properties exist
+            if (!content._featureGridData.iconColor) content._featureGridData.iconColor = '#3b82f6';
+            if (!content._featureGridData.titleColor) content._featureGridData.titleColor = '#1f2937';
+            if (!content._featureGridData.descriptionColor) content._featureGridData.descriptionColor = '#6b7280';
+            content.renderFeatureGrid();
+            if (data.style) {
+              Object.assign(content.style, data.style);
+            }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
+          case 'investment-tier':
+            content._investmentTierData = data.investmentTierData || {};
+            content.renderInvestmentTier();
+            if (data.style) {
+              Object.assign(content.style, data.style);
+            }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
           case 'custom-form':
             content._customFormFields = data.customFormFields || [];
             content.renderCustomForm();
@@ -7188,6 +9538,12 @@ function applyResponsiveStyles() {
                           nestedContent.renderImage();
                         }
                         break;
+                      case 'numbered-timeline':
+                        if (compData.timelineData) {
+                          nestedContent._timelineData = compData.timelineData;
+                          nestedContent.renderTimeline();
+                        }
+                        break;
                       case 'gallery':
                         if (compData.galleryData) {
                           nestedContent._galleryData = compData.galleryData;
@@ -7204,6 +9560,18 @@ function applyResponsiveStyles() {
                         if (compData.textImagesData) {
                           nestedContent._textImagesData = compData.textImagesData;
                           nestedContent.renderTextImages();
+                        }
+                        break;
+                      case 'feature-grid':
+                        if (compData.featureGridData) {
+                          console.log('Deserializing nested feature-grid with data:', compData.featureGridData);
+                          nestedContent._featureGridData = compData.featureGridData;
+                          // Ensure color properties exist
+                          if (!nestedContent._featureGridData.iconColor) nestedContent._featureGridData.iconColor = '#3b82f6';
+                          if (!nestedContent._featureGridData.titleColor) nestedContent._featureGridData.titleColor = '#1f2937';
+                          if (!nestedContent._featureGridData.descriptionColor) nestedContent._featureGridData.descriptionColor = '#6b7280';
+                          console.log('After nested initialization:', nestedContent._featureGridData);
+                          nestedContent.renderFeatureGrid();
                         }
                         break;
                       case 'custom-form':
@@ -7253,6 +9621,52 @@ function applyResponsiveStyles() {
                           nestedContent.renderFWTI();
                         }
                         break;
+                      case 'press-card':
+                        if (compData.pressCardData) {
+                          nestedContent._pressCardData = compData.pressCardData;
+                          nestedContent.renderPressCard();
+                        }
+                        break;
+                      case 'video':
+                        console.log('=== DESERIALIZING NESTED VIDEO COMPONENT ===');
+                        if (compData.videoData) {
+                          console.log('Nested video data found:', compData.videoData);
+                          
+                          // Initialize _videoData if it doesn't exist
+                          if (!nestedContent._videoData) {
+                            nestedContent._videoData = {
+                              url: '',
+                              type: 'youtube',
+                              autoplay: false,
+                              width: null,
+                              height: null
+                            };
+                          }
+                          
+                          // Merge the saved data
+                          Object.assign(nestedContent._videoData, compData.videoData);
+                          console.log('Merged nested _videoData:', nestedContent._videoData);
+                          
+                          // Apply custom width and height if set
+                          if (compData.videoData.width && compData.videoData.width > 0) {
+                            nestedContent.style.width = compData.videoData.width + 'px';
+                            console.log('Applied nested width:', compData.videoData.width + 'px');
+                          }
+                          if (compData.videoData.height && compData.videoData.height > 0) {
+                            nestedContent.style.height = compData.videoData.height + 'px';
+                            console.log('Applied nested height:', compData.videoData.height + 'px');
+                          }
+                          
+                          // Call updateVideo function to render the video
+                          if (nestedContent.updateVideo && typeof nestedContent.updateVideo === 'function') {
+                            console.log('Calling nested updateVideo with:', compData.videoData.url, compData.videoData.type);
+                            nestedContent.updateVideo(compData.videoData.url, compData.videoData.type);
+                          } else {
+                            console.warn('updateVideo function not found on nested component');
+                          }
+                        }
+                        console.log('=== END NESTED VIDEO DESERIALIZATION ===');
+                        break;
                       default:
                         // For basic components like text, heading, etc., just restore HTML
                         if (nestedContent && compData.html) {
@@ -7262,7 +9676,7 @@ function applyResponsiveStyles() {
                     }
                     
                     // Restore styles (only if not already handled by component-specific rendering)
-                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'text-images', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image'].includes(compData.type)) {
+                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image', 'press-card', 'video'].includes(compData.type)) {
                       Object.assign(nestedContent.style, compData.style);
                     }
                     
@@ -7333,17 +9747,42 @@ function applyResponsiveStyles() {
     }
 
     function saveBuilderState() {
+      console.log('=== SAVE BUILDER STATE CALLED ===');
       id = document.getElementById('page_id').value;
+      console.log('Page ID:', id);
 
       const state = serializeBuilder();
+      console.log('Serialized state:', state);
+      console.log('State components count:', state.components ? state.components.length : 'no components');
+      
+      // Log press card data specifically
+      if (state.components) {
+        state.components.forEach((comp, idx) => {
+          if (comp.type === 'press-card' || (comp.nestedComponents && comp.nestedComponents.some(col => col.some(nested => nested.type === 'press-card')))) {
+            console.log(`Component ${idx} has press card data:`, comp);
+          }
+        });
+      }
+
       fetch('/admins/page/save/'+id, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
         body: JSON.stringify({ state })
       })
-      .then(res => res.json())
-      .then(data => { alert('Page saved!'); })
-      .catch(() => alert('Save failed'));
+      .then(res => {
+        console.log('Save response status:', res.status);
+        return res.json();
+      })
+      .then(data => { 
+        console.log('Save response data:', data);
+        console.log('Page saved successfully!'); 
+      })
+      .catch(error => {
+        console.error('Save failed:', error);
+        alert('Save failed: ' + error.message);
+      });
+      
+      console.log('=== END SAVE BUILDER STATE ===');
     }
 
     window.onload = function() {
@@ -7376,6 +9815,29 @@ function applyResponsiveStyles() {
                 console.error('Load failed:', err);
                 alert('Load failed');
             });
+            
+        // Initialize page background color to match canvas
+        const page = document.getElementById('page');
+        if (page && page.style.backgroundColor) {
+            const currentBgColor = page.style.backgroundColor;
+            updatePageBackground(currentBgColor);
+            const colorInput = document.getElementById('pageBackgroundColor');
+            if (colorInput) {
+                // Convert rgb to hex if needed
+                const rgbToHex = (rgb) => {
+                    if (rgb.startsWith('#')) return rgb;
+                    const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                    if (match) {
+                        const r = parseInt(match[1]);
+                        const g = parseInt(match[2]);
+                        const b = parseInt(match[3]);
+                        return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+                    }
+                    return rgb;
+                };
+                colorInput.value = rgbToHex(currentBgColor);
+            }
+        }
     };
 
     // Restore the showTab function (regression fix)
@@ -7393,6 +9855,31 @@ function applyResponsiveStyles() {
         if (tabContent) tabContent.style.display = 'block';
         // Add active class to the clicked button
         event.target.classList.add('active');
+    }
+
+    // Page Background Color Update Function
+    function updatePageBackground(color) {
+        const page = document.getElementById('page');
+        const canvas = document.getElementById('canvas');
+        const root = document.documentElement;
+        
+        // Update page background
+        if (page) {
+            page.style.backgroundColor = color;
+        }
+        
+        // Update canvas background to match page background
+        if (canvas) {
+            canvas.style.backgroundColor = color;
+        }
+        
+        // Update CSS variable for consistent theming
+        root.style.setProperty('--bg-color', color);
+        
+        // Save to page data if available
+        if (window.pageData) {
+            window.pageData.background_color = color;
+        }
     }
 
     // Floating Structure Panel Functions
@@ -7657,44 +10144,105 @@ function applyResponsiveStyles() {
     function reorderComponents(fromIndex, toIndex) {
         const page = document.getElementById('page');
         const components = Array.from(page.querySelectorAll('.component'));
-        const dropzones = Array.from(page.querySelectorAll('.dropzone'));
         
         if (fromIndex < 0 || fromIndex >= components.length || toIndex < 0 || toIndex >= components.length) {
+            console.warn('Invalid reorder indices:', fromIndex, toIndex);
+            return;
+        }
+        
+        if (fromIndex === toIndex) {
+            console.log('No reorder needed - same position');
             return;
         }
         
         const draggedComponent = components[fromIndex];
         const targetComponent = components[toIndex];
         
-        // Remove the dragged component and its associated dropzone
-        const draggedDropzone = draggedComponent.nextElementSibling;
-        draggedComponent.remove();
-        if (draggedDropzone && draggedDropzone.classList.contains('dropzone')) {
-            draggedDropzone.remove();
+        // Validate that both components still exist
+        if (!draggedComponent || !targetComponent) {
+            console.error('Components not found for reorder');
+            return;
         }
         
-        // Insert the dragged component at the new position
-        if (fromIndex < toIndex) {
-            // Moving down - insert after target
-            if (targetComponent.nextElementSibling && targetComponent.nextElementSibling.classList.contains('dropzone')) {
-                page.insertBefore(draggedComponent, targetComponent.nextElementSibling.nextElementSibling);
-            } else {
-                page.insertBefore(draggedComponent, targetComponent.nextElementSibling);
+        // Validate that they're still children of the page
+        if (!page.contains(draggedComponent) || !page.contains(targetComponent)) {
+            console.error('Components are not children of page');
+            return;
+        }
+        
+        try {
+            // Find and remove the dragged component's associated dropzone
+            const draggedDropzone = draggedComponent.nextElementSibling;
+            if (draggedDropzone && draggedDropzone.classList.contains('dropzone')) {
+                draggedDropzone.remove();
             }
-        } else {
-            // Moving up - insert before target
-            page.insertBefore(draggedComponent, targetComponent);
+            
+            // Remove the dragged component but keep a reference
+            const draggedParent = draggedComponent.parentNode;
+            draggedComponent.remove();
+            
+            // Re-get the target component since DOM might have changed
+            const updatedComponents = Array.from(page.querySelectorAll('.component'));
+            let newTargetComponent = null;
+            
+            // Find target by comparing with original target
+            for (let comp of updatedComponents) {
+                if (comp === targetComponent) {
+                    newTargetComponent = comp;
+                    break;
+                }
+            }
+            
+            if (!newTargetComponent) {
+                console.error('Target component not found after removal');
+                // Re-add the dragged component back to its original position
+                draggedParent.appendChild(draggedComponent);
+                return;
+            }
+            
+            // Insert the dragged component at the new position
+            if (fromIndex < toIndex) {
+                // Moving down - insert after target
+                const nextSibling = newTargetComponent.nextElementSibling;
+                if (nextSibling && nextSibling.classList.contains('dropzone')) {
+                    // Insert after the dropzone
+                    const afterDropzone = nextSibling.nextElementSibling;
+                    if (afterDropzone) {
+                        page.insertBefore(draggedComponent, afterDropzone);
+                    } else {
+                        page.appendChild(draggedComponent);
+                    }
+                } else if (nextSibling) {
+                    page.insertBefore(draggedComponent, nextSibling);
+                } else {
+                    page.appendChild(draggedComponent);
+                }
+            } else {
+                // Moving up - insert before target
+                page.insertBefore(draggedComponent, newTargetComponent);
+            }
+            
+            // Add a new dropzone after the moved component if it doesn't have one
+            const componentNextSibling = draggedComponent.nextElementSibling;
+            if (!componentNextSibling || !componentNextSibling.classList.contains('dropzone')) {
+                const newDropzone = createDropzone();
+                if (componentNextSibling) {
+                    page.insertBefore(newDropzone, componentNextSibling);
+                } else {
+                    page.appendChild(newDropzone);
+                }
+            }
+            
+            // Refresh the structure panel to reflect new order
+            refreshStructure();
+            
+            // Select the moved component
+            selectComponent(draggedComponent);
+            
+            console.log('Component reordered successfully');
+        } catch (error) {
+            console.error('Error during component reorder:', error);
         }
-        
-        // Add a new dropzone after the moved component
-        const newDropzone = createDropzone();
-        page.insertBefore(newDropzone, draggedComponent.nextElementSibling);
-        
-        // Refresh the structure panel to reflect new order
-        refreshStructure();
-        
-        // Select the moved component
-        selectComponent(draggedComponent);
     }
 
     // Close panel with Escape key
@@ -7778,6 +10326,183 @@ function applyResponsiveStyles() {
                 document.removeEventListener('mousemove', handleMouseMove);
                 document.removeEventListener('mouseup', handleMouseUp);
             }
+        }
+    }
+</script>
+
+<script>
+    function ckeditorinit(editorId) {
+        // Initialize Quill editor for the text-images editor after DOM update
+        let retryCount = 0;
+        const maxRetries = 10; // Maximum 5 seconds (10 * 500ms)
+        
+        function initEditor() {
+            const textEditor = document.getElementById(editorId);
+            if (textEditor && !textEditor._quillInstance) {
+                if (typeof Quill === 'undefined' || !window.quillReady) {
+                    retryCount++;
+                    if (retryCount >= maxRetries) {
+                        console.error('Quill failed to load after maximum retries');
+                        return;
+                    }
+                    console.log(`Quill not ready, retrying... ${retryCount}/${maxRetries}`);
+                    setTimeout(initEditor, 500);
+                    return;
+                }
+                
+                console.log('Initializing Quill for:', editorId);
+                
+                // Hide the original textarea
+                textEditor.style.display = 'none';
+                
+                // Create a div for Quill editor
+                const quillContainer = document.createElement('div');
+                quillContainer.id = editorId + '_quill';
+                quillContainer.style.minHeight = '200px';
+                quillContainer.style.backgroundColor = 'white';
+                textEditor.parentNode.insertBefore(quillContainer, textEditor.nextSibling);
+                
+                // Create Quill editor with font size and color controls
+                const quill = new Quill('#' + quillContainer.id, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'font': FontClass.whitelist }],
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link'],
+                            ['clean']
+                        ]
+                    },
+                    placeholder: 'Enter your text...',
+                    formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
+                });
+                
+                textEditor._quillInstance = quill;
+                textEditor._quillContainer = quillContainer;
+                
+                // Set initial content from textarea
+                if (textEditor.value && textEditor.value.trim() !== '') {
+                    quill.root.innerHTML = textEditor.value;
+                }
+                
+                // Listen for Quill changes and update textarea
+                quill.on('text-change', function() {
+                    const content = quill.root.innerHTML;
+                    textEditor.value = content;
+                    
+                    // Call updateTextImagesField for text-images component
+                    if (typeof updateTextImagesField === 'function') {
+                        updateTextImagesField(content, 'text');
+                    }
+                    
+                    // Also try to call updateContent for general updates
+                    if (typeof updateContent === 'function') {
+                        updateContent(content);
+                    }
+                });
+            }
+        }
+        
+        setTimeout(initEditor, 100);
+    }
+</script>
+
+<script>
+    function ckeditorinitTextBox(editorId) {
+        // Initialize Quill editor for text boxes
+        let retryCount = 0;
+        const maxRetries = 10; // Maximum 5 seconds (10 * 500ms)
+        
+        function initEditor() {
+            const textEditor = document.getElementById(editorId);
+            if (textEditor && !textEditor._quillInstance) {
+                if (typeof Quill === 'undefined' || !window.quillReady) {
+                    retryCount++;
+                    if (retryCount >= maxRetries) {
+                        console.error('Quill failed to load after maximum retries');
+                        return;
+                    }
+                    console.log(`Quill TextBox not ready, retrying... ${retryCount}/${maxRetries}`);
+                    setTimeout(initEditor, 500);
+                    return;
+                }
+                
+                console.log('Initializing Quill TextBox for:', editorId);
+                
+                // Hide the original textarea
+                textEditor.style.display = 'none';
+                
+                // Create a div for Quill editor
+                const quillContainer = document.createElement('div');
+                quillContainer.id = editorId + '_quill';
+                quillContainer.style.minHeight = '200px';
+                quillContainer.style.backgroundColor = 'white';
+                textEditor.parentNode.insertBefore(quillContainer, textEditor.nextSibling);
+                
+                // Create Quill editor with font size and color controls
+                const quill = new Quill('#' + quillContainer.id, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'font': FontClass.whitelist }],
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link'],
+                            ['clean']
+                        ]
+                    },
+                    placeholder: 'Enter your text...',
+                    formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
+                });
+                
+                textEditor._quillInstance = quill;
+                textEditor._quillContainer = quillContainer;
+                
+                // Set initial content from textarea
+                if (textEditor.value && textEditor.value.trim() !== '') {
+                    quill.root.innerHTML = textEditor.value;
+                }
+                
+                // Listen for Quill changes and update textarea and preview
+                quill.on('text-change', function() {
+                    const content = quill.root.innerHTML;
+                    textEditor.value = content;
+                    
+                    // Call updateContent for general updates
+                    if (typeof updateContent === 'function') {
+                        updateContent(content);
+                    }
+                });
+            }
+        }
+        
+        setTimeout(initEditor, 100);
+    }
+
+    // Function to cleanup Quill instances
+    function cleanupQuillEditor(editorId) {
+        const textEditor = document.getElementById(editorId);
+        if (textEditor && textEditor._quillInstance) {
+            textEditor._quillInstance = null;
+            if (textEditor._quillContainer) {
+                textEditor._quillContainer.remove();
+                textEditor._quillContainer = null;
+            }
+            textEditor.style.display = '';
+        }
+    }
+
+    // Function to refresh Quill editor with new content
+    function refreshQuillEditor(editorId, content) {
+        const textEditor = document.getElementById(editorId);
+        if (textEditor && textEditor._quillInstance) {
+            textEditor._quillInstance.root.innerHTML = content || '';
+            textEditor.value = content || '';
         }
     }
 </script>

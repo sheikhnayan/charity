@@ -79,6 +79,32 @@
                             </div>
                         </div>
 
+                        <div class="row mb-4">
+                            <div class="col-lg">
+                                <div class="alert alert-info">
+                                    <h5><i class="fas fa-info-circle"></i> How Pages Work</h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong>📄 Fundraiser Websites:</strong>
+                                            <ul class="mb-0 mt-2">
+                                                <li>Each page is a separate URL</li>
+                                                <li>Traditional multi-page navigation</li>
+                                                <li>Example: /page/about, /page/services</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>💼 Investment Websites:</strong>
+                                            <ul class="mb-0 mt-2">
+                                                <li>All pages appear as sections on homepage</li>
+                                                <li>Single-page with smooth scrolling navigation</li>
+                                                <li>Menu clicks scroll to sections</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
@@ -89,6 +115,9 @@
                                                 <th>SI</th>
                                                 <th>Name</th>
                                                 <th>Website</th>
+                                                <th>Website Type</th>
+                                                <th>Position/Order</th>
+                                                <th>Display Type</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -96,11 +125,7 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
+                                                    <td colspan="8" class="text-center">No data found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $key => $item)
@@ -109,16 +134,36 @@
                                                         <td>{{ $item->name }}</td>
                                                         <td>{{ $item->website->name }}</td>
                                                         <td>
-                                                            @if ($item->status == 1)
-                                                                Active
+                                                            <span class="badge bg-{{ $item->website->type == 'investment' ? 'primary' : 'success' }}">
+                                                                {{ ucfirst($item->website->type) }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
+                                                            @if ($item->website->type == 'investment')
+                                                                <small class="text-muted d-block">Section order</small>
                                                             @else
-                                                                Deactive
+                                                                <small class="text-muted d-block">Menu order</small>
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <a href="/admins/page/show/{{ $item->id }}" class="btn btn-success">Show</a>
-                                                            <a href="/admins/page/edit/{{ $item->id }}" class="btn btn-primary">Edit</a>
-                                                            <a href="/admins/page/delete/{{ $item->id }}" class="btn btn-danger">Delete</a>
+                                                            @if ($item->website->type == 'investment')
+                                                                <small class="text-muted">Section on homepage</small>
+                                                            @else
+                                                                <small class="text-muted">Separate page</small>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($item->status == 1)
+                                                                <span class="badge bg-success">Active</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">Inactive</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a href="/admins/page/show/{{ $item->id }}" class="btn btn-success btn-sm">Show</a>
+                                                            <a href="/admins/page/edit/{{ $item->id }}" class="btn btn-primary btn-sm">Edit</a>
+                                                            <a href="/admins/page/delete/{{ $item->id }}" class="btn btn-danger btn-sm">Delete</a>
                                                         </td>
                                                     </tr>
                                                 @endforeach

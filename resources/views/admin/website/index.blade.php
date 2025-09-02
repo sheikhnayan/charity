@@ -89,6 +89,7 @@
                                                 <th>SI</th>
                                                 <th>Name</th>
                                                 <th>Domain</th>
+                                                <th>Type</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -96,11 +97,7 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
+                                                    <td colspan="6" class="text-center">No data found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $key => $item)
@@ -109,10 +106,15 @@
                                                         <td>{{ $item->name }}</td>
                                                         <td>{{ $item->domain }}</td>
                                                         <td>
+                                                            <span class="badge bg-{{ $item->type == 'investment' ? 'success' : 'primary' }}">
+                                                                {{ ucfirst($item->type ?? 'fundraiser') }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
                                                             @if ($item->status == 1)
-                                                                Active
+                                                                <span class="badge bg-success">Active</span>
                                                             @else
-                                                                Deactive
+                                                                <span class="badge bg-danger">Deactive</span>
                                                             @endif
                                                         </td>
                                                         <td>

@@ -158,10 +158,6 @@ nav a:hover{
         margin-top: 22px;
     }
 
-    .video-container iframe{
-        height: 600px;
-    }
-
   @media (max-width: 767.98px) {
     #studentTable, #studentTable thead, #studentTable tbody, #studentTable tr, #studentTable th, #studentTable td {
         display: block !important;
@@ -174,6 +170,7 @@ nav a:hover{
 
     .video-container iframe{
         height: 315px !important;
+        width: 100% !important;
     }
 
     .jk{

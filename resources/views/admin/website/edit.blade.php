@@ -2,7 +2,6 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('user/extra.css') }}">
-<!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
 
@@ -87,6 +86,17 @@
                                                     <div class="mb-3">
                                                         <label for="first_name" class="form-label">Name</label>
                                                         <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name" value="{{ $data->user->name }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="type" class="form-label">Website Type</label>
+                                                        <select name="type" class="form-control" id="type" required>
+                                                            <option value="">Select Website Type</option>
+                                                            <option value="fundraiser" {{ $data->type == 'fundraiser' ? 'selected' : '' }}>Fundraiser</option>
+                                                            <option value="investment" {{ $data->type == 'investment' ? 'selected' : '' }}>Investment</option>
+                                                        </select>
+                                                        <small class="form-text text-muted">Choose whether this website is for fundraising or investment purposes.</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">

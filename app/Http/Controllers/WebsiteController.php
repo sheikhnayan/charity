@@ -40,6 +40,17 @@ class WebsiteController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'name' => 'required|string|max:255',
+            'domain' => 'required|string|max:255',
+            'type' => 'required|in:fundraiser,investment',
+        ]);
+
         // dd($request->all());
         try {
             //code...
@@ -47,6 +58,7 @@ class WebsiteController extends Controller
             $add->user_id = Auth::user()->id;
             $add->name = $request->name;
             $add->domain = $request->domain;
+            $add->type = $request->type;
             $add->status = 1;
             $add->save();
 
@@ -155,9 +167,19 @@ class WebsiteController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
+        // Validate the request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'domain' => 'required|string|max:255',
+            'type' => 'required|in:fundraiser,investment',
+            'status' => 'required|in:0,1',
+        ]);
+
         $update = Website::find($id);
         $update->name = $request->name;
         $update->domain = $request->domain;
+        $update->type = $request->type;
         $update->status = $request->status;
         $update->update();
 

@@ -16,13 +16,20 @@ class admin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!Auth::check()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            return redirect()->route('login');
+        }
+        
         if (Auth::user()->role == 'admin') {
-            # code...
             return $next($request);
         } else {
-            # code...
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Admin access required'], 403);
+            }
             return back();
         }
-
     }
 }

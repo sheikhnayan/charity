@@ -49,6 +49,8 @@ Route::get('/auction/{id}', [AuctionController::class, 'show'])->name('auction-s
 
 Route::get('/page/{id}', [FrontendController::class, 'page'])->name('page');
 
+Route::get('/dealmaker-demo', [FrontendController::class, 'dealmakerDemo'])->name('dealmaker.demo');
+
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -56,6 +58,17 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::get('/donate', [FrontendController::class, 'donate'])->name('donate');
+
+Route::get('/invest', [FrontendController::class, 'invest'])->name('invest');
+
+// Investment-related routes
+Route::post('/invest/save-info', [FrontendController::class, 'saveInvestmentInfo'])->name('invest.save-info');
+Route::post('/invest/process-investment', [FrontendController::class, 'processInvestment'])->name('invest.process');
+Route::get('/invest/thank-you', [FrontendController::class, 'investmentThankYou'])->name('invest.thank-you');
+Route::get('/invest/status/{id}', [FrontendController::class, 'investmentStatus'])->name('invest.status');
+Route::post('/invest/contact', [FrontendController::class, 'investmentContact'])->name('invest.contact');
+Route::get('/invest/terms', [FrontendController::class, 'investmentTerms'])->name('invest.terms');
+Route::get('/invest/privacy', [FrontendController::class, 'investmentPrivacy'])->name('invest.privacy');
 
 Route::post('/donations', [FrontendController::class, 'donation'])->name('donation');
 
@@ -269,9 +282,38 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         ])->name('admin.page.load');
     });
 
+    // Image upload route for page builder
+    Route::post('/upload-image', [AdminController::class, 'uploadImage'])->name('admin.upload.image');
+    
+    // Video upload route for page builder
+    Route::post('/upload-video', [AdminController::class, 'uploadVideo'])->name('admin.upload.video');
 
+});
 
+// Temporary test route for video upload (remove after testing)
+Route::post('/test-upload-video', function(Illuminate\Http\Request $request) {
+    try {
+        $request->validate([
+            'video' => 'required|file|mimes:mp4,webm,ogg,avi,mov,wmv|max:10240',
+        ]);
 
+        $video = $request->file('video');
+        $videoName = time() . '_test_' . uniqid() . '.' . $video->getClientOriginalExtension();
+        
+        $video->move(public_path('uploads'), $videoName);
+        $videoUrl = asset('uploads/' . $videoName);
 
+        return response()->json([
+            'success' => true,
+            'url' => $videoUrl,
+            'message' => 'Video uploaded successfully (test route)'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Upload failed: ' . $e->getMessage()
+        ], 400);
+    }
 });
 

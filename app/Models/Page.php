@@ -13,6 +13,11 @@ class Page extends Model
         'name',
         'state',
         'status',
+        'position',
+        'meta_title',
+        'meta_description',
+        'background_color',
+        'default',
     ];
 
     protected $casts = [

@@ -1,4 +1,8 @@
 @php
+    // Debug: Check what properties are available
+    // dd($component['properties'] ?? 'No properties found');
+    
+    
     $buttonText = $component['properties']['button_text'] ?? 'INVEST NOW';
     $buttonUrl = $component['properties']['button_url'] ?? '#';
     $buttonTarget = $component['properties']['button_target'] ?? '_self';
@@ -8,7 +12,17 @@
     $rightLabel = $component['properties']['right_label'] ?? 'Min. Investment';
     
     // Background and styling
-    $backgroundColor = $component['properties']['background_color'] ?? 'transparent';
+    $backgroundColor = $component['properties']['background_color'] ?? '#ffffff';
+    $buttonText = $component['properties']['button_text'] ?? 'INVEST NOW';
+    $buttonUrl = $component['properties']['button_url'] ?? '#';
+    $buttonTarget = $component['properties']['button_target'] ?? '_self';
+    $leftValue = $component['properties']['left_value'] ?? '$2.13';
+    $leftLabel = $component['properties']['left_label'] ?? 'Share Price';
+    $rightValue = $component['properties']['right_value'] ?? '$1001.10';
+    $rightLabel = $component['properties']['right_label'] ?? 'Min. Investment';
+    
+    // Background and styling
+    $backgroundColor = $component['properties']['background_color'] ?? '#ffffff';
     $borderRadius = $component['properties']['border_radius'] ?? '0';
     $padding = $component['properties']['padding'] ?? '20';
     

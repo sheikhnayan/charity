@@ -48,6 +48,16 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         margin-bottom: -111px;
     }
 
+    /* Investment Tier Background Image Support */
+    .investment-tier-bg {
+        background-attachment: scroll !important;
+        background-clip: border-box !important;
+    }
+
+    .perk-wrap {
+        background-attachment: scroll !important;
+    }
+
     /* Auction Components Styles */
     .c-node-ap__auction-results{
         margin-right: 36px;
@@ -403,7 +413,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         @endforeach
 
         {{-- Main content area with universal inner-section handling --}}
-        <div class="container-fluid px-3" id="rendered-page">
+        <div class="container px-3" id="rendered-page">
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';

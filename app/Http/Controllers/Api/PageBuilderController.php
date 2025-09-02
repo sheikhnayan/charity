@@ -71,13 +71,22 @@ class PageBuilderController extends Controller
 
     public function store(Request $request)
     {
-        
+        // dd($request->all());
         $website = Website::find($request->website_id);
+        
+        // Get the next position for this website
+        $nextPosition = Page::where('website_id', $request->website_id)->max('position') + 1;
         
         $add = new Page;
         $add->user_id = $website->user_id;
         $add->website_id = $request->website_id;
         $add->name = $request->name;
+        $add->meta_title = $request->meta_title;
+        $add->meta_description = $request->meta_description;
+        $add->background_color = $request->background_color;
+        $add->default = $request->default;
+        $add->position = $nextPosition;
+        $add->status = 1;
         $add->save();
 
         return redirect()->route('admin.page.index')->with('success', 'Page created successfully.');
@@ -92,8 +101,14 @@ class PageBuilderController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd($request->all());
+         // --- IGNORE ---
         $update = Page::find($id);
         $update->name = $request->name;
+        $update->meta_title = $request->meta_title;
+        $update->meta_description = $request->meta_description;
+        $update->background_color = $request->background_color;
+        $update->default = $request->default;
         $update->status = $request->status;
         $update->update();
 
@@ -110,7 +125,7 @@ class PageBuilderController extends Controller
 
     public function show($id)
     {
-        $data = Page::find($id);
+        $data = Page::with('website')->find($id);
         return view('admin.page.page-builder', compact('data'));
     }
 }

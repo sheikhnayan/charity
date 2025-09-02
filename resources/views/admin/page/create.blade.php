@@ -91,13 +91,21 @@ label{
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="name" class="form-label">Website</label>
-                                                        <select name="website_id" class="form-control" required>
+                                                        <select name="website_id" class="form-control" id="website_select" required>
+                                                            <option value="">Select Website</option>
                                                             @foreach ($data as $item)
-                                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                                <option value="{{ $item->id }}" data-type="{{ $item->type }}">{{ $item->name }} ({{ ucfirst($item->type) }})</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            
+                                            {{-- Website Type Information --}}
+                                            <div id="website-type-info" class="alert alert-info" style="display: none;">
+                                                <strong>Website Type:</strong> <span id="selected-website-type"></span>
+                                                <br>
+                                                <small id="website-type-description"></small>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -164,6 +172,48 @@ label{
                                         </div>
 
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const websiteSelect = document.getElementById('website_select');
+            const websiteTypeInfo = document.getElementById('website-type-info');
+            const selectedWebsiteType = document.getElementById('selected-website-type');
+            const websiteTypeDescription = document.getElementById('website-type-description');
+            
+            websiteSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const websiteType = selectedOption.getAttribute('data-type');
+                
+                if (websiteType) {
+                    selectedWebsiteType.textContent = websiteType.charAt(0).toUpperCase() + websiteType.slice(1);
+                    
+                    if (websiteType === 'investment') {
+                        websiteTypeDescription.innerHTML = `
+                            <strong>Investment Website:</strong> Pages will appear as sections on a single page with smooth scrolling navigation.
+                            <br><strong>Note:</strong> Create pages normally - they will automatically be converted to sections on the frontend.
+                        `;
+                    } else {
+                        websiteTypeDescription.innerHTML = `
+                            <strong>Fundraiser Website:</strong> Each page will be a separate page with traditional multi-page navigation.
+                        `;
+                    }
+                    
+                    websiteTypeInfo.style.display = 'block';
+                } else {
+                    websiteTypeInfo.style.display = 'none';
+                }
+            });
+        });
+    </script>
                                 </div>
                             </div>
                         </div>
