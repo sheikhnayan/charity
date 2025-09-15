@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+class WebsitePaymentSetting extends Model
+{
+    protected $fillable = [
+        'website_id',
+        'payment_method',
+        'stripe_publishable_key',
+        'stripe_secret_key',
+        'stripe_webhook_secret',
+        'authorize_login_id',
+        'authorize_transaction_key',
+        'authorize_sandbox',
+        'is_active',
+        'settings'
+    ];
+
+    protected $casts = [
+        'stripe_publishable_key' => 'encrypted',
+        'stripe_secret_key' => 'encrypted',
+        'stripe_webhook_secret' => 'encrypted',
+        'authorize_login_id' => 'encrypted',
+        'authorize_transaction_key' => 'encrypted',
+        'authorize_sandbox' => 'boolean',
+        'is_active' => 'boolean',
+        'settings' => 'array'
+    ];
+
+    /**
+     * Get the website that owns this payment setting
+     */
+    public function website()
+    {
+        return $this->belongsTo(Website::class);
+    }
+
+    /**
+     * Check if Stripe is configured and active
+     */
+    public function isStripeConfigured(): bool
+    {
+        return $this->payment_method === 'stripe' 
+            && !empty($this->stripe_publishable_key) 
+            && !empty($this->stripe_secret_key)
+            && $this->is_active;
+    }
+
+    /**
+     * Check if Authorize.net is configured and active
+     */
+    public function isAuthorizeConfigured(): bool
+    {
+        return $this->payment_method === 'authorize' 
+            && !empty($this->authorize_login_id) 
+            && !empty($this->authorize_transaction_key)
+            && $this->is_active;
+    }
+
+    /**
+     * Get Stripe configuration array
+     */
+    public function getStripeConfig(): array
+    {
+        return [
+            'publishable_key' => $this->stripe_publishable_key,
+            'secret_key' => $this->stripe_secret_key,
+            'webhook_secret' => $this->stripe_webhook_secret,
+        ];
+    }
+
+    /**
+     * Get Authorize.net configuration array
+     */
+    public function getAuthorizeConfig(): array
+    {
+        return [
+            'login_id' => $this->authorize_login_id,
+            'transaction_key' => $this->authorize_transaction_key,
+            'sandbox' => $this->authorize_sandbox,
+        ];
+    }
+
+    /**
+     * Get the appropriate payment configuration based on payment method
+     */
+    public function getPaymentConfig(): array
+    {
+        if ($this->payment_method === 'stripe') {
+            return $this->getStripeConfig();
+        } else {
+            return $this->getAuthorizeConfig();
+        }
+    }
+}

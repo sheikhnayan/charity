@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\WebsitePaymentController;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\AuthorizeNetController;
 use App\Http\Controllers\TicketController;
@@ -293,6 +294,23 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         Route::get('/delete/{id}', [
             WebsiteController::class, 'delete'
         ])->name('admin.website.delete');
+
+        // Payment settings routes
+        Route::get('/{website}/payment-settings', [
+            WebsitePaymentController::class, 'show'
+        ])->name('admin.websites.payment.show');
+
+        Route::put('/{website}/payment-settings', [
+            WebsitePaymentController::class, 'update'
+        ])->name('admin.websites.payment.update');
+
+        Route::post('/{website}/payment-settings/test', [
+            WebsitePaymentController::class, 'test'
+        ])->name('admin.websites.payment.test');
+
+        Route::delete('/{website}/payment-settings', [
+            WebsitePaymentController::class, 'destroy'
+        ])->name('admin.websites.payment.destroy');
     });
 
     Route::prefix('ticket')->name('admin.ticket.')->group(function () {

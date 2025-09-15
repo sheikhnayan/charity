@@ -119,6 +119,9 @@
                                                         </td>
                                                         <td>
                                                             <a href="/admins/website/edit/{{ $item->id }}" class="btn btn-primary">Edit</a>
+                                                            <a href="{{ route('admin.websites.payment.show', $item) }}" class="btn btn-warning">
+                                                                <i class="fa fa-credit-card"></i> Payment
+                                                            </a>
                                                             <a href="/admins/website/delete/{{ $item->id }}" class="btn btn-danger">Delete</a>
                                                         </td>
                                                     </tr>

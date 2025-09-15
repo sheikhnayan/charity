@@ -16,6 +16,7 @@ use App\Models\Auction;
 use App\Models\Website;
 use App\Models\Page;
 use App\Models\Setting;
+use App\Services\PaymentGatewayService;
 use Stripe;
 
 class AuthorizeNetController extends Controller
@@ -42,18 +43,22 @@ class AuthorizeNetController extends Controller
         }
 
         $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = Website::where('domain', $doamin)->first();
-        $user_id = $check->user_id;
-        $setting = Setting::where('user_id', $user_id)->first();
-
-        if ($setting->payment_method == 'stripe') {
-            return view('stripe',compact('data','type'));
-        }else{
-            return view('authorize-net',compact('data','type'));
+        $domain = parse_url($url, PHP_URL_HOST);
+        $website = Website::where('domain', $domain)->first();
+        
+        if (!$website) {
+            abort(404, 'Website not found');
         }
+        
+        $paymentGatewayService = new PaymentGatewayService();
+        $paymentConfig = $paymentGatewayService->getPaymentConfigForWebsite($website);
+        $paymentMethod = $paymentConfig['payment_method'];
 
-
+        if ($paymentMethod == 'stripe') {
+            return view('stripe', compact('data', 'type', 'website', 'paymentConfig'));
+        } else {
+            return view('authorize-net', compact('data', 'type', 'website', 'paymentConfig'));
+        }
     }
 
     /**
@@ -63,18 +68,34 @@ class AuthorizeNetController extends Controller
      */
     public function paymentPost(Request $request)
     {
-
-        // dd($request->all());
+        // Get website from current domain
+        $url = url()->current();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $website = Website::where('domain', $domain)->first();
+        
+        if (!$website) {
+            return back()->with('error', 'Website not found');
+        }
+        
+        $paymentGatewayService = new PaymentGatewayService();
+        $paymentConfig = $paymentGatewayService->getPaymentConfigForWebsite($website);
+        
+        // Validate payment configuration
+        $validationErrors = $paymentGatewayService->validatePaymentConfig($website);
+        if (!empty($validationErrors)) {
+            return back()->with('error', 'Payment configuration error: ' . implode(', ', $validationErrors));
+        }
 
         $cardNumber = $request->input('card_number');
         $date = \Carbon\Carbon::parse($request->input('date'))->format('m/y');
-        // dd($date);
         $expirationDate = $date;
         $cvv = $request->input('cvv');
 
-        $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
-        $merchantAuthentication->setName(env('AUTHORIZENET_API_LOGIN_ID'));
-        $merchantAuthentication->setTransactionKey(env('AUTHORIZENET_TRANSACTION_KEY'));
+        // Use website-specific credentials instead of environment variables
+        $merchantAuthentication = $paymentGatewayService->createAuthorizeNetAuth($website);
+        if (!$merchantAuthentication) {
+            return back()->with('error', 'Failed to initialize payment gateway');
+        }
 
         $creditCard = new AnetAPI\CreditCardType();
         $creditCard->setCardNumber($cardNumber);
@@ -86,15 +107,12 @@ class AuthorizeNetController extends Controller
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
         if ($request->type == 'auction') {
-            # code...
             $transactionRequestType->setTransactionType("authOnlyTransaction");
         } else {
-            # code...
             $transactionRequestType->setTransactionType("authCaptureTransaction");
         }
         $amount = number_format((float)$request->amount, 2, '.', '');
         $transactionRequestType->setAmount($amount);
-        // $transactionRequestType->setAmount("10.00");
         $transactionRequestType->setPayment($payment);
 
         $requests = new AnetAPI\CreateTransactionRequest();
@@ -103,13 +121,14 @@ class AuthorizeNetController extends Controller
         $requests->setTransactionRequest($transactionRequestType);
 
         $controller = new AnetController\CreateTransactionController($requests);
-        $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+        // Use website-specific environment (sandbox/production)
+        $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
+        $response = $controller->executeWithApiResponse($environment);
 
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
-                // dd($request->all());
                 $type = $request->type;
                 if ($request->type == 'donation') {
                     # code...
@@ -294,8 +313,22 @@ class AuthorizeNetController extends Controller
 
     public function paymentStripe(Request $request)
     {
+        // Get current website based on domain
+        $currentDomain = request()->getHost();
+        $website = Website::where('domain', $currentDomain)->first();
+        
+        if (!$website) {
+            return back()->with('error', 'Website not found');
+        }
 
-        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        // Get Stripe credentials for this website
+        $paymentConfig = $this->paymentGatewayService->getPaymentConfig($website);
+        
+        if (!$paymentConfig || !isset($paymentConfig['stripe']['secret_key'])) {
+            return back()->with('error', 'Stripe is not configured for this website');
+        }
+
+        Stripe\Stripe::setApiKey($paymentConfig['stripe']['secret_key']);
 
         try {
             // 3️⃣ Create a one‑time token from the raw card data

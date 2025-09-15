@@ -52,4 +52,60 @@ class Website extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    /**
+     * Get the payment settings for this website
+     */
+    public function paymentSettings()
+    {
+        return $this->hasOne(WebsitePaymentSetting::class);
+    }
+
+    /**
+     * Get the active payment configuration for this website
+     * Falls back to settings table if no website-specific payment settings exist
+     */
+    public function getPaymentConfig()
+    {
+        $websitePaymentSettings = $this->paymentSettings;
+        
+        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+            return $websitePaymentSettings->getPaymentConfig();
+        }
+        
+        // Fallback to settings table (existing behavior)
+        $setting = $this->setting;
+        if ($setting) {
+            if ($setting->payment_method === 'stripe') {
+                return [
+                    'publishable_key' => $setting->stripe_publishable_key,
+                    'secret_key' => $setting->stripe_secret_key,
+                ];
+            } else {
+                return [
+                    'login_id' => $setting->authorize_login_id,
+                    'transaction_key' => $setting->authorize_transaction_key,
+                    'sandbox' => true, // Default to sandbox for fallback
+                ];
+            }
+        }
+        
+        return [];
+    }
+
+    /**
+     * Get the payment method for this website
+     */
+    public function getPaymentMethod()
+    {
+        $websitePaymentSettings = $this->paymentSettings;
+        
+        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+            return $websitePaymentSettings->payment_method;
+        }
+        
+        // Fallback to settings table
+        $setting = $this->setting;
+        return $setting ? $setting->payment_method : 'authorize';
+    }
 }
