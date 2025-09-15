@@ -41,7 +41,7 @@ class WebsiteController extends Controller
     public function store(Request $request)
     {
         // Validate the request
-        $request->validate([
+        $validation = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -49,9 +49,17 @@ class WebsiteController extends Controller
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
-        ]);
+        ];
 
-        // dd($request->all());
+        // Add investment-specific validation if type is investment
+        if ($request->type === 'investment') {
+            $validation['share_price'] = 'required|numeric|min:0.01';
+            $validation['min_investment'] = 'required|numeric|min:1';
+            $validation['investment_tiers'] = 'nullable|string';
+        }
+
+        $request->validate($validation);
+
         try {
             //code...
             $add = new Website;
@@ -60,6 +68,14 @@ class WebsiteController extends Controller
             $add->domain = $request->domain;
             $add->type = $request->type;
             $add->status = 1;
+            
+            // Add investment-specific fields if type is investment
+            if ($request->type === 'investment') {
+                $add->share_price = $request->share_price;
+                $add->min_investment = $request->min_investment;
+                $add->investment_tiers = $request->investment_tiers;
+            }
+            
             $add->save();
 
             $user = new User;
@@ -189,11 +205,84 @@ class WebsiteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete($id)
     {
-        $delete = Website::find($id);
-        $delete->delete();
+        $website = Website::find($id);
+        
+        if (!$website) {
+            return redirect()->route('admin.website.index')->with('error', 'Website not found!');
+        }
+        
+        try {
+            // Start database transaction for safe deletion
+            \DB::transaction(function () use ($website, $id) {
+                // Delete all related data with website_id
+                
+                // Delete page comments directly by website_id (new approach)
+                \App\Models\PageComment::where('website_id', $id)->delete();
+                
+                // Delete pages and their remaining comments (for any orphaned comments)
+                $pages = \App\Models\Page::where('website_id', $id)->get();
+                foreach ($pages as $page) {
+                    // Delete any remaining page comments by page_id (backup cleanup)
+                    \App\Models\PageComment::where('page_identifier', $page->id)->delete();
+                }
+                \App\Models\Page::where('website_id', $id)->delete();
+                
+                // Delete investments
+                \App\Models\Investment::where('website_id', $id)->delete();
+                
+                // Delete users associated with this website
+                \App\Models\User::where('website_id', $id)->delete();
+                
+                // Delete donations
+                \App\Models\Donation::where('website_id', $id)->delete();
+                
+                // Delete auctions and their images
+                $auctions = \App\Models\Auction::where('website_id', $id)->get();
+                foreach ($auctions as $auction) {
+                    \App\Models\AuctionImage::where('auction_id', $auction->id)->delete();
+                }
+                \App\Models\Auction::where('website_id', $id)->delete();
+                
+                // Delete transactions
+                \App\Models\Transaction::where('website_id', $id)->delete();
+                
+                // Delete taxes and tax receipts
+                \App\Models\Tax::where('website_id', $id)->delete();
+                \App\Models\TaxReceipt::where('website_id', $id)->delete();
+                
+                // Delete tickets and ticket sales
+                $tickets = \App\Models\Ticket::where('website_id', $id)->get();
+                foreach ($tickets as $ticket) {
+                    // Delete ticket sell details first
+                    $ticketSells = \App\Models\TicektSell::where('ticket_id', $ticket->id)->get();
+                    foreach ($ticketSells as $sell) {
+                        \App\Models\TicketSellDetail::where('ticket_sell_id', $sell->id)->delete();
+                    }
+                    \App\Models\TicektSell::where('ticket_id', $ticket->id)->delete();
+                }
+                \App\Models\Ticket::where('website_id', $id)->delete();
+                
+                // Delete sponsors
+                \App\Models\Sponsor::where('website_id', $id)->delete();
+                
+                // Delete headers
+                \App\Models\Header::where('website_id', $id)->delete();
+                
+                // Delete footers
+                \App\Models\Footer::where('website_id', $id)->delete();
+                
+                // Finally, delete the website itself
+                $website->delete();
+            });
+            
+            return redirect()->route('admin.website.index')->with('success', 'Website and all related data deleted successfully!');
+            
+        } catch (\Exception $e) {
+        dd($e->getMessage());
 
-        return redirect()->route('admin.website.index')->with('success', 'Website deleted successfully.');
+            return redirect()->route('admin.website.index')->with('error', 'Error deleting website: ' . $e->getMessage());
+        }
     }
 }

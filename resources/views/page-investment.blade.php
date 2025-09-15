@@ -11,6 +11,7 @@ if (isset($state['components'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $data->name ?? 'Page' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>body{background:#f9fafb;}</style>
@@ -19,12 +20,293 @@ if (isset($state['components'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <style>
+    /* COMPREHENSIVE FRONTEND FIXES */
+    
+    /* Global full-width support */
+    html, body {
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+    
+    /* Main container adjustments for full-width support */
+    #rendered-page {
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Full-width section support - Enhanced */
+    .inner-section-fullwidth {
+        width: 100vw !important;
+        position: relative;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Enable borders and padding for inner-sections */
+    .inner-section-fullwidth,
+    .inner-section-frontend {
+        border: inherit !important;
+        padding: inherit !important;
+        margin: inherit !important;
+    }
+    
+    /* Force apply styles that might be ignored */
+    .inner-section-fullwidth[style],
+    .inner-section-frontend[style] {
+        border: inherit !important;
+        padding: inherit !important;
+        margin: inherit !important;
+        background: inherit !important;
+        background-color: inherit !important;
+        background-image: inherit !important;
+        background-attachment: inherit !important;
+    }
+    
+    /* Parallax background fix - Enhanced implementation with higher specificity */
+    .inner-section-fullwidth[style*="background-attachment: fixed"],
+    .inner-section-frontend[style*="background-attachment: fixed"] {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: cover !important;
+    }
+    
+    /* Force parallax for any background image in full-width sections */
+    .inner-section-fullwidth[style*="background"][style*="url"],
+    .inner-section-frontend[style*="background"][style*="url"] {
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-position: center center !important;
+        background-size: cover !important;
+    }
+    
+    /* CRITICAL: Target all background images with multi-value background-attachment syntax */
+    .inner-section-fullwidth[style*="background-attachment: scroll,fixed"],
+    .inner-section-frontend[style*="background-attachment: scroll,fixed"],
+    .inner-section-fullwidth[style*="scroll,fixed"],
+    .inner-section-frontend[style*="scroll,fixed"] {
+        background-attachment: scroll, fixed !important;
+        background-repeat: no-repeat, no-repeat !important;
+        background-position: 0 0, center center !important;
+        background-size: auto, cover !important;
+    }
+    
+    /* Ensure parallax works by overriding transform conflicts */
+    .inner-section-fullwidth[style*="background-attachment: fixed"] {
+        transform: translateX(-50%) !important;
+        will-change: transform !important;
+    }
+    
+    /* Direct ID targeting with multi-value support */
+    div[id].inner-section-fullwidth[style*="background-image"][style*="scroll,fixed"],
+    div[id].inner-section-frontend[style*="background-image"][style*="scroll,fixed"] {
+        background-attachment: scroll, fixed !important;
+        background-position: 0 0, center center !important;
+        background-size: auto, cover !important;
+        background-repeat: no-repeat, no-repeat !important;
+    }
+    
+    /* Additional parallax support for webkit browsers */
+    @supports (-webkit-appearance: none) {
+        .inner-section-fullwidth[style*="background-attachment: fixed"],
+        .inner-section-frontend[style*="background-attachment: fixed"],
+        .inner-section-fullwidth[style*="scroll,fixed"],
+        .inner-section-frontend[style*="scroll,fixed"] {
+            -webkit-background-attachment: fixed !important;
+        }
+    }
+    
+    /* Direct ID targeting for parallax - most specific */
+    div[id][style*="background-image"][style*="background-attachment: fixed"],
+    div[id][style*="background-image"][style*="scroll,fixed"] {
+        background-attachment: fixed !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    /* Universal parallax fallback - highest specificity with multi-value support */
+    html body main div[style*="background-attachment: fixed"],
+    html body main div[style*="scroll,fixed"],
+    html body div[style*="background-attachment: fixed"],
+    html body div[style*="scroll,fixed"],
+    html body [style*="background-attachment: fixed"],
+    html body [style*="scroll,fixed"] {
+        background-attachment: fixed !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    /* Specific class targeting with multi-value support */
+    body .inner-section-fullwidth[style*="background-attachment: fixed"],
+    body .inner-section-frontend[style*="background-attachment: fixed"],
+    body .inner-section-fullwidth[style*="scroll,fixed"],
+    body .inner-section-frontend[style*="scroll,fixed"] {
+        background-attachment: fixed !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    /* Parallax element class added by JavaScript */
+    .parallax-element {
+        background-attachment: fixed !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    /* Force parallax with highest specificity possible - enhanced with multi-value */
+    html body main #rendered-page div[style*="background-attachment"],
+    html body main #rendered-page div[style*="scroll,fixed"],
+    html body main #rendered-page [style*="background-attachment"],
+    html body main #rendered-page [style*="scroll,fixed"] {
+        background-attachment: fixed !important;
+        background-position: center center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    /* ULTIMATE fallback - target inline styles directly by attribute */
+    [style*="linear-gradient"][style*="url"][style*="scroll,fixed"] {
+        background-attachment: scroll, fixed !important;
+        background-position: 0 0, center center !important;
+        background-size: auto, cover !important;
+        background-repeat: no-repeat, no-repeat !important;
+    }
+    
+    /* Video component comprehensive responsive fixes */
+    .video-component,
+    .video-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .video-component iframe,
+    .video-component video,
+    .video-container iframe,
+    .video-container video {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+    
+    /* Force responsive behavior for videos with custom dimensions */
+    .video-container[style*="width"],
+    .video-container[style*="height"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .video-container[style*="width"] iframe,
+    .video-container[style*="width"] video,
+    .video-container[style*="height"] iframe,
+    .video-container[style*="height"] video {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        aspect-ratio: 16/9 !important;
+    }
+    
+    /* Investment tier auto-amount fix for full-width sections */
+    .inner-section-fullwidth .investment-tier a[href*="/invest?amount"],
+    .inner-section-frontend .investment-tier a[href*="/invest?amount"] {
+        pointer-events: auto !important;
+        display: inline-block !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+    
+    /* Mobile specific fixes */
+    @media (max-width: 768px) {
+        /* Full-width sections on mobile */
+        .inner-section-fullwidth {
+            width: 100vw !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            margin-left: calc(-50vw + 50%) !important;
+            margin-right: calc(-50vw + 50%) !important;
+            max-width: none !important;
+        }
+        
+        /* Force parallax to scroll on mobile */
+        .inner-section-fullwidth[style*="background-attachment"],
+        .inner-section-frontend[style*="background-attachment"] {
+            background-attachment: scroll !important;
+        }
+        
+        /* Video responsiveness on mobile */
+        .video-component,
+        .video-container {
+            width: 100% !important;
+            height: auto !important;
+        }
+        
+        .video-component iframe,
+        .video-component video,
+        .video-container iframe,
+        .video-container video {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 200px !important;
+            max-height: 300px !important;
+            aspect-ratio: 16/9 !important;
+        }
+        
+        /* Force remove custom dimensions on mobile */
+        .video-container[style] {
+            width: 100% !important;
+            height: auto !important;
+            padding-bottom: 56.25% !important;
+            position: relative !important;
+        }
+        
+        .video-container[style] iframe,
+        .video-container[style] video {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .video-component iframe,
+        .video-component video,
+        .video-container iframe,
+        .video-container video {
+            min-height: 180px !important;
+            max-height: 220px !important;
+        }
+        
+        /* Ensure very small screens get full-width treatment */
+        .inner-section-fullwidth {
+            width: 100vw !important;
+            left: 0 !important;
+            transform: none !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+    
     /* Base Component Styles */
     #studentTable {
         background-color: #fff !important;
@@ -254,6 +536,8 @@ if (isset($state['components'])) {
         }
     }
 
+    
+
     @php
         // Generate comprehensive responsive CSS for all components and nested components
         function generateResponsiveStyles($state) {
@@ -348,7 +632,7 @@ if (isset($state['components'])) {
     @endphp
     </style>
 </head>
-<body style="overflow-x: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
+<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -417,7 +701,7 @@ if (isset($state['components'])) {
         @endforeach
 
         {{-- Main content area with universal inner-section handling --}}
-        <div class="container px-3" id="rendered-page">
+        <div id="rendered-page">
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';
@@ -442,95 +726,23 @@ if (isset($state['components'])) {
                 @endphp
                 
                 {{-- Universal Inner Section Wrapper --}}
-                <div class="page-inner-section" id="{{ $componentId }}">
-                    @if($componentType === 'inner-section')
-                        {{-- This is an actual inner-section component --}}
-                        @php
-                            $innerSectionData = $component['innerSectionData'] ?? [];
-                            $nestedComponents = $component['nestedComponents'] ?? [];
-                            $columns = $innerSectionData['columns'] ?? 1;
-                            $gap = $innerSectionData['gap'] ?? '0px';
-                            
-                            // Apply custom styling ONLY if explicitly set in page-builder
-                            $sectionStyle = '';
-                            
-                            // Only add background if explicitly set and not transparent/empty
-                            if (isset($innerSectionData['backgroundColor']) 
-                                && $innerSectionData['backgroundColor'] !== 'transparent' 
-                                && $innerSectionData['backgroundColor'] !== '' 
-                                && $innerSectionData['backgroundColor'] !== '#f8f9fa') {
-                                $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']};";
-                            }
-                            
-                            // Only add padding if explicitly set and not 0
-                            if (isset($innerSectionData['padding']) 
-                                && $innerSectionData['padding'] !== '0px' 
-                                && $innerSectionData['padding'] !== '20px' 
-                                && $innerSectionData['padding'] !== '') {
-                                $sectionStyle .= "padding: {$innerSectionData['padding']};";
-                            }
-                            
-                            // Only add margin if explicitly set and not 0
-                            if (isset($innerSectionData['margin']) 
-                                && $innerSectionData['margin'] !== '0px' 
-                                && $innerSectionData['margin'] !== '10px 0' 
-                                && $innerSectionData['margin'] !== '') {
-                                $sectionStyle .= "margin: {$innerSectionData['margin']};";
-                            }
-                            
-                            // Only add border if explicitly set and not default dashed
-                            if (isset($innerSectionData['borderStyle']) 
-                                && $innerSectionData['borderStyle'] !== 'none' 
-                                && $innerSectionData['borderStyle'] !== 'dashed'
-                                && $innerSectionData['borderStyle'] !== '') {
-                                $borderWidth = $innerSectionData['borderWidth'] ?? '2px';
-                                $borderColor = $innerSectionData['borderColor'] ?? '#ddd';
-                                $sectionStyle .= "border: {$borderWidth} {$innerSectionData['borderStyle']} {$borderColor};";
-                            }
-                            
-                            // Only add border-radius if explicitly set and not default
-                            if (isset($innerSectionData['borderRadius']) 
-                                && $innerSectionData['borderRadius'] !== '0px' 
-                                && $innerSectionData['borderRadius'] !== '8px' 
-                                && $innerSectionData['borderRadius'] !== '') {
-                                $sectionStyle .= "border-radius: {$innerSectionData['borderRadius']};";
-                            }
-                        @endphp
-                        
-                        <div class="inner-section-grid cols-{{ $columns }}" 
-                             style="{{ $sectionStyle }} gap: {{ $gap }};">
-                            @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="inner-column">
-                                    @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
-                                        @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                            @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
-                                            <div class="page-component" id="{{ $nestedComponentId }}">
-                                                @include('page-components.render-component', [
-                                                    'component' => $nestedComponent, 
-                                                    'componentId' => $nestedComponentId,
-                                                    'isNested' => true
-                                                ])
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            @endfor
-                        </div>
-                    @else
-                        {{-- This is an auto-wrapped component (1-column transparent inner-section) --}}
-                        <div class="inner-section-grid cols-1">
-                            <div class="inner-column">
-                                <div class="page-component" id="auto-wrapped-{{ $index }}">
-                                    @include('page-components.render-component', [
-                                        'component' => $component, 
-                                        'componentId' => "auto-wrapped-{$index}",
-                                        'isNested' => false
-                                    ])
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                @if($componentType === 'inner-section')
+                    {{-- This is an actual inner-section component - use render-component for full functionality --}}
+                    @include('page-components.render-component', [
+                        'component' => $component, 
+                        'componentId' => $componentId,
+                        'isNested' => false
+                    ])
+                @else
+                    {{-- This is an auto-wrapped component (1-column transparent inner-section) --}}
+                    <div class="auto-wrapped-component" style="max-width: 1200px; margin: 0 auto; padding: 0 15px;">
+                        @include('page-components.render-component', [
+                            'component' => $component, 
+                            'componentId' => "auto-wrapped-{$index}",
+                            'isNested' => false
+                        ])
+                    </div>
+                @endif
             @endforeach
         </div>
     </main>
@@ -570,7 +782,223 @@ if (isset($state['components'])) {
                     }
                 });
             @endif
+            
+            // Enhanced Parallax Fix - Force CSS and add JavaScript fallback
+            initParallaxFix();
+            
+            // Initialize form data storage for frontend users
+            if (typeof initFormDataStorageForFrontend === 'function') {
+                initFormDataStorageForFrontend();
+            }
         });
+        
+        // Parallax Fix Function
+        function initParallaxFix() {
+            // Find all elements with background-attachment: fixed in their style
+            const parallaxElements = document.querySelectorAll('[style*="background-attachment: fixed"], [style*="background-attachment:fixed"], [style*="scroll,fixed"]');
+            
+            parallaxElements.forEach(function(element) {
+                // Check if it's multi-value syntax (scroll,fixed) 
+                const styleAttr = element.getAttribute('style') || '';
+                
+                if (styleAttr.includes('scroll,fixed')) {
+                    // Keep multi-value syntax for complex backgrounds
+                    if (!element.style.backgroundAttachment.includes('scroll,fixed')) {
+                        element.style.backgroundAttachment = 'scroll,fixed';
+                    }
+                    if (!element.style.backgroundPosition.includes('0 0,center center')) {
+                        element.style.backgroundPosition = '0 0,center center';
+                    }
+                    if (!element.style.backgroundSize.includes('auto,cover')) {
+                        element.style.backgroundSize = 'auto,cover';
+                    }
+                    if (!element.style.backgroundRepeat.includes('no-repeat,no-repeat')) {
+                        element.style.backgroundRepeat = 'no-repeat,no-repeat';
+                    }
+                } else {
+                    // Single value syntax for simple backgrounds
+                    element.style.backgroundAttachment = 'fixed';
+                    element.style.backgroundPosition = 'center center';
+                    element.style.backgroundSize = 'cover';
+                    element.style.backgroundRepeat = 'no-repeat';
+                }
+                
+                // Add a class for easier targeting
+                element.classList.add('parallax-element');
+                
+                // Debug log
+                console.log('Parallax element found and fixed:', element, 'Style:', styleAttr);
+            });
+            
+            // Also check after a slight delay in case elements are loaded dynamically
+            setTimeout(function() {
+                const newParallaxElements = document.querySelectorAll('[style*="background-attachment"][style*="background-image"]:not(.parallax-element), [style*="scroll,fixed"]:not(.parallax-element)');
+                newParallaxElements.forEach(function(element) {
+                    const styleAttr = element.getAttribute('style') || '';
+                    
+                    if (styleAttr.includes('scroll,fixed')) {
+                        element.style.backgroundAttachment = 'scroll,fixed';
+                        element.style.backgroundPosition = '0 0,center center';
+                        element.style.backgroundSize = 'auto,cover';
+                        element.style.backgroundRepeat = 'no-repeat,no-repeat';
+                    } else {
+                        element.style.backgroundAttachment = 'fixed';
+                        element.style.backgroundPosition = 'center center';
+                        element.style.backgroundSize = 'cover';
+                        element.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    element.classList.add('parallax-element');
+                    console.log('Delayed parallax element fixed:', element, 'Style:', styleAttr);
+                });
+            }, 100);
+            
+            // Additional check for elements with the specific gradient+image pattern
+            setTimeout(function() {
+                const gradientElements = document.querySelectorAll('[style*="linear-gradient"][style*="url"]');
+                gradientElements.forEach(function(element) {
+                    if (!element.classList.contains('parallax-element')) {
+                        const styleAttr = element.getAttribute('style') || '';
+                        console.log('Found gradient+image element:', element, 'Style:', styleAttr);
+                        
+                        if (styleAttr.includes('scroll,fixed') || styleAttr.includes('background-attachment')) {
+                            // Force the parallax styles
+                            element.style.backgroundAttachment = 'scroll,fixed';
+                            element.style.backgroundPosition = '0 0,center center';
+                            element.style.backgroundSize = 'auto,cover';
+                            element.style.backgroundRepeat = 'no-repeat,no-repeat';
+                            element.classList.add('parallax-element');
+                            console.log('Applied parallax fix to gradient element:', element);
+                        }
+                    }
+                });
+            }, 200);
+        }
+        
+        // Form Data Storage for Frontend Users
+        function initFormDataStorageForFrontend() {
+            // Initialize form data storage system for frontend
+            if (!window.formDataStorage) {
+                window.formDataStorage = {
+                    data: {},
+                    
+                    storeFormData: function(formId, fieldName, value) {
+                        if (!this.data[formId]) {
+                            this.data[formId] = {};
+                        }
+                        this.data[formId][fieldName] = value;
+                        this.saveToStorage();
+                    },
+                    
+                    getFormData: function(formId) {
+                        return this.data[formId] || {};
+                    },
+                    
+                    getAllData: function() {
+                        return this.data;
+                    },
+                    
+                    clearFormData: function(formId) {
+                        if (formId) {
+                            delete this.data[formId];
+                        } else {
+                            this.data = {};
+                        }
+                        this.saveToStorage();
+                    },
+                    
+                    saveToStorage: function() {
+                        try {
+                            localStorage.setItem('investmentFormData', JSON.stringify(this.data));
+                        } catch (e) {
+                            console.warn('Could not save form data to localStorage:', e);
+                        }
+                    },
+                    
+                    loadFromStorage: function() {
+                        try {
+                            const stored = localStorage.getItem('investmentFormData');
+                            if (stored) {
+                                this.data = JSON.parse(stored);
+                            }
+                        } catch (e) {
+                            console.warn('Could not load form data from localStorage:', e);
+                            this.data = {};
+                        }
+                    }
+                };
+                
+                // Load existing data
+                window.formDataStorage.loadFromStorage();
+            }
+            
+            // Capture form inputs
+            document.addEventListener('input', function(e) {
+                if (e.target.matches('input, select, textarea')) {
+                    const form = e.target.closest('form');
+                    if (form && !form.classList.contains('no-store')) {
+                        const formId = form.id || form.className || 'default_form';
+                        const fieldName = e.target.name || e.target.id || `field_${Date.now()}`;
+                        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                        
+                        window.formDataStorage.storeFormData(formId, fieldName, value);
+                        
+                        // Show subtle save indicator
+                        showDataSavedIndicator();
+                    }
+                }
+            });
+            
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('input[type="radio"], input[type="checkbox"], select')) {
+                    const form = e.target.closest('form');
+                    if (form && !form.classList.contains('no-store')) {
+                        const formId = form.id || form.className || 'default_form';
+                        const fieldName = e.target.name || e.target.id || `field_${Date.now()}`;
+                        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                        
+                        window.formDataStorage.storeFormData(formId, fieldName, value);
+                        showDataSavedIndicator();
+                    }
+                }
+            });
+        }
+        
+        function showDataSavedIndicator() {
+            // Remove existing indicator
+            const existing = document.querySelector('.data-saved-indicator');
+            if (existing) existing.remove();
+            
+            // Create new indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'data-saved-indicator';
+            indicator.innerHTML = '<i class="fas fa-check"></i> Saved';
+            indicator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(40, 167, 69, 0.9);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                z-index: 10000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            `;
+            
+            document.body.appendChild(indicator);
+            
+            // Animate in and out
+            setTimeout(() => indicator.style.opacity = '1', 10);
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+                setTimeout(() => indicator.remove(), 300);
+            }, 1500);
+        }
     </script>
 </body>
 </html>

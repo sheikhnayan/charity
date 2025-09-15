@@ -25,4 +25,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(TicektSell::class,'reference_id','id');
     }
+
+    public function investment()
+    {
+        return $this->belongsTo(Investment::class,'reference_id','id');
+    }
 }

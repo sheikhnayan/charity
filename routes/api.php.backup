@@ -15,31 +15,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/comments', [CommentController::class, 'store']);
 Route::get('/comments', [CommentController::class, 'index']);
 
-// Simple logger endpoint for debugging
-Route::post('/logger', function (Request $request) {
-    $level = $request->input('level', 'info');
-    $source = $request->input('source', 'frontend');
-    $reason = $request->input('reason', 'unknown');
-    $data = $request->input('data', []);
-    
-    $logMessage = "Frontend Log - Source: $source, Reason: $reason";
-    
-    switch ($level) {
-        case 'error':
-            Log::error($logMessage, ['data' => $data]);
-            break;
-        case 'warning':
-            Log::warning($logMessage, ['data' => $data]);
-            break;
-        case 'debug':
-            Log::debug($logMessage, ['data' => $data]);
-            break;
-        default:
-            Log::info($logMessage, ['data' => $data]);
-    }
-    
-    return response()->json(['status' => 'logged'], 200);
-});
+// DealMaker API endpoints (no auth/CSRF required for investment platform integration)
 Route::post('/investor', function (Request $request) {
     $dealId = $request->query('dealId');
     $payload = $request->all();

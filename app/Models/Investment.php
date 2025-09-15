@@ -15,6 +15,7 @@ class Investment extends Model
         'investor_email',
         'investor_phone',
         'investment_amount',
+        'investor_type',
         'share_quantity',
         'deal_id',
         'status',

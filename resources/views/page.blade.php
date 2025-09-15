@@ -7,6 +7,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $data->name ?? 'Page' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>body{background:#f9fafb;}</style>
@@ -155,6 +156,41 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         margin: 0;
         box-sizing: border-box;
     }
+    
+    /* Inner section styling support */
+    .inner-section-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+    }
+    
+    .inner-section-wrapper.full-width {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+    }
+    
+    /* Parallax background support for inner sections */
+    .inner-section-wrapper.has-parallax {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        min-height: 100vh;
+    }
+    
+    @media (max-width: 768px) {
+        .inner-section-wrapper.has-parallax {
+            background-attachment: scroll;
+            min-height: 50vh;
+        }
+        
+        .inner-section-wrapper.full-width {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
 
     /* Component Styling - All components get consistent spacing */
     .page-component {
@@ -231,6 +267,41 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     @media (max-width: 576px) {
         .inner-section-grid {
             gap: 10px;
+        }
+    }
+
+    /* Video component responsive styles */
+    .video-component {
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+    }
+    
+    .video-component iframe,
+    .video-component video {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100%;
+        aspect-ratio: 16/9;
+    }
+    
+    @media (max-width: 768px) {
+        .video-component iframe,
+        .video-component video {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 200px;
+            max-height: 300px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .video-component iframe,
+        .video-component video {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 180px;
+            max-height: 220px;
         }
     }
 
@@ -415,19 +486,52 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                     @endswitch
                 @endif
         @endforeach
-    <div class="container my-5" id="rendered-page">
-        <div class="row">
-            @foreach($state as $index =>  $data)
-                @php 
-                    $type = $data['type'] ?? ''; 
-                    // Skip if this component is nested inside an inner-section
-                    $isNested = isset($data['isNested']) && $data['isNested'];
-                @endphp
+    <div id="rendered-page">
+        @foreach($state as $index =>  $data)
+            @php 
+                $type = $data['type'] ?? ''; 
+                // Skip if this component is nested inside an inner-section
+                $isNested = isset($data['isNested']) && $data['isNested'];
                 
-                @if(!$isNested)
-                    <div class="col-md-12">
-                        <div class="component mb-4" data-type="{{ $type }}" id="component-{{ $index }}">
-                            <div class="component-content">
+                // Check if component should be full-width
+                $isFullWidth = false;
+                $wrapperStyle = $data['wrapperStyle'] ?? [];
+                $style = $data['style'] ?? [];
+                
+                // Check for full-width in various component types
+                if ($type === 'inner-section') {
+                    $innerSectionData = $data['innerSectionData'] ?? [];
+                    $isFullWidth = isset($innerSectionData['fullWidth']) && $innerSectionData['fullWidth'];
+                }
+                
+                // Build component styles
+                $componentStyles = '';
+                foreach ($wrapperStyle as $k => $v) {
+                    if ($v) $componentStyles .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                }
+                foreach ($style as $k => $v) {
+                    if ($v) $componentStyles .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                }
+                
+                // Add parallax background support
+                $hasParallax = false;
+                if (!empty($style['backgroundImage']) && isset($style['backgroundAttachment']) && $style['backgroundAttachment'] === 'fixed') {
+                    $hasParallax = true;
+                }
+            @endphp
+            
+            @if(!$isNested)
+                @if($isFullWidth)
+                    {{-- Full-width component (no container) --}}
+                    <div class="component mb-4 {{ $hasParallax ? 'has-parallax' : '' }}" data-type="{{ $type }}" id="component-{{ $index }}" style="{{ $componentStyles }}">
+                @else
+                    {{-- Regular component (with container) --}}
+                    <div class="container my-5">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="component mb-4" data-type="{{ $type }}" id="component-{{ $index }}" style="{{ $componentStyles }}">
+                @endif
+                        <div class="component-content">
                                 @switch($type)
 
                                 @case('custom-banner')
@@ -877,10 +981,13 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         }
         $videoHtml = $data['videoHtml'] ?? '';
         $videoWidth = $data['videoWidth'] ?? '100%';
+        $videoHeight = $data['videoHeight'] ?? 'auto';
     @endphp
     <div class="video-component mb-3" style="{{ $wrapperStyle }}">
-        <div class="video-container" style="width:{{ $videoWidth }};{{ $style }}">
-            {!! $videoHtml !!}
+        <div class="video-container" style="width:100%;max-width:{{ $videoWidth }};{{ $style }}">
+            <div class="responsive-video-wrapper">
+                {!! $videoHtml !!}
+            </div>
         </div>
     </div>
 @break
@@ -2138,6 +2245,27 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                         $innerSectionData = $data['innerSectionData'] ?? [];
                                         $nestedComponents = $data['nestedComponents'] ?? [];
                                         $columns = $innerSectionData['columns'] ?? 2;
+                                        $fullWidth = isset($innerSectionData['fullWidth']) && $innerSectionData['fullWidth'];
+                                        
+                                        // Build inner-section styles from wrapperStyle and style
+                                        $innerSectionStyles = '';
+                                        $wrapperStyle = $data['wrapperStyle'] ?? [];
+                                        $style = $data['style'] ?? [];
+                                        
+                                        // Process wrapper styles (margin, padding, etc.)
+                                        foreach ($wrapperStyle as $k => $v) {
+                                            if ($v) $innerSectionStyles .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        
+                                        // Process component styles (background, border, etc.)
+                                        foreach ($style as $k => $v) {
+                                            if ($v) $innerSectionStyles .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                        }
+                                        
+                                        // Check for parallax background
+                                        $hasParallax = !empty($style['backgroundImage']) && 
+                                                      isset($style['backgroundAttachment']) && 
+                                                      $style['backgroundAttachment'] === 'fixed';
                                         
                                         // Calculate Bootstrap column classes
                                         $bootstrapClass = '';
@@ -2150,11 +2278,25 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                             case 6: $bootstrapClass = 'col-lg-2 col-md-4 col-sm-6 col-12'; break;
                                             default: $bootstrapClass = 'col-lg-4 col-md-6 col-sm-12';
                                         }
+                                        
+                                        // Build CSS classes
+                                        $wrapperClasses = 'inner-section-wrapper';
+                                        if ($fullWidth) $wrapperClasses .= ' full-width';
+                                        if ($hasParallax) $wrapperClasses .= ' has-parallax';
                                     @endphp
                                     
-                                    {{-- Clean structural container with Bootstrap grid - no styling --}}
-                                    <div class="inner-section-component">
-                                        <div class="row">
+                                    {{-- Inner section wrapper with styling support --}}
+                                    <div class="{{ $wrapperClasses }}" style="{{ $innerSectionStyles }}">
+                                        @if($fullWidth)
+                                            {{-- Full width layout --}}
+                                            <div class="inner-section-component">
+                                                <div class="row">
+                                        @else
+                                            {{-- Regular containerized layout --}}
+                                            <div class="container">
+                                                <div class="inner-section-component">
+                                                    <div class="row">
+                                        @endif
                                             @for($i = 0; $i < $columns; $i++)
                                                 <div class="inner-column {{ $bootstrapClass }}">
                                                     {{-- Render nested components for this column with their normal styling --}}
@@ -2354,7 +2496,16 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                                     @endif
                                                 </div>
                                             @endfor
+                                        @if($fullWidth)
+                                            {{-- Close full-width layout --}}
+                                                </div>
+                                            </div>
+                                        @else
+                                            {{-- Close regular containerized layout --}}
+                                                </div>
+                                            </div>
                                         </div>
+                                        @endif
                                     </div>
                                 @break
 
@@ -2607,11 +2758,19 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                     {!! $data['html'] ?? '' !!}
                             @endswitch
                         </div>
+                        
+                @if($isFullWidth)
+                    {{-- Close full-width component --}}
                     </div>
-                </div>
+                @else
+                    {{-- Close regular component with container --}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 @endif
             @endforeach
-        </div>
     </div>
     </main>
     <!-- Gallery Image Modal -->

@@ -15,12 +15,21 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <style>
+    /* Global full-width support */
+    html, body {
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+    
     /* Base Component Styles */
     #studentTable {
         background-color: #fff !important;
@@ -344,7 +353,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     @endphp
     </style>
 </head>
-<body style="overflow-x: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
+<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -413,7 +422,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         @endforeach
 
         {{-- Main content area with universal inner-section handling --}}
-        <div class="container px-3" id="rendered-page">
+        <div id="rendered-page">
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';
@@ -429,95 +438,23 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                 @endphp
                 
                 {{-- Universal Inner Section Wrapper --}}
-                <div class="page-inner-section" id="{{ $componentId }}">
-                    @if($componentType === 'inner-section')
-                        {{-- This is an actual inner-section component --}}
-                        @php
-                            $innerSectionData = $component['innerSectionData'] ?? [];
-                            $nestedComponents = $component['nestedComponents'] ?? [];
-                            $columns = $innerSectionData['columns'] ?? 1;
-                            $gap = $innerSectionData['gap'] ?? '0px';
-                            
-                            // Apply custom styling ONLY if explicitly set in page-builder
-                            $sectionStyle = '';
-                            
-                            // Only add background if explicitly set and not transparent/empty
-                            if (isset($innerSectionData['backgroundColor']) 
-                                && $innerSectionData['backgroundColor'] !== 'transparent' 
-                                && $innerSectionData['backgroundColor'] !== '' 
-                                && $innerSectionData['backgroundColor'] !== '#f8f9fa') {
-                                $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']};";
-                            }
-                            
-                            // Only add padding if explicitly set and not 0
-                            if (isset($innerSectionData['padding']) 
-                                && $innerSectionData['padding'] !== '0px' 
-                                && $innerSectionData['padding'] !== '20px' 
-                                && $innerSectionData['padding'] !== '') {
-                                $sectionStyle .= "padding: {$innerSectionData['padding']};";
-                            }
-                            
-                            // Only add margin if explicitly set and not 0
-                            if (isset($innerSectionData['margin']) 
-                                && $innerSectionData['margin'] !== '0px' 
-                                && $innerSectionData['margin'] !== '10px 0' 
-                                && $innerSectionData['margin'] !== '') {
-                                $sectionStyle .= "margin: {$innerSectionData['margin']};";
-                            }
-                            
-                            // Only add border if explicitly set and not default dashed
-                            if (isset($innerSectionData['borderStyle']) 
-                                && $innerSectionData['borderStyle'] !== 'none' 
-                                && $innerSectionData['borderStyle'] !== 'dashed'
-                                && $innerSectionData['borderStyle'] !== '') {
-                                $borderWidth = $innerSectionData['borderWidth'] ?? '2px';
-                                $borderColor = $innerSectionData['borderColor'] ?? '#ddd';
-                                $sectionStyle .= "border: {$borderWidth} {$innerSectionData['borderStyle']} {$borderColor};";
-                            }
-                            
-                            // Only add border-radius if explicitly set and not default
-                            if (isset($innerSectionData['borderRadius']) 
-                                && $innerSectionData['borderRadius'] !== '0px' 
-                                && $innerSectionData['borderRadius'] !== '8px' 
-                                && $innerSectionData['borderRadius'] !== '') {
-                                $sectionStyle .= "border-radius: {$innerSectionData['borderRadius']};";
-                            }
-                        @endphp
-                        
-                        <div class="inner-section-grid cols-{{ $columns }}" 
-                             style="{{ $sectionStyle }} gap: {{ $gap }};">
-                            @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="inner-column">
-                                    @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
-                                        @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                            @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
-                                            <div class="page-component" id="{{ $nestedComponentId }}">
-                                                @include('page-components.render-component', [
-                                                    'component' => $nestedComponent, 
-                                                    'componentId' => $nestedComponentId,
-                                                    'isNested' => true
-                                                ])
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            @endfor
-                        </div>
-                    @else
-                        {{-- This is an auto-wrapped component (1-column transparent inner-section) --}}
-                        <div class="inner-section-grid cols-1">
-                            <div class="inner-column">
-                                <div class="page-component" id="auto-wrapped-{{ $index }}">
-                                    @include('page-components.render-component', [
-                                        'component' => $component, 
-                                        'componentId' => "auto-wrapped-{$index}",
-                                        'isNested' => false
-                                    ])
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                @if($componentType === 'inner-section')
+                    {{-- This is an actual inner-section component - use render-component for full functionality --}}
+                    @include('page-components.render-component', [
+                        'component' => $component, 
+                        'componentId' => $componentId,
+                        'isNested' => false
+                    ])
+                @else
+                    {{-- This is an auto-wrapped component (1-column transparent inner-section) --}}
+                    <div class="auto-wrapped-component" style="max-width: 1200px; margin: 0 auto; padding: 0 15px;">
+                        @include('page-components.render-component', [
+                            'component' => $component, 
+                            'componentId' => "auto-wrapped-{$index}",
+                            'isNested' => false
+                        ])
+                    </div>
+                @endif
             @endforeach
         </div>
     </main>

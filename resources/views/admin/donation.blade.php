@@ -104,6 +104,7 @@
                                                 <option value="sponsor">Sponsor</option>
                                                 <option value="auction">Auction</option>
                                                 <option value="ticket">Ticket</option>
+                                                <option value="investment">Investment</option>
                                             </select>
                                         </div>
                                         {{-- <div class="col-md-4">
@@ -152,6 +153,8 @@
                                                             <td>{{ $item->auction->title }}</td>
                                                         @elseif($item->type == 'ticket')
                                                             <td>{{ $item->ticket->details[0]->ticket->name }}</td>
+                                                        @elseif ($item->type == 'investment')
+                                                            <td>{{ $item->investment->investor_name }}</td>
                                                         @endif
                                                         @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->group_name }}</td>

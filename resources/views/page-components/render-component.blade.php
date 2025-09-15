@@ -118,6 +118,7 @@
 .ql-font-georgia { font-family: Georgia, serif !important; }
 .ql-font-verdana { font-family: Verdana, sans-serif !important; }
 .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+.ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
 
 /* Global Mobile Fixes */
 @media screen and (max-width: 767px) {
@@ -231,6 +232,7 @@
 .ql-font-georgia { font-family: Georgia, serif !important; }
 .ql-font-verdana { font-family: Verdana, sans-serif !important; }
 .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+.ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
 </style>
 @endif
 
@@ -247,42 +249,47 @@
                 $contentWidth = $innerSectionData['contentWidth'] ?? 'full';
                 $contentWidth = $innerSectionData['contentWidth'] ?? 'full'; // 'full' or 'boxed'
                 
-                // Apply inner-section styling - NO BORDERS for frontend
+                // Apply inner-section styling - ENABLE ALL STYLES for frontend
                 $sectionStyle = '';
                 
-                // Background color
-                if (isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== 'transparent' && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== '#f8f9fa') {
-                    $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']};";
+                // Background color - always apply if set
+                if (isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== 'transparent') {
+                    $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']} !important;";
                 }
                 
-                // Padding - only if explicitly set and not default
-                if (isset($innerSectionData['padding']) && $innerSectionData['padding'] !== '' && $innerSectionData['padding'] !== '20px') {
-                    $sectionStyle .= "padding: {$innerSectionData['padding']};";
+                // Padding - always apply if set
+                if (isset($innerSectionData['padding']) && $innerSectionData['padding'] !== '') {
+                    $sectionStyle .= "padding: {$innerSectionData['padding']} !important;";
                 }
                 
-                // Margin - only if explicitly set and not default
-                if (isset($innerSectionData['margin']) && $innerSectionData['margin'] !== '' && $innerSectionData['margin'] !== '10px 0') {
-                    $sectionStyle .= "margin: {$innerSectionData['margin']};";
+                // Margin - always apply if set
+                if (isset($innerSectionData['margin']) && $innerSectionData['margin'] !== '') {
+                    $sectionStyle .= "margin: {$innerSectionData['margin']} !important;";
                 }
                 
-                // Border radius - only if explicitly set
-                if (isset($innerSectionData['borderRadius']) && $innerSectionData['borderRadius'] !== '' && $innerSectionData['borderRadius'] !== '8px') {
-                    $sectionStyle .= "border-radius: {$innerSectionData['borderRadius']};";
+                // Border - always apply if set
+                if (isset($innerSectionData['border']) && $innerSectionData['border'] !== '') {
+                    $sectionStyle .= "border: {$innerSectionData['border']} !important;";
                 }
                 
-                // Handle background image with fixed gradient format and attachment
+                // Border radius - always apply if set
+                if (isset($innerSectionData['borderRadius']) && $innerSectionData['borderRadius'] !== '') {
+                    $sectionStyle .= "border-radius: {$innerSectionData['borderRadius']} !important;";
+                }
+                
+                // Handle background image with parallax support
                 if (isset($innerSectionData['backgroundType']) && $innerSectionData['backgroundType'] === 'image' && !empty($innerSectionData['backgroundImage'])) {
                     $imageUrl = trim($innerSectionData['backgroundImage']);
                     if (!empty($imageUrl)) {
                         // Get background attachment setting (scroll, fixed, local)
                         $backgroundAttachment = $innerSectionData['backgroundAttachment'] ?? 'scroll';
                         
-                        // Build background style with attachment
-                        $sectionStyle .= "background: linear-gradient(#000,#000c 18%),url({$imageUrl}); ";
-                        $sectionStyle .= "background-position: 0 0,50%; ";
-                        $sectionStyle .= "background-size: auto,cover; ";
-                        $sectionStyle .= "background-attachment: {$backgroundAttachment}; ";
-                        $sectionStyle .= "background-repeat: no-repeat; ";
+                        // FIXED: Use same background syntax as page-builder for consistency
+                        $sectionStyle .= "background-image: linear-gradient(#000,#000c 18%), url({$imageUrl}) !important; ";
+                        $sectionStyle .= "background-position: 0 0, 50% !important; ";
+                        $sectionStyle .= "background-size: auto, cover !important; ";
+                        $sectionStyle .= "background-attachment: scroll, {$backgroundAttachment} !important; ";
+                        $sectionStyle .= "background-repeat: no-repeat !important; ";
                     }
                 }
                 
@@ -301,28 +308,29 @@
             
             @if($fullWidth)
                 {{-- Full Width Section - Use CSS to break out of container --}}
-                <div class="inner-section-fullwidth" style="{{ $sectionStyle }}">
+                <div class="inner-section-fullwidth" id="{{ $componentId }}" style="{{ $sectionStyle }}">
                     <style>
-                        .inner-section-fullwidth {
+                        #{{ $componentId }} {
                             width: 100vw;
-                            margin-left: calc(-50vw + 50%);
                             position: relative;
-                            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+                            left: 50%;
+                            transform: translateX(-50%);
+                            box-sizing: border-box;
                         }
                         
                         @if($contentWidth === 'boxed')
                         /* Boxed content - keep components centered like a regular container */
-                        .inner-section-fullwidth .content-wrapper {
+                        #{{ $componentId }} .content-wrapper {
                             max-width: 1200px;
                             margin: 0 auto;
                             padding: 0 15px;
                         }
-                        .inner-section-fullwidth .row {
+                        #{{ $componentId }} .row {
                             margin: 0;
                         }
                         @else
                         /* Full width content - components spread across full width */
-                        .inner-section-fullwidth .row {
+                        #{{ $componentId }} .row {
                             margin: 0;
                             width: 100%;
                             max-width: 100%;
@@ -331,35 +339,63 @@
                         
                         /* Custom gap handling for full width */
                         @if($gap !== '0px' && $gap !== '15px')
-                        .inner-section-fullwidth .row > [class*="col-"] {
+                        #{{ $componentId }} .row > [class*="col-"] {
                             padding-left: calc({{ $gap }} / 2);
                             padding-right: calc({{ $gap }} / 2);
                         }
-                        .inner-section-fullwidth .row {
+                        #{{ $componentId }} .row {
                             margin-left: calc(-{{ $gap }} / 2) !important;
                             margin-right: calc(-{{ $gap }} / 2) !important;
                         }
                         @else
                         /* Default Bootstrap gutters */
-                        .inner-section-fullwidth .row > [class*="col-"] {
+                        #{{ $componentId }} .row > [class*="col-"] {
                             padding-left: 15px;
                             padding-right: 15px;
                         }
                         @endif
                         
-                        /* Mobile responsiveness fixes */
+                        /* Parallax background support - Force fixed attachment */
+                        @if(isset($innerSectionData['backgroundType']) && $innerSectionData['backgroundType'] === 'image' && 
+                            !empty($innerSectionData['backgroundImage']) && 
+                            isset($innerSectionData['backgroundAttachment']) && $innerSectionData['backgroundAttachment'] === 'fixed')
+                        #{{ $componentId }} {
+                            background-attachment: fixed !important;
+                            background-position: center center !important;
+                            background-size: cover !important;
+                            background-repeat: no-repeat !important;
+                        }
+                        @endif
+                        
+                        /* Mobile responsiveness fixes - Enhanced for true full-width */
                         @media (max-width: 767px) {
-                            .inner-section-fullwidth {
-                                width: 100vw;
-                                margin-left: calc(-50vw + 50%);
-                                padding-left: 15px;
-                                padding-right: 15px;
-                                box-sizing: border-box;
+                            #{{ $componentId }} {
+                                width: 100vw !important;
+                                position: relative !important;
+                                left: 50% !important;
+                                transform: translateX(-50%) !important;
+                                margin-left: 0 !important;
+                                margin-right: 0 !important;
+                                max-width: none !important;
+                                padding-left: 0 !important;
+                                padding-right: 0 !important;
+                                box-sizing: border-box !important;
+                            }
+                            
+                            /* Force parallax backgrounds to scroll on mobile */
+                            #{{ $componentId }}[style*="background-attachment"] {
+                                background-attachment: scroll !important;
                             }
                             
                             @if($contentWidth === 'boxed')
-                            .inner-section-fullwidth .content-wrapper {
-                                padding: 0 15px;
+                            #{{ $componentId }} .content-wrapper {
+                                padding: 0 15px !important;
+                                max-width: 100% !important;
+                            }
+                            @else 
+                            #{{ $componentId }} .row {
+                                margin: 0 !important;
+                                padding: 0 15px !important;
                             }
                             @endif
                         }
@@ -373,7 +409,7 @@
                                     <div class="{{ $bootstrapClass }}">
                                         @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                             @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                                @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
+                                                @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
                                                 <div class="nested-component">
                                                     @include('page-components.render-component', [
                                                         'component' => $nestedComponent, 
@@ -394,7 +430,7 @@
                                 <div class="{{ $bootstrapClass }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                            @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
+                                            @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
                                             <div class="nested-component">
                                                 @include('page-components.render-component', [
                                                     'component' => $nestedComponent, 
@@ -411,25 +447,33 @@
                 </div>
             @else
                 {{-- Regular Section - Stay within container --}}
-                <div class="inner-section-frontend" style="{{ $sectionStyle }}">
+                <div class="inner-section-frontend" id="{{ $componentId }}" style="{{ $sectionStyle }}">
+                    <style>
+                        #{{ $componentId }} {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 0 15px;
+                        }
+                        
+                        @if($gap !== '0px' && $gap !== '15px')
+                        /* Custom gap using CSS variables and margin */
+                        #{{ $componentId }} .row > [class*="col-"] {
+                            padding-left: calc({{ $gap }} / 2);
+                            padding-right: calc({{ $gap }} / 2);
+                        }
+                        #{{ $componentId }} .row {
+                            margin-left: calc(-{{ $gap }} / 2);
+                            margin-right: calc(-{{ $gap }} / 2);
+                        }
+                        @endif
+                    </style>
                     @if($gap !== '0px' && $gap !== '15px')
-                        {{-- Custom gap using CSS variables and margin --}}
-                        <style>
-                            .inner-section-frontend .row > [class*="col-"] {
-                                padding-left: calc({{ $gap }} / 2);
-                                padding-right: calc({{ $gap }} / 2);
-                            }
-                            .inner-section-frontend .row {
-                                margin-left: calc(-{{ $gap }} / 2);
-                                margin-right: calc(-{{ $gap }} / 2);
-                            }
-                        </style>
                         <div class="row">
                             @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
                                 <div class="{{ $bootstrapClass }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                            @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
+                                            @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
                                             <div class="nested-component">
                                                 @include('page-components.render-component', [
                                                     'component' => $nestedComponent, 
@@ -449,7 +493,7 @@
                                 <div class="{{ $bootstrapClass }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
-                                            @php $nestedComponentId = "nested-{$columnIndex}-{$nestedIndex}"; @endphp
+                                            @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
                                             <div class="nested-component">
                                                 @include('page-components.render-component', [
                                                     'component' => $nestedComponent, 
@@ -757,45 +801,492 @@
         @break
 
         @case('faq')
-            <div style="{{ $styleStr }}">
+            @php
+                // Debug: Log the component data structure
+                error_log("FAQ COMPONENT DEBUG: " . json_encode($component));
+                
+                $faqData = $component['_faqData'] ?? $component['faqData'] ?? [
+                    'questions' => [],
+                    'questionBackgroundColor' => '#f3f4f6',
+                    'questionTextColor' => '#1f2937',
+                    'answerBackgroundColor' => '#ffffff',
+                    'answerTextColor' => '#374151',
+                    'iconColor' => '#059669',
+                    'borderRadius' => '8px',
+                    'spacing' => '10px'
+                ];
+                
+                // Debug: Log the extracted FAQ data
+                error_log("FAQ DATA EXTRACTED: " . json_encode($faqData));
+            @endphp
+            <div id="{{ $componentId }}" class="faq-component" style="{{ $styleStr }}">
                 @php
-                    $domain = request()->getHttpHost();
-                    $website = \App\Models\Website::where('domain', $domain)->first();
+                    error_log("FAQ QUESTIONS CHECK: " . (empty($faqData['questions']) ? 'EMPTY' : 'HAS DATA'));
+                    error_log("FAQ QUESTIONS COUNT: " . count($faqData['questions'] ?? []));
                 @endphp
-                @if($website)
-                    @php
-                        $faqs = \App\Models\Page::where('website_id', $website->id)->where('name', 'FAQ')->first();
-                    @endphp
-                    @if($faqs && $faqs->state)
-                        @php
-                            $faqState = is_string($faqs->state) ? json_decode($faqs->state, true) : $faqs->state;
-                        @endphp
-                        @if(is_array($faqState))
-                            <div class="accordion" id="faqAccordion">
-                                @foreach($faqState as $faqIndex => $faq)
-                                    @if(isset($faq['type']) && $faq['type'] === 'text')
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="heading{{ $faqIndex }}">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $faqIndex }}" aria-expanded="false" aria-controls="collapse{{ $faqIndex }}">
-                                                    {{ strip_tags($faq['html'] ?? "Question $faqIndex") }}
-                                                </button>
-                                            </h2>
-                                            <div id="collapse{{ $faqIndex }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $faqIndex }}" data-bs-parent="#faqAccordion">
-                                                <div class="accordion-body">
-                                                    {!! $faq['html'] ?? '' !!}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
+                @if(!empty($faqData['questions']))
+                    <div class="faq-container" style="max-width: 100%;">
+                        @foreach($faqData['questions'] as $index => $item)
+                            <div class="faq-item" style="
+                                margin-bottom: {{ $faqData['spacing'] }};
+                                border-radius: {{ $faqData['borderRadius'] }};
+                                overflow: hidden;
+                                border: 1px solid #e5e7eb;
+                            ">
+                                <div class="faq-question" style="
+                                    background-color: {{ $faqData['questionBackgroundColor'] }};
+                                    color: {{ $faqData['questionTextColor'] }};
+                                    padding: 16px 20px;
+                                    cursor: pointer;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    font-weight: 500;
+                                    font-size: 16px;
+                                    user-select: none;
+                                " onclick="toggleFrontendFaqItem(this, {{ $index }})">
+                                    <span>{{ $item['question'] ?? 'Question' }}</span>
+                                    <div class="faq-icon" style="
+                                        width: 32px;
+                                        height: 32px;
+                                        border-radius: 50%;
+                                        background-color: {{ $faqData['iconColor'] }};
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        color: white;
+                                        font-weight: bold;
+                                        font-size: 18px;
+                                        flex-shrink: 0;
+                                        margin-left: 15px;
+                                    ">+</div>
+                                </div>
+                                <div class="faq-answer" style="
+                                    background-color: {{ $faqData['answerBackgroundColor'] }};
+                                    color: {{ $faqData['answerTextColor'] }};
+                                    padding: 0 20px;
+                                    max-height: 0;
+                                    overflow: hidden;
+                                    transition: all 0.3s ease;
+                                    font-size: 15px;
+                                    line-height: 1.6;
+                                ">{{ $item['answer'] ?? 'Answer' }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div style="padding: 40px; text-align: center; background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px;">
+                        <p style="color: #6b7280; margin: 0;">No FAQ questions added yet.</p>
+                        <!-- DEBUG INFO -->
+                        <details style="margin-top: 10px; text-align: left;">
+                            <summary style="cursor: pointer; color: #059669;">Debug Info (Remove in production)</summary>
+                            <pre style="background: #1f2937; color: #fff; padding: 10px; margin-top: 10px; font-size: 12px; overflow-x: auto;">
+Component Data: {{ json_encode($component, JSON_PRETTY_PRINT) }}
+
+FAQ Data: {{ json_encode($faqData, JSON_PRETTY_PRINT) }}
+
+Questions Empty: {{ empty($faqData['questions']) ? 'YES' : 'NO' }}
+Questions Count: {{ count($faqData['questions'] ?? []) }}
+                            </pre>
+                        </details>
+                    </div>
+                @endif
+            </div>
+            
+            <script>
+                function toggleFrontendFaqItem(questionElement, index) {
+                    const faqItem = questionElement.closest('.faq-item');
+                    const answerElement = faqItem.querySelector('.faq-answer');
+                    const iconElement = questionElement.querySelector('.faq-icon');
+                    const faqContainer = questionElement.closest('.faq-container');
+                    
+                    // Close all other items (accordion behavior)
+                    if (faqContainer) {
+                        const allItems = faqContainer.querySelectorAll('.faq-item');
+                        allItems.forEach((item, i) => {
+                            if (i !== index) {
+                                const otherAnswer = item.querySelector('.faq-answer');
+                                const otherIcon = item.querySelector('.faq-icon');
+                                otherAnswer.style.maxHeight = '0';
+                                otherAnswer.style.padding = '0 20px';
+                                otherIcon.textContent = '+';
+                            }
+                        });
+                    }
+                    
+                    // Toggle current item
+                    const isExpanded = answerElement.style.maxHeight !== '0px' && answerElement.style.maxHeight !== '';
+                    
+                    if (isExpanded) {
+                        answerElement.style.maxHeight = '0';
+                        answerElement.style.padding = '0 20px';
+                        iconElement.textContent = '+';
+                    } else {
+                        answerElement.style.maxHeight = '1000px';
+                        answerElement.style.padding = '20px';
+                        iconElement.textContent = '−';
+                    }
+                }
+            </script>
+        @break
+
+        @case('simple-comments')
+            @php
+                $simpleCommentsData = $component['_simpleCommentsData'] ?? $component['simpleCommentsData'] ?? [
+                    'title' => 'Comments',
+                    'showTitle' => true,
+                    'allowAnonymous' => true,
+                    'moderationEnabled' => false,
+                    'requireEmail' => true,
+                    'maxComments' => 100,
+                    'sortOrder' => 'newest',
+                    'backgroundColor' => '#ffffff',
+                    'borderColor' => '#e0e0e0',
+                    'textColor' => '#333333',
+                    'buttonColor' => '#007bff'
+                ];
+                
+                // Get the current page identifier and component ID for comments
+                $pageIdentifier = request()->path();
+                $componentId = $componentId ?? 'comments-' . uniqid();
+                
+                // Get website_id from context (available as $check variable)
+                $websiteId = isset($check) ? $check->id : (isset($website) ? $website->id : null);
+                
+                // If no website_id available, try to get from URL or set a default
+                if (!$websiteId) {
+                    // Try to get website by domain from request
+                    $domain = request()->getHost();
+                    $websiteFromDomain = \App\Models\Website::where('domain', $domain)->first();
+                    $websiteId = $websiteFromDomain ? $websiteFromDomain->id : '1'; // fallback to website ID 1
+                }
+                
+                // Fetch existing comments for this component - with error handling
+                $existingComments = collect();
+                try {
+                    if (class_exists('\App\Models\PageComment') && $websiteId) {
+                        $existingComments = \App\Models\PageComment::where('page_identifier', $pageIdentifier)
+                            ->where('component_id', $componentId)
+                            ->where('website_id', $websiteId)
+                            ->where('is_approved', true)
+                            ->whereNull('parent_id')
+                            ->with(['replies' => function($query) use ($websiteId) {
+                                $query->where('is_approved', true)
+                                      ->where('website_id', $websiteId)
+                                      ->orderBy('created_at', 'asc');
+                            }])
+                            ->orderBy('created_at', $simpleCommentsData['sortOrder'] === 'newest' ? 'desc' : 'asc')
+                            ->limit($simpleCommentsData['maxComments'])
+                            ->get();
+                    }
+                } catch (\Exception $e) {
+                    // If there's any error fetching comments, just use empty collection
+                    $existingComments = collect();
+                }
+            @endphp
+            
+            <div id="{{ $componentId }}" class="simple-comments-component" style="{{ $styleStr }}">
+                <div style="
+                    background: {{ $simpleCommentsData['backgroundColor'] }};
+                    border: 1px solid {{ $simpleCommentsData['borderColor'] }};
+                    border-radius: 8px;
+                    padding: 20px;
+                    color: {{ $simpleCommentsData['textColor'] }};
+                ">
+                    @if($simpleCommentsData['showTitle'])
+                        <h3 style="margin: 0 0 20px 0; color: {{ $simpleCommentsData['textColor'] }};">
+                            {{ $simpleCommentsData['title'] }}
+                        </h3>
+                    @endif
+                    
+                    <!-- Comment Form -->
+                    <form id="comment-form-{{ $componentId }}" class="comment-form" style="margin-bottom: 30px;">
+                        @csrf
+                        <input type="hidden" name="page_identifier" value="{{ $pageIdentifier }}">
+                        <input type="hidden" name="component_id" value="{{ $componentId }}">
+                        <input type="hidden" name="website_id" value="{{ $websiteId }}">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <input type="text" name="author_name" placeholder="Your Name" required
+                                       style="width: 100%; padding: 10px; border: 1px solid {{ $simpleCommentsData['borderColor'] }}; border-radius: 4px;">
+                            </div>
+                            @if($simpleCommentsData['requireEmail'])
+                                <div>
+                                    <input type="email" name="author_email" placeholder="Your Email" required
+                                           style="width: 100%; padding: 10px; border: 1px solid {{ $simpleCommentsData['borderColor'] }}; border-radius: 4px;">
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <textarea name="comment" placeholder="Write your comment..." required
+                                      style="width: 100%; padding: 10px; border: 1px solid {{ $simpleCommentsData['borderColor'] }}; border-radius: 4px; min-height: 100px; resize: vertical;"></textarea>
+                        </div>
+                        
+                        @if($simpleCommentsData['allowAnonymous'])
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: flex; align-items: center; font-size: 14px;">
+                                    <input type="checkbox" name="is_anonymous" value="1" style="margin-right: 8px;">
+                                    Post as Anonymous
+                                </label>
                             </div>
                         @endif
-                    @else
-                        <p>No FAQ content found.</p>
-                    @endif
-                @else
-                    <p>Website not found.</p>
-                @endif
+                        
+                        <button type="submit" style="
+                            background: {{ $simpleCommentsData['buttonColor'] }};
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        ">
+                            Post Comment
+                        </button>
+                        
+                        @if($simpleCommentsData['moderationEnabled'])
+                            <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                                <i class="fas fa-info-circle"></i> Comments are moderated and may take some time to appear.
+                            </p>
+                        @endif
+                    </form>
+                    
+                    <!-- Comments List -->
+                    <div id="comments-list-{{ $componentId }}" class="comments-list">
+                        @if($existingComments->count() > 0)
+                            @foreach($existingComments as $comment)
+                                <div class="comment-item" style="
+                                    background: #f8f9fa;
+                                    border-left: 4px solid {{ $simpleCommentsData['buttonColor'] }};
+                                    padding: 15px;
+                                    border-radius: 4px;
+                                    margin-bottom: 15px;
+                                ">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <strong style="color: {{ $simpleCommentsData['textColor'] }};">
+                                            {{ $comment->is_anonymous ? 'Anonymous' : $comment->author_name }}
+                                        </strong>
+                                        <small style="color: #666;">{{ $comment->created_at->diffForHumans() }}</small>
+                                    </div>
+                                    <p style="margin: 0; color: {{ $simpleCommentsData['textColor'] }}; line-height: 1.5;">
+                                        {{ $comment->comment }}
+                                    </p>
+                                    
+                                    <!-- Replies -->
+                                    @if($comment->replies && $comment->replies->count() > 0)
+                                        <div style="margin-top: 15px; padding-left: 20px; border-left: 2px solid #dee2e6;">
+                                            @foreach($comment->replies as $reply)
+                                                <div style="
+                                                    background: #ffffff;
+                                                    padding: 10px;
+                                                    border-radius: 4px;
+                                                    margin-bottom: 10px;
+                                                    border: 1px solid {{ $simpleCommentsData['borderColor'] }};
+                                                ">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                        <strong style="color: {{ $simpleCommentsData['textColor'] }}; font-size: 14px;">
+                                                            {{ $reply->is_anonymous ? 'Anonymous' : $reply->author_name }}
+                                                        </strong>
+                                                        <small style="color: #666; font-size: 12px;">{{ $reply->created_at->diffForHumans() }}</small>
+                                                    </div>
+                                                    <p style="margin: 0; color: {{ $simpleCommentsData['textColor'] }}; font-size: 14px; line-height: 1.4;">
+                                                        {{ $reply->comment }}
+                                                    </p>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        @else
+                            <div style="
+                                text-align: center;
+                                padding: 40px 20px;
+                                color: #666;
+                                font-style: italic;
+                            ">
+                                <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; color: #ccc;"></i>
+                                <p>No comments yet. Be the first to share your thoughts!</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.getElementById('comment-form-{{ $componentId }}').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const originalText = submitButton.textContent;
+                    
+                    // Handle checkbox properly - if not checked, explicitly set to false
+                    const anonymousCheckbox = this.querySelector('input[name="is_anonymous"]');
+                    if (anonymousCheckbox && !anonymousCheckbox.checked) {
+                        formData.set('is_anonymous', '0');
+                    }
+                    
+                    // Show loading state
+                    submitButton.textContent = 'Posting...';
+                    submitButton.disabled = true;
+                    
+                    // Get CSRF token - try multiple methods
+                    let csrfToken = '';
+                    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                    const csrfInput = document.querySelector('input[name="_token"]');
+                    
+                    if (csrfMeta) {
+                        csrfToken = csrfMeta.getAttribute('content');
+                    } else if (csrfInput) {
+                        csrfToken = csrfInput.value;
+                    } else {
+                        // Get token from the form's CSRF input
+                        const formCsrf = this.querySelector('input[name="_token"]');
+                        if (formCsrf) {
+                            csrfToken = formCsrf.value;
+                        }
+                    }
+                    
+                    // Prepare headers
+                    const headers = {};
+                    if (csrfToken) {
+                        headers['X-CSRF-TOKEN'] = csrfToken;
+                    }
+                    
+                    fetch('/comments', {
+                        method: 'POST',
+                        body: formData,
+                        headers: headers
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Reset form
+                            this.reset();
+                            
+                            // Show success message
+                            const successMsg = document.createElement('div');
+                            successMsg.style.cssText = 'background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px;';
+                            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+                            this.parentNode.insertBefore(successMsg, this.nextSibling);
+                            
+                            // Remove success message after 5 seconds
+                            setTimeout(() => successMsg.remove(), 5000);
+                            
+                            // Reload comments if not moderated
+                            @if(!$simpleCommentsData['moderationEnabled'])
+                                setTimeout(() => location.reload(), 1000);
+                            @endif
+                        } else {
+                            throw new Error(data.message || 'Failed to post comment');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Comment submission error:', error);
+                        // Show error message
+                        const errorMsg = document.createElement('div');
+                        errorMsg.style.cssText = 'background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px;';
+                        errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (error.message || 'Failed to submit comment. Please try again.');
+                        this.parentNode.insertBefore(errorMsg, this.nextSibling);
+                        
+                        // Remove error message after 5 seconds
+                        setTimeout(() => errorMsg.remove(), 5000);
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                    });
+                });
+            </script>
+        @break
+
+        @case('disqus')
+            @php
+                $disqusData = $component['_disqusData'] ?? $component['disqusData'] ?? [
+                    'shortname' => '',
+                    'identifier' => '',
+                    'title' => '',
+                    'url' => '',
+                    'showInPreview' => true
+                ];
+                
+                // Fallback to empty if no shortname provided
+                if (empty($disqusData['shortname'])) {
+                    echo '<div style="padding: 40px 20px; text-align: center; background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; color: #6c757d;">
+                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; color: #adb5bd;"></i>
+                        <h4 style="margin: 0 0 8px 0; color: #495057;">Disqus Comments</h4>
+                        <p style="margin: 0; font-size: 14px;">Configure your Disqus shortname to enable comments.</p>
+                    </div>';
+                    return;
+                }
+            @endphp
+            
+            <div id="{{ $componentId }}" class="disqus-component" style="{{ $styleStr }}">
+                <div id="disqus_thread_{{ $componentId }}"></div>
+                
+                <script>
+                    (function() {
+                        // Generate unique identifier for this instance
+                        const componentId = '{{ $componentId }}';
+                        const disqusThread = document.getElementById('disqus_thread_' + componentId);
+                        
+                        // Disqus configuration variables
+                        var disqus_config = function () {
+                            @if(!empty($disqusData['identifier']))
+                                this.page.identifier = '{{ $disqusData['identifier'] }}';
+                            @else
+                                this.page.identifier = window.location.pathname;
+                            @endif
+                            
+                            @if(!empty($disqusData['url']))
+                                this.page.url = '{{ $disqusData['url'] }}';
+                            @else
+                                this.page.url = window.location.href;
+                            @endif
+                            
+                            @if(!empty($disqusData['title']))
+                                this.page.title = '{{ addslashes($disqusData['title']) }}';
+                            @else
+                                this.page.title = document.title;
+                            @endif
+                        };
+                        
+                        // Load Disqus script
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://{{ $disqusData['shortname'] }}.disqus.com/embed.js';
+                        s.setAttribute('data-timestamp', +new Date());
+                        
+                        // Override DISQUS global to use our specific thread container
+                        window.DISQUS = window.DISQUS || {};
+                        const originalReset = window.DISQUS.reset;
+                        
+                        s.onload = function() {
+                            // If Disqus is already loaded, reset it for this container
+                            if (window.DISQUS && window.DISQUS.reset) {
+                                window.DISQUS.reset({
+                                    reload: true,
+                                    config: disqus_config
+                                });
+                            }
+                        };
+                        
+                        (d.head || d.body).appendChild(s);
+                        
+                        // Set the container for Disqus to use
+                        window.disqus_container_id = 'disqus_thread_' + componentId;
+                    })();
+                </script>
+                
+                <noscript>
+                    <div style="padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; text-align: center; color: #6c757d;">
+                        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                        Please enable JavaScript to view the 
+                        <a href="https://disqus.com/?ref_noscript" style="color: #007bff;">comments powered by Disqus.</a>
+                    </div>
+                </noscript>
             </div>
         @break
 
@@ -1005,6 +1496,13 @@
                 $backgroundColor = $tierData['backgroundColor'] ?? '#f8f9fa';
                 $backgroundImage = $tierData['backgroundImage'] ?? '';
                 
+                // Extract numeric value from tier price for URL parameter
+                $numericPrice = preg_replace('/[^0-9.,]/', '', $tierPrice);
+                $numericPrice = str_replace(',', '', $numericPrice);
+                
+                // Always redirect to /invest with amount parameter
+                $buttonUrl = '/invest?amount=' . urlencode($numericPrice);
+                
                 $backgroundStyle = 'background-color: ' . $backgroundColor . ';';
                 if ($backgroundType === 'image' && !empty($backgroundImage)) {
                     $imageUrl = trim($backgroundImage);
@@ -1014,11 +1512,35 @@
                 }
             @endphp
             
-            {{-- Add specific CSS to override any responsive margin conflicts --}}
+            {{-- Add specific CSS to override any responsive margin conflicts and ensure links work --}}
             <style>
                 #{{ $componentId }} .investment-tier {
                     margin: 0 auto !important;
                     max-width: 370px !important;
+                    position: relative !important;
+                    z-index: 1 !important;
+                }
+                
+                #{{ $componentId }} .investment-tier a {
+                    pointer-events: auto !important;
+                    position: relative !important;
+                    z-index: 10 !important;
+                    display: inline-block !important;
+                }
+                
+                /* Ensure investment tier works in full-width sections */
+                .inner-section-fullwidth #{{ $componentId }} .investment-tier,
+                .inner-section-frontend #{{ $componentId }} .investment-tier {
+                    pointer-events: auto !important;
+                    position: relative !important;
+                    z-index: 1 !important;
+                }
+                
+                .inner-section-fullwidth #{{ $componentId }} .investment-tier a,
+                .inner-section-frontend #{{ $componentId }} .investment-tier a {
+                    pointer-events: auto !important;
+                    position: relative !important;
+                    z-index: 10 !important;
                 }
             </style>
             
@@ -1178,7 +1700,67 @@
                     $embedUrl = $videoUrl;
                 }
             @endphp
-            {{ $videoData['type'] }}
+            
+            {{-- Force responsive video styles --}}
+            <style>
+                #{{ $componentId }} .video-container {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    position: relative !important;
+                    overflow: hidden !important;
+                }
+                
+                #{{ $componentId }} .video-container iframe,
+                #{{ $componentId }} .video-container video {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-width: 100% !important;
+                    display: block !important;
+                }
+                
+                /* Force override custom dimensions */
+                #{{ $componentId }} .video-container[style] {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                
+                #{{ $componentId }} .video-container[style] iframe,
+                #{{ $componentId }} .video-container[style] video {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-width: 100% !important;
+                }
+                
+                /* Mobile specific video fixes */
+                @media (max-width: 768px) {
+                    #{{ $componentId }} .video-container {
+                        width: 100% !important;
+                        height: auto !important;
+                        padding-bottom: 56.25% !important;
+                        position: relative !important;
+                    }
+                    
+                    #{{ $componentId }} .video-container iframe,
+                    #{{ $componentId }} .video-container video {
+                        position: absolute !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        min-height: 200px !important;
+                        max-height: none !important;
+                    }
+                    
+                    /* Force remove any custom dimensions on mobile */
+                    #{{ $componentId }} .video-container[style*="width"],
+                    #{{ $componentId }} .video-container[style*="height"] {
+                        width: 100% !important;
+                        height: auto !important;
+                        padding-bottom: 56.25% !important;
+                    }
+                }
+            </style>
+            
             <div style="{{ $styleStr }}">
                 @if($videoUrl)
                     @if($videoType === 'uploaded')

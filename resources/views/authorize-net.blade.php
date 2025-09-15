@@ -145,6 +145,22 @@
                             ${{ $data->amount }}
                         </div>
                     </div>
+                @elseif($type == 'investment')
+                    <div class="row">
+                        <div class="col-md-2 col-2">
+                            <img src="{{ asset('/uploads/' . $data->website->user->setting->logo) }}" width="64px"
+                                style="border-radius: 5px; border: 1px solid #eee;">
+                        </div>
+                        <div class="col-md-6 col-6 text-start" style="padding-top: 20px; font-weight: bold;">
+                            Investment - {{ $data->website->name }}
+                            @if($data->shares > 0)
+                                <p style="font-weight: 400; margin-top: 5px;">{{ number_format($data->shares) }} shares</p>
+                            @endif
+                        </div>
+                        <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
+                            ${{ number_format($data->amount, 2) }}
+                        </div>
+                    </div>
                 @endif
                 <div class="row mt-4" style="padding-left: 10px;">
                     <div class="col-md-8 col-8 text-start">
@@ -423,6 +439,22 @@
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
                             ${{ $data->amount }}
+                        </div>
+                    </div>
+                @elseif($type == 'investment')
+                    <div class="row">
+                        <div class="col-md-2 col-2">
+                            <img src="{{ asset('/uploads/' . $data->website->user->setting->logo) }}" width="64px"
+                                style="border-radius: 5px; border: 1px solid #eee;">
+                        </div>
+                        <div class="col-md-6 col-6 text-start" style="padding-top: 20px; font-weight: bold;">
+                            Investment - {{ $data->website->name }}
+                            @if($data->shares > 0)
+                                <p style="font-weight: 400; margin-top: 5px;">{{ number_format($data->shares) }} shares</p>
+                            @endif
+                        </div>
+                        <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
+                            ${{ number_format($data->amount, 2) }}
                         </div>
                     </div>
                 @endif

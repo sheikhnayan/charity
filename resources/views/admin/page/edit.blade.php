@@ -174,6 +174,40 @@ label{
                                                 </script>
                                             </div>
 
+                                            <!-- Template Actions -->
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    <div class="card border">
+                                                        <div class="card-header">
+                                                            <h6 class="card-title mb-0">
+                                                                <i class="fas fa-file-alt me-2"></i>Template Actions
+                                                            </h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="btn-group w-100 mb-3" role="group">
+                                                                <button type="button" class="btn btn-outline-success" onclick="showSaveTemplateModal()">
+                                                                    <i class="fas fa-save me-1"></i>Save as Template
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-info" onclick="showApplyTemplateModal()">
+                                                                    <i class="fas fa-paste me-1"></i>Apply Template
+                                                                </button>
+                                                                <a href="{{ route('admin.templates.index') }}" class="btn btn-outline-primary" target="_blank">
+                                                                    <i class="fas fa-list me-1"></i>Browse Templates
+                                                                </a>
+                                                            </div>
+                                                            
+                                                            @if($data->template_id)
+                                                                <div class="alert alert-info">
+                                                                    <i class="fas fa-info-circle me-2"></i>
+                                                                    This page was created from template: 
+                                                                    <strong>{{ $data->template->name ?? 'Unknown Template' }}</strong>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.page.index') }}" class="btn btn-danger">Cancel</a>
                                         </div>
@@ -185,4 +219,257 @@ label{
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+<!-- Save as Template Modal -->
+<div class="modal fade" id="saveTemplateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save Page as Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saveTemplateForm">
+                    <div class="mb-3">
+                        <label for="template_name" class="form-label">Template Name</label>
+                        <input type="text" class="form-control" id="template_name" name="template_name" 
+                               value="{{ $data->name }} Template" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="template_description" class="form-label">Description</label>
+                        <textarea class="form-control" id="template_description" name="template_description" 
+                                  rows="3" placeholder="Describe what this template is for..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="template_category" class="form-label">Category</label>
+                        <select class="form-select" id="template_category" name="template_category">
+                            <option value="general">General</option>
+                            <option value="landing">Landing Page</option>
+                            <option value="about">About</option>
+                            <option value="contact">Contact</option>
+                            <option value="services">Services</option>
+                            <option value="portfolio">Portfolio</option>
+                            <option value="blog">Blog</option>
+                            <option value="e-commerce">E-commerce</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="template_is_public" 
+                               name="is_public" checked>
+                        <label class="form-check-label" for="template_is_public">
+                            Make this template available to all users
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveAsTemplate()">Save Template</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Apply Template Modal -->
+<div class="modal fade" id="applyTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Apply Template to Page</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="template_category_filter" class="form-label">Filter by Category</label>
+                    <select class="form-select" id="template_category_filter" onchange="loadTemplates()">
+                        <option value="">All Categories</option>
+                        <option value="general">General</option>
+                        <option value="landing">Landing Page</option>
+                        <option value="about">About</option>
+                        <option value="contact">Contact</option>
+                        <option value="services">Services</option>
+                        <option value="portfolio">Portfolio</option>
+                        <option value="blog">Blog</option>
+                        <option value="e-commerce">E-commerce</option>
+                    </select>
+                </div>
+                
+                <div id="templatesContainer">
+                    <p class="text-center">Loading templates...</p>
+                </div>
+                
+                <div class="alert alert-warning mt-3" id="applyWarning" style="display: none;">
+                    <strong>Warning:</strong> Applying a template will replace the current page content. 
+                    Make sure to save any changes first.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="applyTemplateBtn" 
+                        onclick="applySelectedTemplate()" disabled>Apply Template</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedTemplateId = null;
+
+function showSaveTemplateModal() {
+    const modal = new bootstrap.Modal(document.getElementById('saveTemplateModal'));
+    modal.show();
+}
+
+function showApplyTemplateModal() {
+    const modal = new bootstrap.Modal(document.getElementById('applyTemplateModal'));
+    modal.show();
+    loadTemplates();
+}
+
+function saveAsTemplate() {
+    const formData = new FormData(document.getElementById('saveTemplateForm'));
+    
+    fetch('{{ route("admin.templates.save-from-page", $data->id) }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            bootstrap.Modal.getInstance(document.getElementById('saveTemplateModal')).hide();
+            // Optionally redirect to templates page
+            const viewTemplate = confirm('Template saved! Would you like to view the templates page?');
+            if (viewTemplate) {
+                window.open('{{ route("admin.templates.index") }}', '_blank');
+            }
+        } else {
+            alert('Error saving template: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving template');
+    });
+}
+
+function loadTemplates() {
+    const category = document.getElementById('template_category_filter').value;
+    const container = document.getElementById('templatesContainer');
+    
+    container.innerHTML = '<p class="text-center">Loading templates...</p>';
+    
+    fetch(`{{ route('admin.templates.get') }}?category=${category}`)
+    .then(response => response.json())
+    .then(templates => {
+        if (templates.length === 0) {
+            container.innerHTML = '<p class="text-center text-muted">No templates found.</p>';
+            return;
+        }
+        
+        let html = '<div class="row">';
+        templates.forEach(template => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card template-card" onclick="selectTemplate(${template.id}, '${template.name}')">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title">${template.name}</h6>
+                                    <p class="card-text text-muted small">
+                                        ${template.description || 'No description'}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-download me-1"></i>Used ${template.usage_count} times
+                                    </small>
+                                </div>
+                                <span class="badge bg-label-primary">${template.category || 'General'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        container.innerHTML = '<p class="text-center text-danger">Error loading templates.</p>';
+    });
+}
+
+function selectTemplate(templateId, templateName) {
+    // Remove previous selection
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.classList.remove('border-success');
+        card.style.borderWidth = '';
+    });
+    
+    // Highlight selected template
+    event.currentTarget.classList.add('border-success');
+    event.currentTarget.style.borderWidth = '2px';
+    
+    selectedTemplateId = templateId;
+    document.getElementById('applyTemplateBtn').disabled = false;
+    document.getElementById('applyWarning').style.display = 'block';
+}
+
+function applySelectedTemplate() {
+    if (!selectedTemplateId) {
+        alert('Please select a template first');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to apply this template? This will replace the current page content.')) {
+        return;
+    }
+    
+    fetch(`{{ route('admin.templates.apply-to-page', ['template' => '__TEMPLATE_ID__', 'page' => $data->id]) }}`.replace('__TEMPLATE_ID__', selectedTemplateId), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            bootstrap.Modal.getInstance(document.getElementById('applyTemplateModal')).hide();
+            // Reload the page to show applied template content
+            window.location.reload();
+        } else {
+            alert('Error applying template: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error applying template');
+    });
+}
+
+// CSS for template selection
+const style = document.createElement('style');
+style.textContent = `
+    .template-card {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .template-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+`;
+document.head.appendChild(style);
+</script>
 @endsection

@@ -12,11 +12,13 @@
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
+<!-- Google Fonts - Outfit -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <!-- Quill Rich Text Editor with Font Controls -->
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <style>
 /* Custom Quill styles for better font size and family support */
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
@@ -103,6 +105,11 @@
   content: 'Courier New';
   font-family: 'Courier New', monospace;
 }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="outfit"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="outfit"]::before {
+  content: 'Outfit';
+  font-family: 'Outfit', sans-serif;
+}
 
 /* Apply font families to content */
 .ql-font-arial {
@@ -122,6 +129,9 @@
 }
 .ql-font-courier {
   font-family: 'Courier New', monospace !important;
+}
+.ql-font-outfit {
+  font-family: 'Outfit', sans-serif !important;
 }
 
 /* Apply font sizes to content */
@@ -160,7 +170,7 @@ Quill.register(SizeClass, true);
 
 // Custom font family configuration using classes
 var FontClass = Quill.import('attributors/class/font');
-FontClass.whitelist = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier'];
+FontClass.whitelist = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier', 'outfit'];
 Quill.register(FontClass, true);
 
 window.addEventListener('load', function() {
@@ -806,6 +816,239 @@ window.addEventListener('load', function() {
         }
     }
 
+    /* Enhanced Mobile and Tablet Responsive Fixes */
+    @media screen and (max-width: 1199px) and (min-width: 768px) {
+        /* Tablet specific styles */
+        .container { max-width: 100%; padding: 0 20px; }
+        .inner-column { margin-bottom: 15px; }
+        .component { margin-bottom: 15px; }
+        
+        /* Fix column spacing on tablets */
+        .row { margin: 0 -10px; }
+        .col, [class*="col-"] { padding: 0 10px; }
+        
+        /* Investment/Charity components tablet fixes */
+        .investment-tier-component, .perk-wrap { 
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+        
+        /* Image components */
+        .image-component img { max-width: 100%; height: auto; }
+        
+        /* Button components */
+        .button-component { 
+            margin: 10px 0; 
+            display: block;
+            width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        /* Mobile specific styles */
+        .container, .container-fluid { 
+            padding: 0 10px !important; 
+            margin: 0 !important;
+            max-width: 100% !important;
+        }
+        
+        .row { 
+            margin: 0 -5px !important; 
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .col, [class*="col-"] { 
+            padding: 0 5px !important; 
+            flex: 1;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        
+        /* Inner columns mobile behavior */
+        .inner-column {
+            display: block !important;
+            width: 100% !important;
+            float: none !important;
+            margin-bottom: 10px;
+            min-height: 30px;
+        }
+        
+        /* Component mobile fixes */
+        .component {
+            margin-bottom: 10px !important;
+            max-width: 100% !important;
+            overflow: hidden;
+        }
+        
+        /* Text components */
+        .text-component, .heading-component {
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        .heading-component {
+            font-size: 18px !important;
+        }
+        
+        /* Button components mobile */
+        .button-component {
+            display: block !important;
+            width: 100% !important;
+            margin: 10px 0 !important;
+            padding: 12px 20px !important;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        
+        /* Image components mobile */
+        .image-component {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .image-component img {
+            max-width: 100% !important;
+            height: auto !important;
+            width: auto !important;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* Investment/Charity specific mobile fixes */
+        .investment-tier-component, .perk-wrap {
+            display: block !important;
+            width: 100% !important;
+            margin: 10px 0 !important;
+            padding: 15px 10px !important;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .investment-tier, .charity-tier {
+            width: 100% !important;
+            margin-bottom: 15px !important;
+            padding: 10px !important;
+        }
+        
+        /* Form components mobile */
+        .form-component, .custom-form-component {
+            width: 100% !important;
+            margin: 10px 0 !important;
+        }
+        
+        .form-component input,
+        .form-component select,
+        .form-component textarea,
+        .custom-form-component input,
+        .custom-form-component select,
+        .custom-form-component textarea {
+            width: 100% !important;
+            margin-bottom: 10px !important;
+            padding: 10px !important;
+            box-sizing: border-box;
+            font-size: 16px !important; /* Prevent zoom on iOS */
+        }
+        
+        /* Timeline components mobile */
+        .numbered-timeline-component {
+            margin: 10px 0 !important;
+            padding: 10px !important;
+        }
+        
+        .timeline-content {
+            margin-left: 10px !important;
+            font-size: 14px !important;
+        }
+        
+        /* Grid components mobile */
+        .grid-component {
+            display: block !important;
+        }
+        
+        .grid-component > * {
+            width: 100% !important;
+            margin-bottom: 10px !important;
+        }
+        
+        /* Prevent horizontal overflow */
+        * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Hidden elements on mobile if needed */
+        .hide-mobile {
+            display: none !important;
+        }
+        
+        /* Show mobile-only elements */
+        .show-mobile {
+            display: block !important;
+        }
+        
+        /* Fix canvas mobile view */
+        .canvas.mobile-view {
+            width: 375px !important;
+            padding: 10px !important;
+        }
+        
+        .canvas.mobile-view .component {
+            max-width: 100% !important;
+        }
+    }
+
+    /* Canvas Preview Mode Styles */
+    .canvas.tablet-view {
+        width: 768px;
+        max-width: 768px;
+        padding: 15px;
+    }
+    
+    .canvas.tablet-view .component {
+        max-width: 100%;
+    }
+    
+    .canvas.tablet-view .inner-column {
+        margin-bottom: 15px;
+    }
+    
+    .canvas.mobile-view {
+        width: 375px;
+        max-width: 375px;
+        padding: 10px;
+        overflow-x: hidden;
+    }
+    
+    .canvas.mobile-view .component {
+        max-width: 100% !important;
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+    
+    .canvas.mobile-view .inner-column {
+        width: 100% !important;
+        display: block !important;
+        float: none !important;
+        margin-bottom: 10px;
+    }
+    
+    .canvas.mobile-view .row {
+        margin: 0 -5px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .canvas.mobile-view .col,
+    .canvas.mobile-view [class*="col-"] {
+        padding: 0 5px;
+        flex: 1;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
     /* image modal css */
 
     #largeImageModal {
@@ -954,6 +1197,55 @@ window.addEventListener('load', function() {
 .canvas.mobile-view .inner-column.col-lg-2.col-md-4.col-sm-6,
 .canvas.mobile-view .inner-column.col-12 {
   width: 100% !important;
+}
+
+/* Full-width section visualization in canvas */
+.component.inner-section-component[data-full-width="true"] {
+  position: relative;
+  margin-left: -40px !important; /* Offset canvas padding */
+  margin-right: -40px !important;
+  border-left: 3px solid #007bff !important;
+  border-right: 3px solid #007bff !important;
+  padding-left: 40px;
+  padding-right: 40px;
+  background: linear-gradient(90deg, #f8f9ff 0%, #fff 20%, #fff 80%, #f8f9ff 100%) !important;
+}
+
+.component.inner-section-component[data-full-width="true"]::before {
+  content: "⬌ FULL WIDTH SECTION ⬌";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #007bff;
+  color: white;
+  padding: 2px 12px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 0 0 6px 6px;
+  z-index: 10;
+}
+
+/* Full-width sections break out of page container in canvas */
+.page .component.inner-section-component[data-full-width="true"] {
+  width: calc(100% + 80px) !important; /* Account for page padding */
+  margin-left: -40px !important;
+  margin-right: -40px !important;
+  position: relative;
+}
+
+/* Mobile canvas full-width adjustments */
+.canvas.mobile-view .component.inner-section-component[data-full-width="true"] {
+  margin-left: -40px !important;
+  margin-right: -40px !important;
+  width: calc(100% + 80px) !important;
+}
+
+/* Tablet canvas full-width adjustments */
+.canvas.tablet-view .component.inner-section-component[data-full-width="true"] {
+  margin-left: -40px !important;
+  margin-right: -40px !important;
+  width: calc(100% + 80px) !important;
 }
 
 /* Special case for 5-6 column layouts on mobile that use col-sm-6 */
@@ -1201,6 +1493,47 @@ button a:hover {
         outline: none;
         border-color: #007bff;
         box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    }
+    
+    .border-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .border-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .border-item label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .border-item input,
+    .border-item select {
+        padding: 6px 8px;
+        font-size: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background: white;
+    }
+
+    .border-item input:focus,
+    .border-item select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    }
+
+    .border-item input[type="color"] {
+        width: 100%;
+        height: 32px;
+        padding: 2px;
+        cursor: pointer;
     }
     
     .image-preview {
@@ -1610,6 +1943,14 @@ button a:hover {
             <button class="save-btn" onclick="saveBuilderState()">
                 <i class="bi bi-check-circle"></i> Save Page
             </button>
+            
+            <button class="save-btn" onclick="showSaveAsTemplateModal()" style="background: #28a745; margin-left: 10px;">
+                <i class="bi bi-file-earmark-plus"></i> Save as Template
+            </button>
+            
+            <button class="save-btn" onclick="showApplyTemplateModal()" style="background: #17a2b8; margin-left: 10px;">
+                <i class="bi bi-clipboard-plus"></i> Apply Template
+            </button>
 
             <div id="componentsTab" class="tab-section">
                 <h3><i class="bi bi-collection"></i> Components</h3>
@@ -1626,6 +1967,8 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="slider"><i class="fas fa-sliders-h me-2"></i>Slider</div>
                 <div class="component-item" draggable="true" data-type="video"><i class="fas fa-video me-2"></i>Video</div>
                 <div class="component-item" draggable="true" data-type="faq"><i class="fas fa-question-circle me-2"></i>FAQ</div>
+                <div class="component-item" draggable="true" data-type="simple-comments"><i class="fas fa-comment-dots me-2"></i>Simple Comments</div>
+                <div class="component-item" draggable="true" data-type="disqus"><i class="fas fa-comments me-2"></i>Disqus Comments</div>
                 <div class="component-item" draggable="true" data-type="button"><i class="fas fa-square me-2"></i>Buttons</div>
                 <div class="component-item" draggable="true" data-type="full-width-text-image"><i class="fas fa-image me-2"></i>Full Width Text & Image</div>
                 <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
@@ -1765,6 +2108,118 @@ button a:hover {
         </div>
     </div>
 
+    <!-- Save as Template Modal -->
+    <div id="saveAsTemplateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#fff; border-radius:10px; padding:30px; position:relative; max-width:500px; width:90vw;">
+            <span class="close" onclick="closeSaveAsTemplateModal()" style="position:absolute; top:15px; right:25px; cursor:pointer; font-size:28px; color:#333;">&times;</span>
+            
+            <h3 style="margin-bottom:20px; color:#333;">
+                <i class="bi bi-file-earmark-plus" style="margin-right:10px; color:#28a745;"></i>
+                Save Page as Template
+            </h3>
+            
+            <form id="saveAsTemplateForm" style="margin-bottom:0;">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Template Name</label>
+                    <input type="text" id="templateName" name="template_name" 
+                           style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;"
+                           placeholder="Enter template name..." required>
+                </div>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Description</label>
+                    <textarea id="templateDescription" name="template_description" 
+                              style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; resize:vertical;"
+                              rows="3" placeholder="Describe what this template is for..."></textarea>
+                </div>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Category</label>
+                    <select id="templateCategory" name="template_category" 
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;">
+                        <option value="general">General</option>
+                        <option value="landing">Landing Page</option>
+                        <option value="about">About</option>
+                        <option value="contact">Contact</option>
+                        <option value="services">Services</option>
+                        <option value="portfolio">Portfolio</option>
+                        <option value="blog">Blog</option>
+                        <option value="e-commerce">E-commerce</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="display:flex; align-items:center; cursor:pointer;">
+                        <input type="checkbox" id="templateIsPublic" name="is_public" checked
+                               style="margin-right:8px; transform:scale(1.2);">
+                        <span style="color:#555;">Make this template available to all users</span>
+                    </label>
+                </div>
+                
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeSaveAsTemplateModal()" 
+                            style="padding:10px 20px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="savePageAsTemplate()" 
+                            style="padding:10px 20px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">
+                        <i class="bi bi-check-circle" style="margin-right:5px;"></i>
+                        Save Template
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Apply Template Modal -->
+    <div id="applyTemplateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#fff; border-radius:10px; padding:30px; position:relative; max-width:700px; width:90vw; max-height:80vh; overflow-y:auto;">
+            <span class="close" onclick="closeApplyTemplateModal()" style="position:absolute; top:15px; right:25px; cursor:pointer; font-size:28px; color:#333;">&times;</span>
+            
+            <h3 style="margin-bottom:20px; color:#333;">
+                <i class="bi bi-clipboard-plus" style="margin-right:10px; color:#17a2b8;"></i>
+                Apply Template to Page
+            </h3>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:10px; font-weight:bold; color:#555;">Filter by Category</label>
+                <select id="templateCategoryFilter" onchange="loadTemplatesForApply()" 
+                        style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;">
+                    <option value="">All Categories</option>
+                    <option value="general">General</option>
+                    <option value="landing">Landing Page</option>
+                    <option value="about">About</option>
+                    <option value="contact">Contact</option>
+                    <option value="services">Services</option>
+                    <option value="portfolio">Portfolio</option>
+                    <option value="blog">Blog</option>
+                    <option value="e-commerce">E-commerce</option>
+                </select>
+            </div>
+            
+            <div id="templatesContainer" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:5px; padding:10px;">
+                <p style="text-align:center; color:#666;">Loading templates...</p>
+            </div>
+            
+            <div id="applyWarning" style="display:none; background:#fff3cd; border:1px solid #ffeaa7; color:#856404; padding:10px; border-radius:5px; margin-top:15px;">
+                <strong>Warning:</strong> Applying a template will replace all current page content. 
+                Make sure to save any important changes first.
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                <button type="button" onclick="closeApplyTemplateModal()" 
+                        style="padding:10px 20px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="button" id="applyTemplateBtn" onclick="applySelectedTemplate()" disabled
+                        style="padding:10px 20px; background:#17a2b8; color:white; border:none; border-radius:5px; cursor:pointer; opacity:0.5;">
+                    <i class="bi bi-clipboard-plus" style="margin-right:5px;"></i>
+                    Apply Template
+                </button>
+            </div>
+        </div>
+    </div>
+
   <style>
     .modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -1827,11 +2282,13 @@ button a:hover {
           setTimeout(() => {
             applyResponsiveStyles();
             updateResponsiveCSS();
+            refreshComponentSizes();
           }, 50);
           
           // Refresh layout to ensure proper responsive behavior
           setTimeout(() => {
             triggerLayoutRefresh();
+            fixComponentOverflow();
           }, 100);
         });
       });
@@ -1847,7 +2304,7 @@ button a:hover {
       // Create new notification
       const notification = document.createElement('div');
       notification.className = 'device-notification';
-      notification.textContent = `Preview: ${'${device.charAt(0).toUpperCase() + device.slice(1)}'} View`;
+      notification.textContent = `Preview: ` + device.charAt(0).toUpperCase() + device.slice(1) + ` View`;
       notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -1887,6 +2344,79 @@ button a:hover {
       });
     }
 
+    // Enhanced responsive functions for mobile fixes
+    function refreshComponentSizes() {
+      const components = document.querySelectorAll('.component');
+      components.forEach(component => {
+        const content = getContentElement(component);
+        if (content) {
+          // Force width recalculation
+          content.style.width = '';
+          content.style.maxWidth = '';
+          
+          // Apply device-specific constraints
+          const canvas = document.getElementById('canvas');
+          if (canvas.classList.contains('mobile-view')) {
+            content.style.maxWidth = '100%';
+            content.style.overflow = 'hidden';
+          } else if (canvas.classList.contains('tablet-view')) {
+            content.style.maxWidth = '100%';
+          }
+        }
+      });
+    }
+    
+    function fixComponentOverflow() {
+      const canvas = document.getElementById('canvas');
+      const components = document.querySelectorAll('.component');
+      
+      components.forEach(component => {
+        const content = getContentElement(component);
+        if (content) {
+          // Fix common overflow issues
+          content.style.boxSizing = 'border-box';
+          content.style.wordWrap = 'break-word';
+          content.style.overflowWrap = 'break-word';
+          
+          // Device-specific fixes
+          if (canvas.classList.contains('mobile-view')) {
+            // Mobile specific overflow fixes
+            content.style.maxWidth = '100%';
+            content.style.minWidth = '0';
+            
+            // Fix images
+            const images = content.querySelectorAll('img');
+            images.forEach(img => {
+              img.style.maxWidth = '100%';
+              img.style.height = 'auto';
+              img.style.width = 'auto';
+            });
+            
+            // Fix tables
+            const tables = content.querySelectorAll('table');
+            tables.forEach(table => {
+              table.style.maxWidth = '100%';
+              table.style.overflow = 'auto';
+            });
+            
+            // Fix forms
+            const inputs = content.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+              input.style.maxWidth = '100%';
+              input.style.boxSizing = 'border-box';
+            });
+          }
+        }
+      });
+    }
+    
+    function getCurrentPreviewDevice() {
+      const canvas = document.getElementById('canvas');
+      if (canvas.classList.contains('mobile-view')) return 'mobile';
+      if (canvas.classList.contains('tablet-view')) return 'tablet';
+      return 'desktop';
+    }
+
     function undoLastAction() {
       // TODO: Implement undo functionality
       console.log('Undo action');
@@ -1903,26 +2433,366 @@ button a:hover {
       
       // Create preview window
       const previewWindow = window.open('', '_blank', 'width=1200,height=800');
-      previewWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Page Preview</title>
-          <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-          <link rel="stylesheet" href="{{ asset('auction.css') }}">
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; }
-            .dropzone { display: none; }
-            .component-controls { display: none !important; }
-          </style>
-        </head>
-        <body>
-          ${'${pageContent}'}
-        </body>
-        </html>
-      `);
+      
+      // Get current website type for proper styling
+      const websiteTypeElement = document.querySelector('input[name="website_type"]:checked');
+      const websiteType = websiteTypeElement ? websiteTypeElement.value : 'charity';
+      
+      // Frontend CSS (same as page-investment.blade.php)
+      const frontendCSS = `
+        /* Global full-width support */
+        html, body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        #rendered-page {
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Full-width section support - Enhanced */
+        .inner-section-fullwidth {
+            width: 100vw !important;
+            position: relative !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            box-sizing: border-box !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Enable borders and padding for inner-sections */
+        .inner-section-fullwidth,
+        .inner-section-frontend {
+            border: inherit !important;
+            padding: inherit !important;
+            margin: inherit !important;
+        }
+        
+        /* Force apply styles that might be ignored */
+        .inner-section-fullwidth[style],
+        .inner-section-frontend[style] {
+            border: inherit !important;
+            padding: inherit !important;
+            margin: inherit !important;
+            background: inherit !important;
+            background-color: inherit !important;
+            background-image: inherit !important;
+            background-attachment: inherit !important;
+        }
+        
+        /* Parallax background fix - Enhanced implementation with higher specificity */
+        .inner-section-fullwidth[style*="background-attachment: fixed"],
+        .inner-section-frontend[style*="background-attachment: fixed"],
+        .inner-section-fullwidth[style*="background"][style*="url"],
+        .inner-section-frontend[style*="background"][style*="url"] {
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            background-size: cover !important;
+        }
+        
+        /* Video component comprehensive responsive fixes */
+        .video-component,
+        .video-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .video-component iframe,
+        .video-component video,
+        .video-container iframe,
+        .video-container video {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+            display: block !important;
+        }
+        
+        /* Force responsive behavior for videos with custom dimensions */
+        .video-container[style*="width"],
+        .video-container[style*="height"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .video-container[style*="width"] iframe,
+        .video-container[style*="width"] video,
+        .video-container[style*="height"] iframe,
+        .video-container[style*="height"] video {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+            aspect-ratio: 16/9 !important;
+        }
+        
+        /* Investment tier auto-amount fix for full-width sections */
+        .inner-section-fullwidth .investment-tier a[href*="/invest?amount"],
+        .inner-section-frontend .investment-tier a[href*="/invest?amount"] {
+            pointer-events: auto !important;
+            display: inline-block !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        /* Mobile specific fixes */
+        @media (max-width: 768px) {
+            .inner-section-fullwidth {
+                width: 100vw !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                margin-left: calc(-50vw + 50%) !important;
+                margin-right: calc(-50vw + 50%) !important;
+                max-width: none !important;
+            }
+            
+            .inner-section-fullwidth[style*="background-attachment"],
+            .inner-section-frontend[style*="background-attachment"] {
+                background-attachment: scroll !important;
+            }
+            
+            .video-component,
+            .video-container {
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            .video-component iframe,
+            .video-component video,
+            .video-container iframe,
+            .video-container video {
+                width: 100% !important;
+                height: auto !important;
+                min-height: 200px !important;
+                max-height: 300px !important;
+                aspect-ratio: 16/9 !important;
+            }
+            
+            .video-container[style] {
+                width: 100% !important;
+                height: auto !important;
+                padding-bottom: 56.25% !important;
+                position: relative !important;
+            }
+            
+            .video-container[style] iframe,
+            .video-container[style] video {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .inner-section-fullwidth {
+                width: 100vw !important;
+                left: 0 !important;
+                transform: none !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+        }
+        
+        /* Hide page-builder specific elements */
+        .dropzone { display: none !important; }
+        .component-controls { display: none !important; }
+        .sortable-placeholder { display: none !important; }
+        .ui-sortable-handle { cursor: default !important; }
+        .drag-handle { display: none !important; }
+        .section-label { display: none !important; }
+        .component-type-label { display: none !important; }
+      `;
+      
+      let themeStyles = '';
+      if (websiteType === 'investment') {
+        themeStyles = '.investment-theme { --primary-color: #d4af37; --secondary-color: #2c3e50; --accent-color: #e8c547; } .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); } .text-primary { color: var(--primary-color) !important; }';
+      } else {
+        themeStyles = '.charity-theme { --primary-color: #28a745; --secondary-color: #17a2b8; --accent-color: #ffc107; } .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); } .text-primary { color: var(--primary-color) !important; }';
+      }
+      
+      // Build HTML content that matches page-investment.blade.php structure
+      let htmlContent = '<!DOCTYPE html><html><head><title>Page Preview - Frontend View</title>';
+      htmlContent += '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+      htmlContent += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">';
+      htmlContent += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">';
+      htmlContent += '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">';
+      htmlContent += '<style>body { background: #f9fafb; margin: 0; padding: 0; }' + frontendCSS + themeStyles + '</style></head>';
+      htmlContent += '<body class="' + websiteType + '-theme" style="margin: 0; padding: 0;"><main style="margin-top: 0;"><div id="rendered-page">' + pageContent + '</div></main>';
+      htmlContent += '</body></html>';
+      
+      previewWindow.document.write(htmlContent);
       previewWindow.document.close();
+      
+      // Focus the preview window
+      previewWindow.focus();
+    }
+
+    // Client-side Form Data Storage System
+    window.formDataStorage = {
+        data: {},
+        
+        // Store form data
+        storeFormData: function(formId, fieldName, value) {
+            if (!this.data[formId]) {
+                this.data[formId] = {};
+            }
+            this.data[formId][fieldName] = value;
+            this.saveToStorage();
+        },
+        
+        // Get form data
+        getFormData: function(formId) {
+            return this.data[formId] || {};
+        },
+        
+        // Get all stored data
+        getAllData: function() {
+            return this.data;
+        },
+        
+        // Clear form data
+        clearFormData: function(formId) {
+            if (formId) {
+                delete this.data[formId];
+            } else {
+                this.data = {};
+            }
+            this.saveToStorage();
+        },
+        
+        // Save to localStorage
+        saveToStorage: function() {
+            try {
+                localStorage.setItem('pageBuilderFormData', JSON.stringify(this.data));
+            } catch (e) {
+                console.warn('Could not save form data to localStorage:', e);
+            }
+        },
+        
+        // Load from localStorage
+        loadFromStorage: function() {
+            try {
+                const stored = localStorage.getItem('pageBuilderFormData');
+                if (stored) {
+                    this.data = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.warn('Could not load form data from localStorage:', e);
+                this.data = {};
+            }
+        },
+        
+        // Submit all collected data with investor information
+        submitInvestmentWithAllData: function(investorData) {
+            const allData = {
+                ...investorData,
+                form_data: this.getAllData()
+            };
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                allData._token = csrfToken.getAttribute('content');
+            }
+            
+            return fetch('/invest/save-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': allData._token
+                },
+                body: JSON.stringify(allData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear stored data on successful submission
+                    this.clearFormData();
+                    return data;
+                } else {
+                    throw new Error(data.message || 'Submission failed');
+                }
+            });
+        }
+    };
+    
+    // Initialize form data storage
+    window.formDataStorage.loadFromStorage();
+    
+    // Auto-save form inputs
+    function initFormDataCapture() {
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input, select, textarea')) {
+                const form = e.target.closest('form');
+                if (form) {
+                    const formId = form.id || 'default_form';
+                    const fieldName = e.target.name || e.target.id || `field_${Date.now()}`;
+                    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                    
+                    window.formDataStorage.storeFormData(formId, fieldName, value);
+                    
+                    // Show visual feedback
+                    showFormDataSavedIndicator();
+                }
+            }
+        });
+        
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="radio"], input[type="checkbox"], select')) {
+                const form = e.target.closest('form');
+                if (form) {
+                    const formId = form.id || 'default_form';
+                    const fieldName = e.target.name || e.target.id || `field_${Date.now()}`;
+                    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                    
+                    window.formDataStorage.storeFormData(formId, fieldName, value);
+                    showFormDataSavedIndicator();
+                }
+            }
+        });
+    }
+    
+    function showFormDataSavedIndicator() {
+        // Remove existing indicator
+        const existing = document.querySelector('.form-data-saved-indicator');
+        if (existing) existing.remove();
+        
+        // Create new indicator
+        const indicator = document.createElement('div');
+        indicator.className = 'form-data-saved-indicator';
+        indicator.textContent = 'Form data saved';
+        indicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            z-index: 10000;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+        
+        document.body.appendChild(indicator);
+        
+        // Animate in
+        setTimeout(() => indicator.style.opacity = '1', 10);
+        
+        // Animate out
+        setTimeout(() => {
+            indicator.style.opacity = '0';
+            setTimeout(() => indicator.remove(), 300);
+        }, 2000);
     }
 
     window.currentSponsors = @json($sponsors->map(function($s) {
@@ -2055,7 +2925,7 @@ button a:hover {
       
       // Assign unique ID to component
       const existingComponents = document.querySelectorAll('.component').length;
-      component.id = `component-${'${existingComponents}'}`;
+      component.id = `component-` + existingComponents;
 
       const controls = document.createElement('div');
       controls.className = 'component-controls';
@@ -2427,7 +3297,7 @@ break;
             
             // Store component data with enhanced background options
             content._innerSectionData = {
-                backgroundColor: '#f8f9fa',
+                backgroundColor: 'transparent',
                 borderColor: '#ddd',
                 borderStyle: 'dashed',
                 borderWidth: '2px',
@@ -2490,7 +3360,7 @@ break;
                 // Update margin-bottom for all columns to create visual gap
                 const columns = content.querySelectorAll('.inner-column');
                 columns.forEach(column => {
-                    column.style.marginBottom = `${'${gapValue}'}${'${gapUnit}'}`;
+                    column.style.marginBottom = gapValue + gapUnit;
                 });
                 
                 // Update the row to use custom CSS variables for gap if needed
@@ -2507,6 +3377,9 @@ break;
                 
                 // Update visual appearance based on full width setting
                 if (data.fullWidth) {
+                    // Add data attribute for CSS targeting
+                    content.setAttribute('data-full-width', 'true');
+                    
                     // Visual indication that this will be full width on frontend
                     content.style.borderStyle = 'solid';
                     content.style.borderColor = '#007bff';
@@ -2520,6 +3393,9 @@ break;
                         sectionLabel.style.color = '#fff';
                     }
                 } else {
+                    // Remove data attribute for regular sections
+                    content.removeAttribute('data-full-width');
+                    
                     // Regular appearance
                     content.style.borderStyle = 'dashed';
                     content.style.borderColor = '#ddd';
@@ -2562,7 +3438,7 @@ break;
             content = document.createElement('div');
             let investCtaData = content._investCtaData || {
                 buttonText: 'INVEST NOW',
-                buttonUrl: '#',
+                buttonUrl: '/invest',
                 buttonTarget: '_self',
                 leftValue: '$2.13',
                 leftLabel: 'Share Price',
@@ -2579,7 +3455,7 @@ break;
             content.innerHTML = `
                 <div class="invest-cta-wrapper" style="background-color: ${investCtaData.bgColor}; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0px;">
                     <div class="invest-cta-button-wrap">
-                        <a href="#" 
+                        <a href="/invest" 
                            target="_self" 
                            class="invest-cta-button"
                            style="display: inline-block; background-color: #2e7d3e; color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 4px; font-size: 14px; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; border: none; cursor: pointer; white-space: nowrap; flex-shrink: 0;"
@@ -2924,10 +3800,268 @@ break;
 
         case 'faq':
             content = document.createElement('div');
-            content.textContent = 'FAQ Placeholder';
-            content.style.border = '1px dashed #ccc';
-            content.style.padding = '40px';
-            content.style.textAlign = 'center';
+            content.className = 'faq-component';
+            
+            // Initialize FAQ data
+            if (!content._faqData) {
+                content._faqData = {
+                    questions: [
+                        {
+                            question: 'How much can I invest?',
+                            answer: 'Accredited investors can invest as much as they want. But if you are NOT an accredited investor, your investment limit depends on either your annual income or net worth, whichever is greater.',
+                            expanded: false
+                        },
+                        {
+                            question: 'Why Should I Invest?',
+                            answer: 'This is a great opportunity to be part of an innovative project.',
+                            expanded: false
+                        }
+                    ],
+                    questionBackgroundColor: '#f3f4f6',
+                    questionTextColor: '#1f2937',
+                    answerBackgroundColor: '#ffffff',
+                    answerTextColor: '#374151',
+                    iconColor: '#059669',
+                    borderRadius: '8px',
+                    spacing: '10px'
+                };
+            }
+            
+            content.renderFaq = function() {
+                const faqData = this._faqData;
+                this.innerHTML = `
+                    <div class="faq-container" style="max-width: 100%;">
+                        ${faqData.questions.map((item, index) => `
+                            <div class="faq-item" style="
+                                margin-bottom: ${faqData.spacing};
+                                border-radius: ${faqData.borderRadius};
+                                overflow: hidden;
+                                border: 1px solid #e5e7eb;
+                            ">
+                                <div class="faq-question" style="
+                                    background-color: ${faqData.questionBackgroundColor};
+                                    color: ${faqData.questionTextColor};
+                                    padding: 16px 20px;
+                                    cursor: pointer;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    font-weight: 500;
+                                    font-size: 16px;
+                                    user-select: none;
+                                " onclick="toggleFaqItem(this, ${index})">
+                                    <span>${item.question}</span>
+                                    <div class="faq-icon" style="
+                                        width: 32px;
+                                        height: 32px;
+                                        border-radius: 50%;
+                                        background-color: ${faqData.iconColor};
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        color: white;
+                                        font-weight: bold;
+                                        font-size: 18px;
+                                        flex-shrink: 0;
+                                        margin-left: 15px;
+                                    ">${item.expanded ? '−' : '+'}</div>
+                                </div>
+                                <div class="faq-answer" style="
+                                    background-color: ${faqData.answerBackgroundColor};
+                                    color: ${faqData.answerTextColor};
+                                    padding: ${item.expanded ? '20px' : '0 20px'};
+                                    max-height: ${item.expanded ? '1000px' : '0'};
+                                    overflow: hidden;
+                                    transition: all 0.3s ease;
+                                    font-size: 15px;
+                                    line-height: 1.6;
+                                ">${item.answer}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            };
+            
+            content.renderFaq();
+        break;
+
+        case 'simple-comments':
+            content = document.createElement('div');
+            content.className = 'simple-comments-component';
+            
+            // Initialize Simple Comments data
+            if (!content._simpleCommentsData) {
+                content._simpleCommentsData = {
+                    title: 'Comments',
+                    showTitle: true,
+                    allowAnonymous: true,
+                    moderationEnabled: false,
+                    requireEmail: true,
+                    maxComments: 100,
+                    sortOrder: 'newest',
+                    backgroundColor: '#ffffff',
+                    borderColor: '#e0e0e0',
+                    textColor: '#333333',
+                    buttonColor: '#007bff'
+                };
+            }
+            
+            content.renderSimpleComments = function() {
+                const data = this._simpleCommentsData;
+                
+                this.innerHTML = `
+                    <div style="
+                        background: ${data.backgroundColor};
+                        border: 1px solid ${data.borderColor};
+                        border-radius: 8px;
+                        padding: 20px;
+                        color: ${data.textColor};
+                    ">
+                        ${data.showTitle ? `<h3 style="margin: 0 0 20px 0; color: ${data.textColor};">${data.title}</h3>` : ''}
+                        
+                        <!-- Comment Form Preview -->
+                        <div style="
+                            background: #f8f9fa;
+                            border: 1px dashed #dee2e6;
+                            border-radius: 6px;
+                            padding: 16px;
+                            margin-bottom: 20px;
+                        ">
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <i class="fas fa-plus-circle" style="color: ${data.buttonColor}; margin-right: 8px;"></i>
+                                <strong>Comment Form</strong>
+                            </div>
+                            <div style="font-size: 14px; color: #666;">
+                                ${data.allowAnonymous ? '• Anonymous comments allowed' : '• Registration required'}<br>
+                                ${data.requireEmail ? '• Email required' : '• Email optional'}<br>
+                                ${data.moderationEnabled ? '• Comments moderated' : '• Comments auto-approved'}
+                            </div>
+                        </div>
+                        
+                        <!-- Sample Comments Preview -->
+                        <div style="border-top: 1px solid ${data.borderColor}; padding-top: 16px;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 16px;">
+                                <i class="fas fa-comments" style="margin-right: 6px;"></i>
+                                Sample comments will appear here (sorted by ${data.sortOrder})
+                            </div>
+                            
+                            <div style="
+                                background: #f8f9fa;
+                                border-left: 4px solid ${data.buttonColor};
+                                padding: 12px 16px;
+                                border-radius: 4px;
+                                margin-bottom: 12px;
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong style="color: ${data.textColor};">Sample User</strong>
+                                    <small style="color: #666;">2 hours ago</small>
+                                </div>
+                                <p style="margin: 0; color: ${data.textColor};">This is a sample comment to show how comments will look on your page.</p>
+                            </div>
+                            
+                            <div style="
+                                background: #f8f9fa;
+                                border-left: 4px solid ${data.buttonColor};
+                                padding: 12px 16px;
+                                border-radius: 4px;
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong style="color: ${data.textColor};">Another User</strong>
+                                    <small style="color: #666;">1 day ago</small>
+                                </div>
+                                <p style="margin: 0; color: ${data.textColor};">Great article! Thanks for sharing this information.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+            
+            content.renderSimpleComments();
+        break;
+
+        case 'disqus':
+            content = document.createElement('div');
+            content.className = 'disqus-component';
+            
+            // Initialize Disqus data
+            if (!content._disqusData) {
+                content._disqusData = {
+                    shortname: '',
+                    identifier: '',
+                    title: '',
+                    url: '',
+                    showInPreview: true
+                };
+            }
+            
+            content.renderDisqus = function() {
+                const disqusData = this._disqusData;
+                
+                if (!disqusData.shortname) {
+                    this.innerHTML = `
+                        <div style="
+                            padding: 40px 20px;
+                            text-align: center;
+                            background: #f8f9fa;
+                            border: 2px dashed #dee2e6;
+                            border-radius: 8px;
+                            color: #6c757d;
+                        ">
+                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; color: #adb5bd;"></i>
+                            <h4 style="margin: 0 0 8px 0; color: #495057;">Disqus Comments</h4>
+                            <p style="margin: 0; font-size: 14px;">Configure your Disqus shortname in the properties panel to enable comments.</p>
+                        </div>
+                    `;
+                } else if (disqusData.showInPreview) {
+                    this.innerHTML = `
+                        <div style="
+                            padding: 20px;
+                            background: #ffffff;
+                            border: 1px solid #dee2e6;
+                            border-radius: 8px;
+                        ">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                margin-bottom: 16px;
+                                padding-bottom: 12px;
+                                border-bottom: 1px solid #e9ecef;
+                            ">
+                                <i class="fas fa-comments" style="font-size: 20px; margin-right: 8px; color: #2e9fff;"></i>
+                                <strong style="color: #495057;">Disqus Comments Preview</strong>
+                                <span style="
+                                    margin-left: 8px;
+                                    padding: 2px 8px;
+                                    background: #e7f3ff;
+                                    color: #0066cc;
+                                    border-radius: 12px;
+                                    font-size: 12px;
+                                ">Site: ${disqusData.shortname}</span>
+                            </div>
+                            <p style="margin: 0; color: #6c757d; font-style: italic;">
+                                Comments will appear here when visitors view the page. 
+                                The actual Disqus interface will be loaded on the frontend.
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    this.innerHTML = `
+                        <div style="
+                            padding: 20px;
+                            text-align: center;
+                            background: #f8f9fa;
+                            border: 1px dashed #adb5bd;
+                            border-radius: 8px;
+                            color: #6c757d;
+                        ">
+                            <i class="fas fa-eye-slash" style="margin-right: 8px;"></i>
+                            Disqus comments hidden in preview
+                        </div>
+                    `;
+                }
+            };
+            
+            content.renderDisqus();
         break;
 
         case 'display-assets':
@@ -4202,7 +5336,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                                                     </div>
                                                 </div>
                                                 <div class="main_cta_button_wrap" style="margin-top: 18px;">
-                                                    <a dmr-checkout-start="1" tag="button" aria-label="Proceed to checkout" href="${d.buttonUrl}" target="${d.buttonTarget}" class="button w-button is-small hide-tablet" style="display: block; width: 100%; background: ${d.buttonBgColor}; color: ${d.buttonTextColor}; font-weight: 700; font-size: 1.1rem; border-radius: 4px; padding: 13px 0 11px 0; text-align: center; letter-spacing: 1px; text-transform: uppercase; border: none;">${d.buttonText}</a>
+                                                    <a dmr-checkout-start="1" tag="button" aria-label="Proceed to checkout" href="/invest?amount=${encodeURIComponent(d.tierPrice)}" class="button w-button is-small hide-tablet" style="display: block; width: 100%; background: ${d.buttonBgColor}; color: ${d.buttonTextColor}; font-weight: 700; font-size: 1.1rem; border-radius: 4px; padding: 13px 0 11px 0; text-align: center; letter-spacing: 1px; text-transform: uppercase; border: none;">${d.buttonText}</a>
                                                 </div>
                                             </div>
                                             `;
@@ -4457,10 +5591,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             specificControls = `
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Colors</h4>
                 <div class="form-group">
-                    <label>Number Border Color</label>
-                    <input type="color" value="${colors.numberBackground || '#22c55e'}" oninput="updateTimelineColor('numberBackground', this.value)">
-                </div>
-                <div class="form-group">
                     <label>Number Text Color</label>
                     <input type="color" value="${colors.numberText || '#22c55e'}" oninput="updateTimelineColor('numberText', this.value)">
                 </div>
@@ -4613,28 +5743,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                 </div>
                 
-                <h4 style="margin: 20px 0 10px 0; color: #333;">Border & Spacing</h4>
-                <div class="form-group">
-                    <label>Border Color</label>
-                    <input type="color" value="${innerSectionData.borderColor || '#ddd'}" oninput="updateInnerSectionField(this.value, 'borderColor')">
-                </div>
-                <div class="form-group">
-                    <label>Border Style</label>
-                    <select oninput="updateInnerSectionField(this.value, 'borderStyle')">
-                        <option value="solid" ${innerSectionData.borderStyle === 'solid' ? 'selected' : ''}>Solid</option>
-                        <option value="dashed" ${innerSectionData.borderStyle === 'dashed' ? 'selected' : ''}>Dashed</option>
-                        <option value="dotted" ${innerSectionData.borderStyle === 'dotted' ? 'selected' : ''}>Dotted</option>
-                        <option value="none" ${innerSectionData.borderStyle === 'none' ? 'selected' : ''}>None</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Border Width</label>
-                    <input type="text" value="${innerSectionData.borderWidth || '2px'}" oninput="updateInnerSectionField(this.value, 'borderWidth')">
-                </div>
-                <div class="form-group">
-                    <label>Border Radius</label>
-                    <input type="text" value="${innerSectionData.borderRadius || '8px'}" oninput="updateInnerSectionField(this.value, 'borderRadius')">
-                </div>
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Spacing</h4>
                 <div class="form-group">
                     <label>Padding</label>
                     <input type="text" value="${innerSectionData.padding || '20px'}" oninput="updateInnerSectionField(this.value, 'padding')">
@@ -4885,32 +5994,322 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'faq':
+                const faqData = content._faqData || {
+                    questions: [],
+                    questionBackgroundColor: '#f3f4f6',
+                    questionTextColor: '#1f2937',
+                    answerBackgroundColor: '#ffffff',
+                    answerTextColor: '#374151',
+                    iconColor: '#059669',
+                    borderRadius: '8px',
+                    spacing: '10px'
+                };
+                
                 specificControls = `
+                    <h4 style="margin: 20px 0 10px 0; color: #333;">FAQ Questions</h4>
                     <div class="form-group">
-                        <label>Status</label>
-                        <select class="form-select" id="faq_status" name="faq_status">
-                            <option value="1">Enabled</option>
-                            <option value="0">Disabled</option>
-                        </select>
+                        <button type="button" onclick="addFaqQuestion()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
+                            + Add Question
+                        </button>
+                    </div>
+                    <div id="faq-questions-list">
+                        ${faqData.questions.map((q, index) => `
+                            <div class="faq-question-item" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong>Question ${index + 1}</strong>
+                                    <button type="button" onclick="removeFaqQuestion(${index})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">Remove</button>
+                                </div>
+                                <div class="form-group">
+                                    <label>Question:</label>
+                                    <input type="text" value="${q.question}" oninput="updateFaqQuestion(${index}, 'question', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Answer:</label>
+                                    <textarea oninput="updateFaqQuestion(${index}, 'answer', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; min-height: 60px; resize: vertical;">${q.answer}</textarea>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 10px 0; color: #333;">Styling Options</h4>
+                    <div class="form-group">
+                        <label>Question Background Color</label>
+                        <input type="color" value="${faqData.questionBackgroundColor}" oninput="updateFaqStyle('questionBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
-                        <label>Number of questions</label>
-                        <select class="form-select" id="faq_number_of_questions" name="faq_number_of_questions">
-                            ${Array.from({length: 20}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
-                        </select>
+                        <label>Question Text Color</label>
+                        <input type="color" value="${faqData.questionTextColor}" oninput="updateFaqStyle('questionTextColor', this.value)">
                     </div>
-                    <div id="faq_entries"></div>
+                    <div class="form-group">
+                        <label>Answer Background Color</label>
+                        <input type="color" value="${faqData.answerBackgroundColor}" oninput="updateFaqStyle('answerBackgroundColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Answer Text Color</label>
+                        <input type="color" value="${faqData.answerTextColor}" oninput="updateFaqStyle('answerTextColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon Color</label>
+                        <input type="color" value="${faqData.iconColor}" oninput="updateFaqStyle('iconColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Border Radius</label>
+                        <input type="text" value="${faqData.borderRadius}" oninput="updateFaqStyle('borderRadius', this.value)" placeholder="e.g. 8px">
+                    </div>
+                    <div class="form-group">
+                        <label>Spacing Between Items</label>
+                        <input type="text" value="${faqData.spacing}" oninput="updateFaqStyle('spacing', this.value)" placeholder="e.g. 10px">
+                    </div>
                 `;
-                if (type === 'faq') {
-                    const numSelect = document.getElementById('faq_number_of_questions');
-                    if (numSelect) {
-                        numSelect.addEventListener('change', function() {
-                            renderFaqEntries(this.value);
-                        });
-                        renderFaqEntries(numSelect.value || 1);
-                    }
-                }
             break;
+
+            case 'simple-comments':
+                const simpleCommentsData = content._simpleCommentsData || {
+                    title: 'Comments',
+                    showTitle: true,
+                    allowAnonymous: true,
+                    moderationEnabled: false,
+                    requireEmail: true,
+                    maxComments: 100,
+                    sortOrder: 'newest',
+                    backgroundColor: '#ffffff',
+                    borderColor: '#e0e0e0',
+                    textColor: '#333333',
+                    buttonColor: '#007bff'
+                };
+                
+                specificControls = `
+                    <h4 style="margin: 20px 0 10px 0; color: #333;">
+                        <i class="fas fa-comment-dots" style="margin-right: 8px; color: #007bff;"></i>
+                        Simple Comments Settings
+                    </h4>
+                    
+                    <div class="alert alert-info" style="margin-bottom: 16px; padding: 12px; background: #e3f2fd; border: 1px solid #2196f3; border-radius: 6px;">
+                        <i class="fas fa-info-circle" style="margin-right: 6px; color: #1976d2;"></i>
+                        <strong>No Setup Required!</strong> Comments are stored in your database and work immediately.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-heading" style="margin-right: 6px;"></i>
+                            Comments Section Title
+                        </label>
+                        <input type="text" value="${simpleCommentsData.title}" 
+                               oninput="updateSimpleCommentsField('title', this.value)" 
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333; display: flex; align-items: center;">
+                            <input type="checkbox" ${simpleCommentsData.showTitle ? 'checked' : ''} 
+                                   onchange="updateSimpleCommentsField('showTitle', this.checked)"
+                                   style="margin-right: 8px;">
+                            <i class="fas fa-eye" style="margin-right: 6px;"></i>
+                            Show section title
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333; display: flex; align-items: center;">
+                            <input type="checkbox" ${simpleCommentsData.allowAnonymous ? 'checked' : ''} 
+                                   onchange="updateSimpleCommentsField('allowAnonymous', this.checked)"
+                                   style="margin-right: 8px;">
+                            <i class="fas fa-user-secret" style="margin-right: 6px;"></i>
+                            Allow anonymous comments
+                        </label>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px; margin-left: 24px;">
+                            Users can comment without creating an account
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333; display: flex; align-items: center;">
+                            <input type="checkbox" ${simpleCommentsData.requireEmail ? 'checked' : ''} 
+                                   onchange="updateSimpleCommentsField('requireEmail', this.checked)"
+                                   style="margin-right: 8px;">
+                            <i class="fas fa-envelope" style="margin-right: 6px;"></i>
+                            Require email address
+                        </label>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px; margin-left: 24px;">
+                            Email is required for posting comments
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333; display: flex; align-items: center;">
+                            <input type="checkbox" ${simpleCommentsData.moderationEnabled ? 'checked' : ''} 
+                                   onchange="updateSimpleCommentsField('moderationEnabled', this.checked)"
+                                   style="margin-right: 8px;">
+                            <i class="fas fa-shield-alt" style="margin-right: 6px;"></i>
+                            Enable comment moderation
+                        </label>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px; margin-left: 24px;">
+                            Comments need approval before appearing
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-sort" style="margin-right: 6px;"></i>
+                            Comment Sort Order
+                        </label>
+                        <select onchange="updateSimpleCommentsField('sortOrder', this.value)" 
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="newest" ${simpleCommentsData.sortOrder === 'newest' ? 'selected' : ''}>Newest First</option>
+                            <option value="oldest" ${simpleCommentsData.sortOrder === 'oldest' ? 'selected' : ''}>Oldest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-list-ol" style="margin-right: 6px;"></i>
+                            Maximum Comments to Show
+                        </label>
+                        <input type="number" value="${simpleCommentsData.maxComments}" min="10" max="1000"
+                               oninput="updateSimpleCommentsField('maxComments', parseInt(this.value))" 
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                            Older comments will be paginated
+                        </small>
+                    </div>
+                    
+                    <h5 style="margin: 20px 0 10px 0; color: #333;">Styling Options</h5>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">Background Color</label>
+                        <input type="color" value="${simpleCommentsData.backgroundColor}" 
+                               oninput="updateSimpleCommentsField('backgroundColor', this.value)"
+                               style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">Border Color</label>
+                        <input type="color" value="${simpleCommentsData.borderColor}" 
+                               oninput="updateSimpleCommentsField('borderColor', this.value)"
+                               style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">Text Color</label>
+                        <input type="color" value="${simpleCommentsData.textColor}" 
+                               oninput="updateSimpleCommentsField('textColor', this.value)"
+                               style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">Button Color</label>
+                        <input type="color" value="${simpleCommentsData.buttonColor}" 
+                               oninput="updateSimpleCommentsField('buttonColor', this.value)"
+                               style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                `;
+            break;
+
+            case 'disqus':
+                const disqusData = content._disqusData || {
+                    shortname: '',
+                    identifier: '',
+                    title: '',
+                    url: '',
+                    showInPreview: true
+                };
+                
+                specificControls = `
+                    <h4 style="margin: 20px 0 10px 0; color: #333;">
+                        <i class="fas fa-comments" style="margin-right: 8px; color: #2e9fff;"></i>
+                        Disqus Comments Configuration
+                    </h4>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-cog" style="margin-right: 6px;"></i>
+                            Disqus Shortname <span style="color: #dc3545;">*</span>
+                        </label>
+                        <input type="text" value="${disqusData.shortname}" 
+                               oninput="updateDisqusField('shortname', this.value)" 
+                               placeholder="your-site-shortname"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                            <i class="fas fa-info-circle" style="margin-right: 4px;"></i>
+                            Find your shortname in Disqus Admin → Settings → General
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-fingerprint" style="margin-right: 6px;"></i>
+                            Page Identifier (Optional)
+                        </label>
+                        <input type="text" value="${disqusData.identifier}" 
+                               oninput="updateDisqusField('identifier', this.value)" 
+                               placeholder="unique-page-id"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                            Unique identifier for this page. Leave empty to use the page URL.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-heading" style="margin-right: 6px;"></i>
+                            Discussion Title (Optional)
+                        </label>
+                        <input type="text" value="${disqusData.title}" 
+                               oninput="updateDisqusField('title', this.value)" 
+                               placeholder="Custom discussion title"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                            Custom title for the discussion. Leave empty to use the page title.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333;">
+                            <i class="fas fa-link" style="margin-right: 6px;"></i>
+                            Canonical URL (Optional)
+                        </label>
+                        <input type="url" value="${disqusData.url}" 
+                               oninput="updateDisqusField('url', this.value)" 
+                               placeholder="https://example.com/page"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                            Canonical URL for this page. Leave empty to use the current page URL.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; color: #333; display: flex; align-items: center;">
+                            <input type="checkbox" ${disqusData.showInPreview ? 'checked' : ''} 
+                                   onchange="updateDisqusField('showInPreview', this.checked)"
+                                   style="margin-right: 8px;">
+                            <i class="fas fa-eye" style="margin-right: 6px;"></i>
+                            Show preview in page builder
+                        </label>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px; margin-left: 24px;">
+                            Display a preview box in the page builder. Uncheck to show only a minimal placeholder.
+                        </small>
+                    </div>
+                    
+                    <div style="
+                        background: #e3f2fd; 
+                        border: 1px solid #2196f3; 
+                        border-radius: 6px; 
+                        padding: 12px; 
+                        margin: 16px 0;
+                        font-size: 13px;
+                    ">
+                        <div style="display: flex; align-items: flex-start;">
+                            <i class="fas fa-lightbulb" style="color: #2196f3; margin-right: 8px; margin-top: 2px;"></i>
+                            <div>
+                                <strong style="color: #1976d2;">Setup Required:</strong><br>
+                                Make sure you have a Disqus account and have registered your website at 
+                                <a href="https://disqus.com/admin/" target="_blank" style="color: #1976d2;">disqus.com/admin</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            break;
+
             case 'display-assets':
             specificControls = `
                 <div class="form-group">
@@ -5060,10 +6459,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <small class="text-muted">Background color for the logo section</small>
                     </div>
                     <div class="form-group">
-                        <label>Card Border Radius</label>
-                        <input type="text" value="${pressData.cardBorderRadius}" oninput="updatePressCardField('cardBorderRadius', this.value)" placeholder="e.g., 8px, 0px, 15px">
-                    </div>
-                    <div class="form-group">
                         <label>Card Shadow</label>
                         <select oninput="updatePressCardField('cardBoxShadow', this.value)">
                             <option value="none" ${pressData.cardBoxShadow === 'none' ? 'selected' : ''}>No Shadow</option>
@@ -5168,10 +6563,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <div class="form-group">
                         <label>Button Padding</label>
                         <input type="text" value="${sellData.buttonPadding}" oninput="updateSellTicketsField(this.value, 'buttonPadding')">
-                    </div>
-                    <div class="form-group">
-                        <label>Button Border Radius</label>
-                        <input type="text" value="${sellData.buttonRadius}" oninput="updateSellTicketsField(this.value, 'buttonRadius')">
                     </div>
                 `;
             break;
@@ -5453,7 +6844,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                     <div class="form-group">
                         <label>Button URL</label>
-                        <input type="text" value="${investmentTierData.buttonUrl || '#'}" oninput="updateInvestmentTierField(this.value, 'buttonUrl')">
+                        <input type="text" value="${investmentTierData.buttonUrl || '#'}" oninput="updateInvestmentTierField(this.value, 'buttonUrl')" placeholder="Leave as # to auto-redirect to /invest with tier price">
+                        <small style="color: #666; font-size: 0.9em; margin-top: 4px; display: block;">
+                            Leave as "#" to automatically redirect to /invest page with tier price as amount parameter
+                        </small>
                     </div>
                     <div class="form-group">
                         <label>Button Target</label>
@@ -5497,10 +6891,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <div class="form-group">
                         <label>Button Text Color</label>
                         <input type="color" value="${investmentTierData.buttonTextColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'buttonTextColor')">
-                    </div>
-                    <div class="form-group">
-                        <label>Border Radius</label>
-                        <input type="text" value="${investmentTierData.borderRadius || '12px'}" oninput="updateInvestmentTierField(this.value, 'borderRadius')">
                     </div>
                     <div class="form-group">
                         <label>Padding</label>
@@ -5594,10 +6984,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             <div class="form-group">
             <label>Color</label>
             <input type="color" value="${rgbToHex(content.style.color || '#000000')}" oninput="updateStyle(this, 'color')">
-            </div>
-            <div class="form-group">
-            <label>Background Color</label>
-            <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
             </div>`;
         
         propertyControls.innerHTML = `
@@ -5811,6 +7197,119 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                                 <input type="text" value="${getResponsiveStyle(content, 'padding-left', 'mobile') || ''}" 
                                        oninput="updateResponsiveStyle(this, 'padding-left', 'mobile')" 
                                        placeholder="e.g. 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Responsive Border Controls -->
+            <div class="responsive-spacing-group">
+                <h6 class="spacing-header">
+                    <i class="fas fa-border-style"></i> Responsive Border
+                </h6>
+                <div class="device-tabs">
+                    <button type="button" class="device-tab active" data-device="desktop" onclick="switchSpacingDevice(this, 'border')">
+                        <i class="fas fa-desktop"></i> Desktop
+                    </button>
+                    <button type="button" class="device-tab" data-device="tablet" onclick="switchSpacingDevice(this, 'border')">
+                        <i class="fas fa-tablet-alt"></i> Tablet
+                    </button>
+                    <button type="button" class="device-tab" data-device="mobile" onclick="switchSpacingDevice(this, 'border')">
+                        <i class="fas fa-mobile-alt"></i> Mobile
+                    </button>
+                </div>
+                <div class="spacing-controls border-controls">
+                    <div class="device-content active" data-device="desktop">
+                        <div class="border-grid">
+                            <div class="border-item">
+                                <label>Width</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-width', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-width', 'desktop')" 
+                                       placeholder="e.g. 1px">
+                            </div>
+                            <div class="border-item">
+                                <label>Style</label>
+                                <select onchange="updateResponsiveStyle(this, 'border-style', 'desktop')">
+                                    <option value="">None</option>
+                                    <option value="solid" ${getResponsiveStyle(content, 'border-style', 'desktop') === 'solid' ? 'selected' : ''}>Solid</option>
+                                    <option value="dashed" ${getResponsiveStyle(content, 'border-style', 'desktop') === 'dashed' ? 'selected' : ''}>Dashed</option>
+                                    <option value="dotted" ${getResponsiveStyle(content, 'border-style', 'desktop') === 'dotted' ? 'selected' : ''}>Dotted</option>
+                                    <option value="double" ${getResponsiveStyle(content, 'border-style', 'desktop') === 'double' ? 'selected' : ''}>Double</option>
+                                </select>
+                            </div>
+                            <div class="border-item">
+                                <label>Color</label>
+                                <input type="color" value="${getResponsiveStyle(content, 'border-color', 'desktop') || '#000000'}" 
+                                       oninput="updateResponsiveStyle(this, 'border-color', 'desktop')">
+                            </div>
+                            <div class="border-item">
+                                <label>Radius</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-radius', 'desktop') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-radius', 'desktop')" 
+                                       placeholder="e.g. 5px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="tablet">
+                        <div class="border-grid">
+                            <div class="border-item">
+                                <label>Width</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-width', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-width', 'tablet')" 
+                                       placeholder="e.g. 1px">
+                            </div>
+                            <div class="border-item">
+                                <label>Style</label>
+                                <select onchange="updateResponsiveStyle(this, 'border-style', 'tablet')">
+                                    <option value="">None</option>
+                                    <option value="solid" ${getResponsiveStyle(content, 'border-style', 'tablet') === 'solid' ? 'selected' : ''}>Solid</option>
+                                    <option value="dashed" ${getResponsiveStyle(content, 'border-style', 'tablet') === 'dashed' ? 'selected' : ''}>Dashed</option>
+                                    <option value="dotted" ${getResponsiveStyle(content, 'border-style', 'tablet') === 'dotted' ? 'selected' : ''}>Dotted</option>
+                                    <option value="double" ${getResponsiveStyle(content, 'border-style', 'tablet') === 'double' ? 'selected' : ''}>Double</option>
+                                </select>
+                            </div>
+                            <div class="border-item">
+                                <label>Color</label>
+                                <input type="color" value="${getResponsiveStyle(content, 'border-color', 'tablet') || '#000000'}" 
+                                       oninput="updateResponsiveStyle(this, 'border-color', 'tablet')">
+                            </div>
+                            <div class="border-item">
+                                <label>Radius</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-radius', 'tablet') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-radius', 'tablet')" 
+                                       placeholder="e.g. 5px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-content" data-device="mobile">
+                        <div class="border-grid">
+                            <div class="border-item">
+                                <label>Width</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-width', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-width', 'mobile')" 
+                                       placeholder="e.g. 1px">
+                            </div>
+                            <div class="border-item">
+                                <label>Style</label>
+                                <select onchange="updateResponsiveStyle(this, 'border-style', 'mobile')">
+                                    <option value="">None</option>
+                                    <option value="solid" ${getResponsiveStyle(content, 'border-style', 'mobile') === 'solid' ? 'selected' : ''}>Solid</option>
+                                    <option value="dashed" ${getResponsiveStyle(content, 'border-style', 'mobile') === 'dashed' ? 'selected' : ''}>Dashed</option>
+                                    <option value="dotted" ${getResponsiveStyle(content, 'border-style', 'mobile') === 'dotted' ? 'selected' : ''}>Dotted</option>
+                                    <option value="double" ${getResponsiveStyle(content, 'border-style', 'mobile') === 'double' ? 'selected' : ''}>Double</option>
+                                </select>
+                            </div>
+                            <div class="border-item">
+                                <label>Color</label>
+                                <input type="color" value="${getResponsiveStyle(content, 'border-color', 'mobile') || '#000000'}" 
+                                       oninput="updateResponsiveStyle(this, 'border-color', 'mobile')">
+                            </div>
+                            <div class="border-item">
+                                <label>Radius</label>
+                                <input type="text" value="${getResponsiveStyle(content, 'border-radius', 'mobile') || ''}" 
+                                       oninput="updateResponsiveStyle(this, 'border-radius', 'mobile')" 
+                                       placeholder="e.g. 5px">
                             </div>
                         </div>
                     </div>
@@ -6328,7 +7827,7 @@ function updateInvestCtaField(value, field) {
     if (!content._investCtaData) {
         content._investCtaData = {
             buttonText: 'INVEST NOW',
-            buttonUrl: '#',
+            buttonUrl: '/invest',
             buttonTarget: '_self',
             leftValue: '$2.13',
             leftLabel: 'Share Price',
@@ -6417,18 +7916,6 @@ function updateInnerSectionField(value, field) {
     switch (field) {
         case 'backgroundColor':
             content.style.backgroundColor = value;
-            break;
-        case 'borderColor':
-            content.style.borderColor = value;
-            break;
-        case 'borderStyle':
-            content.style.borderStyle = value;
-            break;
-        case 'borderWidth':
-            content.style.borderWidth = value;
-            break;
-        case 'borderRadius':
-            content.style.borderRadius = value;
             break;
         case 'padding':
             content.style.padding = value;
@@ -8658,6 +10145,12 @@ function applyResponsiveStyles() {
           case 'faq':
             data.faqData = content._faqData || {};
             break;
+          case 'simple-comments':
+            data.simpleCommentsData = content._simpleCommentsData || {};
+            break;
+          case 'disqus':
+            data.disqusData = content._disqusData || {};
+            break;
           case 'event-countdown':
             data.countdownData = content._countdownData;
             break;
@@ -8947,7 +10440,7 @@ function applyResponsiveStyles() {
                 // Load from properties if available (for front-end compatibility)
                 let investCtaDefaults = {
                     buttonText: 'INVEST NOW',
-                    buttonUrl: '#',
+                    buttonUrl: '/invest',
                     buttonTarget: '_self',
                     leftValue: '$2.13',
                     leftLabel: 'Share Price',
@@ -9066,7 +10559,30 @@ function applyResponsiveStyles() {
                 break;
 
             case 'faq':
-                actualContent._faqData = data.faqData;
+                actualContent._faqData = data.faqData || data._faqData || { // Support both old and new format
+                    questions: [
+                        {
+                            question: 'How much can I invest?',
+                            answer: 'Accredited investors can invest as much as they want. But if you are NOT an accredited investor, your investment limit depends on either your annual income or net worth, whichever is greater.',
+                            expanded: false
+                        },
+                        {
+                            question: 'Why Should I Invest?',
+                            answer: 'This is a great opportunity to be part of an innovative project.',
+                            expanded: false
+                        }
+                    ],
+                    questionBackgroundColor: '#f3f4f6',
+                    questionTextColor: '#1f2937',
+                    answerBackgroundColor: '#ffffff',
+                    answerTextColor: '#374151',
+                    iconColor: '#059669',
+                    borderRadius: '8px',
+                    spacing: '10px'
+                };
+                actualContent.renderFaq();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
@@ -9429,9 +10945,63 @@ function applyResponsiveStyles() {
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'faq':
-            content._faqData = data.faqData;
+            content._faqData = data.faqData || data._faqData || { // Support both old and new format
+                questions: [
+                    {
+                        question: 'How much can I invest?',
+                        answer: 'Accredited investors can invest as much as they want. But if you are NOT an accredited investor, your investment limit depends on either your annual income or net worth, whichever is greater.',
+                        expanded: false
+                    },
+                    {
+                        question: 'Why Should I Invest?',
+                        answer: 'This is a great opportunity to be part of an innovative project.',
+                        expanded: false
+                    }
+                ],
+                questionBackgroundColor: '#f3f4f6',
+                questionTextColor: '#1f2937',
+                answerBackgroundColor: '#ffffff',
+                answerTextColor: '#374151',
+                iconColor: '#059669',
+                borderRadius: '8px',
+                spacing: '10px'
+            };
+            content.renderFaq();
+            if (data.style) Object.assign(content.style, data.style);
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
-            // ...re-render FAQ if needed...
+            break;
+          case 'simple-comments':
+            content._simpleCommentsData = data.simpleCommentsData || {
+                title: 'Comments',
+                showTitle: true,
+                allowAnonymous: true,
+                moderationEnabled: false,
+                requireEmail: true,
+                maxComments: 100,
+                sortOrder: 'newest',
+                backgroundColor: '#ffffff',
+                borderColor: '#e0e0e0',
+                textColor: '#333333',
+                buttonColor: '#007bff'
+            };
+            content.renderSimpleComments();
+            if (data.style) Object.assign(content.style, data.style);
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
+          case 'disqus':
+            content._disqusData = data.disqusData || {
+                shortname: '',
+                identifier: '',
+                title: '',
+                url: '',
+                showInPreview: true
+            };
+            content.renderDisqus();
+            if (data.style) Object.assign(content.style, data.style);
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'event-countdown':
             content._countdownData = data.countdownData;
@@ -9503,7 +11073,7 @@ function applyResponsiveStyles() {
           case 'inner-section':
             // Restore inner section data
             content._innerSectionData = data.innerSectionData || {
-              backgroundColor: '#f8f9fa',
+              backgroundColor: 'transparent',
               borderColor: '#ddd',
               borderStyle: 'dashed',
               borderWidth: '2px',
@@ -9517,6 +11087,12 @@ function applyResponsiveStyles() {
             // Update the section with saved data
             content.updateColumns(content._innerSectionData.columns);
             content.updateGap(content._innerSectionData.gap);
+            
+            // CRITICAL: Apply background after data is restored
+            if (content.updateBackground && typeof content.updateBackground === 'function') {
+              content.updateBackground();
+              console.log('Applied background for inner-section on reload:', content._innerSectionData);
+            }
             
             // Restore nested components if they exist
             if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
@@ -9605,8 +11181,9 @@ function applyResponsiveStyles() {
                         }
                         break;
                       case 'faq':
-                        if (compData.faqData) {
-                          nestedContent._faqData = compData.faqData;
+                        if (compData.faqData || compData._faqData) {
+                          nestedContent._faqData = compData.faqData || compData._faqData;
+                          nestedContent.renderFaq();
                         }
                         break;
                       case 'sell-tickets':
@@ -9743,6 +11320,16 @@ function applyResponsiveStyles() {
       // Apply responsive CSS after all components are loaded
       setTimeout(() => {
         updateResponsiveCSS();
+        
+        // CRITICAL: Refresh all backgrounds after page load to ensure they appear in canvas
+        const innerSections = document.querySelectorAll('.inner-section-component');
+        innerSections.forEach(section => {
+          const content = getContentElement(section);
+          if (content && content.updateBackground && typeof content.updateBackground === 'function') {
+            content.updateBackground();
+            console.log('Refreshed background for section after full page load:', content._innerSectionData);
+          }
+        });
       }, 100);
     }
 
@@ -9785,6 +11372,247 @@ function applyResponsiveStyles() {
       console.log('=== END SAVE BUILDER STATE ===');
     }
 
+    // Template Functions
+    function showSaveAsTemplateModal() {
+      const modal = document.getElementById('saveAsTemplateModal');
+      modal.style.display = 'flex';
+      
+      // Set default template name based on page name if available
+      const pageNameInput = document.querySelector('[name="name"]');
+      const templateNameInput = document.getElementById('templateName');
+      if (pageNameInput && pageNameInput.value) {
+        templateNameInput.value = pageNameInput.value + ' Template';
+      }
+    }
+
+    function closeSaveAsTemplateModal() {
+      const modal = document.getElementById('saveAsTemplateModal');
+      modal.style.display = 'none';
+      
+      // Clear form
+      document.getElementById('saveAsTemplateForm').reset();
+    }
+
+    function savePageAsTemplate() {
+      const pageId = document.getElementById('page_id').value;
+      const templateName = document.getElementById('templateName').value.trim();
+      const templateDescription = document.getElementById('templateDescription').value.trim();
+      const templateCategory = document.getElementById('templateCategory').value;
+      const isPublic = document.getElementById('templateIsPublic').checked;
+
+      if (!templateName) {
+        alert('Please enter a template name');
+        return;
+      }
+
+      // Get current page state
+      const currentState = serializeBuilder();
+      
+      const formData = new FormData();
+      formData.append('template_name', templateName);
+      formData.append('template_description', templateDescription);
+      formData.append('template_category', templateCategory);
+      if (isPublic) {
+        formData.append('is_public', '1');
+      }
+
+      fetch(`/admins/templates/save-from-page/${pageId}`, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ ' + data.message);
+          closeSaveAsTemplateModal();
+          
+          // Ask if user wants to view templates
+          const viewTemplates = confirm('Template saved successfully! Would you like to view the templates page?');
+          if (viewTemplates) {
+            window.open('/admins/templates', '_blank');
+          }
+        } else {
+          alert('❌ Error saving template: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error saving template: ' + error.message);
+      });
+    }
+
+    // Close modal when clicking outside of it
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('saveAsTemplateModal');
+      if (event.target === modal) {
+        closeSaveAsTemplateModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const saveModal = document.getElementById('saveAsTemplateModal');
+        const applyModal = document.getElementById('applyTemplateModal');
+        if (saveModal.style.display === 'flex') {
+          closeSaveAsTemplateModal();
+        }
+        if (applyModal.style.display === 'flex') {
+          closeApplyTemplateModal();
+        }
+      }
+    });
+
+    // Apply Template Functions
+    let selectedTemplateId = null;
+
+    function showApplyTemplateModal() {
+      const modal = document.getElementById('applyTemplateModal');
+      modal.style.display = 'flex';
+      loadTemplatesForApply();
+    }
+
+    function closeApplyTemplateModal() {
+      const modal = document.getElementById('applyTemplateModal');
+      modal.style.display = 'none';
+      selectedTemplateId = null;
+      
+      // Reset apply button
+      const applyBtn = document.getElementById('applyTemplateBtn');
+      applyBtn.disabled = true;
+      applyBtn.style.opacity = '0.5';
+      
+      // Hide warning
+      document.getElementById('applyWarning').style.display = 'none';
+    }
+
+    function loadTemplatesForApply() {
+      const category = document.getElementById('templateCategoryFilter').value;
+      const container = document.getElementById('templatesContainer');
+      
+      container.innerHTML = '<p style="text-align:center; color:#666;">Loading templates...</p>';
+      
+      fetch(`/admins/templates/get-templates?category=${category}`)
+      .then(response => response.json())
+      .then(templates => {
+        if (templates.length === 0) {
+          container.innerHTML = '<p style="text-align:center; color:#999;">No templates found in this category.</p>';
+          return;
+        }
+        
+        let html = '<div style="display:grid; gap:10px;">';
+        templates.forEach(template => {
+          html += `
+            <div class="template-card" onclick="selectTemplateForApply(${template.id}, '${template.name}')" 
+                 style="border:1px solid #ddd; border-radius:5px; padding:15px; cursor:pointer; transition:all 0.2s;
+                        background:#f8f9fa;" 
+                 onmouseover="this.style.borderColor='#17a2b8'; this.style.background='#e3f2fd';"
+                 onmouseout="this.style.borderColor='#ddd'; this.style.background='#f8f9fa';">
+              <div style="display:flex; justify-content:between; align-items:start;">
+                <div style="flex:1;">
+                  <h6 style="margin:0 0 5px 0; color:#333; font-weight:bold;">${template.name}</h6>
+                  <p style="margin:0 0 8px 0; color:#666; font-size:13px; line-height:1.4;">
+                    ${template.description || 'No description provided'}
+                  </p>
+                  <div style="display:flex; gap:10px; align-items:center;">
+                    <span style="background:#17a2b8; color:white; padding:3px 8px; border-radius:3px; font-size:11px;">
+                      ${template.category ? template.category.charAt(0).toUpperCase() + template.category.slice(1) : 'General'}
+                    </span>
+                    <small style="color:#999;">
+                      <i class="bi bi-download" style="margin-right:3px;"></i>Used ${template.usage_count} times
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        container.innerHTML = '<p style="text-align:center; color:#dc3545;">Error loading templates.</p>';
+      });
+    }
+
+    function selectTemplateForApply(templateId, templateName) {
+      // Remove previous selection
+      document.querySelectorAll('.template-card').forEach(card => {
+        card.style.borderColor = '#ddd';
+        card.style.background = '#f8f9fa';
+        card.style.borderWidth = '1px';
+      });
+      
+      // Highlight selected template
+      event.currentTarget.style.borderColor = '#28a745';
+      event.currentTarget.style.borderWidth = '2px';
+      event.currentTarget.style.background = '#d4edda';
+      
+      selectedTemplateId = templateId;
+      
+      // Enable apply button
+      const applyBtn = document.getElementById('applyTemplateBtn');
+      applyBtn.disabled = false;
+      applyBtn.style.opacity = '1';
+      
+      // Show warning
+      document.getElementById('applyWarning').style.display = 'block';
+    }
+
+    function applySelectedTemplate() {
+      if (!selectedTemplateId) {
+        alert('Please select a template first');
+        return;
+      }
+      
+      if (!confirm('⚠️ Are you sure you want to apply this template? This will replace ALL current page content and cannot be undone.')) {
+        return;
+      }
+      
+      const pageId = document.getElementById('page_id').value;
+      
+      fetch(`/admins/templates/apply-to-page/${selectedTemplateId}/${pageId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ ' + data.message);
+          closeApplyTemplateModal();
+          
+          // Reload page to show applied template content
+          window.location.reload();
+        } else {
+          alert('❌ Error applying template: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error applying template: ' + error.message);
+      });
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+      const saveModal = document.getElementById('saveAsTemplateModal');
+      const applyModal = document.getElementById('applyTemplateModal');
+      if (event.target === saveModal) {
+        closeSaveAsTemplateModal();
+      }
+      if (event.target === applyModal) {
+        closeApplyTemplateModal();
+      }
+    });
+
     window.onload = function() {
 
         const id = document.getElementById('page_id').value;
@@ -9807,8 +11635,16 @@ function applyResponsiveStyles() {
                 deserializeBuilder(state);
                 // Apply responsive CSS after loading
                 updateResponsiveCSS();
+                // Initialize device preview functionality
+                initDevicePreview();
+                // Initialize form data capture
+                initFormDataCapture();
             } else {
                 console.log('No saved page found.');
+                // Initialize device preview even if no saved page
+                initDevicePreview();
+                // Initialize form data capture
+                initFormDataCapture();
             }
             })
             .catch(err => {
@@ -9880,6 +11716,119 @@ function applyResponsiveStyles() {
         if (window.pageData) {
             window.pageData.background_color = color;
         }
+    }
+
+    // FAQ Component Functions
+    function toggleFaqItem(questionElement, index) {
+        // Find the FAQ component
+        const faqComponent = questionElement.closest('.faq-component');
+        if (!faqComponent || !faqComponent._faqData) return;
+        
+        // Toggle the specific item
+        faqComponent._faqData.questions[index].expanded = !faqComponent._faqData.questions[index].expanded;
+        
+        // Close all other items (accordion behavior)
+        faqComponent._faqData.questions.forEach((item, i) => {
+            if (i !== index) {
+                item.expanded = false;
+            }
+        });
+        
+        // Re-render the FAQ
+        faqComponent.renderFaq();
+    }
+
+    function addFaqQuestion() {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._faqData) return;
+        
+        content._faqData.questions.push({
+            question: 'New Question',
+            answer: 'New Answer',
+            expanded: false
+        });
+        
+        content.renderFaq();
+        updatePropertyPanel();
+    }
+
+    function removeFaqQuestion(index) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._faqData) return;
+        
+        if (confirm('Remove this FAQ question?')) {
+            content._faqData.questions.splice(index, 1);
+            content.renderFaq();
+            updatePropertyPanel();
+        }
+    }
+
+    function updateFaqQuestion(index, field, value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._faqData) return;
+        
+        content._faqData.questions[index][field] = value;
+        content.renderFaq();
+    }
+
+    function updateFaqStyle(property, value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._faqData) return;
+        
+        content._faqData[property] = value;
+        content.renderFaq();
+    }
+
+    // Disqus component functions
+    function updateDisqusField(field, value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._disqusData) {
+            content._disqusData = {
+                shortname: '',
+                identifier: '',
+                title: '',
+                url: '',
+                showInPreview: true
+            };
+        }
+        
+        content._disqusData[field] = value;
+        content.renderDisqus();
+        
+        // Update the property panel to reflect changes
+        updatePropertyPanel();
+    }
+
+    // Simple Comments component functions
+    function updateSimpleCommentsField(field, value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._simpleCommentsData) {
+            content._simpleCommentsData = {
+                title: 'Comments',
+                showTitle: true,
+                allowAnonymous: true,
+                moderationEnabled: false,
+                requireEmail: true,
+                maxComments: 100,
+                sortOrder: 'newest',
+                backgroundColor: '#ffffff',
+                borderColor: '#e0e0e0',
+                textColor: '#333333',
+                buttonColor: '#007bff'
+            };
+        }
+        
+        content._simpleCommentsData[field] = value;
+        content.renderSimpleComments();
+        
+        // Update the property panel to reflect changes
+        updatePropertyPanel();
     }
 
     // Floating Structure Panel Functions
@@ -10529,6 +12478,19 @@ function applyResponsiveStyles() {
         });
     });
 </script>
+
+<script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const parallaxElements = document.querySelectorAll("[style*=\\"background-attachment: fixed\\"], [style*=\\"background-attachment:fixed\\"]");
+          parallaxElements.forEach(function(element) {
+              element.style.backgroundAttachment = "fixed";
+              element.style.backgroundPosition = "center center";
+              element.style.backgroundSize = "cover";
+              element.style.backgroundRepeat = "no-repeat";
+              element.classList.add("parallax-element");
+          });
+      });
+      </script>
 
 {{-- modal html for image modal start --}}
 

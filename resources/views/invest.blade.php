@@ -19,16 +19,41 @@ if ($check) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Investment Checkout' : 'Investment Checkout' }}</title><meta content="{{ $setting && $setting->company_name ? 'Invest in ' . $setting->company_name . ' and become part of our growing success story. Secure your shares today through our regulated investment platform.' : 'Secure investment platform offering regulated investment opportunities.' }}" name="description"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Investment Checkout' : 'Investment Checkout' }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>body{background:#f9fafb;}</style>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('auction.css') }}">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Original invest page metadata -->
+    <meta content="{{ $setting && $setting->company_name ? 'Invest in ' . $setting->company_name . ' and become part of our growing success story. Secure your shares today through our regulated investment platform.' : 'Secure investment platform offering regulated investment opportunities.' }}" name="description"/>
     <meta content="{{ $setting && $setting->company_name ? $setting->company_name . ' | Investment Checkout' : 'Investment Checkout' }}" property="og:title"/>
     <meta content="{{ $setting && $setting->company_name ? 'Invest in ' . $setting->company_name . ' and become part of our growing success story. Secure your shares today through our regulated investment platform.' : 'Secure investment platform offering regulated investment opportunities.' }}" property="og:description"/>
     <meta content="{{ $setting && $setting->logo ? asset('uploads/' . $setting->logo) : asset('investment/images/default-investment-image.jpg') }}" property="og:image"/>
     <meta content="{{ $setting && $setting->company_name ? $setting->company_name . ' | Investment Checkout' : 'Investment Checkout' }}" property="twitter:title"/>
     <meta content="{{ $setting && $setting->company_name ? 'Invest in ' . $setting->company_name . ' and become part of our growing success story. Secure your shares today through our regulated investment platform.' : 'Secure investment platform offering regulated investment opportunities.' }}" property="twitter:description"/>
-    <meta content="{{ $setting && $setting->logo ? asset('uploads/' . $setting->logo) : asset('investment/images/default-investment-image.jpg') }}" property="twitter:image"/><meta property="og:type" content="website"/><meta content="summary_large_image" name="twitter:card"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="noindex" name="robots"/><link href="{{ asset('investment/css/main.min.css') }}" rel="stylesheet" type="text/css"/>
-<script src="{{ asset('investment/js/webfont-loader.js') }}" type="text/javascript"></script>
+    <meta content="{{ $setting && $setting->logo ? asset('uploads/' . $setting->logo) : asset('investment/images/default-investment-image.jpg') }}" property="twitter:image"/>
+    <meta property="og:type" content="website"/>
+    <meta content="summary_large_image" name="twitter:card"/>
+    <meta content="noindex" name="robots"/>
+    
+    <!-- Investment page specific styles -->
+    <link href="{{ asset('investment/css/main.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('investment/css/investment-utilities.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ asset('investment/js/webfont-loader.js') }}" type="text/javascript"></script>
     <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
+    
     @if($setting && $setting->favicon)
         <link href="{{ asset('uploads/' . $setting->favicon) }}" rel="shortcut icon" type="image/x-icon"/>
         <link href="{{ asset('uploads/' . $setting->favicon) }}" rel="apple-touch-icon"/>
@@ -48,6 +73,298 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   -moz-osx-font-smoothing: grayscale;
   -o-font-smoothing: antialiased;
 }
+
+/* Custom Investment Form Styles */
+.investment-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  color: #ffffff !important;
+}
+
+.investment-form-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a !important;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.investment-step {
+  transition: all 0.3s ease;
+}
+
+.investment-step.hidden {
+  display: none;
+}
+
+.investment-step h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333 !important;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Amount Tiers */
+.amount-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.tier-option {
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 20px 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+  color: #ffffff !important;
+}
+
+.tier-option:hover {
+  border-color: #007bff;
+  background: #f0f8ff;
+  color: #ffffff !important;
+}
+
+.tier-option.selected {
+  border-color: #007bff;
+  background: #007bff;
+  color: white !important;
+}
+
+.tier-amount {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tier-shares {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.custom-amount-wrapper {
+  grid-column: 1 / -1;
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.custom-amount-wrapper label {
+  display: block;
+  font-weight: 600;
+  color: #333 !important;
+  margin-bottom: 10px;
+}
+
+.custom-amount-wrapper input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background: white !important;
+  color: #ffffff !important;
+}
+
+.custom-shares-display {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666 !important;
+  font-weight: 500;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #333 !important;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background: white !important;
+  color: #ffffff !important;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+  background: white !important;
+  color: #ffffff !important;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #ffffff !important;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Buttons */
+.btn-continue,
+.btn-submit,
+.btn-back {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-continue,
+.btn-submit {
+  background: #007bff;
+  color: white;
+  width: 100%;
+}
+
+.btn-continue:hover:not(:disabled),
+.btn-submit:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+.btn-continue:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-back {
+  background: #6c757d;
+  color: white;
+  margin-right: 15px;
+}
+
+.btn-back:hover {
+  background: #545b62;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+}
+
+/* Success Message */
+.success-message {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-message h3 {
+  color: #28a745 !important;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.investment-summary {
+  background: rgba(248, 249, 250, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 25px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item .label {
+  font-weight: 600;
+  color: #495057 !important;
+}
+
+.summary-item .value {
+  font-weight: 700;
+  color: #007bff !important;
+}
+
+/* Override any inherited white text */
+* {
+  color: inherit;
+}
+
+.investment-form-container *,
+.investment-form-wrapper *,
+.page-wrapper * {
+  color: #ffffff !important;
+}
+
+.investment-form-container input,
+.investment-form-container select,
+.investment-form-container textarea {
+  background: white !important;
+  color: #ffffff !important;
+}
+
+.tier-option.selected * {
+  color: white !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .investment-form-container {
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  .amount-tiers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .btn-back {
+    margin-right: 0;
+    width: 100%;
+  }
+}
 </style>
 
 <!-- Google Search Console -->
@@ -63,7 +380,37 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
 #step1>div.opacity-100:first-child {
     display: none !important;
 }
-</style></head><body style="background-color: {{ $setting && $setting->background_color ? $setting->background_color : '#ffffff' }};"><div class="page-wrapper"><div class="global-styles w-embed"><style>
+</style>
+</head>
+
+<body style="background-color: {{ $website && $website->background_color ? $website->background_color : ($setting && $setting->background_color ? $setting->background_color : '#f9fafb') }}; margin: 0; padding: 0; color: {{ $website && $website->text_color ? $website->text_color : ($setting && $setting->text_color ? $setting->text_color : '#ffffff') }};">
+    @php
+        $url = url()->current();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $check = \App\Models\Website::where('domain', $domain)->first();
+        
+        if ($check) {
+            $header = \App\Models\Header::where('website_id', $check->id)->first();
+            $footer = \App\Models\Footer::where('website_id', $check->id)->first();
+        }
+        
+        // Get dynamic background and text colors
+        $pageBackgroundColor = $website->pages[0]->background_color;
+        $pageTextColor = $website && $website->text_color ? $website->text_color : ($setting && $setting->text_color ? $setting->text_color : '#ffffff');
+    @endphp
+    
+    @if ($header && $header->status == 1)
+        @include('layouts.nav')
+    @endif
+    
+    <main style="margin-top: 6.9rem; background-color: {{ $pageBackgroundColor }};">
+        <div class="container-fluid" style="background-color: {{ $pageBackgroundColor }};">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <!-- Investment Form Container -->
+                    <div class="investment-form-wrapper" style="min-height: calc(100vh - 6.9rem); background-color: {{ $pageBackgroundColor }};">
+
+<div class="page-wrapper" style="background-color: {{ $pageBackgroundColor }}; color: {{ $pageTextColor }};"<div class="global-styles w-embed"><style>
 
 /* Set color style to inherit */
 .inherit-color * {
@@ -171,87 +518,9 @@ a,
       display: none !important;
     }
 }
- 
-.margin-0 {
-  margin: 0rem !important;
-}
-  
-.padding-0 {
-  padding: 0rem !important;
-}
 
-.spacing-clean {
-padding: 0rem !important;
-margin: 0rem !important;
-}
-
-.margin-top {
-  margin-right: 0rem !important;
-  margin-bottom: 0rem !important;
-  margin-left: 0rem !important;
-}
-
-.padding-top {
-  padding-right: 0rem !important;
-  padding-bottom: 0rem !important;
-  padding-left: 0rem !important;
-}
-  
-.margin-right {
-  margin-top: 0rem !important;
-  margin-bottom: 0rem !important;
-  margin-left: 0rem !important;
-}
-
-.padding-right {
-  padding-top: 0rem !important;
-  padding-bottom: 0rem !important;
-  padding-left: 0rem !important;
-}
-
-.margin-bottom {
-  margin-top: 0rem !important;
-  margin-right: 0rem !important;
-  margin-left: 0rem !important;
-}
-
-.padding-bottom {
-  padding-top: 0rem !important;
-  padding-right: 0rem !important;
-  padding-left: 0rem !important;
-}
-
-.margin-left {
-  margin-top: 0rem !important;
-  margin-right: 0rem !important;
-  margin-bottom: 0rem !important;
-}
-  
-.padding-left {
-  padding-top: 0rem !important;
-  padding-right: 0rem !important;
-  padding-bottom: 0rem !important;
-}
-  
-.margin-horizontal {
-  margin-top: 0rem !important;
-  margin-bottom: 0rem !important;
-}
-
-.padding-horizontal {
-  padding-top: 0rem !important;
-  padding-bottom: 0rem !important;
-}
-
-.margin-vertical {
-  margin-right: 0rem !important;
-  margin-left: 0rem !important;
-}
-  
-.padding-vertical {
-  padding-right: 0rem !important;
-  padding-left: 0rem !important;
-}
+/* NOTE: Utility classes moved to external CSS file to prevent conflicts */
+/* See: /investment/css/investment-utilities.css */
 
 /* Apply "..." at 100% width */
 .truncate-width { 
@@ -274,13 +543,303 @@ margin: 0rem !important;
 @if ($header && $header->status == 1)
     @include('layouts.nav')
 @endif
-<main class="main-wrapper"><header id="home" class="section_header3 checkout-hero"><div class="padding-global z-index-2"><div class="container-2"><div class="dmr-checkout-wrapper"><div><div class="hero-text-2 _2"><h1 class="heading-style-h1 is-checkout"><strong>{{ $setting && $setting->company_name ? $setting->company_name : 'Investment' }}</strong> Investment Opportunity<br/></h1><div class="spacer-small"></div><div class="dmr-details-mobile-show"><div class="div-block-132"><div id="w-node-d76ce5db-1098-4f05-302a-51e614ef1974-4eda2ff4" class="div-block-155"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d5-a22a22d5" class="div-block-155"><div class="dmr-common-stock dmr-larger-t text-color-white"><strong>Investment Details</strong></div><div class="div-block-132"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5" class="w-layout-layout quick-stack-5 wf-layout-layout"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22da-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">SHARE PRICE</div><div class="dmr-common-stock-2 fixed-height"><strong>$2.13 USD</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">MIN INVESTMENT</div><div class="dmr-common-stock-2 fixed-height"><strong>$1001.10 USD</strong></div></div><div class="div-block-46 _3"><a href="#" class="close-2 w-inline-block"><div>X</div></a><div>Minimum investment is $504 + 1.5% transaction fee</div></div></div></div><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22ee-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">OFFERING TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>Equity</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">ASSET TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>Series C-1 Preferred Stock</strong></div></div></div></div></div></div><div class="div-block-130"><div class="investor_info_wrap text-size-xsmall link-light"><a aria-label="See full Form 1A about the offering." href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825003758/0001683168-25-003758-index.htm" target="_blank" class="investor_info_link text-link-inherit">Form 1A</a><a href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825006276/ginandluck_253g2.htm" aria-label="Investor Education" target="_blank" class="investor_info_link text-link-inherit">1A Supplement</a></div><div class="countdown_checkout_wrapper"><div countdown-wrapper="1" class="countdown_wrapper is_checkout"><div class="countdown_title is_checkout"><strong>FInal Day to Invest is 9/27</strong></div><div id="js-clock" class="timer_wrap"><div id="w-node-_20a0a116-730f-65a2-befe-802bf563b40a-a22a22d5" class="timer_cell"><div id="days" class="timer_number smaller">0</div><div class="timer_label _3">Days</div></div><div class="timer_cell"><div id="hours" class="timer_number smaller">0</div><div class="timer_label _3">Hours</div></div><div class="timer_cell last-m"><div id="minutes" class="timer_number smaller">0</div><div class="timer_label _3">Minutes</div></div><div class="timer_cell mobil-hide"><div id="seconds" class="timer_number smaller">0</div><div class="timer_label _3">Seconds</div></div></div></div></div></div></div></div></div></div></div><div class="w-layout-grid virtuix-checkout-grid"><div id="root" class="react-wrapper w-node-d76ce5db-1098-4f05-302a-51e614ef19a6-4eda2ff4"></div><div id="w-node-d76ce5db-1098-4f05-302a-51e614ef19a7-4eda2ff4" class="dmr-investment-details"><div class="w-layout-grid grid-35"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d5-a22a22d5" class="div-block-155"><div class="dmr-common-stock dmr-larger-t text-color-white"><strong>Investment Details</strong></div><div class="div-block-132"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5" class="w-layout-layout quick-stack-5 wf-layout-layout"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22da-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">SHARE PRICE</div><div class="dmr-common-stock-2 fixed-height"><strong>$2.13 USD</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">MIN INVESTMENT</div><div class="dmr-common-stock-2 fixed-height"><strong>$1001.10 USD</strong></div></div><div class="div-block-46 _3"><a href="#" class="close-2 w-inline-block"><div>X</div></a><div>Minimum investment is $504 + 1.5% transaction fee</div></div></div></div><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22ee-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">OFFERING TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>Equity</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">ASSET TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>Series C-1 Preferred Stock</strong></div></div></div></div></div></div><div class="div-block-130"><div class="investor_info_wrap text-size-xsmall link-light"><a aria-label="See full Form 1A about the offering." href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825003758/0001683168-25-003758-index.htm" target="_blank" class="investor_info_link text-link-inherit">Form 1A</a><a href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825006276/ginandluck_253g2.htm" aria-label="Investor Education" target="_blank" class="investor_info_link text-link-inherit">1A Supplement</a></div><div class="countdown_checkout_wrapper"><div countdown-wrapper="1" class="countdown_wrapper is_checkout"><div class="countdown_title is_checkout"><strong>FInal Day to Invest is 9/27</strong></div><div id="js-clock" class="timer_wrap"><div id="w-node-_20a0a116-730f-65a2-befe-802bf563b40a-a22a22d5" class="timer_cell"><div id="days" class="timer_number smaller">0</div><div class="timer_label _3">Days</div></div><div class="timer_cell"><div id="hours" class="timer_number smaller">0</div><div class="timer_label _3">Hours</div></div><div class="timer_cell last-m"><div id="minutes" class="timer_number smaller">0</div><div class="timer_label _3">Minutes</div></div><div class="timer_cell mobil-hide"><div id="seconds" class="timer_number smaller">0</div><div class="timer_label _3">Seconds</div></div></div></div></div></div></div></div><div class="dmr-details-padding last-list"><div class="dmr-common-stock text-color-white"><strong>Additional Information</strong></div><ul role="list" class="list-3"></ul><div class="disclaimer-dmr">I consent to receiving reports, promotional emails and other commercial electronic messages from {{ $setting && $setting->company_name ? $setting->company_name : 'the Company' }} or from other service providers on behalf of {{ $setting && $setting->company_name ? $setting->company_name : 'the Company' }}.</div><div class="disclaimer-dmr">The amount of bonus shares will be represented in your Direct Registration Statement once shares are issued. The bonus shares will NOT be displayed in your DealMaker account dashboard.</div></div></div></div></div></div></div></div></header></main><footer class="footer_component"><div id="footer" class="padding-global"><div class="container-large"><div class="padding-vertical padding-xxlarge"><div class="div-block-169"><a href="/" dmr-utm-forward="1" aria-label="Go to Homepage" class="footer_logo w-nav-brand">
-        @if($header && $header->logo)
-            <img src="{{ asset('uploads/' . $header->logo) }}" loading="eager" width="250" alt="{{ $setting && $setting->company_name ? $setting->company_name : 'Company' }} logo." class="image-46"/>
-        @else
-            <div class="company-name" style="color: white; font-size: 24px; font-weight: bold;">{{ $setting && $setting->company_name ? $setting->company_name : 'Investment Platform' }}</div>
-        @endif
-    </a><p class="paragraph-3">[<a href="https://policies.google.com/privacy" aria-label="Go to PrivacyPolicy" target="_blank" class="link-3">Privacy Policy</a>]</p></div><div class="padding-top padding-medium"><div class="footer2_bottom-wrapper"><div class="w-layout-grid footer2_legal-list"><div class="footer2_credit-text">An offering statement regarding this offering has been filed with the SEC. The SEC has qualified that offering statement, which only means that the company may make sales of the securities described by the offering statement. The offering circular that is part of that offering statement is available <a href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825000119/ginluck_1aa1.htm" target="_blank" class="link-9">here</a>.<br/><br/>This website may contain forward-looking statements and information relating to, among other things, the company, its business plan and strategy, and its industry. These forward-looking statements are based on the beliefs of, assumptions made by, and information currently available to the company’s management. When used in the offering materials, the words “estimate,” “project,” “believe,” “anticipate,” “intend,” “expect” and similar expressions are intended to identify forward-looking statements. These statements reflect management’s current views with respect to future events and are subject to risks and uncertainties that could cause the company’s actual results to differ materially from those contained in the forward-looking statements. Investors are cautioned not to place undue reliance on these forward-looking statements, which speak only as of the date on which they are made. The company does not undertake any obligation to revise or update these forward-looking statements to reflect events or circumstances after such date or to reflect the occurrence of unanticipated events.</div><div class="w-layout-grid grid-4"><div class="w-layout-grid grid-2"><div id="w-node-_09590d8d-0d99-05d6-cbe7-c946f15c2b26-f15c2b06" class="footer-contact"><div class="w-embed"><svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M64 96c-17.7 0-32 14.3-32 32v39.9L227.6 311.3c16.9 12.4 39.9 12.4 56.8 0L480 167.9V128c0-17.7-14.3-32-32-32H64zM32 207.6V384c0 17.7 14.3 32 32 32H448c17.7 0 32-14.3 32-32V207.6L303.3 337.1c-28.2 20.6-66.5 20.6-94.6 0L32 207.6zM0 128C0 92.7 28.7 64 64 64H448c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/></svg></div><div>Investor Relations:</div><div class="reason-text"><h3 class="heading-style-h5-2"><a href="#" aria-label="Mail {{ $setting && $setting->company_name ? $setting->company_name : 'Company' }}" class="link-2 text-color-white">{{ $setting && $setting->company_email ? $setting->company_email : 'invest@company.com' }}</a></h3></div></div></div><div id="w-node-_09590d8d-0d99-05d6-cbe7-c946f15c2b2e-f15c2b06" class="w-layout-grid footer4_social-list">@if($setting && $setting->facebook_url)
+<main class="main-wrapper" style="background-color: {{ $pageBackgroundColor }}"><header id="home" class="section_header3 checkout-hero"><div class="padding-global z-index-2"><div class="container-2"><div class="dmr-checkout-wrapper"><div><div class="hero-text-2 _2"><h1 class="heading-style-h1 is-checkout"><strong>{{ $setting && $setting->company_name ? $setting->company_name : 'Investment' }}</strong> Investment Opportunity<br/></h1><div class="spacer-small"></div><div class="dmr-details-mobile-show"><div class="div-block-132"><div id="w-node-d76ce5db-1098-4f05-302a-51e614ef1974-4eda2ff4" class="div-block-155"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d5-a22a22d5" class="div-block-155"><div class="dmr-common-stock dmr-larger-t text-color-white"><strong>Investment Details</strong></div><div class="div-block-132"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5" class="w-layout-layout quick-stack-5 wf-layout-layout"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22da-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">SHARE PRICE</div><div class="dmr-common-stock-2 fixed-height"><strong>${{ $website && $website->share_price ? number_format($website->share_price, 2) : ($setting && $setting->share_price ? number_format($setting->share_price, 2) : '1.00') }} USD</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">MIN INVESTMENT</div><div class="dmr-common-stock-2 fixed-height"><strong>${{ $website && $website->min_investment ? number_format($website->min_investment, 2) : ($setting && $setting->min_investment ? number_format($setting->min_investment, 2) : '1000.00') }} USD</strong></div></div><div class="div-block-46 _3"><a href="#" class="close-2 w-inline-block"><div>X</div></a><div>{{ $website && $website->investment_note ? $website->investment_note : ($setting && $setting->investment_note ? $setting->investment_note : 'Minimum investment amount plus applicable transaction fees') }}</div></div></div></div><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22ee-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">OFFERING TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>{{ $website && $website->offering_type ? $website->offering_type : ($setting && $setting->offering_type ? $setting->offering_type : 'Equity') }}</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">ASSET TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong></div></div></div></div></div></div><div class="div-block-130">@if(($website && $website->investment_documents) || ($setting && $setting->investment_documents))<div class="investor_info_wrap text-size-xsmall link-light">@php $docs = $website && $website->investment_documents ? json_decode($website->investment_documents, true) : json_decode($setting->investment_documents, true); @endphp @if(is_array($docs)) @foreach($docs as $doc) <a aria-label="{{ $doc['name'] ?? 'Investment Document' }}" href="{{ $doc['url'] ?? '#' }}" target="_blank" class="investor_info_link text-link-inherit">{{ $doc['name'] ?? 'Document' }}</a> @endforeach @endif</div>@endif @if(($website && $website->investment_deadline) || ($setting && $setting->investment_deadline))<div class="countdown_checkout_wrapper"><div countdown-wrapper="1" class="countdown_wrapper is_checkout"><div class="countdown_title is_checkout"><strong>{{ $website && $website->deadline_text ? $website->deadline_text : ($setting && $setting->deadline_text ? $setting->deadline_text : 'Investment Deadline') }}</strong></div><div id="js-clock" class="timer_wrap"><div id="w-node-_20a0a116-730f-65a2-befe-802bf563b40a-a22a22d5" class="timer_cell"><div id="days" class="timer_number smaller">0</div><div class="timer_label _3">Days</div></div><div class="timer_cell"><div id="hours" class="timer_number smaller">0</div><div class="timer_label _3">Hours</div></div><div class="timer_cell last-m"><div id="minutes" class="timer_number smaller">0</div><div class="timer_label _3">Minutes</div></div><div class="timer_cell mobil-hide"><div id="seconds" class="timer_number smaller">0</div><div class="timer_label _3">Seconds</div></div></div></div></div>@endif</div></div></div></div></div></div><div class="w-layout-grid virtuix-checkout-grid">
+    <!-- Custom Investment Form (replacing DealMaker React component) -->
+    <div class="investment-form-container w-node-d76ce5db-1098-4f05-302a-51e614ef19a6-4eda2ff4">
+        <div class="investment-form-wrapper">
+            <h2 class="investment-form-title" style="color: #000 !important;">Complete Your Investment</h2>
+            
+            <!-- Investment Amount Selection -->
+            <div class="investment-step" id="amount-step">
+                <h3>Select Investment Amount</h3>
+                <div class="amount-tiers">
+                    @php
+                        // Handle JSON format for investment tiers
+                        $tiersData = null;
+                        if ($website && $website->investment_tiers) {
+                            $tiersData = json_decode($website->investment_tiers, true);
+                        } elseif ($setting && $setting->investment_tiers) {
+                            $tiersData = json_decode($setting->investment_tiers, true);
+                        }
+                        
+                        // Extract amounts from tier data or use defaults
+                        if ($tiersData && is_array($tiersData)) {
+                            $tiers = array_map(function($tier) {
+                                return is_array($tier) ? (float)$tier['amount'] : (float)$tier;
+                            }, $tiersData);
+                        } else {
+                            $tiers = [1000, 2500, 5000, 10000];
+                        }
+                        
+                        $sharePrice = $website && $website->share_price ? (float)$website->share_price : 
+                                     ($setting && $setting->share_price ? (float)$setting->share_price : 1.00);
+                        $minInvestment = $website && $website->min_investment ? (float)$website->min_investment : 
+                                        ($setting && $setting->min_investment ? (float)$setting->min_investment : 1000);
+                    @endphp
+                    
+                    @foreach($tiers as $tier)
+                        <div class="tier-option" data-amount="{{ $tier }}">
+                            <div class="tier-amount">${{ number_format($tier) }}</div>
+                            <div class="tier-shares">{{ number_format($tier / $sharePrice) }} shares</div>
+                        </div>
+                    @endforeach
+                    
+                    <div class="custom-amount-wrapper">
+                        <label for="custom-amount">Custom Amount (Min: ${{ number_format($minInvestment) }})</label>
+                        <input type="number" id="custom-amount" min="{{ $minInvestment }}" step="1" placeholder="Enter amount">
+                        <div class="custom-shares-display"></div>
+                    </div>
+                </div>
+                
+                <button class="btn-continue" id="amount-continue" disabled>Continue</button>
+            </div>
+            
+            <!-- Investor Information Step -->
+            <div class="investment-step hidden" id="info-step">
+                <h3>Investor Information</h3>
+                <form id="investor-form">
+                    <div class="form-group">
+                        <label for="investor_type">Pick an investor type *</label>
+                        <select id="investor_type" name="investor_type" required>
+                            <option value="">Select investor type</option>
+                            <option value="individual">Myself/an individual</option>
+                            <option value="joint">Joint (more than one individual)</option>
+                            <option value="corporation">Corporation</option>
+                            <option value="trust">Trust</option>
+                            <option value="ira">IRA</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Individual Investor Fields -->
+                    <div id="individual-fields" class="investor-type-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="investor_name">Full Name *</label>
+                            <input type="text" id="investor_name" name="investor_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="date_of_birth">Date of Birth *</label>
+                            <input type="date" id="date_of_birth" name="date_of_birth">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ssn">Social Security Number *</label>
+                            <input type="text" id="ssn" name="ssn" placeholder="XXX-XX-XXXX">
+                        </div>
+                    </div>
+                    
+                    <!-- Joint Account Fields -->
+                    <div id="joint-fields" class="investor-type-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="primary_name">Primary Account Holder Name *</label>
+                            <input type="text" id="primary_name" name="primary_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="primary_dob">Primary Holder Date of Birth *</label>
+                            <input type="date" id="primary_dob" name="primary_dob">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="primary_ssn">Primary Holder SSN *</label>
+                            <input type="text" id="primary_ssn" name="primary_ssn" placeholder="XXX-XX-XXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="secondary_name">Secondary Account Holder Name *</label>
+                            <input type="text" id="secondary_name" name="secondary_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="secondary_dob">Secondary Holder Date of Birth *</label>
+                            <input type="date" id="secondary_dob" name="secondary_dob">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="secondary_ssn">Secondary Holder SSN *</label>
+                            <input type="text" id="secondary_ssn" name="secondary_ssn" placeholder="XXX-XX-XXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="joint_type">Joint Account Type *</label>
+                            <select id="joint_type" name="joint_type">
+                                <option value="">Select joint type</option>
+                                <option value="jtwros">Joint Tenants with Rights of Survivorship</option>
+                                <option value="tenants_common">Tenants in Common</option>
+                                <option value="community_property">Community Property</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Corporation Fields -->
+                    <div id="corporation-fields" class="investor-type-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="corporation_name">Corporation Name *</label>
+                            <input type="text" id="corporation_name" name="corporation_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ein">Federal Tax ID (EIN) *</label>
+                            <input type="text" id="ein" name="ein" placeholder="XX-XXXXXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="incorporation_state">State of Incorporation *</label>
+                            <input type="text" id="incorporation_state" name="incorporation_state">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="authorized_signatory">Authorized Signatory Name *</label>
+                            <input type="text" id="authorized_signatory" name="authorized_signatory">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="signatory_title">Signatory Title *</label>
+                            <input type="text" id="signatory_title" name="signatory_title" placeholder="e.g., CEO, President">
+                        </div>
+                    </div>
+                    
+                    <!-- Trust Fields -->
+                    <div id="trust-fields" class="investor-type-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="trust_name">Trust Name *</label>
+                            <input type="text" id="trust_name" name="trust_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trust_date">Trust Date *</label>
+                            <input type="date" id="trust_date" name="trust_date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trustee_name">Trustee Name *</label>
+                            <input type="text" id="trustee_name" name="trustee_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trustee_ssn">Trustee SSN/EIN *</label>
+                            <input type="text" id="trustee_ssn" name="trustee_ssn" placeholder="XXX-XX-XXXX or XX-XXXXXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trust_type">Trust Type *</label>
+                            <select id="trust_type" name="trust_type">
+                                <option value="">Select trust type</option>
+                                <option value="revocable">Revocable Trust</option>
+                                <option value="irrevocable">Irrevocable Trust</option>
+                                <option value="charitable">Charitable Trust</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- IRA Fields -->
+                    <div id="ira-fields" class="investor-type-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="ira_holder_name">IRA Account Holder Name *</label>
+                            <input type="text" id="ira_holder_name" name="ira_holder_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ira_holder_dob">Account Holder Date of Birth *</label>
+                            <input type="date" id="ira_holder_dob" name="ira_holder_dob">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ira_holder_ssn">Account Holder SSN *</label>
+                            <input type="text" id="ira_holder_ssn" name="ira_holder_ssn" placeholder="XXX-XX-XXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ira_type">IRA Type *</label>
+                            <select id="ira_type" name="ira_type">
+                                <option value="">Select IRA type</option>
+                                <option value="traditional">Traditional IRA</option>
+                                <option value="roth">Roth IRA</option>
+                                <option value="sep">SEP IRA</option>
+                                <option value="simple">SIMPLE IRA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="custodian_name">IRA Custodian Name *</label>
+                            <input type="text" id="custodian_name" name="custodian_name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ira_account_number">IRA Account Number *</label>
+                            <input type="text" id="ira_account_number" name="ira_account_number">
+                        </div>
+                    </div>
+                    
+                    <!-- Common Fields for All Types -->
+                    <div class="common-fields">
+                        <!-- Hidden field for main investor name (populated by JavaScript) -->
+                        <input type="hidden" id="main_investor_name" name="investor_name">
+                        
+                        <div class="form-group">
+                            <label for="investor_email">Email Address *</label>
+                            <input type="email" id="investor_email" name="investor_email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="investor_phone">Phone Number</label>
+                            <input type="tel" id="investor_phone" name="investor_phone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="investment_amount">Investment Amount *</label>
+                            <input type="number" id="investment_amount" name="investment_amount" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="investor_address">Address</label>
+                            <textarea id="investor_address" name="investor_address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <label style="color: #000 !important;">
+                                <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
+                                I agree to the terms and conditions and consent to receiving investment communications
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-back" id="info-back">Back</button>
+                        <button type="submit" class="btn-submit">Submit Investment</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Success Step -->
+            <div class="investment-step hidden" id="success-step">
+                <div class="success-message">
+                    <h3>Investment Submitted Successfully!</h3>
+                    <p>Thank you for your investment. You will receive a confirmation email shortly.</p>
+                    <div class="investment-summary">
+                        <div class="summary-item">
+                            <span class="label">Investment Amount:</span>
+                            <span class="value" id="final-amount"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Number of Shares:</span>
+                            <span class="value" id="final-shares"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="w-node-d76ce5db-1098-4f05-302a-51e614ef19a7-4eda2ff4" class="dmr-investment-details"><div class="w-layout-grid grid-35"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d5-a22a22d5" class="div-block-155"><div class="dmr-common-stock dmr-larger-t text-color-white"><strong>Investment Details</strong></div><div class="div-block-132"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5" class="w-layout-layout quick-stack-5 wf-layout-layout"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22da-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">SHARE PRICE</div><div class="dmr-common-stock-2 fixed-height"><strong>${{ $website && $website->share_price ? number_format($website->share_price, 2) : ($setting && $setting->share_price ? number_format($setting->share_price, 2) : '1.00') }} USD</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">MIN INVESTMENT</div><div class="dmr-common-stock-2 fixed-height"><strong>${{ $website && $website->min_investment ? number_format($website->min_investment, 2) : ($setting && $setting->min_investment ? number_format($setting->min_investment, 2) : '1000.00') }} USD</strong></div></div><div class="div-block-46 _3"><a href="#" class="close-2 w-inline-block"><div>X</div></a><div>{{ $website && $website->investment_note ? $website->investment_note : ($setting && $setting->investment_note ? $setting->investment_note : 'Minimum investment amount plus applicable transaction fees') }}</div></div></div></div><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22ee-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">OFFERING TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>{{ $website && $website->offering_type ? $website->offering_type : ($setting && $setting->offering_type ? $setting->offering_type : 'Equity') }}</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small">ASSET TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong>{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong></div></div></div></div></div></div><div class="div-block-130">@if(($website && $website->investment_documents) || ($setting && $setting->investment_documents))<div class="investor_info_wrap text-size-xsmall link-light">@php $docs = $website && $website->investment_documents ? json_decode($website->investment_documents, true) : json_decode($setting->investment_documents, true); @endphp @if(is_array($docs)) @foreach($docs as $doc) <a aria-label="{{ $doc['name'] ?? 'Investment Document' }}" href="{{ $doc['url'] ?? '#' }}" target="_blank" class="investor_info_link text-link-inherit">{{ $doc['name'] ?? 'Document' }}</a> @endforeach @endif</div>@endif @if(($website && $website->investment_deadline) || ($setting && $setting->investment_deadline))<div class="countdown_checkout_wrapper"><div countdown-wrapper="1" class="countdown_wrapper is_checkout"><div class="countdown_title is_checkout"><strong>{{ $website && $website->deadline_text ? $website->deadline_text : ($setting && $setting->deadline_text ? $setting->deadline_text : 'Investment Deadline') }}</strong></div><div id="js-clock" class="timer_wrap"><div id="w-node-_20a0a116-730f-65a2-befe-802bf563b40a-a22a22d5" class="timer_cell"><div id="days" class="timer_number smaller">0</div><div class="timer_label _3">Days</div></div><div class="timer_cell"><div id="hours" class="timer_number smaller">0</div><div class="timer_label _3">Hours</div></div><div class="timer_cell last-m"><div id="minutes" class="timer_number smaller">0</div><div class="timer_label _3">Minutes</div></div><div class="timer_cell mobil-hide"><div id="seconds" class="timer_number smaller">0</div><div class="timer_label _3">Seconds</div></div></div></div></div>@endif</div></div><div class="dmr-details-padding last-list"><div class="dmr-common-stock text-color-white"><strong>Additional Information</strong></div><ul role="list" class="list-3"></ul><div class="disclaimer-dmr">{{ $website && $website->privacy_consent ? $website->privacy_consent : ($setting && $setting->privacy_consent ? $setting->privacy_consent : 'I consent to receiving reports, promotional emails and other commercial electronic messages from ' . ($setting && $setting->company_name ? $setting->company_name : 'the Company') . ' or from other service providers on behalf of ' . ($setting && $setting->company_name ? $setting->company_name : 'the Company') . '.') }}</div><div class="disclaimer-dmr">{{ $website && $website->investment_disclaimer ? $website->investment_disclaimer : ($setting && $setting->investment_disclaimer ? $setting->investment_disclaimer : 'Investment details and disclosures are available in the offering documents.') }}</div></div></div></div></div></div></div></div></header></main>
+    @if($footer)
+        {!! $footer->content !!}
+    @endif
+
+
+
+<div class="w-layout-grid footer2_legal-list"><div class="footer2_credit-text"> ,   <a href="https://www.sec.gov/Archives/edgar/data/1748169/000168316825000119/ginluck_1aa1.htm" target="_blank" class="link-9">here</a>.<br/><br/>  These forward-looking statements are based on the beliefs of, assumptions made by, and information currently available to the company’s management. When used in the offering materials, the words “estimate,” “project,” “believe,” “anticipate,” “intend,” “expect” and similar expressions are intended to identify forward-looking statements. These statements reflect management’s current views with respect to future events and are subject to risks and uncertainties that could cause the company’s actual results to differ materially from those contained in the forward-looking statements. Investors are cautioned not to place undue reliance on these forward-looking statements, which speak only as of the date on which they are made. The company does not undertake any obligation to revise or update these forward-looking statements to reflect events or circumstances after such date or to reflect the occurrence of unanticipated events.</div><div class="w-layout-grid grid-4"><div class="w-layout-grid grid-2"><div id="w-node-_09590d8d-0d99-05d6-cbe7-c946f15c2b26-f15c2b06" class="footer-contact"><div class="w-embed"><svg xmlns="http://www.w3.org/2000/svg" height="32" width="32" viewBox="0 0 512 512"><!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M64 96c-17.7 0-32 14.3-32 32v39.9L227.6 311.3c16.9 12.4 39.9 12.4 56.8 0L480 167.9V128c0-17.7-14.3-32-32-32H64zM32 207.6V384c0 17.7 14.3 32 32 32H448c17.7 0 32-14.3 32-32V207.6L303.3 337.1c-28.2 20.6-66.5 20.6-94.6 0L32 207.6zM0 128C0 92.7 28.7 64 64 64H448c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/></svg></div><div></div><div class="reason-text"><h3 class="heading-style-h5-2"><a href="#" aria-label="Mail {{ $setting && $setting->company_name ? $setting->company_name : 'Company' }}" class="link-2 text-color-white">{{ $setting && $setting->company_email ? $setting->company_email : 'invest@company.com' }}</a></h3></div></div></div><div id="w-node-_09590d8d-0d99-05d6-cbe7-c946f15c2b2e-f15c2b06" class="w-layout-grid footer4_social-list">@if($setting && $setting->facebook_url)
         <a aria-label="Go to Facebook" href="{{ $setting->facebook_url }}" target="_blank" class="footer4_social-link w-inline-block">
     @else
         <a aria-label="Go to Facebook" href="#" class="footer4_social-link w-inline-block" style="display: none;">
@@ -298,37 +857,7 @@ margin: 0rem !important;
         <a aria-label="Go to X" href="#" class="footer4_social-link w-inline-block" style="display: none;">
     @endif<div class="icon-embed-xsmall w-embed"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17.1761 4H19.9362L13.9061 10.7774L21 20H15.4456L11.0951 14.4066L6.11723 20H3.35544L9.80517 12.7508L3 4H8.69545L12.6279 9.11262L17.1761 4ZM16.2073 18.3754H17.7368L7.86441 5.53928H6.2232L16.2073 18.3754Z" fill="CurrentColor"/>
-</svg></div></a></div></div></div></div></div></div></div></div><div class="reach-template-2024--powered_by_dm_wrap"><a aria-label="Go to DealMaker" href="https://dealmaker.tech" target="_blank" class="reach-template-2024--powered_by_dm_link w-inline-block"><img width="160" height="51.5" alt="DealMaker logo" src="https://cdn.prod.website-files.com/65bbbcaef2927fbb7ef5844d/685d37052ca06fcc8c3d9788_60a781ab391de3142cd53e14d62ce0cc_dealmaker_logo-18.webp" loading="lazy" class="reach-template-2024--powered_by_dm_logo"/></a></div></footer></div><div id="tax-notice" class="tax-notice w-embed"><p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000"><strong>Government-required identity &amp; anti-fraud checks secure all transactions. Why Do We Need This?</strong></span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000"><strong>Since this is a financial transaction we are required by regulators like the SEC &amp; US Department of Treasury to perform AML (Anti Money Laundering) &amp; KYC (Know Your Customer) verification in order to avoid money laundering, fraud, and identity theft.&nbsp;</strong></span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">Our broker-dealer, DealMaker Securities, LLC uses a Taxpayer Identification Number (TIN), for example Social Security Number (SSN), Employment Identification Number (EIN), Individual Tax Identification Number (ITIN) to fulfill its responsibilities with its Anti-Money Laundering (AML) Program as required by the Bank Secrecy Act (BSA) and its implementing regulations and FINRA Rule 3310 (AML Compliance Program) by requesting, reviewing, and verifying data and documentation provided during securities transactions, prior to acceptance.&nbsp;</span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">Here&rsquo;s why they are required for startup investments:</span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">1.</span></span></span></p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">Preventing Illegal Activities: Money laundering involves the concealment or disguise of money derived from criminal origins by processing it through a single or series of transactions to make it appear as if it comes from a legal, legitimate source or constitute legitimate assets. Having a verification process, whereby investors are reviewed, checked against governmental databases, and all investment funds are evaluated, startups can feel confident they are protecting themselves from civil and criminal penalties and preventing terrorist financing, drug trafficking, tax evasion, corruption, fraud, and other financial crimes.</span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">2.</span></span></span></p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">Identity Verification/Data: KYC processes help collect essential pieces of data and verify the identity and authority of the investors, ensuring that they are indeed who they claim to be and are authorized to process the transaction they seek to make. This protects against identity theft and fraud.</span></span></span></p>
-
-<p>&nbsp;</p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">3.</span></span></span></p>
-
-<p><span style="font-size:14px"><span style="font-family:Arial,sans-serif"><span style="color:#000000">Regulatory Compliance: Compliance with AML and KYC requirements is mandatory in many jurisdictions. Failure to comply can lead to severe civil penalties, including heavy fines, and even criminal penalties.</span></span></span></p></div>
+</svg></div></a></div></div></div></div></div></div></div></div></footer></div>
 
 {{-- Replace external scripts with local jQuery --}}
 <script src="{{ asset('investment/js/jquery-3.5.1.min.js') }}" type="text/javascript"></script>
@@ -403,60 +932,314 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
 ></script>
 --}}
 
-<!-- Checkout Settings -->
-<script>  
-  window.checkoutSettings = {
-    dealId: {{ $setting && $setting->deal_id ? $setting->deal_id : 'null' }},
-    disableRadioButtons: false,
-    investmentTiers: {{ $setting && $setting->investment_tiers ? json_encode(explode(',', $setting->investment_tiers)) : '[1000, 2500, 5000, 10000]' }},
-    sharePrice: {{ $setting && $setting->share_price ? $setting->share_price : '1.00' }},
-    minInvestment: {{ $setting && $setting->min_investment ? $setting->min_investment : '1000.00' }},
-    sharePriceMinFractionDigits: 2,
-    sharePriceMaxFractionDigits: 2,
-    disclaimer: '*All bonus shares (if any) will be issued after the completion or termination of this Offering, and therefore they will not be displayed under your investment amount.',
-    resumeInvestmentText: 'Already started an investment in this round?',
-    enableManaged: true,
-    adjustScrollOfset: 90,
-    wording: {
-      price: 'Share price',
-      perks: 'Shares',
-      shares: 'Shares'
-    },
-    logoUrl: '{{ $header && $header->logo ? asset("uploads/" . $header->logo) : asset("investment/images/default-logo.png") }}',
-    buttonColor: '{{ $setting && $setting->button_color ? $setting->button_color : "#007bff" }}',
-    brandColor: '{{ $setting && $setting->brand_color ? $setting->brand_color : "#000" }}',
-    companyName: '{{ $setting && $setting->company_name ? addslashes($setting->company_name) : "Investment Platform" }}',
-    companyEmail: '{{ $setting && $setting->company_email ? $setting->company_email : "invest@company.com" }}'
-  };
-  
-  // Debug logging to check for undefined values
-  console.log('Checkout Settings:', window.checkoutSettings);
-  
-  // Ensure wording object is properly defined
-  if (!window.checkoutSettings.wording) {
-    window.checkoutSettings.wording = {
-      price: 'Share price',
-      perks: 'Shares', 
-      shares: 'Shares'
+<!-- Custom Investment Form JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Investment form configuration
+    const config = {
+        sharePrice: {{ $website && $website->share_price ? $website->share_price : ($setting && $setting->share_price ? $setting->share_price : 1.00) }},
+        minInvestment: {{ $website && $website->min_investment ? $website->min_investment : ($setting && $setting->min_investment ? $setting->min_investment : 1000) }},
+        companyName: '{{ $setting && $setting->company_name ? addslashes($setting->company_name) : "Investment Platform" }}'
     };
-  }
+    
+    let selectedAmount = {{ isset($amount) && !empty($amount) ? $amount : 'null' }};
+    
+    // DOM elements
+    const amountStep = document.getElementById('amount-step');
+    const infoStep = document.getElementById('info-step');
+    const successStep = document.getElementById('success-step');
+    const tierOptions = document.querySelectorAll('.tier-option');
+    const customAmountInput = document.getElementById('custom-amount');
+    const customSharesDisplay = document.querySelector('.custom-shares-display');
+    const amountContinueBtn = document.getElementById('amount-continue');
+    const investmentAmountField = document.getElementById('investment_amount');
+    const investorForm = document.getElementById('investor-form');
+    const backBtn = document.getElementById('info-back');
+    
+    // Initialize with prefilled amount if available
+    if (selectedAmount) {
+        updateSelectedAmount(selectedAmount);
+        showStep('info');
+    }
+    
+    // Tier selection
+    tierOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const amount = parseInt(this.dataset.amount);
+            selectTier(this, amount);
+        });
+    });
+    
+    // Custom amount input
+    customAmountInput.addEventListener('input', function() {
+        const amount = parseFloat(this.value);
+        if (amount >= config.minInvestment) {
+            clearTierSelections();
+            updateSelectedAmount(amount);
+            updateCustomShares(amount);
+        } else {
+            selectedAmount = null;
+            customSharesDisplay.textContent = '';
+            amountContinueBtn.disabled = true;
+        }
+    });
+    
+    // Continue to info step
+    amountContinueBtn.addEventListener('click', function() {
+        if (selectedAmount) {
+            showStep('info');
+        }
+    });
+    
+    // Back to amount step
+    backBtn.addEventListener('click', function() {
+        showStep('amount');
+    });
+    
+    // Form submission
+    investorForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitInvestment();
+    });
+    
+    // Investor type handling
+    const investorTypeSelect = document.getElementById('investor_type');
+    const investorTypeFields = document.querySelectorAll('.investor-type-fields');
+    
+    investorTypeSelect.addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        // Hide all investor type fields first
+        investorTypeFields.forEach(field => {
+            field.style.display = 'none';
+            // Clear required attributes from hidden fields
+            const inputs = field.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.removeAttribute('required');
+            });
+        });
+        
+        // Show the selected investor type fields
+        if (selectedType) {
+            const selectedFields = document.getElementById(selectedType + '-fields');
+            if (selectedFields) {
+                selectedFields.style.display = 'block';
+                // Add required attributes to visible fields
+                const requiredInputs = selectedFields.querySelectorAll('input, select');
+                requiredInputs.forEach(input => {
+                    if (input.type !== 'hidden') {
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            }
+        }
+        
+        // Update the main investor_name field based on type
+        updateInvestorNameField(selectedType);
+    });
+    
+    function updateInvestorNameField(investorType) {
+        // Set the main investor_name field based on the selected type and its specific fields
+        const mainNameField = document.getElementById('main_investor_name');
+        if (!mainNameField) return;
+        
+        switch(investorType) {
+            case 'individual':
+                const individualName = document.getElementById('investor_name');
+                if (individualName && individualName.value) {
+                    mainNameField.value = individualName.value;
+                }
+                break;
+            case 'joint':
+                const primaryName = document.getElementById('primary_name');
+                const secondaryName = document.getElementById('secondary_name');
+                if (primaryName && secondaryName) {
+                    mainNameField.value = `${primaryName.value} & ${secondaryName.value}`;
+                }
+                break;
+            case 'corporation':
+                const corpName = document.getElementById('corporation_name');
+                if (corpName && corpName.value) {
+                    mainNameField.value = corpName.value;
+                }
+                break;
+            case 'trust':
+                const trustName = document.getElementById('trust_name');
+                if (trustName && trustName.value) {
+                    mainNameField.value = trustName.value;
+                }
+                break;
+            case 'ira':
+                const iraHolderName = document.getElementById('ira_holder_name');
+                if (iraHolderName && iraHolderName.value) {
+                    mainNameField.value = `${iraHolderName.value} (IRA)`;
+                }
+                break;
+        }
+    }
+    
+    // Add event listeners to update main name field when specific fields change
+    document.addEventListener('input', function(e) {
+        const selectedType = investorTypeSelect.value;
+        if (!selectedType) return;
+        
+        const fieldId = e.target.id;
+        const relevantFields = {
+            'individual': ['investor_name'],
+            'joint': ['primary_name', 'secondary_name'],
+            'corporation': ['corporation_name'],
+            'trust': ['trust_name'],
+            'ira': ['ira_holder_name']
+        };
+        
+        if (relevantFields[selectedType] && relevantFields[selectedType].includes(fieldId)) {
+            updateInvestorNameField(selectedType);
+        }
+    });
+
+    // Functions
+    function selectTier(element, amount) {
+        clearTierSelections();
+        element.classList.add('selected');
+        customAmountInput.value = '';
+        customSharesDisplay.textContent = '';
+        updateSelectedAmount(amount);
+    }
+    
+    function clearTierSelections() {
+        tierOptions.forEach(option => option.classList.remove('selected'));
+    }
+    
+    function updateSelectedAmount(amount) {
+        selectedAmount = amount;
+        amountContinueBtn.disabled = false;
+        
+        // Update both the visible readonly field and ensure form data is set
+        if (investmentAmountField) {
+            investmentAmountField.value = amount;
+        }
+        
+        // Also update any hidden fields or other amount inputs
+        const allAmountFields = document.querySelectorAll('input[name="investment_amount"]');
+        allAmountFields.forEach(field => {
+            field.value = amount;
+        });
+        
+        // Update button text
+        const shares = Math.floor(amount / config.sharePrice);
+        amountContinueBtn.textContent = `Continue with $${amount.toLocaleString()} (${shares.toLocaleString()} shares)`;
+    }
+    
+    function updateCustomShares(amount) {
+        const shares = Math.floor(amount / config.sharePrice);
+        customSharesDisplay.textContent = `≈ ${shares.toLocaleString()} shares at $${config.sharePrice} per share`;
+    }
+    
+    function showStep(step) {
+        // Hide all steps
+        amountStep.classList.add('hidden');
+        infoStep.classList.add('hidden');
+        successStep.classList.add('hidden');
+        
+        // Show selected step
+        switch(step) {
+            case 'amount':
+                amountStep.classList.remove('hidden');
+                break;
+            case 'info':
+                infoStep.classList.remove('hidden');
+                break;
+            case 'success':
+                successStep.classList.remove('hidden');
+                break;
+        }
+    }
+    
+    function submitInvestment() {
+        const formData = new FormData(investorForm);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Add CSRF token
+        formData.append('_token', csrfToken);
+        
+        // Show loading state
+        const submitBtn = investorForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+        submitBtn.disabled = true;
+        
+        // Create a regular form and submit it (like donations do)
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/invest/save-info';
+        form.style.display = 'none';
+        
+        // Add all form data as hidden inputs
+        for (let [key, value] of formData.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+        
+        // Submit the form
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function showSuccessStep(data) {
+        const shares = Math.floor(selectedAmount / config.sharePrice);
+        document.getElementById('final-amount').textContent = `$${selectedAmount.toLocaleString()}`;
+        document.getElementById('final-shares').textContent = `${shares.toLocaleString()} shares`;
+    }
+});
 </script>
 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<!-- DealMaker Checkout -->
-<link rel="stylesheet" href="{{ asset('investment/css/dealmaker.css') }}"/>
-<link rel="stylesheet" href="{{ asset('investment/css/investment-platform.css') }}"/>
-<script src="{{ asset('investment/js/dealmaker.js') }}"></script>
-<script src="{{ asset('investment/js/investment-platform.js') }}"></script>
+    @if($footer && $footer->status == 1)
+        {!! $footer->content !!}
+    @endif
 
-<!-- Add CSRF token for AJAX requests -->
-<meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- CSRF Test Button (for debugging) -->
+    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;">
+        <button id="csrf-test-btn" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Test CSRF</button>
+    </div>
 
-{{-- 
-NOTE: The footer in this page is currently hardcoded but could be replaced with:
-@if($footer)
-    {!! $footer->content !!}
-@endif
---}}
+    <script>
+        document.getElementById('csrf-test-btn').addEventListener('click', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            console.log('Testing CSRF with token:', csrfToken);
+            
+            fetch('/test-csrf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    test: 'data',
+                    _token: csrfToken
+                })
+            }).then(response => {
+                console.log('CSRF Test Response Status:', response.status);
+                return response.json();
+            }).then(data => {
+                console.log('CSRF Test Response:', data);
+                alert('CSRF Test: ' + data.message);
+            }).catch(error => {
+                console.error('CSRF Test Error:', error);
+                alert('CSRF Test Failed: ' + error.message);
+            });
+        });
+    </script>
 
 </body></html>

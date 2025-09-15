@@ -14,6 +14,7 @@ use App\Models\Ticket;
 use App\Models\TicektSell;
 use App\Models\TicketSellDetail;
 use App\Models\Investment;
+use App\Models\DealmakerConfig;
 use Mail;
 
 class FrontendController extends Controller
@@ -67,7 +68,7 @@ class FrontendController extends Controller
         return view('donate', compact('data'));
     }
 
-    public function invest()
+    public function invest(Request $request)
     {
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -82,47 +83,74 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = Footer::where('user_id', $user_id)->first();
         
-        return view('invest', compact('setting', 'header', 'footer', 'website'));
+        // Get amount from URL parameter if provided
+        $amount = $request->get('amount');
+        
+        // Clean and decode the amount if provided
+        if ($amount) {
+            // URL decode the amount
+            $amount = urldecode($amount);
+            // Remove currency symbols and convert to numeric value
+            $amount = preg_replace('/[^0-9.,]/', '', $amount);
+            // Remove commas
+            $amount = str_replace(',', '', $amount);
+            // Convert to float and back to ensure it's a clean number
+            $amount = floatval($amount);
+        }
+        
+        return view('invest', compact('setting', 'header', 'footer', 'website', 'amount'));
     }
 
     public function saveInvestmentInfo(Request $request)
     {
-        $request->validate([
-            'investor_name' => 'required|string|max:255',
-            'investor_email' => 'required|email|max:255',
-            'investor_phone' => 'nullable|string|max:20',
-            'investment_amount' => 'required|numeric|min:1',
-        ]);
+        try {
+            $request->validate([
+                'investor_name' => 'required|string|max:255',
+                'investor_email' => 'required|email|max:255',
+                'investor_phone' => 'nullable|string|max:20',
+                'investment_amount' => 'required|numeric|min:1',
+                'investor_type' => 'required|string|in:individual,joint,corporation,trust,ira',
+            ]);
 
-        $url = url()->previous();
-        $domain = parse_url($url, PHP_URL_HOST);
-        $website = Website::where('domain', $domain)->first();
+            $url = url()->previous();
+            $domain = parse_url($url, PHP_URL_HOST);
+            $website = Website::where('domain', $domain)->first();
 
-        if (!$website) {
-            return response()->json(['error' => 'Website not found'], 404);
+            if (!$website) {
+                return redirect()->back()->with('error', 'Website not found');
+            }
+
+            $setting = \App\Models\Setting::where('user_id', $website->user_id)->first();
+            $sharePrice = $setting && $setting->share_price ? $setting->share_price : 1.00;
+            $shareQuantity = floor($request->investment_amount / $sharePrice);
+
+            // Store all form data collected from the page
+            $allFormData = $request->input('form_data', []);
+            
+            $investment = Investment::create([
+                'website_id' => $website->id,
+                'investor_name' => $request->investor_name,
+                'investor_email' => $request->investor_email,
+                'investor_phone' => $request->investor_phone,
+                'investment_amount' => $request->investment_amount,
+                'investor_type' => $request->investor_type,
+                'share_quantity' => $shareQuantity,
+                'deal_id' => $setting && $setting->deal_id ? $setting->deal_id : null,
+                'status' => 'pending', // Set to pending for payment processing
+                'investor_data' => array_merge(
+                    $request->only(['address', 'city', 'state', 'zip', 'country', 'accredited_investor']),
+                    $allFormData // Include all collected form data
+                )
+            ]);
+
+            // Redirect to payment page like donation and auction
+            return redirect('/authorize/payment/investment/'.$investment->id)->with('success', 'Investment Pending Payment');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage())->withInput();
         }
-
-        $setting = \App\Models\Setting::where('user_id', $website->user_id)->first();
-        $sharePrice = $setting && $setting->share_price ? $setting->share_price : 1.00;
-        $shareQuantity = floor($request->investment_amount / $sharePrice);
-
-        $investment = Investment::create([
-            'website_id' => $website->id,
-            'investor_name' => $request->investor_name,
-            'investor_email' => $request->investor_email,
-            'investor_phone' => $request->investor_phone,
-            'investment_amount' => $request->investment_amount,
-            'share_quantity' => $shareQuantity,
-            'deal_id' => $setting && $setting->deal_id ? $setting->deal_id : null,
-            'status' => 'completed', // Auto-complete for demo purposes
-            'investor_data' => $request->only(['address', 'city', 'state', 'zip', 'country', 'accredited_investor'])
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'investment_id' => $investment->id,
-            'message' => 'Investment processed successfully'
-        ]);
     }
 
     public function processInvestment(Request $request)
@@ -450,7 +478,63 @@ class FrontendController extends Controller
 
     public function dealmakerDemo()
     {
-        return view('dealmaker-demo');
+        // Use the separate DealMaker configuration system
+        $setting = DealmakerConfig::getInstance();
+        
+        // Add client logos and slider images (these can be added to the model later if needed)
+        $setting->client_logos = [
+            [
+                'name' => 'EnergyX',
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png',
+                'url' => '#'
+            ],
+            [
+                'name' => 'Pacaso',
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png',
+                'url' => '#'
+            ],
+            [
+                'name' => 'Monument',
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png',
+                'url' => '#'
+            ],
+            [
+                'name' => 'Company',
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo.png',
+                'url' => '#'
+            ],
+            [
+                'name' => 'Death & Co',
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d6f9e20e71e81f421_death%20and%20co%20(1).png',
+                'url' => '#'
+            ]
+        ];
+
+        $setting->slider_images = [
+            [
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561045749461ab86204c2_homepage_phone-02.webp',
+                'title' => 'Funding Ambition. Powering Growth.',
+                'description' => 'DealMaker is the future of capital raising. We provide an end-to-end platform to raise capital directly from individual investors.',
+                'cta_text' => 'Start Now',
+                'cta_url' => '/connect'
+            ],
+            [
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610466fede381344c563_homepage_phone-03.webp',
+                'title' => 'Raise Boldly. Own Your Future.',
+                'description' => 'Unlock the power of retail capital. Raise the capital you need to drive growth while building your brand and community.',
+                'cta_text' => 'Start Now',
+                'cta_url' => '/connect'
+            ],
+            [
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610465b5ca9a46afe153_homepage_phone-04.webp',
+                'title' => 'Real Capital. Retail Experience.',
+                'description' => 'Raise up to $75M annually with Reg A offerings. The capital you need - no road shows, no trips to Sand Hill Road.',
+                'cta_text' => 'Start Now',
+                'cta_url' => '/connect'
+            ]
+        ];
+        
+        return view('dealmaker-demo', compact('setting'))->with('config', $setting);
     }
 
     /**

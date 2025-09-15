@@ -11,7 +11,10 @@ class Website extends Model
         'domain',
         'user_id',
         'type',
-        'status'
+        'status',
+        'share_price',
+        'min_investment',
+        'investment_tiers'
     ];
 
     /**

@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
+    protected $fillable = [
+        'user_id', 'address', 'website_name', 'website_description', 'logo',
+        'donate_button_text', 'phone_number', 'email', 'goal', 'description',
+        'banner', 'title', 'title2', 'sub_title', 'date', 'location', 'time',
+        'theme', 'font', 'payout_option', 'site_status', 'payment_method',
+        'stripe_publishable_key', 'stripe_secret_key', 'authorize_login_id',
+        'authorize_transaction_key', 'refund', 'privacy', 'terms'
+    ];
+
     public function website()
     {
         return $this->belongsTo(Website::class, 'user_id', 'user_id');

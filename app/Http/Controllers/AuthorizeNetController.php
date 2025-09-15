@@ -36,6 +36,9 @@ class AuthorizeNetController extends Controller
             // dd($request->amount);
             $data = Auction::find($id);
             $data->amount = $request->amount;
+        }elseif($type == 'investment'){
+            $data = \App\Models\Investment::find($id);
+            $data->amount = $data->investment_amount; // Set amount for payment processing
         }
 
         $url = url()->current();
@@ -244,6 +247,36 @@ class AuthorizeNetController extends Controller
 
                     return view('thank-you', compact('type'));
 
+                }elseif($request->type == 'investment'){
+                    $investment = \App\Models\Investment::find($request->donation_id);
+                    $investment->status = 'completed';
+                    $investment->transaction_id = $tresponse->getTransId();
+                    $investment->update();
+
+                    $tran = new Transaction;
+                    $tran->amount = $investment->investment_amount;
+                    $tran->type = 'investment';
+                    $tran->website_id = $investment->website_id;
+                    $tran->transaction_id = $tresponse->getTransId();
+                    $tran->name = $request->first_name;
+                    $tran->last_name = $request->last_name;
+                    $tran->email = $request->email;
+                    $tran->address = $request->address;
+                    $tran->apartment = $request->apartment;
+                    $tran->city = $request->city;
+                    $tran->state = $request->state;
+                    $tran->zip = $request->zipcode;
+                    $tran->phone = $request->phone;
+                    $tran->name_on_card = $request->name_on_card;
+                    $tran->country = $request->country;
+                    $tran->fee = 0;
+                    $tran->fee_paid = 1;
+                    $tran->status = 1; // Completed status
+                    $tran->reference_id = $investment->id;
+                    $tran->save();
+
+                    return view('thank-you', compact('type'));
+
                 }else {
                         # code...
                         return redirect('/')->with('success', 'Payment successful!');
@@ -409,6 +442,36 @@ class AuthorizeNetController extends Controller
                     $tran->fee_paid = 1;
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
+                    $tran->save();
+
+                    return view('thank-you', compact('type'));
+
+                }elseif($request->type == 'investment'){
+                    $investment = \App\Models\Investment::find($request->donation_id);
+                    $investment->status = 'completed';
+                    $investment->transaction_id = $charge->id;
+                    $investment->update();
+
+                    $tran = new Transaction;
+                    $tran->amount = $investment->investment_amount;
+                    $tran->type = 'investment';
+                    $tran->website_id = $investment->website_id;
+                    $tran->transaction_id = $charge->id;
+                    $tran->name = $request->first_name;
+                    $tran->last_name = $request->last_name;
+                    $tran->email = $request->email;
+                    $tran->address = $request->address;
+                    $tran->apartment = $request->apartment;
+                    $tran->city = $request->city;
+                    $tran->state = $request->state;
+                    $tran->zip = $request->zipcode;
+                    $tran->phone = $request->phone;
+                    $tran->name_on_card = $request->name_on_card;
+                    $tran->country = $request->country;
+                    $tran->fee = 0;
+                    $tran->fee_paid = 1;
+                    $tran->status = 1; // Completed status
+                    $tran->reference_id = $investment->id;
                     $tran->save();
 
                     return view('thank-you', compact('type'));

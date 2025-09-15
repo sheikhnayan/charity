@@ -149,6 +149,13 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}">
+    <a href="/admins/dealmaker-settings" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-home"></i>
+      <div class="text-truncate">DealMaker Settings</div>
+    </a>
+  </li>
+
   <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}">
     <a href="/admins/website" class="menu-link">
       <i class="menu-icon tf-icons bx bx-globe"></i>
@@ -181,6 +188,13 @@
     <a href="/admins/page" class="menu-link">
       <i class="menu-icon tf-icons bx bx-file"></i>
       <div class="text-truncate">Page</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}">
+    <a href="/admins/templates" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-file-blank"></i>
+      <div class="text-truncate">Page Templates</div>
     </a>
   </li>
 

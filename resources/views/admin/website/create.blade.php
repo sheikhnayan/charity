@@ -132,6 +132,31 @@
                                                 </div>
                                             </div>
 
+                                            <!-- Investment-specific fields -->
+                                            <div class="row" id="investment-fields" style="display: none;">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="share_price" class="form-label">Share Price ($)</label>
+                                                        <input type="number" name="share_price" class="form-control" id="share_price" placeholder="2.13" step="0.01" min="0.01">
+                                                        <small class="form-text text-muted">Price per share for investment calculations.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="min_investment" class="form-label">Minimum Investment ($)</label>
+                                                        <input type="number" name="min_investment" class="form-control" id="min_investment" placeholder="1000" step="1" min="1">
+                                                        <small class="form-text text-muted">Minimum amount required to invest.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="investment_tiers" class="form-label">Investment Tiers</label>
+                                                        <input type="text" name="investment_tiers" class="form-control" id="investment_tiers" placeholder="1000,2500,5000,10000">
+                                                        <small class="form-text text-muted">Comma-separated list of investment amounts to display as quick options.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
@@ -152,4 +177,26 @@
                     </div>
                 </div>
             </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const websiteTypeSelect = document.getElementById('type');
+    const investmentFields = document.getElementById('investment-fields');
+    const sharePriceField = document.getElementById('share_price');
+    const minInvestmentField = document.getElementById('min_investment');
+    
+    websiteTypeSelect.addEventListener('change', function() {
+        if (this.value === 'investment') {
+            investmentFields.style.display = 'block';
+            sharePriceField.required = true;
+            minInvestmentField.required = true;
+        } else {
+            investmentFields.style.display = 'none';
+            sharePriceField.required = false;
+            minInvestmentField.required = false;
+        }
+    });
+});
+</script>
+
 @endsection

@@ -11,6 +11,62 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Middleware\admin;
+use App\Models\Setting;
+
+// Test route to populate demo data
+Route::get('/populate-demo', function() {
+    Setting::truncate(); // Clear existing data
+    
+    Setting::create([
+        'user_id' => 1,
+        'hero_title' => 'ADMIN CONTROLLED HERO!',
+        'hero_subtitle' => 'This content is now dynamic from admin panel!',
+        'stat_1_number' => '5B+',
+        'stat_1_text' => 'Raised via admin',
+        'stat_2_number' => '2.5B',
+        'stat_2_text' => 'Admin controlled',
+        'stat_3_number' => '1200+',
+        'stat_3_text' => 'Dynamic offers',
+        'meta_title' => 'Dynamic DealMaker | Admin Controlled',
+        'meta_description' => 'This page is now completely controlled by the admin panel!',
+        'site_logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Amazon_Web_Services_Logo.svg/256px-Amazon_Web_Services_Logo.svg.png',
+        'client_logos' => json_encode([
+            [
+                'name' => 'AWS',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Amazon_Web_Services_Logo.svg/256px-Amazon_Web_Services_Logo.svg.png',
+                'url' => 'https://aws.amazon.com'
+            ],
+            [
+                'name' => 'Google',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png',
+                'url' => 'https://google.com'
+            ],
+            [
+                'name' => 'Microsoft',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/256px-Microsoft_logo.svg.png',
+                'url' => 'https://microsoft.com'
+            ]
+        ]),
+        'slider_images' => json_encode([
+            [
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561045749461ab86204c2_homepage_phone-02.webp',
+                'title' => 'ADMIN CONTROLLED SLIDER!',
+                'description' => 'This slider content is now completely dynamic and controlled from the admin panel!',
+                'cta_text' => 'Admin Demo',
+                'cta_url' => '/admins/dealmaker-settings'
+            ],
+            [
+                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610466fede381344c563_homepage_phone-03.webp',
+                'title' => 'Dynamic Content Management',
+                'description' => 'Change any content on this page through the admin interface without touching code.',
+                'cta_text' => 'Manage Content',
+                'cta_url' => '/admins/dealmaker-settings'
+            ]
+        ])
+    ]);
+    
+    return 'Demo data populated! Visit <a href="/dealmaker-demo">dealmaker-demo</a> to see the changes.';
+});
 
 Route::get('authorize/payment/{type}/{id}', [AuthorizeNetController::class, 'index']);
 Route::post('authorize/payment', [AuthorizeNetController::class, 'paymentPost'])->name('authorize.payment');
@@ -19,6 +75,18 @@ Route::get('/product', function(){
     return view('thank-you');
 });
 
+// Comments routes (with CSRF protection)
+Route::post('/comments', [App\Http\Controllers\Api\CommentController::class, 'store'])->name('comments.store');
+Route::get('/comments', [App\Http\Controllers\Api\CommentController::class, 'index'])->name('comments.index');
+
+// CSRF Test Route
+Route::post('/test-csrf', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'CSRF token is valid',
+        'data' => $request->all()
+    ]);
+})->name('test.csrf');
 
 Route::get('/run-migrate', function () {
     try {
@@ -282,12 +350,92 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         ])->name('admin.page.load');
     });
 
+    // Template management routes
+    route::group(['prefix' => 'templates'], function () {
+        Route::get('/', [
+            \App\Http\Controllers\PageTemplateController::class, 'index'
+        ])->name('admin.templates.index');
+
+        Route::get('/create', [
+            \App\Http\Controllers\PageTemplateController::class, 'create'
+        ])->name('admin.templates.create');
+
+        Route::post('/store', [
+            \App\Http\Controllers\PageTemplateController::class, 'store'
+        ])->name('admin.templates.store');
+
+        Route::get('/show/{template}', [
+            \App\Http\Controllers\PageTemplateController::class, 'show'
+        ])->name('admin.templates.show');
+
+        Route::get('/edit/{template}', [
+            \App\Http\Controllers\PageTemplateController::class, 'edit'
+        ])->name('admin.templates.edit');
+
+        Route::put('/update/{template}', [
+            \App\Http\Controllers\PageTemplateController::class, 'update'
+        ])->name('admin.templates.update');
+
+        Route::delete('/destroy/{template}', [
+            \App\Http\Controllers\PageTemplateController::class, 'destroy'
+        ])->name('admin.templates.destroy');
+
+        Route::get('/preview/{template}', [
+            \App\Http\Controllers\PageTemplateController::class, 'preview'
+        ])->name('admin.templates.preview');
+
+        // AJAX routes
+        Route::get('/get-templates', [
+            \App\Http\Controllers\PageTemplateController::class, 'getTemplates'
+        ])->name('admin.templates.get');
+
+        Route::post('/save-from-page/{page}', [
+            \App\Http\Controllers\PageTemplateController::class, 'saveFromPage'
+        ])->name('admin.templates.save-from-page');
+
+        Route::post('/apply-to-page/{template}/{page}', [
+            \App\Http\Controllers\PageTemplateController::class, 'applyToPage'
+        ])->name('admin.templates.apply-to-page');
+    });
+
     // Image upload route for page builder
     Route::post('/upload-image', [AdminController::class, 'uploadImage'])->name('admin.upload.image');
     
     // Video upload route for page builder
     Route::post('/upload-video', [AdminController::class, 'uploadVideo'])->name('admin.upload.video');
 
+    // DealMaker Admin Routes
+    Route::get('/dealmaker-settings', [App\Http\Controllers\DealmakerAdminController::class, 'index'])->name('dealmaker.admin.index');
+    Route::post('/dealmaker-settings', [App\Http\Controllers\DealmakerAdminController::class, 'update'])->name('dealmaker.admin.update');
+    Route::post('/dealmaker-settings/add-logo', [App\Http\Controllers\DealmakerAdminController::class, 'addLogo'])->name('dealmaker.admin.add-logo');
+    Route::delete('/dealmaker-settings/remove-logo/{index}', [App\Http\Controllers\DealmakerAdminController::class, 'removeLogo'])->name('dealmaker.admin.remove-logo');
+
+});
+
+// Temporary test route for DealMaker admin (REMOVE AFTER TESTING)
+Route::get('/test-dealmaker-admin', function() {
+    $setting = App\Models\DealmakerConfig::getInstance();
+    return response()->json([
+        'current_settings' => $setting->toArray(),
+        'message' => 'DealMaker config loaded successfully'
+    ]);
+});
+
+Route::post('/test-dealmaker-save', function(Illuminate\Http\Request $request) {
+    $setting = App\Models\DealmakerConfig::getInstance();
+    
+    $testData = [
+        'meta_title' => 'Test Title - ' . now(),
+        'hero_title' => 'Test Hero - ' . now()
+    ];
+    
+    $result = $setting->update($testData);
+    
+    return response()->json([
+        'result' => $result,
+        'updated_settings' => $setting->fresh()->toArray(),
+        'message' => $result ? 'Save successful' : 'Save failed'
+    ]);
 });
 
 // Temporary test route for video upload (remove after testing)

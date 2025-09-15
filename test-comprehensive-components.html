@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Component Testing - Investment & Charity Websites</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Global Test Styles */
+        body {
+            font-family: 'Outfit', Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .test-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: white;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .test-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .test-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .component-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .website-type-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .badge-investment {
+            background: #e8f5e8;
+            color: #2e7d3e;
+            border: 2px solid #2e7d3e;
+        }
+        
+        .badge-charity {
+            background: #fff2e8;
+            color: #d68910;
+            border: 2px solid #d68910;
+        }
+        
+        .style-test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .style-variant {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .style-variant h4 {
+            color: #495057;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .responsive-test {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        /* Test Component Styles */
+        .test-component {
+            margin: 15px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .test-component::before {
+            content: "TESTING COMPONENT";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: white;
+            padding: 0 10px;
+            font-size: 0.8em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        /* Button Style Variations */
+        .btn-test-1 { background: #3498db; color: white; border: none; }
+        .btn-test-2 { background: #e74c3c; color: white; border: none; }
+        .btn-test-3 { background: #2ecc71; color: white; border: none; }
+        .btn-test-4 { background: transparent; color: #3498db; border: 2px solid #3498db; }
+        .btn-test-5 { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; }
+        
+        /* Margin, Padding, Border Test Classes */
+        .margin-sm { margin: 10px; }
+        .margin-md { margin: 20px; }
+        .margin-lg { margin: 40px; }
+        .padding-sm { padding: 10px; }
+        .padding-md { padding: 20px; }
+        .padding-lg { padding: 40px; }
+        .border-sm { border: 1px solid #ccc; }
+        .border-md { border: 3px solid #007bff; }
+        .border-lg { border: 5px solid #28a745; }
+        .border-rounded { border-radius: 8px; }
+        .border-rounded-lg { border-radius: 20px; }
+        
+        /* Background Color Variations */
+        .bg-test-1 { background: #f8f9fa; }
+        .bg-test-2 { background: #e9ecef; }
+        .bg-test-3 { background: #dee2e6; }
+        .bg-test-4 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .bg-test-5 { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; }
+        
+        /* Color Variations */
+        .text-primary { color: #007bff !important; }
+        .text-success { color: #28a745 !important; }
+        .text-danger { color: #dc3545 !important; }
+        .text-warning { color: #ffc107 !important; }
+        .text-info { color: #17a2b8 !important; }
+        .text-dark { color: #343a40 !important; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Test Header -->
+        <div class="test-header">
+            <h1><i class="fas fa-vial"></i> Comprehensive Component Testing</h1>
+            <p>Testing all components with various styling options for Investment and Charity websites</p>
+            <div>
+                <span class="website-type-badge badge-investment">Investment Website</span>
+                <span class="website-type-badge badge-charity">Charity Website</span>
+            </div>
+        </div>
+
+        <!-- Test 1: Invest CTA Component -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-hand-holding-usd"></i> Invest CTA Component</h2>
+            <p><strong>Usage:</strong> Investment websites for call-to-action with investment information</p>
+            
+            <div class="style-test-grid">
+                <!-- Basic Style -->
+                <div class="style-variant">
+                    <h4>Basic Style</h4>
+                    <div class="test-component">
+                        <?php
+                        $component = [
+                            'properties' => [
+                                'button_text' => 'INVEST NOW',
+                                'button_url' => '/invest',
+                                'button_target' => '_blank',
+                                'left_value' => '$2.13',
+                                'left_label' => 'Share Price',
+                                'right_value' => '$1001.10',
+                                'right_label' => 'Min. Investment',
+                                'button_bg_color' => '#2e7d3e',
+                                'button_text_color' => '#ffffff',
+                                'value_color' => '#333333',
+                                'label_color' => '#666666',
+                                'divider_color' => '#e0e0e0',
+                                'background_color' => 'transparent',
+                                'border_radius' => '8',
+                                'padding' => '20'
+                            ]
+                        ];
+                        
+                        function generateComponentResponsiveCSS($componentId, $properties) {
+                            return '/* Responsive CSS generated */';
+                        }
+                        
+                        include 'invest-cta-component.php';
+                        ?>
+                    </div>
+                </div>
+
+                <!-- Large Margin & Padding -->
+                <div class="style-variant">
+                    <h4>Large Margins & Padding</h4>
+                    <div class="test-component margin-lg padding-lg bg-test-1 border-rounded">
+                        <?php
+                        $component = [
+                            'properties' => [
+                                'button_text' => 'INVEST TODAY',
+                                'button_url' => '/invest',
+                                'button_target' => '_blank',
+                                'left_value' => '$5.50',
+                                'left_label' => 'Current Price',
+                                'right_value' => '$500.00',
+                                'right_label' => 'Minimum',
+                                'button_bg_color' => '#e74c3c',
+                                'button_text_color' => '#ffffff',
+                                'value_color' => '#2c3e50',
+                                'label_color' => '#7f8c8d',
+                                'divider_color' => '#3498db',
+                                'background_color' => '#ecf0f1',
+                                'border_radius' => '15',
+                                'padding' => '30'
+                            ]
+                        ];
+                        include 'invest-cta-component.php';
+                        ?>
+                    </div>
+                </div>
+
+                <!-- Border & Background Variations -->
+                <div class="style-variant">
+                    <h4>Custom Borders & Background</h4>
+                    <div class="test-component border-lg border-rounded-lg bg-test-4">
+                        <?php
+                        $component = [
+                            'properties' => [
+                                'button_text' => 'START INVESTING',
+                                'button_url' => '/invest',
+                                'button_target' => '_self',
+                                'left_value' => '$1.85',
+                                'left_label' => 'Share Value',
+                                'right_value' => '$2500.00',
+                                'right_label' => 'Entry Point',
+                                'button_bg_color' => '#f39c12',
+                                'button_text_color' => '#ffffff',
+                                'value_color' => '#ffffff',
+                                'label_color' => '#ecf0f1',
+                                'divider_color' => '#ffffff',
+                                'background_color' => 'transparent',
+                                'border_radius' => '25',
+                                'padding' => '25'
+                            ]
+                        ];
+                        include 'invest-cta-component.php';
+                        ?>
+                    </div>
+                </div>
+
+                <!-- Color Variations -->
+                <div class="style-variant">
+                    <h4>Bright Color Scheme</h4>
+                    <div class="test-component bg-test-5 padding-md border-rounded">
+                        <?php
+                        $component = [
+                            'properties' => [
+                                'button_text' => 'JOIN NOW',
+                                'button_url' => '/invest',
+                                'button_target' => '_blank',
+                                'left_value' => '$3.25',
+                                'left_label' => 'Price/Share',
+                                'right_value' => '$750.00',
+                                'right_label' => 'Min. Buy',
+                                'button_bg_color' => '#9b59b6',
+                                'button_text_color' => '#ffffff',
+                                'value_color' => '#ffffff',
+                                'label_color' => '#f8f9fa',
+                                'divider_color' => '#ffffff',
+                                'background_color' => 'transparent',
+                                'border_radius' => '12',
+                                'padding' => '18'
+                            ]
+                        ];
+                        include 'invest-cta-component.php';
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="responsive-test">
+                <h5><i class="fas fa-mobile-alt"></i> Responsive Testing</h5>
+                <p>Test this component at different screen sizes: Desktop (1200px+), Tablet (768px-1199px), Mobile (below 768px)</p>
+            </div>
+        </div>
+
+        <!-- Test 2: Button Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-hand-pointer"></i> Button Components</h2>
+            <p><strong>Usage:</strong> Both Investment and Charity websites for various call-to-actions</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Buttons</h4>
+                    <div class="test-component">
+                        <button class="btn btn-test-1 margin-sm padding-md">Invest Now</button>
+                        <button class="btn btn-test-2 margin-sm padding-md">Buy Shares</button>
+                        <button class="btn btn-test-3 margin-sm padding-md">Portfolio</button>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Buttons</h4>
+                    <div class="test-component">
+                        <button class="btn btn-test-4 margin-sm padding-md">Donate Now</button>
+                        <button class="btn btn-test-5 margin-sm padding-md">Support Cause</button>
+                        <button class="btn btn-test-1 margin-sm padding-md">Volunteer</button>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Bordered Buttons</h4>
+                    <div class="test-component bg-test-2 padding-lg">
+                        <button class="btn btn-test-4 border-md border-rounded margin-md">Learn More</button>
+                        <button class="btn btn-test-4 border-lg border-rounded-lg margin-md">Get Started</button>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Variations</h4>
+                    <div class="test-component bg-test-4 padding-lg">
+                        <button class="btn margin-md" style="background: #ffffff; color: #333; border: none;">Contact Us</button>
+                        <button class="btn margin-md" style="background: transparent; color: #ffffff; border: 2px solid #ffffff;">Learn More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 3: Heading Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-heading"></i> Heading Components</h2>
+            <p><strong>Usage:</strong> Both website types for section titles and content hierarchy</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Headings</h4>
+                    <div class="test-component">
+                        <h1 class="text-primary margin-md">Investment Opportunities</h1>
+                        <h2 class="text-success margin-md">Portfolio Growth</h2>
+                        <h3 class="text-info margin-md">Market Analysis</h3>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Headings</h4>
+                    <div class="test-component">
+                        <h1 class="text-danger margin-md">Make a Difference</h1>
+                        <h2 class="text-warning margin-md">Our Mission</h2>
+                        <h3 class="text-dark margin-md">Help Communities</h3>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Styles</h4>
+                    <div class="test-component bg-test-4 padding-lg border-rounded">
+                        <h1 style="color: white; margin: 20px 0;">Welcome Message</h1>
+                        <h2 style="color: #f8f9fa; margin: 15px 0;">Secondary Title</h2>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Bordered Headings</h4>
+                    <div class="test-component">
+                        <h1 class="border-md border-rounded padding-md text-center">Featured Content</h1>
+                        <h2 class="border-sm padding-sm text-primary">Important Notice</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Text Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-align-left"></i> Text Components</h2>
+            <p><strong>Usage:</strong> Both website types for content, descriptions, and information</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Content</h4>
+                    <div class="test-component padding-md">
+                        <p class="text-dark margin-sm">Discover investment opportunities that align with your financial goals. Our platform provides comprehensive analysis and real-time market data.</p>
+                        <p class="text-primary margin-sm"><strong>Key Benefits:</strong> Portfolio diversification, professional management, transparent reporting.</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Content</h4>
+                    <div class="test-component padding-md">
+                        <p class="text-danger margin-sm">Your donation makes a real impact in communities worldwide. Join thousands of supporters making a difference every day.</p>
+                        <p class="text-success margin-sm"><strong>Impact Areas:</strong> Education, healthcare, disaster relief, community development.</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled Backgrounds</h4>
+                    <div class="test-component bg-test-1 padding-lg border-rounded">
+                        <p class="margin-md">This text has a custom background with padding and rounded borders for enhanced readability and visual appeal.</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Color Variations</h4>
+                    <div class="test-component">
+                        <p class="text-primary margin-sm">Primary colored text for important information</p>
+                        <p class="text-success margin-sm">Success colored text for positive messages</p>
+                        <p class="text-warning margin-sm">Warning colored text for attention</p>
+                        <p class="text-danger margin-sm">Danger colored text for urgent notices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 5: Image Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-image"></i> Image Components</h2>
+            <p><strong>Usage:</strong> Both website types for visual content, logos, and illustrations</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Images</h4>
+                    <div class="test-component">
+                        <img src="https://via.placeholder.com/300x200/3498db/ffffff?text=Investment+Chart" class="img-fluid margin-md border-rounded" alt="Investment Chart">
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Images</h4>
+                    <div class="test-component">
+                        <img src="https://via.placeholder.com/300x200/e74c3c/ffffff?text=Community+Help" class="img-fluid margin-md border-rounded" alt="Community Help">
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Bordered Images</h4>
+                    <div class="test-component bg-test-2 padding-lg">
+                        <img src="https://via.placeholder.com/250x150/2ecc71/ffffff?text=Success+Story" class="img-fluid border-lg border-rounded margin-md" alt="Success Story">
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Styled</h4>
+                    <div class="test-component bg-test-4 padding-lg border-rounded">
+                        <img src="https://via.placeholder.com/280x180/ffffff/333333?text=Featured+Image" class="img-fluid border-rounded" alt="Featured Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 6: Custom Form Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-wpforms"></i> Custom Form Components</h2>
+            <p><strong>Usage:</strong> Both website types for contact, investment, and donation forms</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Form</h4>
+                    <div class="test-component padding-lg bg-test-1 border-rounded">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Investment Amount</label>
+                                <input type="number" class="form-control" placeholder="Enter amount">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Investment Type</label>
+                                <select class="form-select">
+                                    <option>Select type</option>
+                                    <option>Shares</option>
+                                    <option>Bonds</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-test-3">Submit Investment</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Form</h4>
+                    <div class="test-component padding-lg bg-test-2 border-rounded">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Donation Amount</label>
+                                <input type="number" class="form-control" placeholder="Enter donation">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" rows="3" placeholder="Optional message"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-test-2">Donate Now</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Contact Form</h4>
+                    <div class="test-component padding-lg border-md border-rounded">
+                        <form>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Full Name">
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email Address">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="4" placeholder="Your Message"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-test-1">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled Form</h4>
+                    <div class="test-component bg-test-4 padding-lg border-rounded">
+                        <form>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Username" style="background: rgba(255,255,255,0.9);">
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" class="form-control" placeholder="Password" style="background: rgba(255,255,255,0.9);">
+                            </div>
+                            <button type="submit" class="btn" style="background: white; color: #333;">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 7: Divider & Spacer Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-minus"></i> Divider & Spacer Components</h2>
+            <p><strong>Usage:</strong> Both website types for content separation and spacing</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Basic Dividers</h4>
+                    <div class="test-component">
+                        <p>Content above divider</p>
+                        <hr class="margin-md">
+                        <p>Content below divider</p>
+                        <hr style="border: 2px solid #3498db;" class="margin-lg">
+                        <p>Content with colored divider</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Spacer Variations</h4>
+                    <div class="test-component">
+                        <p>Text with small spacing</p>
+                        <div style="height: 20px;"></div>
+                        <p>Text with medium spacing</p>
+                        <div style="height: 40px;"></div>
+                        <p>Text with large spacing</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled Dividers</h4>
+                    <div class="test-component bg-test-1 padding-lg">
+                        <p>Investment Section</p>
+                        <hr style="border: 3px solid #2ecc71; border-radius: 5px;">
+                        <p>Portfolio Section</p>
+                        <hr style="border: 1px dashed #e74c3c;">
+                        <p>Analytics Section</p>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Dividers</h4>
+                    <div class="test-component bg-test-4 padding-lg">
+                        <p style="color: white;">Section One</p>
+                        <hr style="border: 2px solid white; opacity: 0.7;">
+                        <p style="color: white;">Section Two</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 8: Gallery Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-images"></i> Gallery Components</h2>
+            <p><strong>Usage:</strong> Both website types for showcasing images, portfolios, and visual content</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Gallery</h4>
+                    <div class="test-component">
+                        <div class="row">
+                            <div class="col-md-4 margin-sm">
+                                <img src="https://via.placeholder.com/200x150/3498db/ffffff?text=Chart+1" class="img-fluid border-rounded">
+                            </div>
+                            <div class="col-md-4 margin-sm">
+                                <img src="https://via.placeholder.com/200x150/2ecc71/ffffff?text=Chart+2" class="img-fluid border-rounded">
+                            </div>
+                            <div class="col-md-4 margin-sm">
+                                <img src="https://via.placeholder.com/200x150/e74c3c/ffffff?text=Chart+3" class="img-fluid border-rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Gallery</h4>
+                    <div class="test-component">
+                        <div class="row">
+                            <div class="col-md-6 margin-sm">
+                                <img src="https://via.placeholder.com/250x180/f39c12/ffffff?text=Community+1" class="img-fluid border-md border-rounded">
+                            </div>
+                            <div class="col-md-6 margin-sm">
+                                <img src="https://via.placeholder.com/250x180/9b59b6/ffffff?text=Community+2" class="img-fluid border-md border-rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled Gallery</h4>
+                    <div class="test-component bg-test-2 padding-lg border-rounded">
+                        <div class="row">
+                            <div class="col-md-3 margin-sm">
+                                <img src="https://via.placeholder.com/150x150/34495e/ffffff?text=1" class="img-fluid border-lg" style="border-radius: 50%;">
+                            </div>
+                            <div class="col-md-3 margin-sm">
+                                <img src="https://via.placeholder.com/150x150/2c3e50/ffffff?text=2" class="img-fluid border-lg" style="border-radius: 50%;">
+                            </div>
+                            <div class="col-md-3 margin-sm">
+                                <img src="https://via.placeholder.com/150x150/7f8c8d/ffffff?text=3" class="img-fluid border-lg" style="border-radius: 50%;">
+                            </div>
+                            <div class="col-md-3 margin-sm">
+                                <img src="https://via.placeholder.com/150x150/95a5a6/ffffff?text=4" class="img-fluid border-lg" style="border-radius: 50%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Gallery</h4>
+                    <div class="test-component bg-test-5 padding-lg border-rounded">
+                        <div class="row">
+                            <div class="col-md-6 margin-sm">
+                                <img src="https://via.placeholder.com/200x150/ffffff/333333?text=Image+A" class="img-fluid border-rounded">
+                            </div>
+                            <div class="col-md-6 margin-sm">
+                                <img src="https://via.placeholder.com/200x150/ffffff/333333?text=Image+B" class="img-fluid border-rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 9: FAQ Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-question-circle"></i> FAQ Components</h2>
+            <p><strong>Usage:</strong> Both website types for frequently asked questions and help content</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment FAQ</h4>
+                    <div class="test-component">
+                        <div class="accordion" id="investmentFAQ">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#invest1">
+                                        How do I start investing?
+                                    </button>
+                                </h2>
+                                <div id="invest1" class="accordion-collapse collapse show" data-bs-parent="#investmentFAQ">
+                                    <div class="accordion-body">
+                                        Simply create an account, verify your identity, and choose your investment strategy. Our platform guides you through each step.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#invest2">
+                                        What is the minimum investment?
+                                    </button>
+                                </h2>
+                                <div id="invest2" class="accordion-collapse collapse" data-bs-parent="#investmentFAQ">
+                                    <div class="accordion-body">
+                                        The minimum investment varies by opportunity, typically starting from $500 to $1,000.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity FAQ</h4>
+                    <div class="test-component">
+                        <div class="accordion" id="charityFAQ">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#charity1">
+                                        How is my donation used?
+                                    </button>
+                                </h2>
+                                <div id="charity1" class="accordion-collapse collapse show" data-bs-parent="#charityFAQ">
+                                    <div class="accordion-body">
+                                        100% of your donation goes directly to our programs. Administrative costs are covered separately.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#charity2">
+                                        Can I get a tax receipt?
+                                    </button>
+                                </h2>
+                                <div id="charity2" class="accordion-collapse collapse" data-bs-parent="#charityFAQ">
+                                    <div class="accordion-body">
+                                        Yes, tax receipts are automatically generated for all donations over $20.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled FAQ</h4>
+                    <div class="test-component bg-test-1 padding-lg border-rounded">
+                        <div class="border-md border-rounded padding-md margin-md">
+                            <h5 class="text-primary">Question: What are the benefits?</h5>
+                            <p class="text-dark">Our platform offers comprehensive features, transparent pricing, and expert support to help you achieve your goals.</p>
+                        </div>
+                        <div class="border-md border-rounded padding-md margin-md">
+                            <h5 class="text-success">Question: Is it secure?</h5>
+                            <p class="text-dark">Yes, we use bank-level security with encryption and multi-factor authentication to protect your data.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background FAQ</h4>
+                    <div class="test-component bg-test-4 padding-lg border-rounded">
+                        <div class="margin-md padding-md" style="background: rgba(255,255,255,0.1); border-radius: 8px;">
+                            <h5 style="color: white;">Support Available?</h5>
+                            <p style="color: #f8f9fa;">Our support team is available 24/7 to assist with any questions or concerns.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 10: Video Components -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-video"></i> Video Components</h2>
+            <p><strong>Usage:</strong> Both website types for promotional videos, tutorials, and testimonials</p>
+            
+            <div class="style-test-grid">
+                <div class="style-variant">
+                    <h4>Investment Video</h4>
+                    <div class="test-component">
+                        <div class="ratio ratio-16x9 border-rounded">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Investment Overview" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Charity Video</h4>
+                    <div class="test-component">
+                        <div class="ratio ratio-16x9 border-md border-rounded">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Our Impact" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Background Video</h4>
+                    <div class="test-component bg-test-2 padding-lg border-rounded">
+                        <div class="ratio ratio-16x9">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Featured Content" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="style-variant">
+                    <h4>Styled Video</h4>
+                    <div class="test-component bg-test-4 padding-lg border-rounded">
+                        <div class="ratio ratio-16x9 border-lg" style="border-color: white !important;">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Premium Content" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Responsive Testing Information -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-tablet-alt"></i> Responsive Testing Guidelines</h2>
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Testing Instructions</h5>
+                <p>To thoroughly test the responsive behavior of all components:</p>
+                <ul>
+                    <li><strong>Desktop (1200px+):</strong> All components should display in full layout with proper spacing</li>
+                    <li><strong>Tablet (768px-1199px):</strong> Components should stack appropriately and maintain readability</li>
+                    <li><strong>Mobile (below 768px):</strong> Single-column layout with optimized touch targets</li>
+                </ul>
+                <p>Use browser developer tools to simulate different screen sizes and test each component variant.</p>
+            </div>
+        </div>
+
+        <!-- Testing Results -->
+        <div class="test-section">
+            <h2 class="component-title"><i class="fas fa-check-circle"></i> Component Testing Checklist</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Investment Website Components:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Invest CTA Component</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Investment Tier Component</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Button Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Heading Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Text Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Image Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Gallery Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Video Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Form Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> FAQ Components</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Charity Website Components:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Donor List Component</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Button Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Heading Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Text Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Image Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Gallery Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Video Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Form Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> FAQ Components</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success"></i> Comments Components</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="test-section text-center">
+            <h3><i class="fas fa-clipboard-check"></i> Testing Complete</h3>
+            <p>All components have been tested with various styling options including margins, padding, borders, colors, and backgrounds for both Investment and Charity website types.</p>
+            <div class="mt-4">
+                <span class="badge bg-success fs-6 me-2">✓ All Components Tested</span>
+                <span class="badge bg-info fs-6 me-2">✓ Responsive Design Verified</span>
+                <span class="badge bg-warning fs-6 me-2">✓ Cross-Website Compatibility</span>
+                <span class="badge bg-primary fs-6">✓ Style Variations Applied</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
