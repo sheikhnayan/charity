@@ -177,6 +177,7 @@
                     // Initialize DataTable with export/import buttons
                     let table = new DataTable('.table', {
                         dom: 'Bfrtip',
+                        pageLength: 25,
                         buttons: [
                             'copy', 'csv', 'excel', 'pdf', 'print'
                         ]

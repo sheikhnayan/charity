@@ -161,6 +161,7 @@
                     // Initialize DataTable with default search disabled
                    let table = new DataTable('.table', {
                         dom: 'Bfrtip',
+                        pageLength: 25,
                         buttons: [
                             {
                                 extend: 'csv',

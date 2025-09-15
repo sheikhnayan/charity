@@ -622,6 +622,7 @@ max-width: 100%;
             searching: true,
             ordering: true,
             info: true,
+            pageLength: 25
         });
 
         // Link the custom search input to the DataTable search

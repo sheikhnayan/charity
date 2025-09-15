@@ -41,7 +41,7 @@
 
                                     <div>
                                         <span class="text-capitalize">
-                                            Text Receipt
+                                            Tax Receipt
                                         </span>
                                     </div>
 
@@ -136,6 +136,7 @@
                     $.fn.dataTable.ext.errMode = 'none';
                     let table = $('.table').DataTable({
                         dom: 'Bfrtip',
+                        pageLength: 25,
                         buttons: [
                             {
                                 extend: 'csv',

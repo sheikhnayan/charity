@@ -186,7 +186,9 @@
             <script>
                 $(document).ready(function() {
                     // Initialize DataTable with default search disabled
-                    let table = new DataTable('.table');
+                    let table = new DataTable('.table', {
+                        pageLength: 25
+                    });
                 });
             </script>
         @endsection

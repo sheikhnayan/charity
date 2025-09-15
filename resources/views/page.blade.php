@@ -3241,7 +3241,8 @@ setInterval(updateCountdown, 1000);
             paging: true,
             searching: false, // disable default search
             ordering: false,
-            info: false
+            info: false,
+            pageLength: 25
         });
 
         // Link the custom search input to the DataTable search

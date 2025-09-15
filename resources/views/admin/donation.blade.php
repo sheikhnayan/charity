@@ -269,6 +269,7 @@
                     // Initialize DataTable
                     let table = new DataTable('.table', {
                         dom: 'Bfrtip',
+                        pageLength: 25,
                         buttons: [
                             {
                                 extend: 'csv',
