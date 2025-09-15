@@ -2050,94 +2050,93 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $domain = parse_url($url, PHP_URL_HOST);
                 $check = \App\Models\Website::where('domain', $domain)->first();
                 $auction = \App\Models\Auction::where('website_id', $check->id ?? 1)->where('status',1)->latest()->get();
+                
+                // Generate unique component ID for responsive CSS
+                $uniqueId = 'auction-list-' . uniqid();
             @endphp
             
-            <div class="c-content__bottom" style="{{ $wrapperStyleStr }}">
-                <div class="u-wrap--auction-main">
-                    <div id="ai-display" class="c-ai-display c-ai-display--full"><span></span>
-                        <div class="o-wrapper c-ai-display__items c-ai-display__items--full" style="{{ $styleStr }}">
-                            <div class="view-dom-id-ad4934c196a50f6f72cd5a8f4b22c874 js-view js-view-air-auction-items c-view c-view--air-auction-items c-view--display_teaser c-view--display-handler_block c-view--style_default jquery-once-2-processed jqo-vr-processed"
-                                data-view-name="air_auction_items" data-view-display="teaser" data-view-page="0">
-                                <div class="row">
-                                        @foreach ($auction as $item)
-                                        <div class="col-md-4 mt-4 mb-4">
-                                            <div class="c-view__item c-view__item--teaser">
-                                                <div id="node-{{ $item->id }}"
-                                                    class="c-node-ai c-node-ai--teaser js-ai js-ai--teaser js-eq js-ai--teaser-view c-node-ai--teaser-view"
-                                                    about="/auction/{{ $item->id }}" typeof="sioc:Item foaf:Document"
-                                                    data-entity-id="{{ $item->id }}" data-unmet-reserve="0" data-live-id="{{ $item->id }}"
-                                                    data-updated="{{ \Carbon\Carbon::parse($item->updated_at)->timestamp }}"
-                                                    data-leader="{{ $item->leader_id ?? '' }}" data-status="bidding" data-lec="false"
-                                                    data-expiry="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}">
-                                                    <div class="c-node-ai__content">
-                                                        <div id="air-ai-status-indicator-{{ $item->id }}"
-                                                            class="js-ai-status-indicator c-node-ai__status c-node-ai__status--teaser c-tooltip c-tooltip--n"
-                                                            aria-label="Bidding is under way."></div>
-                                                        <div class="c-node-ai__image-wrap">
-                                                            <div class="c-node-ai__image">
-                                                                <svg viewBox="0 0 100 100"></svg>
-                                                                <a href="/auction/{{ $item->id }}" class="">
-                                                                    <img alt="{{ $item->title }}"
-                                                                        sizes="(min-width: 110em) 420px, (min-width: 90em) 25vw, (min-width: 60em) 33vw, (min-width: 30em) 50vw, 100vw"
-                                                                        data-src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
-                                                                        data-srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
-                                                                        class="jqo-io-processed"
-                                                                        src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
-                                                                        srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}">
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="c-node-ai__details-wrap">
-                                                            <h3 class="c-node-ai__title c-heading--gamma">
-                                                                <a href="/auction/{{ $item->id }}" data-mousetrap-trigger="4">
-                                                                    {{ $item->title }}
-                                                                </a>
-                                                            </h3>
-                                                            <div class="c-node-ai__bidding-details">
-                                                                <div class="o-layout">
-                                                                    <div class="o-layout__item u-7/12">
-                                                                        <div class="c-node-ai__timer">
-                                                                            <div id="ai-timer-{{ $item->id }}"
-                                                                                class="js-timer-wrapper c-timer c-timer--small-block u-hide-no-js">
-                                                                                <div class="c-timer__title"><span class="js-timer-title">Time remaining</span></div>
-                                                                                <span class="c-timer__body">
-                                                                                    <span class="js-timer"
-                                                                                        data-timer_id="ai-{{ $item->id }}-long-small-block"
-                                                                                        data-type="expiry"
-                                                                                        data-timeout="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}"
-                                                                                        data-format_num="long"
-                                                                                        data-deadline="{{ $item->dead_line }}"
-                                                                                        id="auction-timer-{{ $item->id }}">
-                                                                                        <span class="js-timer-element-days c-timer__element">
-                                                                                            <span class="c-timer__value" id="days-{{ $item->id }}">0</span>
-                                                                                            <span class="c-timer__period">Days</span>
-                                                                                        </span>
-                                                                                        <span class="c-timer__element">
-                                                                                            <span class="c-timer__value" id="hours-{{ $item->id }}">0</span>
-                                                                                            <span class="c-timer__period">Hrs</span>
-                                                                                        </span>
-                                                                                        <span class="c-timer__element">
-                                                                                            <span class="c-timer__value" id="minutes-{{ $item->id }}">0</span>
-                                                                                            <span class="c-timer__period">Mins</span>
-                                                                                        </span>
-                                                                                    </span>
+            <div class="auction-component-container {{ $uniqueId }}" style="{{ $wrapperStyleStr }}">
+                <div class="auction-main-wrapper">
+                    <div class="auction-display-container" style="{{ $styleStr }}">
+                        <div class="auction-items-wrapper">
+                            <div class="auction-items-grid">
+                                @foreach ($auction as $item)
+                                <div class="auction-item-wrapper">
+                                    <div class="auction-card">
+                                        <div id="node-{{ $item->id }}"
+                                            class="c-node-ai c-node-ai--teaser js-ai js-ai--teaser js-eq js-ai--teaser-view c-node-ai--teaser-view"
+                                            about="/auction/{{ $item->id }}" typeof="sioc:Item foaf:Document"
+                                            data-entity-id="{{ $item->id }}" data-unmet-reserve="0" data-live-id="{{ $item->id }}"
+                                            data-updated="{{ \Carbon\Carbon::parse($item->updated_at)->timestamp }}"
+                                            data-leader="{{ $item->leader_id ?? '' }}" data-status="bidding" data-lec="false"
+                                            data-expiry="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}">
+                                            <div class="c-node-ai__content">
+                                                <div id="air-ai-status-indicator-{{ $item->id }}"
+                                                    class="js-ai-status-indicator c-node-ai__status c-node-ai__status--teaser c-tooltip c-tooltip--n"
+                                                    aria-label="Bidding is under way."></div>
+                                                <div class="c-node-ai__image-wrap">
+                                                    <div class="c-node-ai__image">
+                                                        <svg viewBox="0 0 100 100"></svg>
+                                                        <a href="/auction/{{ $item->id }}" class="">
+                                                            <img alt="{{ $item->title }}"
+                                                                sizes="(min-width: 110em) 420px, (min-width: 90em) 25vw, (min-width: 60em) 33vw, (min-width: 30em) 50vw, 100vw"
+                                                                data-src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                                data-srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                                class="jqo-io-processed"
+                                                                src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
+                                                                srcset="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="c-node-ai__details-wrap">
+                                                    <h3 class="c-node-ai__title c-heading--gamma">
+                                                        <a href="/auction/{{ $item->id }}" data-mousetrap-trigger="4">
+                                                            {{ $item->title }}
+                                                        </a>
+                                                    </h3>
+                                                    <div class="c-node-ai__bidding-details">
+                                                        <div class="auction-details-layout">
+                                                            <div class="auction-timer-section">
+                                                                <div class="c-node-ai__timer">
+                                                                    <div id="ai-timer-{{ $item->id }}"
+                                                                        class="js-timer-wrapper c-timer c-timer--small-block u-hide-no-js">
+                                                                        <div class="c-timer__title"><span class="js-timer-title">Time remaining</span></div>
+                                                                        <span class="c-timer__body">
+                                                                            <span class="js-timer"
+                                                                                data-timer_id="ai-{{ $item->id }}-long-small-block"
+                                                                                data-type="expiry"
+                                                                                data-timeout="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}"
+                                                                                data-format_num="long"
+                                                                                data-deadline="{{ $item->dead_line }}"
+                                                                                id="auction-timer-{{ $item->id }}">
+                                                                                <span class="js-timer-element-days c-timer__element">
+                                                                                    <span class="c-timer__value" id="days-{{ $item->id }}">0</span>
+                                                                                    <span class="c-timer__period">Days</span>
                                                                                 </span>
-                                                                            </div>
-                                                                        </div>
+                                                                                <span class="c-timer__element">
+                                                                                    <span class="c-timer__value" id="hours-{{ $item->id }}">0</span>
+                                                                                    <span class="c-timer__period">Hrs</span>
+                                                                                </span>
+                                                                                <span class="c-timer__element">
+                                                                                    <span class="c-timer__value" id="minutes-{{ $item->id }}">0</span>
+                                                                                    <span class="c-timer__period">Mins</span>
+                                                                                </span>
+                                                                            </span>
+                                                                        </span>
                                                                     </div>
-                                                                    <div class="o-layout__item u-5/12">
-                                                                        <div class="c-node-ai__price">
-                                                                            <div id="ai-price-{{ $item->id }}" class="c-price  c-price--small-block">
-                                                                                <div class="c-price__title"><span class="js-price-title">Current bid</span></div>
-                                                                                <div class="c-price__wrapper">
-                                                                                    <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
-                                                                                        id="auction-price-{{ $item->id }}"
-                                                                                        data-live-item="price"
-                                                                                        data-tcid="{{ $item->id }}:price"
-                                                                                        style="font-size: 16px;">
-                                                                                        ${{ $item->starting_price ?? 0 }}
-                                                                                    </div>
-                                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="auction-price-section">
+                                                                <div class="c-node-ai__price">
+                                                                    <div id="ai-price-{{ $item->id }}" class="c-price  c-price--small-block">
+                                                                        <div class="c-price__title"><span class="js-price-title">Current bid</span></div>
+                                                                        <div class="c-price__wrapper">
+                                                                            <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
+                                                                                id="auction-price-{{ $item->id }}"
+                                                                                data-live-item="price"
+                                                                                data-tcid="{{ $item->id }}:price"
+                                                                                style="font-size: 16px;">
+                                                                                ${{ $item->starting_price ?? 0 }}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -2148,8 +2147,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 </div>
                                             </div>
                                         </div>
-                                        @endforeach
+                                    </div>
                                 </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>

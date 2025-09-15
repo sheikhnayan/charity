@@ -159,16 +159,81 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border: unset;
     }
 
-    /* Auction Component Styles */
-    .c-content__bottom {
-        background-color: #f9fafb;
+    /* Auction Component Styles - Container Responsive */
+    .auction-component-container {
+        width: 100%;
+        background-color: transparent;
     }
 
-    .c-view__item.c-view__item--teaser {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex-basis: 100% !important;
-        min-width: 330px !important;
+    .auction-main-wrapper {
+        width: 100%;
+    }
+
+    .auction-display-container {
+        width: 100%;
+    }
+
+    .auction-items-wrapper {
+        width: 100%;
+    }
+
+    .auction-items-grid {
+        display: grid;
+        gap: 20px;
+        width: 100%;
+        /* Default: 3 columns for full-width containers */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    /* Container-aware responsive behavior */
+    @media (min-width: 1200px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+    }
+
+    @media (max-width: 991px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+        .auction-items-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+
+    /* For when auction is in small containers (col-md-6, col-md-4, etc.) */
+    @container (max-width: 600px) {
+        .auction-items-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @container (max-width: 900px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+        }
+    }
+
+    .auction-item-wrapper {
+        width: 100%;
+        min-width: 0; /* Prevents overflow */
+    }
+
+    .auction-card {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .c-node-ai {
@@ -177,6 +242,10 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border-radius: 8px;
         overflow: hidden;
         transition: transform 0.2s, box-shadow 0.2s;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .c-node-ai:hover {
@@ -184,10 +253,17 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
+    .c-node-ai__content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
     .c-node-ai__image {
         position: relative;
         overflow: hidden;
         height: 200px;
+        flex-shrink: 0;
     }
 
     .c-node-ai__image img {
@@ -198,17 +274,61 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
 
     .c-node-ai__details-wrap {
         padding: 16px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .c-node-ai__title {
         margin: 0 0 12px 0;
         font-size: 1.1rem;
         font-weight: 600;
+        flex-shrink: 0;
     }
 
     .c-node-ai__title a {
         text-decoration: none;
         color: #333;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .c-node-ai__bidding-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .auction-details-layout {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .auction-timer-section {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .auction-price-section {
+        flex: 0 0 auto;
+        min-width: 100px;
+    }
+
+    @media (max-width: 480px) {
+        .auction-details-layout {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .auction-timer-section,
+        .auction-price-section {
+            flex: none;
+            min-width: auto;
+        }
     }
 
     .c-timer {
@@ -216,26 +336,29 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border-radius: 4px;
         padding: 8px;
         text-align: center;
+        width: 100%;
     }
 
     .c-timer__title {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #666;
         margin-bottom: 4px;
+        white-space: nowrap;
     }
 
     .c-timer__element {
         display: inline-block;
-        margin: 0 4px;
+        margin: 0 2px;
     }
 
     .c-timer__value {
         font-weight: bold;
         color: #333;
+        font-size: 0.9rem;
     }
 
     .c-timer__period {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: #666;
     }
 
@@ -245,9 +368,48 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border-radius: 4px;
         padding: 8px;
         text-align: center;
+        width: 100%;
     }
 
     .c-price__title {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    .c-price__value {
+        font-weight: bold;
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 576px) {
+        .c-node-ai__image {
+            height: 160px;
+        }
+        
+        .c-node-ai__details-wrap {
+            padding: 12px;
+        }
+        
+        .c-node-ai__title {
+            font-size: 1rem;
+        }
+        
+        .c-timer__element {
+            margin: 0 1px;
+        }
+        
+        .c-timer__value {
+            font-size: 0.8rem;
+        }
+        
+        .c-timer__period {
+            font-size: 0.65rem;
+        }
+    }
         font-size: 0.8rem;
         color: #666;
         margin-bottom: 4px;
@@ -257,23 +419,6 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         font-weight: bold;
         font-size: 1.1rem;
         color: #2c3e50;
-    }
-
-    .o-layout {
-        display: flex;
-        gap: 12px;
-    }
-
-    .o-layout__item {
-        flex: 1;
-    }
-
-    .u-7\/12 {
-        flex: 0 0 58.333%;
-    }
-
-    .u-5\/12 {
-        flex: 0 0 41.667%;
     }
 
     /* Universal Inner Section Wrapper - Completely Invisible by Default */
