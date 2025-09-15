@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="page-title-actions">
-                <a href="{{ route('admin.websites.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.website.index') }}" class="btn btn-secondary">
                     <i class="fa fa-arrow-left"></i> Back to Websites
                 </a>
             </div>
