@@ -19,70 +19,24 @@ class DealmakerAdminController extends Controller
     {
         \Log::info('DealMaker Admin Update - Request Data: ' . json_encode($request->all()));
         
-        // Simplified validation for fields that are actually in the form
-        $validated = $request->validate([
-            // SEO Meta
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:500',
-            'og_image' => 'nullable|url',
-            
-            // Hero Section
-            'hero_title' => 'nullable|string|max:255',
-            'hero_subtitle' => 'nullable|string|max:255',
-            'hero_cta_text' => 'nullable|string|max:100',
-            'hero_cta_url' => 'nullable|string|max:255',
-            'hero_background_video' => 'nullable|url',
-            'hero_background_image' => 'nullable|url',
-            
-            // Site Branding
-            'site_logo' => 'nullable|url',
-            'site_tagline' => 'nullable|string|max:255',
-            
-            // Statistics
-            'stat_1_number' => 'nullable|string|max:20',
-            'stat_1_text' => 'nullable|string|max:100',
-            'stat_2_number' => 'nullable|string|max:20',
-            'stat_2_text' => 'nullable|string|max:100',
-            'stat_3_number' => 'nullable|string|max:20',
-            'stat_3_text' => 'nullable|string|max:100',
-            
-            // Announcement
-            'announcement_text' => 'nullable|string|max:255',
-            'announcement_badge' => 'nullable|string|max:100',
-            'announcement_url' => 'nullable|string|max:255',
-            
-            // Custom Code
-            'custom_css' => 'nullable|string',
-            'custom_js' => 'nullable|string',
-            'custom_head_code' => 'nullable|string',
-            
-            // Section Toggles (only ones in form)
-            'show_hero' => 'boolean',
-            'show_stats' => 'boolean',
-            'show_about' => 'boolean',
-            'show_services' => 'boolean',
-            'show_testimonials' => 'boolean',
-            'show_contact' => 'boolean'
-        ]);
-
-        \Log::info('DealMaker Admin Update - Validated Data: ' . json_encode($validated));
-
+        // Get all request data without validation
+        $data = $request->all();
+        
         // Handle section visibility checkboxes
-        $validated['show_hero'] = $request->has('show_hero');
-        $validated['show_stats'] = $request->has('show_stats');
-        $validated['show_about'] = $request->has('show_about');
-        $validated['show_services'] = $request->has('show_services');
-        $validated['show_testimonials'] = $request->has('show_testimonials');
-        $validated['show_contact'] = $request->has('show_contact');
+        $data['show_hero'] = $request->has('show_hero');
+        $data['show_stats'] = $request->has('show_stats');
+        $data['show_about'] = $request->has('show_about');
+        $data['show_services'] = $request->has('show_services');
+        $data['show_testimonials'] = $request->has('show_testimonials');
+        $data['show_contact'] = $request->has('show_contact');
 
-        \Log::info('DealMaker Admin Update - Final Data: ' . json_encode($validated));
+        \Log::info('DealMaker Admin Update - Final Data: ' . json_encode($data));
 
         try {
             $setting = DealmakerConfig::getInstance();
             \Log::info('DealMaker Admin Update - Current Setting ID: ' . $setting->id);
             
-            $result = $setting->update($validated);
+            $result = $setting->update($data);
             \Log::info('DealMaker settings update result: ' . ($result ? 'success' : 'failed'));
             
             if ($result) {
@@ -101,16 +55,12 @@ class DealmakerAdminController extends Controller
 
     public function addLogo(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'required|url',
-            'url' => 'nullable|url'
-        ]);
+        $data = $request->all();
 
         $setting = DealmakerConfig::getInstance();
         
         $logos = $setting->client_logos ?? [];
-        $logos[] = $validated;
+        $logos[] = $data;
 
         $setting->update(['client_logos' => $logos]);
 

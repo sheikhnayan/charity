@@ -159,6 +159,123 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         border: unset;
     }
 
+    /* Auction Component Styles */
+    .c-content__bottom {
+        background-color: #f9fafb;
+    }
+
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
+
+    .c-node-ai {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .c-node-ai:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .c-node-ai__image {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .c-node-ai__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .c-node-ai__details-wrap {
+        padding: 16px;
+    }
+
+    .c-node-ai__title {
+        margin: 0 0 12px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .c-node-ai__title a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    .c-timer {
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .c-timer__title {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .c-timer__element {
+        display: inline-block;
+        margin: 0 4px;
+    }
+
+    .c-timer__value {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .c-timer__period {
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .c-price {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .c-price__title {
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .c-price__value {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #2c3e50;
+    }
+
+    .o-layout {
+        display: flex;
+        gap: 12px;
+    }
+
+    .o-layout__item {
+        flex: 1;
+    }
+
+    .u-7\/12 {
+        flex: 0 0 58.333%;
+    }
+
+    .u-5\/12 {
+        flex: 0 0 41.667%;
+    }
+
     /* Universal Inner Section Wrapper - Completely Invisible by Default */
     .page-inner-section {
         width: 100%;
@@ -480,6 +597,54 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
             document.getElementById('galleryImageModalImg').alt = alt;
             new bootstrap.Modal(document.getElementById('galleryImageModal')).show();
         }
+
+        // Auction Timer Functionality
+        function initializeAuctionTimers() {
+            // Find all auction timers on the page
+            const timers = document.querySelectorAll('[id^="auction-timer-"]');
+            
+            timers.forEach(timer => {
+                const timerData = timer.querySelector('.js-timer');
+                if (!timerData) return;
+                
+                const deadline = timerData.getAttribute('data-deadline');
+                const itemId = timer.id.replace('auction-timer-', '');
+                
+                if (!deadline) return;
+                
+                const deadlineTime = new Date(deadline).getTime();
+                
+                // Update timer every second
+                const interval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const timeLeft = deadlineTime - now;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        // Show expired state
+                        document.getElementById(`days-${itemId}`).textContent = '0';
+                        document.getElementById(`hours-${itemId}`).textContent = '0';
+                        document.getElementById(`minutes-${itemId}`).textContent = '0';
+                        return;
+                    }
+                    
+                    // Calculate time units
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    // Update display
+                    document.getElementById(`days-${itemId}`).textContent = days;
+                    document.getElementById(`hours-${itemId}`).textContent = hours;
+                    document.getElementById(`minutes-${itemId}`).textContent = minutes;
+                }, 1000);
+            });
+        }
+
+        // Initialize timers when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuctionTimers();
+        });
     </script>
 </body>
 </html>
