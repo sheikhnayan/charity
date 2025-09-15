@@ -152,7 +152,7 @@
   <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}">
     <a href="/admins/dealmaker-settings" class="menu-link">
       <i class="menu-icon tf-icons bx bx-home"></i>
-      <div class="text-truncate">DealMaker Settings</div>
+      <div class="text-truncate">Homepage Settings</div>
     </a>
   </li>
 
