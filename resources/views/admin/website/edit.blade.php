@@ -82,10 +82,16 @@
                                         @csrf
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label for="first_name" class="form-label">Name</label>
+                                                        <label for="first_name" class="form-label">First Name</label>
                                                         <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name" value="{{ $data->user->name }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="last_name" class="form-label">Last Name</label>
+                                                        <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Last Name" value="{{ $data->user->last_name ?? '' }}" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -99,10 +105,17 @@
                                                         <small class="form-text text-muted">Choose whether this website is for fundraising or investment purposes.</small>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="email" class="form-label">Email</label>
                                                         <input type="email" name="email" class="form-control" id="email" placeholder="Email" value="{{ $data->user->email }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="password" class="form-label">Password</label>
+                                                        <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+                                                        <small class="form-text text-muted">Leave blank to keep current password.</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -134,8 +147,67 @@
                                                 </div>
                                             </div>
 
+                                            <!-- Investment-specific fields -->
+                                            <div class="row" id="investment-fields" style="display: {{ $data->type == 'investment' ? 'block' : 'none' }};">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="share_price" class="form-label">Share Price ($)</label>
+                                                        <input type="number" name="share_price" class="form-control" id="share_price" placeholder="2.13" step="0.01" min="0.01" value="{{ $data->share_price ?? '' }}">
+                                                        <small class="form-text text-muted">Price per share for investment calculations.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="min_investment" class="form-label">Minimum Investment ($)</label>
+                                                        <input type="number" name="min_investment" class="form-control" id="min_investment" placeholder="1000" step="1" min="1" value="{{ $data->min_investment ?? '' }}">
+                                                        <small class="form-text text-muted">Minimum amount required to invest.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="investment_tiers" class="form-label">Investment Tiers</label>
+                                                        <input type="text" name="investment_tiers" class="form-control" id="investment_tiers" placeholder="1000,2500,5000,10000" value="{{ $data->investment_tiers ?? '' }}">
+                                                        <small class="form-text text-muted">Comma-separated list of investment amounts to display as quick options.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="preset_amounts" class="form-label">Preset Amounts</label>
+                                                        <input type="text" name="preset_amounts" value="{{ $data->preset_amounts ?? '' }}" class="form-control" id="preset_amounts" placeholder="e.g. 100,500,1000">
+                                                        <small class="form-text text-muted">Enter preset amounts separated by commas. These will be available for quick selection in auction/investment components.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="shares" class="form-label">Shares</label>
+                                                        <input type="number" name="shares" value="{{ $data->shares ?? '' }}" class="form-control" id="shares" placeholder="Number of shares">
+                                                        <small class="form-text text-muted">Specify the number of shares available for investment/auction.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.website.index') }}" class="btn btn-danger">Cancel</a>
+                                            <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const websiteTypeSelect = document.getElementById('type');
+                                                const investmentFields = document.getElementById('investment-fields');
+                                                const sharePriceField = document.getElementById('share_price');
+                                                const minInvestmentField = document.getElementById('min_investment');
+                                                websiteTypeSelect.addEventListener('change', function() {
+                                                    if (this.value === 'investment') {
+                                                        investmentFields.style.display = 'block';
+                                                        sharePriceField.required = true;
+                                                        minInvestmentField.required = true;
+                                                    } else {
+                                                        investmentFields.style.display = 'none';
+                                                        sharePriceField.required = false;
+                                                        minInvestmentField.required = false;
+                                                    }
+                                                });
+                                            });
+                                            </script>
                                         </div>
 
                                     </form>

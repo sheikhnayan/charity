@@ -184,21 +184,58 @@ class WebsiteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
         // Validate the request
-        $request->validate([
+        $validation = [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email',
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
-        ]);
+            'preset_amounts' => 'nullable|string',
+            'shares' => 'nullable|numeric',
+        ];
+        if ($request->type === 'investment') {
+            $validation['share_price'] = 'required|numeric|min:0.01';
+            $validation['min_investment'] = 'required|numeric|min:1';
+            $validation['investment_tiers'] = 'nullable|string';
+        }
+        // Only validate password if present
+        if ($request->filled('password')) {
+            $validation['password'] = 'string|min:6';
+        }
+        $request->validate($validation);
 
         $update = Website::find($id);
         $update->name = $request->name;
         $update->domain = $request->domain;
         $update->type = $request->type;
         $update->status = $request->status;
+        $update->preset_amounts = $request->preset_amounts;
+        $update->shares = $request->shares;
+        if ($request->type === 'investment') {
+            $update->share_price = $request->share_price;
+            $update->min_investment = $request->min_investment;
+            $update->investment_tiers = $request->investment_tiers;
+        } else {
+            $update->share_price = null;
+            $update->min_investment = null;
+            $update->investment_tiers = null;
+        }
         $update->update();
+
+        // Update related user info
+        $user = User::where('website_id', $update->id)->first();
+        if ($user) {
+            $user->name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->email = $request->email;
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->update();
+        }
 
         return redirect()->route('admin.website.index')->with('success', 'Website updated successfully.');
     }
