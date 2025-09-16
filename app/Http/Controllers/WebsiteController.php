@@ -218,10 +218,6 @@ class WebsiteController extends Controller
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;
             $update->investment_tiers = $request->investment_tiers;
-        } else {
-            $update->share_price = null;
-            $update->min_investment = null;
-            $update->investment_tiers = null;
         }
         $update->update();
 

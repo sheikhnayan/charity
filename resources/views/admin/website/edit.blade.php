@@ -171,7 +171,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                            {{-- <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="preset_amounts" class="form-label">Preset Amounts</label>
@@ -186,7 +186,7 @@
                                                         <small class="form-text text-muted">Specify the number of shares available for investment/auction.</small>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.website.index') }}" class="btn btn-danger">Cancel</a>
                                             <script>
