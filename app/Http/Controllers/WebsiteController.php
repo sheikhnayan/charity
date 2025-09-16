@@ -193,8 +193,6 @@ class WebsiteController extends Controller
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
-            'preset_amounts' => 'nullable|string',
-            'shares' => 'nullable|numeric',
         ];
         if ($request->type === 'investment') {
             $validation['share_price'] = 'required|numeric|min:0.01';
@@ -212,8 +210,6 @@ class WebsiteController extends Controller
         $update->domain = $request->domain;
         $update->type = $request->type;
         $update->status = $request->status;
-        $update->preset_amounts = $request->preset_amounts;
-        $update->shares = $request->shares;
         if ($request->type === 'investment') {
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;
