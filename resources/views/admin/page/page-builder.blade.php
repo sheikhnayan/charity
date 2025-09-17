@@ -684,6 +684,13 @@ window.addEventListener('load', function() {
       gap: 4px;
     }
 
+    .component-controls .btn {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 1000;
+    }
+
     .btn {
       padding: 4px 8px;
       background: var(--primary-color);
@@ -1183,6 +1190,19 @@ window.addEventListener('load', function() {
   background: #f8f9fa;
   border-color: var(--primary-color);
   color: var(--primary-color);
+}
+
+.btn-outline:disabled {
+  background: transparent;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-outline:disabled:hover {
+  background: transparent;
+  border-color: #e5e7eb;
+  color: #9ca3af;
 }
 
 .btn-primary {
@@ -2540,14 +2560,186 @@ button a:hover {
       return 'desktop';
     }
 
+    // History Management System for Undo/Redo
+    class HistoryManager {
+      constructor(maxStates = 50) {
+        this.states = [];
+        this.currentIndex = -1;
+        this.maxStates = maxStates;
+        this.isRedoing = false;
+        this.isUndoing = false;
+      }
+
+      // Save current state to history
+      saveState(description = 'Action') {
+        // Don't save state during undo/redo operations
+        if (this.isRedoing || this.isUndoing) return;
+
+        try {
+          const currentState = serializeBuilder();
+          const stateData = {
+            state: JSON.parse(JSON.stringify(currentState)),
+            description: description,
+            timestamp: Date.now()
+          };
+
+          // Remove any states after current index (when user makes new action after undo)
+          this.states = this.states.slice(0, this.currentIndex + 1);
+          
+          // Add new state
+          this.states.push(stateData);
+          this.currentIndex++;
+
+          // Limit history size
+          if (this.states.length > this.maxStates) {
+            this.states.shift();
+            this.currentIndex--;
+          }
+
+          this.updateUndoRedoButtons();
+          console.log(`History saved: ${description} (${this.states.length} states)`);
+        } catch (error) {
+          console.error('Error saving history state:', error);
+        }
+      }
+
+      // Undo last action
+      undo() {
+        if (this.currentIndex <= 0) {
+          console.log('Nothing to undo');
+          return false;
+        }
+
+        try {
+          this.isUndoing = true;
+          this.currentIndex--;
+          const stateToRestore = this.states[this.currentIndex];
+          
+          console.log(`Undoing to: ${stateToRestore.description}`);
+          deserializeBuilder(stateToRestore.state);
+          
+          // Clear selection to avoid issues with restored components
+          if (window.selectedComponent) {
+            window.selectedComponent.classList.remove('selected');
+            window.selectedComponent = null;
+            updatePropertyPanel();
+          }
+
+          this.updateUndoRedoButtons();
+          
+          // Refresh insertion zones and structure panel
+          setTimeout(() => {
+            refreshInsertionZones();
+            updateStructurePanel();
+            this.isUndoing = false;
+          }, 100);
+
+          return true;
+        } catch (error) {
+          console.error('Error during undo:', error);
+          this.isUndoing = false;
+          return false;
+        }
+      }
+
+      // Redo last undone action
+      redo() {
+        if (this.currentIndex >= this.states.length - 1) {
+          console.log('Nothing to redo');
+          return false;
+        }
+
+        try {
+          this.isRedoing = true;
+          this.currentIndex++;
+          const stateToRestore = this.states[this.currentIndex];
+          
+          console.log(`Redoing to: ${stateToRestore.description}`);
+          deserializeBuilder(stateToRestore.state);
+          
+          // Clear selection to avoid issues with restored components
+          if (window.selectedComponent) {
+            window.selectedComponent.classList.remove('selected');
+            window.selectedComponent = null;
+            updatePropertyPanel();
+          }
+
+          this.updateUndoRedoButtons();
+          
+          // Refresh insertion zones and structure panel
+          setTimeout(() => {
+            refreshInsertionZones();
+            updateStructurePanel();
+            this.isRedoing = false;
+          }, 100);
+
+          return true;
+        } catch (error) {
+          console.error('Error during redo:', error);
+          this.isRedoing = false;
+          return false;
+        }
+      }
+
+      // Update undo/redo button states
+      updateUndoRedoButtons() {
+        const undoBtn = document.querySelector('[onclick="undoLastAction()"]');
+        const redoBtn = document.querySelector('[onclick="redoLastAction()"]');
+
+        if (undoBtn) {
+          undoBtn.disabled = this.currentIndex <= 0;
+          undoBtn.style.opacity = this.currentIndex <= 0 ? '0.5' : '1';
+          undoBtn.title = this.currentIndex > 0 ? 
+            `Undo: ${this.states[this.currentIndex].description}` : 'Nothing to undo';
+        }
+
+        if (redoBtn) {
+          redoBtn.disabled = this.currentIndex >= this.states.length - 1;
+          redoBtn.style.opacity = this.currentIndex >= this.states.length - 1 ? '0.5' : '1';
+          redoBtn.title = this.currentIndex < this.states.length - 1 ? 
+            `Redo: ${this.states[this.currentIndex + 1].description}` : 'Nothing to redo';
+        }
+      }
+
+      // Clear history
+      clear() {
+        this.states = [];
+        this.currentIndex = -1;
+        this.updateUndoRedoButtons();
+      }
+
+      // Get current state info for debugging
+      getInfo() {
+        return {
+          statesCount: this.states.length,
+          currentIndex: this.currentIndex,
+          canUndo: this.currentIndex > 0,
+          canRedo: this.currentIndex < this.states.length - 1
+        };
+      }
+    }
+
+    // Global history manager instance
+    const historyManager = new HistoryManager();
+
+    // Throttled history save for frequent property changes
+    let saveHistoryTimeout = null;
+    function saveHistoryThrottled(description = 'Property changed', delay = 1000) {
+      if (saveHistoryTimeout) {
+        clearTimeout(saveHistoryTimeout);
+      }
+      saveHistoryTimeout = setTimeout(() => {
+        historyManager.saveState(description);
+        saveHistoryTimeout = null;
+      }, delay);
+    }
+
     function undoLastAction() {
-      // TODO: Implement undo functionality
-      console.log('Undo action');
+      historyManager.undo();
     }
 
     function redoLastAction() {
-      // TODO: Implement redo functionality
-      console.log('Redo action');
+      historyManager.redo();
     }
 
     function previewPage() {
@@ -3088,6 +3280,9 @@ button a:hover {
           }
           // Update structure panel when a new component is added
           updateStructurePanel();
+          
+          // Save state to history after component is added
+          historyManager.saveState(`Added ${type} component`);
         }, 10);
       }
     });
@@ -3105,7 +3300,7 @@ button a:hover {
       const controls = document.createElement('div');
       controls.className = 'component-controls';
       controls.innerHTML = `
-        <button class="btn" onclick="deleteComponent(this)">Delete</button>
+        <button class="btn" onclick="deleteComponent(this, event)">Delete</button>
       `;
 
       let content;
@@ -5534,8 +5729,23 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
       // Add click handler for selection
       component.addEventListener('click', (e) => {
+        // Don't select component if clicking on controls
+        if (e.target.closest('.component-controls')) {
+          return;
+        }
         e.stopPropagation();
         selectComponent(component);
+      });
+
+      // Prevent drag events from starting when clicking on component controls
+      controls.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      });
+
+      controls.addEventListener('dragstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
       });
 
       return component;
@@ -5587,6 +5797,9 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             refreshInsertionZones();
             updateStructurePanel();
             selectComponent(newComponent);
+            
+            // Save state to history after component is inserted in column
+            historyManager.saveState(`Added ${type} to column`);
           }, 10);
           
         } else if (parentPage) {
@@ -5651,6 +5864,9 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             if (componentToSelect) {
               selectComponent(componentToSelect);
             }
+            
+            // Save state to history after component is inserted
+            historyManager.saveState(`Inserted ${type} component`);
           }, 10);
         }
       });
@@ -5733,10 +5949,21 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
     }
 
     // Delete a component
-    function deleteComponent(btn) {
+    function deleteComponent(btn, event) {
+      // Prevent any drag or other event bubbling
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+      }
+      
       const component = btn.closest('.component');
+      const componentType = component.dataset.type || 'component';
       const parentColumn = component.closest('.inner-column');
       const parentSection = component.closest('.inner-section-component');
+      
+      // Save state before deletion
+      historyManager.saveState(`Delete ${componentType} component`);
       
       component.remove();
 
@@ -8134,6 +8361,9 @@ function updateImageField(value, field) {
     content._imageData[field] = value;
     content.renderImage();
     updatePropertyPanel();
+    
+    // Save throttled history for image field changes
+    saveHistoryThrottled(`Image ${field} updated`);
 }
 
 // Timeline functions
@@ -8666,6 +8896,9 @@ function uploadFWTIImage(event) {
         content.style[property] = input.value;
     }
 
+    // Save throttled history for style changes
+    saveHistoryThrottled(`Style changed: ${property}`);
+
     // Update the property panel input to reflect the actual applied margin
     setTimeout(() => {
         if (
@@ -8957,6 +9190,9 @@ function applyResponsiveStyles() {
         if (preview) {
           preview.src = src;
         }
+        
+        // Save state for image change
+        historyManager.saveState('Image source updated');
       }
     }
 
@@ -9002,12 +9238,18 @@ function applyResponsiveStyles() {
             if (textBoxPreview) {
                 console.log('updateContent: Updating text box preview', textBoxPreview, 'with', text);
                 textBoxPreview.innerHTML = text;
+                
+                // Save throttled history for content changes
+                saveHistoryThrottled('Content updated');
                 return;
             }
 
             // Fallback: update content.textContent (for other types)
             console.log('updateContent: Fallback, updating content.textContent for', content, 'with', text);
             content.textContent = text;
+            
+            // Save throttled history for content changes
+            saveHistoryThrottled('Content updated');
         }
 
     // Update heading level
@@ -9019,6 +9261,9 @@ function applyResponsiveStyles() {
         newHeading.style.cssText = oldHeading.style.cssText;
         newHeading.contentEditable = true;
         oldHeading.replaceWith(newHeading);
+        
+        // Save state for heading level change
+        historyManager.saveState(`Changed heading to ${level.toUpperCase()}`);
       }
     }
 
@@ -12033,6 +12278,11 @@ function applyResponsiveStyles() {
                     // Initialize insertion zones for existing components
                     refreshInsertionZones();
                     console.log('Insertion zones initialized');
+                    
+                    // Initialize history manager and save initial state
+                    historyManager.clear();
+                    historyManager.saveState('Page loaded');
+                    console.log('History manager initialized');
                 }, 500);
             } else {
                 console.log('No saved page found.');
@@ -12043,6 +12293,11 @@ function applyResponsiveStyles() {
                 // Initialize insertion zones for empty page
                 setTimeout(() => {
                     refreshInsertionZones();
+                    
+                    // Initialize history manager for empty page
+                    historyManager.clear();
+                    historyManager.saveState('Empty page loaded');
+                    console.log('History manager initialized for empty page');
                 }, 100);
             }
             })
@@ -12074,6 +12329,20 @@ function applyResponsiveStyles() {
             }
         }
     };
+
+    // Add keyboard shortcuts for undo/redo
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+Z for undo
+        if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undoLastAction();
+        }
+        // Ctrl+Y or Ctrl+Shift+Z for redo
+        else if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+            e.preventDefault();
+            redoLastAction();
+        }
+    });
 
     // Restore the showTab function (regression fix)
     function showTab(tabId) {
@@ -12941,7 +13210,7 @@ function initializeColumnSortable(column) {
             ghostClass: 'sortable-ghost',
             chosenClass: 'sortable-chosen',
             dragClass: 'sortable-drag',
-            filter: '.column-dropzone, .insertion-zone',
+            filter: '.column-dropzone, .insertion-zone, .component-controls, .component-controls *',
             onChoose: function(evt) {
                 evt.item.style.cursor = 'grabbing';
                 // Add visual feedback to all columns
@@ -12987,6 +13256,9 @@ function initializeColumnSortable(column) {
                     updateStructurePanel();
                     // Refresh insertion zones after drag and drop
                     refreshInsertionZones();
+                    
+                    // Save state to history after drag and drop
+                    historyManager.saveState('Component moved between columns');
                 }, 100);
                 
                 // Auto-save the page state after drag and drop
