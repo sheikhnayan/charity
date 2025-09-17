@@ -3333,7 +3333,7 @@ button a:hover {
         try {
             content.innerHTML = `
                 <div class="image-link" style="display:inline-block;">
-                    <img src="${src}" alt="${alt}" style="width:${width};height:${height};object-fit:${objectFit};border-radius:8px;cursor:default;transition:box-shadow .2s;" class="img-preview"/>
+                    <img src="${src}" alt="${alt}" style="width:${width};height:${height};object-fit:${objectFit};cursor:default;transition:box-shadow .2s;" class="img-preview"/>
                 </div>
             `;
             
@@ -3536,7 +3536,6 @@ break;
             content = document.createElement('div');
             content.className = 'inner-section-component';
             content.style.border = '2px dashed #ddd';
-            content.style.borderRadius = '8px';
             content.style.padding = '20px';
             content.style.margin = '10px 0';
             content.style.backgroundColor = 'transparent';
@@ -3680,7 +3679,7 @@ break;
                 borderColor: '#ddd',
                 borderStyle: 'dashed',
                 borderWidth: '2px',
-                borderRadius: '8px',
+                borderRadius: '',
                 padding: '20px',
                 margin: '10px 0',
                 columns: 2,
@@ -4026,7 +4025,7 @@ break;
                 if (images.length === 1) {
                     content.innerHTML = `
                         <div style="display:flex;justify-content:center;">
-                            <img src="${'${images[0]}'}" data-idx="0" class="gallery-img" style="width:auto;max-width:100%;height:220px;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                            <img src="${'${images[0]}'}" data-idx="0" class="gallery-img" style="width:auto;max-width:100%;height:220px;object-fit:contain;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
                         </div>
                     `;
                     return;
@@ -4036,7 +4035,7 @@ break;
                 images.forEach((src, idx) => {
                     html += `
                         <div class="gallery-img-col" style="flex: 0 0 calc(${'${100/columns}'}% - 10px); max-width: calc(${'${100/columns}'}% - 10px); display: flex; justify-content: center;">
-                            <img src="${'${src}'}" data-idx="${'${idx}'}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                            <img src="${'${src}'}" data-idx="${'${idx}'}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
                         </div>
                     `;
                 });
@@ -11500,7 +11499,7 @@ function applyResponsiveStyles() {
                   if (type === 'uploaded') {
                     const autoplayAttr = autoplay ? 'autoplay muted' : '';
                     container.innerHTML = `
-                      <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} style="border-radius: 8px; max-width: 100%;">
+                      <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} max-width: 100%;">
                         <source src="${url}" type="video/mp4">
                         <source src="${url}" type="video/webm">
                         <source src="${url}" type="video/ogg">
@@ -11709,7 +11708,7 @@ function applyResponsiveStyles() {
               borderColor: '#ddd',
               borderStyle: 'dashed',
               borderWidth: '2px',
-              borderRadius: '8px',
+              borderRadius: '',
               padding: '20px',
               margin: '10px 0',
               columns: 2,

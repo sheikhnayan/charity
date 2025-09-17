@@ -561,7 +561,7 @@
                     <a href="{{ $link }}" {{ $openInNewTab ? 'target="_blank"' : '' }} style="display:inline-block;">
                 @endif
                 <img src="{{ $src }}" alt="{{ $alt }}" 
-                     style="width:{{ $width }};height:{{ $height }};object-fit:{{ $objectFit }};border-radius:8px;" 
+                     style="width:{{ $width }};height:{{ $height }};object-fit:{{ $objectFit }};" 
                      class="img-fluid"/>
                 @if($link)
                     </a>
@@ -1765,7 +1765,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 @if($videoUrl)
                     @if($videoType === 'uploaded')
                         <!-- Uploaded video file -->
-                        <div class="video-container" style="width: {{ $customWidth }}; max-width: 100%; border-radius: 8px; overflow: hidden;">
+                        <div class="video-container" style="width: {{ $customWidth }}; max-width: 100%; overflow: hidden;">
                             <video 
                                 width="100%" 
                                 height="{{ $customHeight === 'auto' ? 'auto' : $customHeight }}"
