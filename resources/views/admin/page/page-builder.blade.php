@@ -19,6 +19,9 @@
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SortableJS for drag and drop functionality -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
 /* Custom Quill styles for better font size and family support */
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
@@ -487,6 +490,7 @@ window.addEventListener('load', function() {
       margin: 10px 0;
       border: 1px solid transparent;
       border-radius: 4px;
+      cursor: grab;
     }
 
     .component:hover {
@@ -495,6 +499,28 @@ window.addEventListener('load', function() {
 
     .component.selected {
       outline: 2px solid var(--primary-color);
+    }
+
+    /* Enhanced drag handle indicator */
+    .component::before {
+      content: '⋮⋮';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: #6c757d;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      letter-spacing: -2px;
+    }
+
+    .component:hover::before {
+      opacity: 0.7;
+    }
+
+    .component:active {
+      cursor: grabbing;
     }
 
     /* Video component specific styling in page builder */
@@ -553,6 +579,34 @@ window.addEventListener('load', function() {
     .inner-column:hover {
       border-color: var(--primary-color);
       background-color: #f0f9ff;
+    }
+
+    /* Enhanced styles for drag and drop functionality */
+    .inner-column.sortable-drag-over {
+      border-color: #22c55e !important;
+      background-color: #f0fdf4 !important;
+      transform: scale(1.02);
+    }
+
+    .component.sortable-ghost {
+      opacity: 0.5;
+      background-color: #e5e7eb;
+      border: 2px dashed #9ca3af;
+    }
+
+    .component.sortable-chosen {
+      cursor: grabbing !important;
+      transform: rotate(3deg);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 1000;
+    }
+
+    .component {
+      cursor: grab;
+    }
+
+    .component:active {
+      cursor: grabbing;
     }
 
     .column-dropzone {
@@ -1313,6 +1367,72 @@ button a:hover {
       border-color: var(--primary-color);
     }
     
+    /* Insertion zones between components */
+    .insertion-zone {
+      height: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      background: transparent;
+      border: 2px dashed transparent;
+      transition: all 0.2s ease;
+      opacity: 0;
+      position: relative;
+    }
+    
+    .insertion-zone.drag-active {
+      opacity: 1;
+      background: #e3f2fd;
+      border-color: #2196f3;
+    }
+    
+    .insertion-zone.drag-over {
+      height: 20px;
+      background: #1976d2;
+      border-color: #1976d2;
+      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+    }
+    
+    .insertion-zone::before {
+      content: "Drop here to insert";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 11px;
+      color: #1976d2;
+      background: #fff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .insertion-zone.drag-over::before {
+      opacity: 1;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* SortableJS drag states */
+    .sortable-ghost {
+      opacity: 0.3;
+    }
+    
+    .sortable-chosen {
+      cursor: grabbing;
+    }
+    
+    .sortable-drag {
+      cursor: grabbing;
+      transform: rotate(2deg);
+    }
+    
+    .sortable-drag-over {
+      background: #e3f2fd !important;
+      border-color: #2196f3 !important;
+    }
+    
     .component {
       position: relative;
       padding: 10px;
@@ -1954,6 +2074,9 @@ button a:hover {
 
             <div id="componentsTab" class="tab-section">
                 <h3><i class="bi bi-collection"></i> Components</h3>
+                <div class="drag-drop-info" style="background: #e3f2fd; border: 1px solid #90caf9; border-radius: 4px; padding: 8px; margin-bottom: 15px; font-size: 12px; color: #0d47a1;">
+                    <i class="fas fa-info-circle"></i> <strong>New:</strong> Drag components between columns! Hover over components in columns to see the drag handle (⋮⋮). You can also drop components between existing ones - look for blue insertion zones while dragging.
+                </div>
                 <div class="component-list">
                 <div class="component-item" draggable="true" data-type="inner-section"><i class="fas fa-layer-group me-2"></i>Inner Section</div>
                 <div class="component-item" draggable="true" data-type="text-images"><i class="fas fa-align-left me-2"></i>Text & Images</div>
@@ -2801,6 +2924,7 @@ button a:hover {
             'image' => asset($s->image),
         ];
     }));
+        
     let selectedComponent = null;
 
     let lastSelectedComponent = null;
@@ -2821,10 +2945,24 @@ button a:hover {
     // Handle drag over
     document.addEventListener('dragover', (e) => {
       e.preventDefault();
+      
+      // Handle dropzones
       const dropzone = e.target.closest('.dropzone');
       if (dropzone) {
         dropzone.classList.add('dragover');
       }
+      
+      // Handle insertion zones
+      const insertionZone = e.target.closest('.insertion-zone');
+      if (insertionZone) {
+        insertionZone.classList.add('drag-over');
+      }
+      
+      // Show all insertion zones when dragging
+      const allInsertionZones = document.querySelectorAll('.insertion-zone');
+      allInsertionZones.forEach(zone => {
+        zone.classList.add('drag-active');
+      });
     });
 
     // Handle drag leave
@@ -2833,14 +2971,39 @@ button a:hover {
       if (dropzone) {
         dropzone.classList.remove('dragover');
       }
+      
+      const insertionZone = e.target.closest('.insertion-zone');
+      if (insertionZone) {
+        insertionZone.classList.remove('drag-over');
+      }
+      
+      // Check if we're leaving the entire canvas area
+      if (!e.relatedTarget || !document.getElementById('canvas').contains(e.relatedTarget)) {
+        const allInsertionZones = document.querySelectorAll('.insertion-zone');
+        allInsertionZones.forEach(zone => {
+          zone.classList.remove('drag-active', 'drag-over');
+        });
+      }
     });
 
     // Handle drop
     document.addEventListener('drop', (e) => {
       e.preventDefault();
+      
+      // Clear all drag states
+      const allInsertionZones = document.querySelectorAll('.insertion-zone');
+      allInsertionZones.forEach(zone => {
+        zone.classList.remove('drag-active', 'drag-over');
+      });
+      
       const dropzone = e.target.closest('.dropzone');
-      if (dropzone) {
-        dropzone.classList.remove('dragover');
+      const insertionZone = e.target.closest('.insertion-zone');
+      
+      if (dropzone || insertionZone) {
+        if (dropzone) {
+          dropzone.classList.remove('dragover');
+        }
+        
         const type = e.dataTransfer.getData('type');
         
         let componentToAdd;
@@ -2884,17 +3047,29 @@ button a:hover {
           componentToAdd = innerSection;
         }
 
-        // Insert the component (either inner-section or wrapped component) before the dropzone
-        dropzone.parentNode.insertBefore(componentToAdd, dropzone);
+        if (insertionZone) {
+          // Insert at the specific position indicated by the insertion zone
+          const parentContainer = insertionZone.parentNode;
+          parentContainer.insertBefore(componentToAdd, insertionZone.nextSibling);
+          
+          // Add new insertion zones around the new component
+          refreshInsertionZones();
+        } else if (dropzone) {
+          // Insert the component (either inner-section or wrapped component) before the dropzone
+          dropzone.parentNode.insertBefore(componentToAdd, dropzone);
 
-        // Create a new dropzone after the component
-        const newDropzone = createDropzone();
-        dropzone.parentNode.insertBefore(newDropzone, dropzone);
+          // Create a new dropzone after the component
+          const newDropzone = createDropzone();
+          dropzone.parentNode.insertBefore(newDropzone, dropzone);
 
-        // Remove the original dropzone if it's not the last one
-        const dropzones = document.querySelectorAll('.dropzone');
-        if (dropzones.length > 1) {
-          dropzone.remove();
+          // Remove the original dropzone if it's not the last one
+          const dropzones = document.querySelectorAll('.dropzone');
+          if (dropzones.length > 1) {
+            dropzone.remove();
+          }
+          
+          // Add insertion zones around the new component
+          refreshInsertionZones();
         }
 
         // Select the appropriate component
@@ -3268,6 +3443,10 @@ break;
                                 // Hide dropzone text if column has components
                                 const hasComponents = column.querySelectorAll('.component').length > 0;
                                 columnDropzone.style.display = hasComponents ? 'none' : 'block';
+                                // Refresh insertion zones after adding component to column
+                                setTimeout(() => {
+                                    refreshInsertionZones();
+                                }, 10);
                                 // Update structure panel and select the new component
                                 setTimeout(() => {
                                     updateStructurePanel();
@@ -3275,6 +3454,11 @@ break;
                                 }, 10);
                             }
                         });
+                        
+                        // Initialize SortableJS for drag and drop between columns
+                        setTimeout(() => {
+                            initializeColumnSortable(column);
+                        }, 100);
                         columnContainer.appendChild(column);
                     }
                 } else {
@@ -5365,6 +5549,189 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
       return dropzone;
     }
 
+    // Create an insertion zone
+    function createInsertionZone() {
+      const insertionZone = document.createElement('div');
+      insertionZone.className = 'insertion-zone';
+      
+      // Add event handlers for insertion zones
+      insertionZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Clear drag states
+        insertionZone.classList.remove('drag-over');
+        
+        const type = e.dataTransfer.getData('type');
+        if (!type) return;
+        
+        const parentColumn = insertionZone.closest('.inner-column');
+        const parentPage = insertionZone.closest('#page');
+        
+        if (parentColumn) {
+          // This is an insertion within a column
+          const newComponent = createComponent(type);
+          newComponent.style.width = '100%';
+          
+          // Insert after this insertion zone
+          parentColumn.insertBefore(newComponent, insertionZone.nextSibling);
+          
+          // Hide dropzone text if column has components
+          const columnDropzone = parentColumn.querySelector('.column-dropzone');
+          if (columnDropzone) {
+            columnDropzone.style.display = 'none';
+          }
+          
+          // Refresh insertion zones and update structure
+          setTimeout(() => {
+            refreshInsertionZones();
+            updateStructurePanel();
+            selectComponent(newComponent);
+          }, 10);
+          
+        } else if (parentPage) {
+          // This is an insertion at the main page level
+          let componentToAdd;
+          
+          // Check if this is an inner-section component
+          if (type === 'inner-section') {
+            // Create inner-section normally
+            componentToAdd = createComponent(type);
+          } else {
+            // For any other component, create an inner-section wrapper with 1 column
+            // and place the component inside it
+            const innerSection = createComponent('inner-section');
+            const innerContent = getContentElement(innerSection);
+            
+            // Set to 1 column
+            innerContent.updateColumns(1);
+            innerContent._innerSectionData.columns = 1;
+            
+            // Update the label to indicate it's auto-created
+            const sectionLabel = innerContent.querySelector('.section-label');
+            if (sectionLabel) {
+              sectionLabel.textContent = 'Auto Section (1 Column)';
+              sectionLabel.style.display = 'none'; // Hide label for auto sections
+            }
+            
+            // Create the actual component
+            const actualComponent = createComponent(type);
+            
+            // Add the component to the first (and only) column
+            const firstColumn = innerContent.querySelector('.inner-column');
+            if (firstColumn) {
+              firstColumn.appendChild(actualComponent);
+              
+              // Hide the dropzone text
+              const columnDropzone = firstColumn.querySelector('.column-dropzone');
+              if (columnDropzone) {
+                columnDropzone.style.display = 'none';
+              }
+            }
+            
+            componentToAdd = innerSection;
+          }
+          
+          // Insert at the specific position indicated by the insertion zone
+          parentPage.insertBefore(componentToAdd, insertionZone.nextSibling);
+          
+          // Select the appropriate component
+          let componentToSelect;
+          if (type === 'inner-section') {
+            componentToSelect = componentToAdd;
+          } else {
+            // Select the actual component inside the auto-created inner-section
+            componentToSelect = componentToAdd.querySelector('.inner-column .component');
+          }
+          
+          // Refresh insertion zones and select component
+          setTimeout(() => {
+            refreshInsertionZones();
+            updateStructurePanel();
+            if (componentToSelect) {
+              selectComponent(componentToSelect);
+            }
+          }, 10);
+        }
+      });
+      
+      insertionZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        insertionZone.classList.add('drag-over');
+      });
+      
+      insertionZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        insertionZone.classList.remove('drag-over');
+      });
+      
+      return insertionZone;
+    }
+
+    // Refresh insertion zones throughout the page
+    function refreshInsertionZones() {
+      // Remove existing insertion zones
+      const existingInsertionZones = document.querySelectorAll('.insertion-zone');
+      existingInsertionZones.forEach(zone => zone.remove());
+      
+      // Add insertion zones in main canvas between components
+      const page = document.getElementById('page');
+      const components = Array.from(page.children).filter(child => child.classList.contains('component'));
+      
+      components.forEach((component, index) => {
+        // Add insertion zone before each component
+        const insertionZone = createInsertionZone();
+        page.insertBefore(insertionZone, component);
+        
+        // Add insertion zone after the last component
+        if (index === components.length - 1) {
+          const finalInsertionZone = createInsertionZone();
+          page.insertBefore(finalInsertionZone, component.nextSibling);
+        }
+      });
+      
+      // If no components exist, add one insertion zone before the dropzone
+      if (components.length === 0) {
+        const firstDropzone = page.querySelector('.dropzone');
+        if (firstDropzone) {
+          const insertionZone = createInsertionZone();
+          page.insertBefore(insertionZone, firstDropzone);
+        }
+      }
+      
+      // Add insertion zones in inner section columns
+      const innerColumns = document.querySelectorAll('.inner-column');
+      innerColumns.forEach(column => {
+        const columnComponents = column.querySelectorAll('.component');
+        
+        columnComponents.forEach((component, index) => {
+          // Add insertion zone before each component
+          const insertionZone = createInsertionZone();
+          column.insertBefore(insertionZone, component);
+          
+          // Add insertion zone after the last component
+          if (index === columnComponents.length - 1) {
+            const finalInsertionZone = createInsertionZone();
+            column.insertBefore(finalInsertionZone, component.nextSibling);
+          }
+        });
+        
+        // If column has no components, add one insertion zone at the beginning
+        if (columnComponents.length === 0) {
+          const insertionZone = createInsertionZone();
+          // Insert before the dropzone text or at the beginning
+          const columnDropzone = column.querySelector('.column-dropzone');
+          if (columnDropzone) {
+            column.insertBefore(insertionZone, columnDropzone);
+          } else {
+            column.insertBefore(insertionZone, column.firstChild);
+          }
+        }
+      });
+    }
+
     // Delete a component
     function deleteComponent(btn) {
       const component = btn.closest('.component');
@@ -5396,6 +5763,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         const page = document.getElementById('page');
         page.appendChild(createDropzone());
       }
+
+      // Refresh insertion zones after component deletion
+      setTimeout(() => {
+        refreshInsertionZones();
+      }, 10);
 
       // Clear properties panel if this was the selected component
       if (selectedComponent === component) {
@@ -7980,6 +8352,21 @@ function updateInnerSectionColumns(numColumns) {
     if (!content.updateColumns) return;
     
     content.updateColumns(parseInt(numColumns));
+    
+    // Re-initialize SortableJS for all columns after structure change
+    setTimeout(() => {
+        const columns = content.querySelectorAll('.inner-column');
+        columns.forEach(column => {
+            // Remove old sortable instance if exists
+            if (column._sortableInstance) {
+                column._sortableInstance.destroy();
+                column.removeAttribute('data-sortable-initialized');
+            }
+            initializeColumnSortable(column);
+        });
+        console.log('SortableJS re-initialized after column update');
+    }, 100);
+    
     updatePropertyPanel();
 }
 
@@ -11639,12 +12026,24 @@ function applyResponsiveStyles() {
                 initDevicePreview();
                 // Initialize form data capture
                 initFormDataCapture();
+                // Initialize SortableJS for all columns after page loads
+                setTimeout(() => {
+                    initializeAllColumnSortables();
+                    console.log('SortableJS initialized for loaded page');
+                    // Initialize insertion zones for existing components
+                    refreshInsertionZones();
+                    console.log('Insertion zones initialized');
+                }, 500);
             } else {
                 console.log('No saved page found.');
                 // Initialize device preview even if no saved page
                 initDevicePreview();
                 // Initialize form data capture
                 initFormDataCapture();
+                // Initialize insertion zones for empty page
+                setTimeout(() => {
+                    refreshInsertionZones();
+                }, 100);
             }
             })
             .catch(err => {
@@ -12482,7 +12881,7 @@ function applyResponsiveStyles() {
 
 <script>
       document.addEventListener("DOMContentLoaded", function() {
-          const parallaxElements = document.querySelectorAll("[style*=\\"background-attachment: fixed\\"], [style*=\\"background-attachment:fixed\\"]");
+          const parallaxElements = document.querySelectorAll('[style*="background-attachment: fixed"], [style*="background-attachment:fixed"]');
           parallaxElements.forEach(function(element) {
               element.style.backgroundAttachment = "fixed";
               element.style.backgroundPosition = "center center";
@@ -12520,6 +12919,158 @@ function applyResponsiveStyles() {
 
 
 {{-- modal html for gallery image modal end --}}
+
+<script>
+// Initialize SortableJS for drag and drop between columns
+function initializeColumnSortable(column) {
+    if (!column || column.hasAttribute('data-sortable-initialized')) {
+        return;
+    }
+    
+    // Mark as initialized to prevent duplicate initialization
+    column.setAttribute('data-sortable-initialized', 'true');
+    
+    try {
+        const sortable = Sortable.create(column, {
+            group: {
+                name: 'columns',
+                pull: true,
+                put: true
+            },
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            filter: '.column-dropzone, .insertion-zone',
+            onChoose: function(evt) {
+                evt.item.style.cursor = 'grabbing';
+                // Add visual feedback to all columns
+                document.querySelectorAll('.inner-column').forEach(col => {
+                    if (col !== evt.from) {
+                        col.classList.add('sortable-drag-over');
+                    }
+                });
+            },
+            onUnchoose: function(evt) {
+                evt.item.style.cursor = 'grab';
+                // Remove visual feedback from all columns
+                document.querySelectorAll('.inner-column').forEach(col => {
+                    col.classList.remove('sortable-drag-over');
+                });
+            },
+            onStart: function(evt) {
+                evt.item.style.opacity = '0.5';
+                // Hide all column dropzones during drag
+                document.querySelectorAll('.column-dropzone').forEach(dropzone => {
+                    dropzone.style.opacity = '0.3';
+                });
+            },
+            onEnd: function(evt) {
+                evt.item.style.opacity = '1';
+                evt.item.style.cursor = 'grab';
+                
+                // Show all column dropzones after drag
+                document.querySelectorAll('.column-dropzone').forEach(dropzone => {
+                    const parentColumn = dropzone.closest('.inner-column');
+                    const hasComponents = parentColumn && parentColumn.querySelectorAll('.component').length > 0;
+                    dropzone.style.opacity = hasComponents ? '0' : '1';
+                    dropzone.style.display = hasComponents ? 'none' : 'block';
+                });
+                
+                // Remove visual feedback from all columns
+                document.querySelectorAll('.inner-column').forEach(col => {
+                    col.classList.remove('sortable-drag-over');
+                });
+                
+                // Update structure panel to reflect new order
+                setTimeout(() => {
+                    updateStructurePanel();
+                    // Refresh insertion zones after drag and drop
+                    refreshInsertionZones();
+                }, 100);
+                
+                // Auto-save the page state after drag and drop
+                if (typeof autoSavePage === 'function') {
+                    setTimeout(() => {
+                        autoSavePage();
+                    }, 500);
+                }
+            },
+            onAdd: function(evt) {
+                const targetColumn = evt.to;
+                const sourceColumn = evt.from;
+                
+                // Hide dropzone in target column since it now has components
+                const targetDropzone = targetColumn.querySelector('.column-dropzone');
+                if (targetDropzone) {
+                    targetDropzone.style.display = 'none';
+                }
+                
+                // Show dropzone in source column if it's empty
+                const sourceDropzone = sourceColumn.querySelector('.column-dropzone');
+                if (sourceDropzone && sourceColumn.querySelectorAll('.component').length === 0) {
+                    sourceDropzone.style.display = 'block';
+                }
+                
+                // Select the moved component
+                if (evt.item && evt.item.classList.contains('component')) {
+                    setTimeout(() => {
+                        selectComponent(evt.item);
+                    }, 50);
+                }
+            },
+            onRemove: function(evt) {
+                const sourceColumn = evt.from;
+                
+                // Show dropzone in source column if it's now empty
+                const sourceDropzone = sourceColumn.querySelector('.column-dropzone');
+                if (sourceDropzone && sourceColumn.querySelectorAll('.component').length === 0) {
+                    sourceDropzone.style.display = 'block';
+                }
+            }
+        });
+        
+        // Store the sortable instance on the column for potential cleanup
+        column._sortableInstance = sortable;
+        
+        console.log('SortableJS initialized for column');
+        
+    } catch (error) {
+        console.error('Error initializing SortableJS:', error);
+    }
+}
+
+// Initialize SortableJS for all existing columns on page load
+function initializeAllColumnSortables() {
+    const columns = document.querySelectorAll('.inner-column');
+    columns.forEach(column => {
+        initializeColumnSortable(column);
+    });
+}
+
+// Auto-save functionality
+function autoSavePage() {
+    try {
+        const pageData = getPageState();
+        if (pageData && typeof savePage === 'function') {
+            savePage();
+            console.log('Page auto-saved after component drag');
+        }
+    } catch (error) {
+        console.error('Error auto-saving page:', error);
+    }
+}
+
+// Call initialization when the page is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing columns after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        initializeAllColumnSortables();
+    }, 1000);
+});
+</script>
+
+
 
 </body>
 </html>
