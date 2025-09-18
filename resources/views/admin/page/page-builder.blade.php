@@ -150,6 +150,64 @@
 .ql-size-36px { font-size: 36px !important; }
 .ql-size-48px { font-size: 48px !important; }
 
+/* Header dropdown styles for SEO heading tags */
+.ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item::before {
+  content: 'Normal';
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+  content: 'Heading 1';
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+  content: 'Heading 2';
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+  content: 'Heading 3';
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
+  content: 'Heading 4';
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
+  content: 'Heading 5';
+}
+
+/* Apply semantic heading styles - SEO friendly */
+.ql-editor h1, h1.ql-header-1 {
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  line-height: 1.2 !important;
+  margin: 1rem 0 0.5rem 0 !important;
+}
+.ql-editor h2, h2.ql-header-2 {
+  font-size: 2rem !important;
+  font-weight: bold !important;
+  line-height: 1.3 !important;
+  margin: 0.8rem 0 0.4rem 0 !important;
+}
+.ql-editor h3, h3.ql-header-3 {
+  font-size: 1.75rem !important;
+  font-weight: bold !important;
+  line-height: 1.4 !important;
+  margin: 0.6rem 0 0.3rem 0 !important;
+}
+.ql-editor h4, h4.ql-header-4 {
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+  line-height: 1.4 !important;
+  margin: 0.5rem 0 0.25rem 0 !important;
+}
+.ql-editor h5, h5.ql-header-5 {
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  line-height: 1.5 !important;
+  margin: 0.4rem 0 0.2rem 0 !important;
+}
+
 /* Custom toolbar styles */
 .ql-toolbar {
     border: 1px solid #ccc;
@@ -2116,7 +2174,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="full-width-text-image"><i class="fas fa-image me-2"></i>Full Width Text & Image</div>
                 <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
                 <div class="component-item" draggable="true" data-type="press-card"><i class="fas fa-newspaper me-2"></i>Press Card</div>
-                <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div>
+                {{-- <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div> --}}
                 </div>
             </div>
 
@@ -3901,11 +3959,12 @@ break;
         break;
 
         case 'section-title':
-            content = document.createElement('h3');
-            content.textContent = 'Section Title';
-            content.contentEditable = true;
-            content.style.fontWeight = 'bold';
+            content = document.createElement('div');
+            const sectionTitleId = 'section-title-content-' + Date.now();
+            content.innerHTML = `<div id="${sectionTitleId}" style="min-height: 50px; padding: 10px;">Section Title</div>`;
             content.style.fontSize = '20px';
+            content.style.fontWeight = 'bold';
+            content._componentType = 'section-title';
         break;
 
         case 'divider':
@@ -4034,8 +4093,8 @@ break;
                 let html = `<div class="gallery-row" style="display: flex; flex-wrap: wrap; gap: 10px;">`;
                 images.forEach((src, idx) => {
                     html += `
-                        <div class="gallery-img-col" style="flex: 0 0 calc(${'${100/columns}'}% - 10px); max-width: calc(${'${100/columns}'}% - 10px); display: flex; justify-content: center;">
-                            <img src="${'${src}'}" data-idx="${'${idx}'}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
+                        <div class="gallery-img-col" style="flex: 0 0 calc(${100/columns}% - 10px); max-width: calc(${100/columns}% - 10px); display: flex; justify-content: center;">
+                            <img src="${src}" data-idx="${idx}" class="gallery-img" style="width:100%;max-width:100%;height:160px;object-fit:cover;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onclick="openGalleryModal(this)">
                         </div>
                     `;
                 });
@@ -4071,8 +4130,8 @@ break;
         for (let s = 0; s < showCount; s++) {
             const idx = (startIdx + s) % images.length;
             html += `
-                <div class="slider-img-col" style="flex: 0 0 calc(${'${100/showCount}'}% - 10px); max-width: calc(${'${100/showCount}'}% - 10px); display: flex; justify-content: center;">
-                    <img src="${'${images[idx]}'}" data-idx="${'${idx}'}" class="slider-img"
+                <div class="slider-img-col" style="flex: 0 0 calc(${100/showCount}% - 10px); max-width: calc(${100/showCount}% - 10px); display: flex; justify-content: center;">
+                    <img src="${images[idx]}" data-idx="${idx}" class="slider-img"
                         style="display:block;width:auto;max-width:100%;height:220px;max-height:100%;object-fit:contain;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);"
                         onclick="openSliderModal(this)">
                 </div>
@@ -4604,13 +4663,13 @@ break;
                 const d = content._fwtiData;
                 content.innerHTML = `
                     <h3
-                        style="margin-bottom: 10px; font-size:${'${d.fontSize1}'}; color:${'${d.color1}'};"
-                    >${'${d.text1}'}</h3>
+                        style="margin-bottom: 10px; font-size:${d.fontSize1}; color:${d.color1};"
+                    >${d.text1}</h3>
                     <p
-                        style="font-size:${'${d.fontSize2}'}; color:${'${d.color2}'};"
-                    >${'${d.text2}'}</p>
-                    <img src="${'${d.imgSrc}'}" alt="${'${d.imgAlt}'}"
-                        style="width:${'${d.imgCustomWidth}'};height:${'${d.imgCustomHeight}'};object-fit:${'${d.imgObjectFit}'};max-width:100%;margin-top:10px;${'${d.imgSrc ? \'\' : \'display:none;\'}'}" />
+                        style="font-size:${d.fontSize2}; color:${d.color2};"
+                    >${d.text2}</p>
+                    <img src="${d.imgSrc}" alt="${d.imgAlt}"
+                        style="width:${d.imgCustomWidth};height:${d.imgCustomHeight};object-fit:${d.imgObjectFit};max-width:100%;margin-top:10px;${d.imgSrc ? '' : 'display:none;'}" />
                 `;
             };
             content.renderFWTI();
@@ -6390,13 +6449,17 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'section-title':
+            const sectionTitleElement = content.querySelector('[id^="section-title-content-"]');
+            const sectionTitleContent = sectionTitleElement ? sectionTitleElement.innerHTML : content.textContent;
+            const sectionTitleEditorId = 'section-title-editor-' + Date.now();
+            ckeditorinitTextBox(sectionTitleEditorId);
             specificControls = `
                 <div class="form-group">
-                <label>Section Title</label>
-                <input type="text" value="${content.textContent}" oninput="updateContent(this.value)">
+                    <label>Section Title Content</label>
+                    <textarea id="${sectionTitleEditorId}" class="quill-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${sectionTitleContent}</textarea>
                 </div>
                 <div class="form-group">
-                <small class="text-muted">💡 Use the Color control in the Style section above to change the text color.</small>
+                <small class="text-muted">💡 Use the formatting toolbar above to style your section title with headings (H1-H5), fonts, colors, and more.</small>
                 </div>
             `;
             break;
@@ -6485,12 +6548,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
                         <div style="margin-top:8px;">
-                            ${'${galleryData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(${idx})">`).join(\'\')}'}
+                            ${galleryData.images.map((src, idx) => '<img src="' + src + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(' + idx + ')">').join('')}
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Columns</label>
-                        <input type="number" min="1" max="6" value="${'${galleryData.columns}'}" oninput="updateGalleryColumns(this.value)">
+                        <input type="number" min="1" max="6" value="${galleryData.columns}" oninput="updateGalleryColumns(this.value)">
                     </div>
                 `;
             break;
@@ -6501,16 +6564,16 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadSliderImages(event)">
                         <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
-                            ${'${sliderData.images.map((src, idx) => `<img src="${src}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(${idx})">`).join(\'\')}'}
+                            ${sliderData.images.map((src, idx) => '<img src="' + src + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(' + idx + ')">').join('')}
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Slides to Show</label>
-                        <input type="number" min="1" max="10" value="${'${sliderData.slidesToShow}'}" oninput="updateSliderSlidesToShow(this.value)">
+                        <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" oninput="updateSliderSlidesToShow(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Slide Speed (ms)</label>
-                        <input type="number" min="500" max="10000" value="${'${sliderData.slideSpeed}'}" oninput="updateSliderSlideSpeed(this.value)">
+                        <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" oninput="updateSliderSlideSpeed(this.value)">
                     </div>
                 `;
             break;
@@ -7573,8 +7636,8 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
         }
 
-        // Common styling controls - skip background color for invest-cta as it has its own
-        const commonControls = type === 'invest-cta' ? '' : `
+        // Common styling controls - skip for components that have their own rich editors
+        const commonControls = (type === 'invest-cta' || type === 'section-title') ? '' : `
             <div class="form-group">
             <label>Font Size</label>
             <input type="text" value="${content.style.fontSize || '16px'}" oninput="updateStyle(this, 'fontSize')">
@@ -9243,6 +9306,17 @@ function applyResponsiveStyles() {
                 return;
             }
 
+            // Try to find the section title preview element
+            const sectionTitlePreview = content.querySelector('[id^="section-title-content-"]');
+            if (sectionTitlePreview) {
+                console.log('updateContent: Updating section title preview', sectionTitlePreview, 'with', text);
+                sectionTitlePreview.innerHTML = text;
+                
+                // Save throttled history for content changes
+                saveHistoryThrottled('Section title updated');
+                return;
+            }
+
             // Fallback: update content.textContent (for other types)
             console.log('updateContent: Fallback, updating content.textContent for', content, 'with', text);
             content.textContent = text;
@@ -9824,7 +9898,7 @@ function applyResponsiveStyles() {
                 selectedImgs.forEach(src => {
                     const col = document.createElement('div');
                     col.className = 'col-md-4 mb-3';
-                    col.innerHTML = `<img src="${'${src}'}" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border: 1px solid #000;">`;
+                    col.innerHTML = `<img src="${src}" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border: 1px solid #000;">`;
                     row.appendChild(col);
                 });
                 if (!selectedImgs.length) {
@@ -9834,8 +9908,8 @@ function applyResponsiveStyles() {
                 // Use Owl Carousel for slider preview
                 const slidesToShow = content.dataset.slidesToShow ? parseInt(content.dataset.slidesToShow, 10) : 1;
                 content.innerHTML = `
-                    <div class="owl-carousel owl-theme" id="sliderPreview" data-slides-to-show="${'${slidesToShow}'}">
-                        ${'${selectedImgs.map(src => `<div class="item"><img src="${src}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;"></div>`).join(\'\')}'}
+                    <div class="owl-carousel owl-theme" id="sliderPreview" data-slides-to-show="${slidesToShow}">
+                        ${selectedImgs.map(src => `<div class="item"><img src="${src}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;"></div>`).join('')}
                     </div>
                 `;
                 // Initialize Owl Carousel (requires jQuery and Owl Carousel)
@@ -10729,7 +10803,8 @@ function applyResponsiveStyles() {
                 break;
 
           case 'section-title':
-            data.text = content.textContent;
+            const sectionTitleEl = content.querySelector('[id^="section-title-content-"]');
+            data.text = sectionTitleEl ? sectionTitleEl.innerHTML : content.textContent;
             break;
           case 'video':
             console.log('=== SERIALIZING VIDEO COMPONENT ===');
@@ -11148,7 +11223,14 @@ function applyResponsiveStyles() {
                 break;
 
             case 'section-title':
-                actualContent.textContent = data.text;
+                const sectionTitleContentEl = actualContent.querySelector('[id^="section-title-content-"]');
+                if (sectionTitleContentEl && data.text) {
+                    // Preserve HTML formatting from Quill editor
+                    sectionTitleContentEl.innerHTML = data.text;
+                } else if (data.text) {
+                    // Fallback for older format
+                    actualContent.textContent = data.text;
+                }
                 if (data.style) {
                   Object.assign(actualContent.style, data.style);
                 }
@@ -11444,7 +11526,12 @@ function applyResponsiveStyles() {
                 break;
 
           case 'section-title':
-            content.textContent = data.text;
+            const sectionTitleDesEl = content.querySelector('[id^="section-title-content-"]');
+            if (sectionTitleDesEl) {
+                sectionTitleDesEl.innerHTML = data.text || 'Section Title';
+            } else {
+                content.textContent = data.text || 'Section Title';
+            }
             if (data.style) {
               Object.assign(content.style, data.style);
             }
@@ -12983,6 +13070,7 @@ function applyResponsiveStyles() {
                     theme: 'snow',
                     modules: {
                         toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, false] }],
                             [{ 'font': FontClass.whitelist }],
                             [{ 'size': SizeClass.whitelist }],
                             [{ 'color': [] }, { 'background': [] }],
@@ -12993,7 +13081,7 @@ function applyResponsiveStyles() {
                         ]
                     },
                     placeholder: 'Enter your text...',
-                    formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
+                    formats: ['header', 'font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
                 });
                 
                 textEditor._quillInstance = quill;
@@ -13063,6 +13151,7 @@ function applyResponsiveStyles() {
                     theme: 'snow',
                     modules: {
                         toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, false] }],
                             [{ 'font': FontClass.whitelist }],
                             [{ 'size': SizeClass.whitelist }],
                             [{ 'color': [] }, { 'background': [] }],
@@ -13073,7 +13162,7 @@ function applyResponsiveStyles() {
                         ]
                     },
                     placeholder: 'Enter your text...',
-                    formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
+                    formats: ['header', 'font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'list', 'bullet', 'link']
                 });
                 
                 textEditor._quillInstance = quill;

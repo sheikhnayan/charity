@@ -120,6 +120,38 @@
 .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
 .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
 
+/* SEO-friendly semantic heading styles for frontend */
+h1, .ql-header-1 {
+    font-size: 2.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.2 !important;
+    margin: 1rem 0 0.5rem 0 !important;
+}
+h2, .ql-header-2 {
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    line-height: 1.3 !important;
+    margin: 0.8rem 0 0.4rem 0 !important;
+}
+h3, .ql-header-3 {
+    font-size: 1.75rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.6rem 0 0.3rem 0 !important;
+}
+h4, .ql-header-4 {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.5rem 0 0.25rem 0 !important;
+}
+h5, .ql-header-5 {
+    font-size: 1.25rem !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    margin: 0.4rem 0 0.2rem 0 !important;
+}
+
 /* Global Mobile Fixes */
 @media screen and (max-width: 767px) {
     /* Prevent horizontal overflow on mobile */
@@ -233,6 +265,38 @@
 .ql-font-verdana { font-family: Verdana, sans-serif !important; }
 .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
 .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+/* SEO-friendly semantic heading styles for frontend */
+h1, .ql-header-1 {
+    font-size: 2.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.2 !important;
+    margin: 1rem 0 0.5rem 0 !important;
+}
+h2, .ql-header-2 {
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    line-height: 1.3 !important;
+    margin: 0.8rem 0 0.4rem 0 !important;
+}
+h3, .ql-header-3 {
+    font-size: 1.75rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.6rem 0 0.3rem 0 !important;
+}
+h4, .ql-header-4 {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.5rem 0 0.25rem 0 !important;
+}
+h5, .ql-header-5 {
+    font-size: 1.25rem !important;
+    font-weight: bold !important;
+    line-height: 1.5 !important;
+    margin: 0.4rem 0 0.2rem 0 !important;
+}
 </style>
 @endif
 
@@ -586,9 +650,14 @@
             @endphp
             <div class="row gallery-component" style="{{ $styleStr }}">
                 @foreach($images as $image)
+                    @php
+                        // Handle both string URLs and object format
+                        $imageSrc = is_string($image) ? $image : ($image['src'] ?? 'https://via.placeholder.com/300x200');
+                        $imageAlt = is_string($image) ? 'Gallery Image' : ($image['alt'] ?? 'Gallery Image');
+                    @endphp
                     <div class="{{ $bootstrapClass }} mb-3">
-                        <img src="{{ $image['src'] ?? 'https://via.placeholder.com/300x200' }}" 
-                             alt="{{ $image['alt'] ?? 'Gallery Image' }}" 
+                        <img src="{{ $imageSrc }}" 
+                             alt="{{ $imageAlt }}" 
                              class="img-fluid gallery-img-preview" 
                              style="width:100%;height:250px;object-fit:cover;border-radius:8px;cursor:pointer;">
                     </div>
@@ -606,9 +675,14 @@
             @endphp
             <div class="owl-carousel owl-theme" id="{{ $sliderId }}" style="{{ $styleStr }}">
                 @foreach($images as $image)
+                    @php
+                        // Handle both string URLs and object format
+                        $imageSrc = is_string($image) ? $image : ($image['src'] ?? 'https://via.placeholder.com/800x400');
+                        $imageAlt = is_string($image) ? 'Slider Image' : ($image['alt'] ?? 'Slider Image');
+                    @endphp
                     <div class="item">
-                        <img src="{{ $image['src'] ?? 'https://via.placeholder.com/800x400' }}" 
-                             alt="{{ $image['alt'] ?? 'Slider Image' }}" 
+                        <img src="{{ $imageSrc }}" 
+                             alt="{{ $imageAlt }}" 
                              style="width:100%;height:400px;object-fit:cover;border-radius:8px;">
                     </div>
                 @endforeach
@@ -1570,27 +1644,39 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
             @php
                 // Try multiple data sources for backwards compatibility
                 $sectionTitleData = $component['sectionTitleData'] ?? [];
-                // dd($component);
+                // Get rich HTML content from Quill editor or fallback to simple text
                 $title = $sectionTitleData['title'] ?? $component['text'] ?? $component['textContent'] ?? $component['html'] ?? 'Section Title';
                 $subtitle = $sectionTitleData['subtitle'] ?? '';
                 $alignment = $sectionTitleData['alignment'] ?? $component['properties']['alignment'] ?? 'left';
                 
-                // Check if color is set in component styles
+                // Don't strip HTML tags - preserve Quill editor formatting including colors
+                // Only clean if title contains suspicious content
+                if (strpos($title, '<script') !== false || strpos($title, 'javascript:') !== false) {
+                    $title = strip_tags($title);
+                }
+                
+                // Check if this is rich HTML content from Quill editor
+                $isRichContent = strip_tags($title) !== $title;
+                
+                // For fallback color when no Quill formatting is present
                 $hasStyleColor = !empty($component['style']['color']);
-                $titleColor = $hasStyleColor ? $component['style']['color'] : ($sectionTitleData['titleColor'] ?? '#1f2937');
+                $titleColor = $hasStyleColor ? $component['style']['color'] : '#1f2937';
                 $subtitleColor = $sectionTitleData['subtitleColor'] ?? '#6b7280';
                 
-                // Clean HTML from title if it exists
-                $title = strip_tags($title);
-                
-                // Remove color from styleStr if we're going to apply it specifically to elements
+                // Don't override colors in styleStr if content is rich HTML (Quill handles colors)
                 $filteredStyleStr = $styleStr;
-                if ($hasStyleColor) {
+                if ($isRichContent && $hasStyleColor) {
                     $filteredStyleStr = preg_replace('/color\s*:[^;]+;?/', '', $styleStr);
                 }
             @endphp
             <div class="section-title" style="text-align: {{ $alignment }} !important; margin: 2rem 0; {{ $filteredStyleStr }}">
-                <h2 style="color: {{ $titleColor }}; margin: 0 0 1rem 0; font-size: 2.5rem; font-weight: bold;">{{ $title }}</h2>
+                @if($isRichContent)
+                    {{-- Rich HTML content from Quill editor - preserve all formatting including colors --}}
+                    <div style="margin: 0 0 1rem 0;">{!! $title !!}</div>
+                @else
+                    {{-- Simple text content - apply fallback styling --}}
+                    <h2 style="color: {{ $titleColor }}; margin: 0 0 1rem 0; font-size: 2.5rem; font-weight: bold;">{{ $title }}</h2>
+                @endif
                 @if($subtitle)
                     <p style="color: {{ $subtitleColor }}; margin: 0; font-size: 1.25rem; line-height: 1.6;">{{ $subtitle }}</p>
                 @endif

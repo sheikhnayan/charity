@@ -1000,5 +1000,136 @@ if (isset($state['components'])) {
             }, 1500);
         }
     </script>
+
+    <!-- Sticky Bottom Investment CTA - Mobile Only -->
+    <div id="sticky-investment-cta" class="d-block d-md-none">
+        <div class="sticky-cta-content">
+            <div class="share-price-section">
+                <div class="price-value">${{ $check->share_price ?? '0.00' }}</div>
+                <div class="price-label">Share Price</div>
+            </div>
+            <div class="invest-button-section">
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'">
+                    INVEST NOW
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Sticky Bottom Investment CTA Styles */
+        #sticky-investment-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #000000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .sticky-cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            max-width: 100%;
+        }
+
+        .share-price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding-left: 14%;
+
+        }
+
+        .price-value {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .price-label {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Add bottom padding to body to prevent content overlap */
+        body {
+            padding-bottom: 70px;
+        }
+
+        /* Remove bottom padding on desktop */
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+            
+            #sticky-investment-cta {
+                display: none !important;
+            }
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 360px) {
+            .sticky-cta-content {
+                padding: 10px 12px;
+            }
+            
+            .price-value {
+                font-size: 16px;
+            }
+            
+            .invest-now-btn {
+                padding: 10px 24px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+        }
+    </style>
 </body>
 </html>
