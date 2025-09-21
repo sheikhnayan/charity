@@ -71,6 +71,8 @@ function adjustBrightness($hex, $percent) {
     gap: 20px;
     max-width: 500px;
     margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .invest-cta-button {
@@ -142,15 +144,32 @@ function adjustBrightness($hex, $percent) {
         padding: 15px;
         gap: 15px;
         text-align: center;
+        max-width: 100% !important;
+        margin: 0 auto;
+        box-sizing: border-box;
+        width: calc(100% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
     }
     
     .investment-info-wrapper {
         gap: 15px;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .investment-info-item {
+        min-width: 0;
+        flex: 1;
     }
     
     .invest-cta-button {
         padding: 12px 25px;
         font-size: 13px;
+        width: 100%;
+        max-width: 200px;
+        box-sizing: border-box;
     }
     
     .investment-value {
@@ -163,6 +182,8 @@ function adjustBrightness($hex, $percent) {
     
     .investment-divider {
         height: 35px;
+        width: 2px;
+        min-width: 2px;
     }
 }
 

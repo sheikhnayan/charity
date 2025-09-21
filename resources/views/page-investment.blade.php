@@ -24,6 +24,9 @@ if (isset($state['components'])) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- DataTables CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
@@ -42,6 +45,14 @@ if (isset($state['components'])) {
     #rendered-page {
         width: 100%;
         overflow-x: hidden;
+    }
+    .ticket-mask {
+        --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
+        -webkit-mask: var(--mask);
+        mask: var(--mask);
+        padding: 1.5rem;
+        background-color: #eee;
+        border: unset;
     }
     
     /* Full-width section support - Enhanced */
@@ -308,25 +319,29 @@ if (isset($state['components'])) {
     }
     
     /* Base Component Styles */
-    #studentTable {
+    #studentTable, #donorTable {
         background-color: #fff !important;
         border: none !important;
     }
 
-    #studentTable th, #studentTable td {
+    #studentTable th, #studentTable td,
+    #donorTable th, #donorTable td {
         background-color: #fff !important;
         border: none !important;
     }
 
-    #studentTable tbody tr {
+    #studentTable tbody tr,
+    #donorTable tbody tr {
         background-color: #fff !important;
     }
 
-    #studentTable_filter, #studentTable_length {
+    #studentTable_filter, #studentTable_length,
+    #donorTable_filter, #donorTable_length {
         display: none;
     }
 
-    #studentTable thead {
+    #studentTable thead,
+    #donorTable thead {
         display: none;
     }
 
@@ -425,6 +440,365 @@ if (isset($state['components'])) {
         width: 100%;
         bottom: 0;
         margin-top: 2rem;
+    }
+
+    /* Event Countdown Component Responsive Styles */
+    .event-countdown .d-flex {
+        gap: 0.5rem;
+    }
+
+    .event-countdown .counters {
+        min-width: 80px;
+        margin: 0.25rem !important;
+    }
+
+    @media (max-width: 768px) {
+        .event-countdown .d-flex {
+            gap: 0.25rem;
+        }
+        
+        .event-countdown .counters {
+            min-width: 60px;
+            margin: 0.125rem !important;
+        }
+        
+        .event-countdown .display-4 {
+            font-size: 1.75rem !important;
+        }
+        
+        .event-countdown p {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .event-countdown .d-flex {
+            gap: 0.125rem;
+        }
+        
+        .event-countdown .counters {
+            min-width: 50px;
+            margin: 0.0625rem !important;
+        }
+        
+        .event-countdown .display-4 {
+            font-size: 1.5rem !important;
+        }
+        
+        .event-countdown p {
+            font-size: 0.625rem !important;
+        }
+    }
+
+    /* Auction Components Styles - from page-new.blade.php */
+    .c-node-ap__auction-results{
+        margin-right: 36px;
+        margin-bottom: 24px;
+        display: inline-block;
+        background-color: #f8f9fa;
+        border-color: #DBDCDD;
+        border: 1px solid;
+        border-radius: 4px;
+        padding: 24px;
+        font-size: 1rem;
+    }
+
+    .c-node-ap__fundraising-target{
+        margin-bottom: 12px;
+    }
+
+    .c-node-ap__auction-total-label {
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #355159
+    }
+    .c-node-ap__auction-total-amount {
+        font-size: 2rem;
+        line-height: 1.5;
+        color: #d9b730;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+    }
+
+    .c-node-ap__totalizer{
+        height: 18px;
+        border-radius: 12px;
+        --color-ui: #d9b730;
+    }
+
+    .c-node-ap__auction-total-component-label{
+        color: #6d6e71
+    }
+
+    .c-node-ap__auction-total-component-amount{
+        font-size: 1rem;
+        line-height: 1.2;
+        font-weight: bold;
+        font-family: AvenirLTPro-Black,sans-serif;
+        color: #000
+    }
+    .c-view__item.c-view__item--teaser {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        min-width: 330px !important;
+    }
+
+    /* Auction Component Styles - Container Responsive */
+    .auction-component-container {
+        width: 100%;
+        background-color: transparent;
+    }
+
+    .auction-main-wrapper {
+        width: 100%;
+    }
+
+    .auction-display-container {
+        width: 100%;
+    }
+
+    .auction-items-wrapper {
+        width: 100%;
+    }
+
+    .auction-items-grid {
+        display: grid;
+        gap: 20px;
+        width: 100%;
+        /* Default: 3 columns for full-width containers */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    /* Container-aware responsive behavior */
+    @media (min-width: 1200px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+    }
+
+    @media (max-width: 991px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+        .auction-items-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+
+    /* For when auction is in small containers (col-md-6, col-md-4, etc.) */
+    @container (max-width: 600px) {
+        .auction-items-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @container (max-width: 900px) {
+        .auction-items-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+        }
+    }
+
+    .auction-item-wrapper {
+        width: 100%;
+        min-width: 0; /* Prevents overflow */
+    }
+
+    .auction-card {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .c-node-ai {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .c-node-ai:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .c-node-ai__content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .c-node-ai__image {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+        flex-shrink: 0;
+    }
+
+    .c-node-ai__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .c-node-ai__details-wrap {
+        padding: 16px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .c-node-ai__title {
+        margin: 0 0 12px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .c-node-ai__title a {
+        text-decoration: none;
+        color: #333;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .c-node-ai__bidding-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .auction-details-layout {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .auction-timer-section {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .auction-price-section {
+        flex: 0 0 auto;
+        min-width: 100px;
+    }
+
+    @media (max-width: 480px) {
+        .auction-details-layout {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .auction-timer-section,
+        .auction-price-section {
+            flex: none;
+            min-width: auto;
+        }
+    }
+
+    .c-timer {
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .c-timer__title {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    .c-timer__element {
+        display: inline-block;
+        margin: 0 2px;
+    }
+
+    .c-timer__value {
+        font-weight: bold;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .c-timer__period {
+        font-size: 0.7rem;
+        color: #666;
+    }
+
+    .c-price {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .c-price__title {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    .c-price__value {
+        font-weight: bold;
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+
+    /* Mobile-specific adjustments for auction components */
+    @media (max-width: 576px) {
+        .c-node-ai__image {
+            height: 160px;
+        }
+        
+        .c-node-ai__details-wrap {
+            padding: 12px;
+        }
+        
+        .c-node-ai__title {
+            font-size: 1rem;
+        }
+        
+        .c-timer__element {
+            margin: 0 1px;
+        }
+        
+        .c-timer__value {
+            font-size: 0.8rem;
+        }
+        
+        .c-timer__period {
+            font-size: 0.65rem;
+        }
+    }
     }
 
     .ticket-mask {
@@ -630,6 +1004,269 @@ if (isset($state['components'])) {
         
         echo generateResponsiveStyles($state);
     @endphp
+    
+    /* Investor Exclusives Bar Styles */
+    .investor-exclusives-bar {
+        padding: 12px 0;
+        text-align: center;
+        position: fixed;
+        top: 10rem; /* Position it below contact bar + navbar */
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 999; /* Just below navbar but above content */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* When contact top bar is not present */
+    .contact-topbar ~ * .investor-exclusives-bar,
+    body:not(:has(.contact-topbar)) .investor-exclusives-bar {
+        top: 6.5rem; /* Original position when no contact bar */
+    }
+    
+    .investor-exclusives-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .investor-exclusives-text {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .investor-exclusives-link {
+        background: rgba(255, 255, 255, 0.15);
+        text-decoration: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    
+    .investor-exclusives-link:hover {
+        background: rgba(255, 255, 255, 0.25);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Icon styling */
+    .investor-exclusives-link i {
+        margin-left: 8px;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .investor-exclusives-bar {
+            position: fixed;
+            top: 9.5rem; /* Adjust for mobile with contact bar */
+        }
+        
+        /* When contact top bar is not present on mobile */
+        body:not(:has(.contact-topbar)) .investor-exclusives-bar {
+            top: 6rem; /* Original mobile position when no contact bar */
+        }
+        
+        .investor-exclusives-content {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .investor-exclusives-text {
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .investor-exclusives-link {
+            font-size: 13px;
+            padding: 6px 16px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .investor-exclusives-bar {
+            padding: 10px 0;
+            top: 5.5rem; /* Further adjust for smaller mobile screens */
+            margin-top: 4rem;
+        }
+        
+        .investor-exclusives-text {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .investor-exclusives-link {
+            font-size: 12px;
+            padding: 5px 14px;
+        }
+    }
+    
+    /* Contact Top Bar Styles */
+    .contact-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1001; /* Above navbar */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-topbar .contact-info {
+        gap: 0;
+    }
+    
+    .contact-topbar .contact-item {
+        font-size: 14px;
+        font-weight: 400;
+    }
+    
+    .contact-topbar .contact-item a {
+        transition: all 0.3s ease;
+    }
+    
+    .contact-topbar .contact-item a:hover {
+        opacity: 0.8;
+        text-decoration: none !important;
+    }
+    
+    .contact-topbar .contact-item i {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    
+    .contact-topbar .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Responsive design for contact top bar */
+    @media (max-width: 768px) {
+        .contact-topbar {
+            padding: 8px 0 !important;
+            font-size: 12px !important;
+        }
+        
+        .contact-topbar .row {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .contact-topbar .col-md-8,
+        .contact-topbar .col-8 {
+            width: 100% !important;
+            margin-bottom: 6px;
+        }
+        
+        .contact-topbar .col-md-4,
+        .contact-topbar .col-4 {
+            width: 100% !important;
+            text-align: center !important;
+        }
+        
+        .contact-topbar .contact-info {
+            justify-content: center;
+            text-align: center;
+            flex-direction: row !important;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .contact-topbar .contact-item {
+            font-size: 11px;
+            margin-right: 8px !important;
+            margin-bottom: 0 !important;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .contact-topbar .contact-item:last-child {
+            margin-right: 0 !important;
+        }
+        
+        .contact-topbar .btn {
+            font-size: 11px;
+            padding: 4px 12px !important;
+            margin-top: 2px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .contact-topbar {
+            padding: 6px 0 !important;
+        }
+        
+        .contact-topbar .contact-info {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .contact-topbar .contact-item {
+            margin-right: 6px !important;
+            margin-bottom: 0 !important;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        
+        .contact-topbar .contact-item:last-child {
+            margin-right: 0 !important;
+        }
+        
+        .contact-topbar .btn {
+            font-size: 10px;
+            padding: 3px 10px !important;
+            margin-top: 2px;
+        }
+    }
+    
+    /* Adjust navbar when contact top bar is present */
+    .contact-topbar + nav.navbar {
+        top: 3.5rem; /* Position navbar below contact bar */
+    }
+    
+    @media (max-width: 768px) {
+        .contact-topbar + nav.navbar {
+            top: 3rem; /* Adjust for mobile */
+        }
+    }
+    
+    /* Adjust main content margin when investor exclusives bar is present */
+    @media (max-width: 768px) {
+        main.with-investor-bar {
+            margin-top: 8.5rem !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        main.with-investor-bar {
+            margin-top: 8rem !important;
+        }
+    }
     </style>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
@@ -645,10 +1282,87 @@ if (isset($state['components'])) {
     @endphp
     
     @if ($header && $header->status == 1)
+        {{-- Contact Information Top Bar - Only for Investment Websites --}}
+        @if($check && $check->isInvestment() && $header && $header->show_contact_topbar)
+            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 55px;">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-md-4 col-12">
+                            <div class="contact-info d-flex flex-wrap align-items-center">
+                                @if($header->contact_phone)
+                                    <div class="contact-item me-4 mb-1">
+                                        <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                        <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration: none;">
+                                            {{ $header->contact_phone }}
+                                        </a>
+                                    </div>
+                                @endif
+                                @if($header->contact_email)
+                                    <div class="contact-item me-4 mb-1">
+                                        <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                        <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration: none;">
+                                            {{ $header->contact_email }}
+                                        </a>
+                                    </div>
+                                @endif
+                                @if($header->contact_address)
+                                    <div class="contact-item mb-1">
+                                        <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                        <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                            {{ $header->contact_address }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        {{-- <div class="col-md-4 col-4 text-end">
+                            @if($header->contact_cta_text && $header->contact_cta_url)
+                                <a href="{{ $header->contact_cta_url }}" class="btn btn-sm" style="
+                                    background-color: {{ $header->contact_cta_bg_color ?? '#007bff' }}; 
+                                    color: {{ $header->contact_cta_text_color ?? '#ffffff' }}; 
+                                    border: none; 
+                                    border-radius: 4px;
+                                    padding: 6px 16px;
+                                    text-decoration: none;
+                                    font-weight: 500;
+                                ">
+                                    {{ $header->contact_cta_text }}
+                                </a>
+                            @endif
+                        </div> --}}
+                    </div>
+                </div>
+            </div>
+        @endif
+        
         @include('layouts.nav')
+        
+        {{-- Investor Exclusives Top Bar - Only for Investment Websites --}}
+        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+                <div class="investor-exclusives-content">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }};">
+                        {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                    </p>
+                    <a href="{{ $header->investor_exclusives_url ?? '#' }}" class="investor-exclusives-link" style="color: {{ $header->topbar_text_color ?? '#ffffff' }};">
+                        Learn More
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        @endif
     @endif
     
-    <main style="margin-top: 6.9rem;">
+    <main style="margin-top: {{ 
+        ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? '14.2rem' : 
+        (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '10.5rem' : 
+        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
+    }};" 
+          class="{{ 
+            ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
+            (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? 'with-contact-bar' : 
+            (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
+        }}">
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
                 Purchase Pending
@@ -747,9 +1461,138 @@ if (isset($state['components'])) {
         </div>
     </main>
 
-    @if($footer)
-        {!! $footer->content !!}
+    @if ($footer)
+@if ($footer->status == 1)
+<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
+background-color: {{ $footer->background }} !important;
+margin-bottom: 100px;
+">
+    <div class="container">
+
+                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
+                {{ $footer->message }}
+            </p>
+                    @if ($footer->menu == 1)
+                        <div class="nav justify-content-center">
+                            @foreach ($check->pages->sortBy('position') as $item)
+
+                            @if($item->status == 1)
+
+                            <div class="nav-item">
+                                <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $footer->color }} !important" aria-current="page">
+                                {{ $item->name }}
+                                </a>
+                            </div>
+                            @endif
+
+                            @endforeach
+                                                    </div>
+                    @endif
+
+                    @if ($footer->social == 1)
+                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
+                            @if ($footer->facebook)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->facebook }}" target="_blank">
+                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">facebook</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->instagram)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->instagram }}" target="_blank">
+                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">instagram</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->linkedin)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->linkedin }}" target="_blank">
+                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">linkedin</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->pinterest)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->pinterest }}" target="_blank">
+                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">pinterest</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->x)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->x }}" target="_blank">
+                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">x</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->youtube)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->youtube }}" target="_blank">
+                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">youtube</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->blue_sky)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->blue_sky }}" target="_blank">
+                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">blue sky</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($footer->tiktok)
+                                <li class="nav-item">
+                                    <a href="{{ $footer->tiktok }}" target="_blank">
+                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                        <span class="visually-hidden">tiktok</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    @endif
+
+                @if ($footer->copy_right != null)
+                    <p class="text-center" style="margin-bottom: 0px;">
+                        <small style="color: {{ $footer->color }}">
+                            {{ $footer->copy_right }}
+                        </small>
+                    </p>
+                @endif
+    </div>
+    @if ($footer->privacy == 1)
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
+                        </li>
+                        <li style="margin-right: 1rem;">
+                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
     @endif
+</footer>
+@endif 
+@endif
 
     <!-- Gallery Image Modal -->
     <div class="modal" id="galleryImageModal" tabindex="-1" aria-labelledby="galleryImageModalLabel" aria-hidden="true">
@@ -769,6 +1612,49 @@ if (isset($state['components'])) {
             new bootstrap.Modal(document.getElementById('galleryImageModal')).show();
         }
 
+        // Auction Timer Functionality - from page-new.blade.php
+        function initializeAuctionTimers() {
+            // Find all auction timers on the page
+            const timers = document.querySelectorAll('[id^="auction-timer-"]');
+            
+            timers.forEach(timer => {
+                const timerData = timer.querySelector('.js-timer');
+                if (!timerData) return;
+                
+                const deadline = timerData.getAttribute('data-deadline');
+                const itemId = timer.id.replace('auction-timer-', '');
+                
+                if (!deadline) return;
+                
+                const deadlineTime = new Date(deadline).getTime();
+                
+                // Update timer every second
+                const interval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const timeLeft = deadlineTime - now;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        // Show expired state
+                        document.getElementById(`days-${itemId}`).textContent = '0';
+                        document.getElementById(`hours-${itemId}`).textContent = '0';
+                        document.getElementById(`minutes-${itemId}`).textContent = '0';
+                        return;
+                    }
+                    
+                    // Calculate time units
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    // Update display
+                    document.getElementById(`days-${itemId}`).textContent = days;
+                    document.getElementById(`hours-${itemId}`).textContent = hours;
+                    document.getElementById(`minutes-${itemId}`).textContent = minutes;
+                }, 1000);
+            });
+        }
+
         // Add scroll margin for menu navigation
         document.addEventListener('DOMContentLoaded', function() {
             @if(isset($menuSections) && is_array($menuSections))
@@ -785,6 +1671,9 @@ if (isset($state['components'])) {
             
             // Enhanced Parallax Fix - Force CSS and add JavaScript fallback
             initParallaxFix();
+            
+            // Initialize auction timers - from page-new.blade.php
+            initializeAuctionTimers();
             
             // Initialize form data storage for frontend users
             if (typeof initFormDataStorageForFrontend === 'function') {
@@ -1001,7 +1890,8 @@ if (isset($state['components'])) {
         }
     </script>
 
-    <!-- Sticky Bottom Investment CTA - Mobile Only -->
+    <!-- Sticky Bottom Investment CTA - Mobile Only (Investment Websites Only) -->
+    @if($check && $check->isInvestment())
     <div id="sticky-investment-cta" class="d-block d-md-none">
         <div class="sticky-cta-content">
             <div class="share-price-section">
@@ -1015,6 +1905,7 @@ if (isset($state['components'])) {
             </div>
         </div>
     </div>
+    @endif
 
     <style>
         /* Sticky Bottom Investment CTA Styles */
@@ -1098,10 +1989,12 @@ if (isset($state['components'])) {
             box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
         }
 
-        /* Add bottom padding to body to prevent content overlap */
+        /* Add bottom padding to body to prevent content overlap - Investment websites only */
+        @if($check && $check->isInvestment())
         body {
             padding-bottom: 70px;
         }
+        @endif
 
         /* Remove bottom padding on desktop */
         @media (min-width: 768px) {
@@ -1131,5 +2024,95 @@ if (isset($state['components'])) {
             }
         }
     </style>
+
+    <!-- DataTables Initialization Script -->
+    <script>
+        // Global function to safely initialize DataTables
+        function initStudentTable() {
+            // Check if table exists
+            if ($('#studentTable').length === 0) {
+                return;
+            }
+            
+            // Destroy existing DataTable instance if it exists
+            if ($.fn.DataTable.isDataTable('#studentTable')) {
+                $('#studentTable').DataTable().destroy();
+            }
+            
+            // Initialize DataTable
+            const table = $('#studentTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                pageLength: 25
+            });
+
+            // Link the custom search input to the DataTable search
+            $('#search').on('keyup', function() {
+                const value = $(this).val();
+                table.search(value).draw();
+            });
+        }
+
+        // Global function to safely initialize Donor DataTables
+        function initDonorTable() {
+            // Check if table exists
+            if ($('#donorTable').length === 0) {
+                return;
+            }
+            
+            // Destroy existing DataTable instance if it exists
+            if ($.fn.DataTable.isDataTable('#donorTable')) {
+                $('#donorTable').DataTable().destroy();
+            }
+            
+            // Initialize DataTable
+            const table = $('#donorTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                pageLength: 25
+            });
+        }
+
+        // Global function to reinitialize all DataTables
+        function reinitializeAllDataTables() {
+            initStudentTable();
+            initDonorTable();
+        }
+
+        $(document).ready(function() {
+            // Initialize all tables
+            reinitializeAllDataTables();
+            
+            // Re-initialize when content changes
+            $(document).on('DOMContentLoaded', function() {
+                reinitializeAllDataTables();
+            });
+            
+            // Observer for dynamically added content
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        // Check if any student or donor tables were added
+                        const hasStudentTable = $(mutation.target).find('#studentTable').length > 0;
+                        const hasDonorTable = $(mutation.target).find('#donorTable').length > 0;
+                        
+                        if (hasStudentTable || hasDonorTable) {
+                            setTimeout(reinitializeAllDataTables, 100);
+                        }
+                    }
+                });
+            });
+            
+            // Start observing
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
 </body>
 </html>

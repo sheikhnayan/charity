@@ -212,6 +212,13 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('admins/newsletter*') ? 'active' : '' }}">
+    <a href="/admins/newsletter" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-envelope"></i>
+      <div class="text-truncate">Newsletter</div>
+    </a>
+  </li>
+
   <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Reports</span>
   </li>

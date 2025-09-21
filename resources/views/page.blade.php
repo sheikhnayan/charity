@@ -179,7 +179,9 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         min-height: 100vh;
     }
     
+    /* Enhanced Mobile Margin/Border Fixes */
     @media (max-width: 768px) {
+        /* Parallax fixes */
         .inner-section-wrapper.has-parallax {
             background-attachment: scroll;
             min-height: 50vh;
@@ -189,6 +191,78 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
             width: 100%;
             margin-left: 0;
             margin-right: 0;
+        }
+        
+        /* Mobile Edge-to-Edge Improvements */
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Bootstrap Container Mobile Overrides - Bring content closer to edges */
+        .container {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        
+        .container-fluid {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        
+        /* Row and Column Mobile Spacing */
+        .row {
+            margin-left: -4px !important;
+            margin-right: -4px !important;
+        }
+        
+        .row > [class*="col-"] {
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+        
+        /* Component Mobile Margin Improvements */
+        .component {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Main content mobile adjustments */
+        main {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        
+        /* Component content mobile spacing */
+        .component-content {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        
+        /* Inner sections mobile edge fixes */
+        .inner-section-frontend,
+        .inner-section-fullwidth {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        
+        /* Remove default margins from page elements on mobile */
+        .my-5 {
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1rem !important;
         }
     }
 
@@ -1325,15 +1399,26 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         // Extract styles
         $style = $data['style'] ?? [];
         $wrapperStyle = $data['wrapperStyle'] ?? [];
-        $donationColors = $data['donationFormColors'] ?? [
-            'headerBg' => '#2e4053',
-            'headerText' => '#ffffff',
-            'footerBg' => '#2e4053',
-            'footerText' => '#ffffff',
-        ];
+        
+        // Extract donation form data for customizable text and colors
+        $donationFormData = $data['donationFormData'] ?? [];
+        $formTitle = $donationFormData['formTitle'] ?? 'Make a general donation to ' . $check->name;
+        $secondaryTitle = $donationFormData['secondaryTitle'] ?? 'Donate to the';
+        $buttonText = $donationFormData['buttonText'] ?? 'Donate';
+        $feeText = $donationFormData['feeText'] ?? 'I elect to pay the fees';
+        $feeTooltip = $donationFormData['feeTooltip'] ?? 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.';
+        $anonymousText = $donationFormData['anonymousText'] ?? 'Anonymous';
+        $anonymousDescription = $donationFormData['anonymousDescription'] ?? 'Choose to make your donation anonymous';
+        $anonymousTooltip = $donationFormData['anonymousTooltip'] ?? 'Selecting this option will hide your name from everyone but the organizer.';
+        
+        // Extract color settings
+        $backgroundColor = $donationFormData['backgroundColor'] ?? '#ffffff';
+        $headerColor = $donationFormData['headerColor'] ?? '#2e4053';
+        $headerTextColor = $donationFormData['headerTextColor'] ?? '#ffffff';
+        $borderColor = $donationFormData['borderColor'] ?? '#2e4053';
+        
         // Build wrapper style string (for margin, padding, etc.)
         $wrapperStyleStr = '';
-        $backgroundColor = '';
         foreach ($wrapperStyle as $k => $v) {
             if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
         }
@@ -1343,35 +1428,29 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
             if ($v) {
                 $cssKey = strtolower(preg_replace('/([A-Z])/', '-$1', $k));
                 $cardStyleStr .= "$cssKey:$v;";
-                if ($cssKey === 'background-color') $backgroundColor = $v;
                 if (in_array($cssKey, ['margin', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right', 'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right'])) {
                     $wrapperStyleStr .= "$cssKey:$v;";
                 }
             }
-        }
-        // Ensure background color is applied to the wrapper if set in style
-        if ($backgroundColor) {
-            $wrapperStyleStr .= 'background-color:' . $backgroundColor . ';';
         }
     @endphp
     <section class="donation-form-component" style="{{ $wrapperStyleStr }}">
         <div class="block-container container" style="{{ $cardStyleStr }}">
             <form method="POST" action="/donation-general" class="donation-form-block">
                 @csrf
-                <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
-                    <div class="card border-primary shadow" style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important;">
-                        <div class="card-header bg-primary border-primary rounded-0 text-center fs-2"
-                            style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; background-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; color: {{ $donationColors['headerText'] ?? '#ffffff' }} !important;">
-                            Make a general donation to {{ $check->name }}
+                <!-- Improved mobile responsiveness: wider on mobile, closer to edges -->
+                <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6 mx-auto px-2 px-sm-3">
+                    <div class="card shadow" style="border-width: 3px; border-color: {{ $borderColor }} !important;">
+                        <div class="card-header rounded-0 text-center fs-2"
+                            style="border-width: 3px !important; border-color: {{ $headerColor }} !important; background-color: {{ $headerColor }} !important; color: {{ $headerTextColor }} !important;">
+                            {{ $formTitle }}
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" style="background-color: {{ $backgroundColor }} !important;">
                             <input type="hidden" name="profile_uuid" value="">
-
                             <input type="hidden" name="team_uuid" value="">
 
                             <div class="row gy-3">
-                                <div
-                                    class="col-12 d-flex flex-column justify-content-center align-items-center">
+                                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                                     <input type="hidden" name="type" id="type" value="general">
                                     <div></div>
                                 </div>
@@ -1379,12 +1458,12 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                 <div class="col-12">
                                     <div class="input-group input-group-lg">
                                         <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
-                                            style="border-width: 2px; border-right-width: 0; border-color: #2e4053 !important;">$</span>
+                                            style="border-width: 2px; border-right-width: 0; border-color: {{ $borderColor }} !important;">$</span>
                                         <input type="number" placeholder="0"
                                             class="form-control fs-2 fs-lg-4 text-center border-primary"
-                                            style="border-width: 2px; border-color: #2e4053 !important;" name="donation_amount" value="" required>
+                                            style="border-width: 2px; border-color: {{ $borderColor }} !important;" name="donation_amount" value="" required>
                                         <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
-                                            style="border-width: 2px; border-left-width: 0; border-color: #2e4053 !important;">.00</span>
+                                            style="border-width: 2px; border-left-width: 0; border-color: {{ $borderColor }} !important;">.00</span>
                                     </div>
                                     <input type="hidden" name="amount" value="">
                                     <div class="text-center">
@@ -1395,30 +1474,21 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                 </div>
 
                                 <div class="col-12 d-flex justify-content-center align-items-center">
-                                    <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: #2e4053 !important;">
+                                    <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: {{ $borderColor }} !important;">
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" role="switch"
                                                 id="pay_fees" name="pay_fees" checked="">
                                             <label class="form-check-label fw-semibold" for="pay_fees">
-                                                I elect to pay the fees
+                                                {{ $feeText }}
                                             </label>
                                             <i role="button"
-                                                class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                class="fa-solid fa-circle-info text-info btn-modal-info ms-2"
                                                 data-bs-toggle="tooltip"
                                                 data-bs-placement="top"
-                                                title="By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step."></i>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    });
-</script>
+                                                title="{{ $feeTooltip }}"></i>
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="col-12">
                                     <label for="first_name" class="form-label fw-semibold required">
@@ -1436,7 +1506,6 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                         name="last_name" value="" required>
                                 </div>
 
-
                                 <div class="col-12">
                                     <label for="email" class="form-label fw-semibold required">
                                         Email address
@@ -1450,13 +1519,14 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                         <input class="form-check-input" type="checkbox" role="switch"
                                             id="anonymous_donation" name="anonymous_donation">
                                         <label class="form-check-label fw-semibold" for="anonymous_donation">
-                                            Anonymous
+                                            {{ $anonymousText }}
                                         </label>
                                         <i role="button"
-                                            class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            class="fa-solid fa-circle-info text-info btn-modal-info ms-2"
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="top"
-                                            title="Selecting this option will hide your name from everyone but the organizer."></i>
+                                            title="{{ $anonymousTooltip }}"></i>
+                                        <small class="text-muted d-block mt-1">{{ $anonymousDescription }}</small>
                                     </div>
                                 </div>
 
@@ -1467,25 +1537,20 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                     <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
                                 </div>
 
-
                                 <div class="col-12">
-                                                <small class="text-muted">This form is protected by reCAPTCHA and the
-                                                    Google <a href="https://policies.google.com/privacy">Privacy Policy</a>
-                                                    and <a href="https://policies.google.com/terms">Terms of Service</a>
-                                                    apply.</small>
-                                            </div>
-
-
-
-
+                                    <small class="text-muted">This form is protected by reCAPTCHA and the
+                                        Google <a href="https://policies.google.com/privacy">Privacy Policy</a>
+                                        and <a href="https://policies.google.com/terms">Terms of Service</a>
+                                        apply.</small>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-footer bg-primary border-primary rounded-0 p-0"
-                            style="border-width: 3px; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; background-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important;">
+                        <div class="card-footer rounded-0 p-0"
+                            style="border-width: 3px !important; border-color: {{ $headerColor }} !important; background-color: {{ $headerColor }} !important;">
                             <button type="submit"
-                                class="btn btn-primary btn-lg w-100 h-100 rounded-0 shadow-none"
-                                style="background: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; border-color: {{ $donationColors['headerBg'] ?? '#2e4053' }} !important; color: {{ $donationColors['headerText'] ?? '#ffffff' }} !important;">
-                                Donate
+                                class="btn btn-lg w-100 h-100 rounded-0 shadow-none"
+                                style="background: {{ $headerColor }} !important; border-color: {{ $headerColor }} !important; color: {{ $headerTextColor }} !important;">
+                                {{ $buttonText }}
                             </button>
                         </div>
                     </div>
@@ -2484,8 +2549,8 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
                                                                                 @break
                                                                                 
                                                                                 @default
-                                                                                    {{-- Default fallback --}}
-                                                                                    <div>{{ ucfirst($nestedComponent['type']) }} Component</div>
+                                                                                    {{-- Silent fallback - no placeholder text displayed --}}
+                                                                                    <div style="display: none;"></div>
                                                                             @endswitch
                                                                         </div>
                                                                 @endswitch
@@ -3234,8 +3299,18 @@ setInterval(updateCountdown, 1000);
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $.fn.dataTable.ext.errMode = 'none';
+    // Global function to safely initialize DataTables
+    function initStudentTable() {
+        // Check if table exists
+        if ($('#studentTable').length === 0) {
+            return;
+        }
+        
+        // Destroy existing DataTable instance if it exists
+        if ($.fn.DataTable.isDataTable('#studentTable')) {
+            $('#studentTable').DataTable().destroy();
+        }
+        
         // Initialize DataTable with default search disabled
         const table = $('#studentTable').DataTable({
             paging: true,
@@ -3271,6 +3346,18 @@ setInterval(updateCountdown, 1000);
                     $(this).show();
                 }
             });
+        });
+    }
+
+    $(document).ready(function() {
+        $.fn.dataTable.ext.errMode = 'none';
+        
+        // Initialize the table
+        initStudentTable();
+        
+        // Re-initialize when new content is loaded (for dynamic components)
+        $(document).on('DOMContentLoaded', function() {
+            initStudentTable();
         });
 
     });
@@ -3545,6 +3632,14 @@ document.addEventListener('click', function(e) {
             modal.style.display = 'none';
         }
     }
+});
+
+// Initialize Bootstrap tooltips
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 });
 </script>
 

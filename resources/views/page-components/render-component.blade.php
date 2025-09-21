@@ -98,6 +98,15 @@
 <style>
 {!! $responsiveCSS !!}
 
+.ticket-mask {
+        --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
+        -webkit-mask: var(--mask);
+        mask: var(--mask);
+        padding: 1.5rem;
+        background-color: #eee;
+        border: unset;
+    }
+
 /* Quill.js Class-based Font Styles for Frontend */
 .ql-size-10px { font-size: 10px !important; }
 .ql-size-12px { font-size: 12px !important; }
@@ -161,6 +170,14 @@ h5, .ql-header-5 {
         margin-right: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Enhanced Mobile Edge-to-Edge Experience */
+    html {
+        overflow-x: hidden !important;
     }
     
     /* Fix any page container margins on mobile */
@@ -172,35 +189,118 @@ h5, .ql-header-5 {
         box-sizing: border-box !important;
     }
     
-    /* Fix container margins on mobile */
+    /* Bootstrap Container Mobile Overrides - Minimal margins for edge-to-edge feel */
     .container-fluid, .container {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
     }
     
-    /* Fix any component wrappers on mobile */
+    /* Fix any component wrappers on mobile - bring content closer to edges */
     .component-wrapper, .component {
         margin-left: 0 !important;
         margin-right: 0 !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
     }
     
-    /* Ensure all components fit within viewport */
+    /* Ensure all components fit within viewport with minimal side spacing */
     .row {
+        margin-left: -2px !important;
+        margin-right: -2px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .row > [class*="col-"] {
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        max-width: 100% !important;
+    }
+    
+    /* Inner sections mobile edge optimization */
+    .inner-section-frontend {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .inner-section-fullwidth {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
     }
     
-    .row > [class*="col-"] {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+    /* Component content mobile optimization */
+    .component-content {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Text and content elements mobile spacing */
+    .text-component, .heading-component {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Form elements mobile edge optimization */
+    .form-component {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Button components mobile spacing */
+    .button-component {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+    
+    /* Image components mobile edge behavior */
+    .image-component img {
+        max-width: calc(100% - 10px) !important;
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+    
+    /* Investment components mobile edge optimization */
+    .investment-tier, .invest-cta-wrapper {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+        max-width: calc(100% - 10px) !important;
+    }
+    
+    /* Video components mobile behavior */
+    .video-component {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+        max-width: calc(100% - 10px) !important;
+    }
+    
+    /* Gallery mobile edge behavior */
+    .gallery-component {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Divider mobile spacing */
+    .divider-component {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+        max-width: calc(100% - 10px) !important;
+    }
     }
     
     /* Fix investment CTA overflow */
@@ -598,13 +698,34 @@ h5, .ql-header-5 {
 
         @case('button')
             @php
-                $text = $component['html'] ?? 'Button';
-                $href = $component['href'] ?? '#';
-                $target = ($component['openInNewTab'] ?? false) ? '_blank' : '_self';
+                // Support both old format and new properties format
+                $text = $component['properties']['button_text'] ?? $component['html'] ?? $component['text'] ?? 'Button';
+                $href = $component['properties']['button_url'] ?? $component['href'] ?? '#';
+                $target = $component['properties']['button_target'] ?? (($component['openInNewTab'] ?? false) ? '_blank' : '_self');
+                
+                // Button styling from properties
+                $buttonBgColor = $component['properties']['button_bg_color'] ?? $style['backgroundColor'] ?? '#007bff';
+                $buttonTextColor = $component['properties']['button_text_color'] ?? $style['color'] ?? '#ffffff';
+                $buttonPadding = $component['properties']['button_padding'] ?? $style['padding'] ?? '10px 20px';
+                $borderRadius = $component['properties']['border_radius'] ?? $style['borderRadius'] ?? '4px';
+                $fontSize = $component['properties']['font_size'] ?? $style['fontSize'] ?? '16px';
+                $fontWeight = $component['properties']['font_weight'] ?? $style['fontWeight'] ?? '400';
+                $textAlign = $component['properties']['text_align'] ?? $style['textAlign'] ?? 'center';
+                $textDecoration = $component['properties']['text_decoration'] ?? 'none';
+                $border = $component['properties']['border'] ?? $style['border'] ?? 'none';
+                $boxShadow = $component['properties']['box_shadow'] ?? $style['boxShadow'] ?? 'none';
+                $transition = $component['properties']['transition'] ?? 'all 0.3s ease';
             @endphp
-            <a href="{{ $href }}" target="{{ $target }}" class="btn" style="{{ $styleStr }}">
-                {{ $text }}
-            </a>
+            <div style="text-align: {{ $textAlign }}; {{ $styleStr }}">
+                <a href="{{ $href }}" target="{{ $target }}" 
+                   style="display: inline-block; background-color: {{ $buttonBgColor }}; color: {{ $buttonTextColor }}; 
+                          padding: {{ $buttonPadding }}; border-radius: {{ $borderRadius }}; font-size: {{ $fontSize }}; 
+                          font-weight: {{ $fontWeight }}; text-decoration: {{ $textDecoration }}; border: {{ $border }}; 
+                          box-shadow: {{ $boxShadow }}; transition: {{ $transition }}; cursor: pointer;"
+                   class="btn custom-button">
+                    {{ $text }}
+                </a>
+            </div>
         @break
 
         @case('image')
@@ -739,10 +860,14 @@ h5, .ql-header-5 {
 
         @case('divider')
             @php
-                $height = $style['height'] ?? '2px';
-                $backgroundColor = $style['backgroundColor'] ?? '#ddd';
+                // Support both style (old format) and properties (new format)
+                $height = $component['properties']['height'] ?? $style['height'] ?? '2px';
+                $backgroundColor = $component['properties']['background_color'] ?? $style['backgroundColor'] ?? '#ddd';
+                $margin = $component['properties']['margin'] ?? $style['margin'] ?? '1rem 0';
+                $borderRadius = $component['properties']['border_radius'] ?? $style['borderRadius'] ?? '0';
+                $opacity = $component['properties']['opacity'] ?? $style['opacity'] ?? '1';
             @endphp
-            <hr style="height:{{ $height }};background-color:{{ $backgroundColor }};border:none;{{ $styleStr }}">
+            <hr style="height:{{ $height }};background-color:{{ $backgroundColor }};border:none;margin:{{ $margin }};border-radius:{{ $borderRadius }};opacity:{{ $opacity }};{{ $styleStr }}">
         @break
 
         @case('spacer')
@@ -750,6 +875,139 @@ h5, .ql-header-5 {
                 $height = $style['height'] ?? '20px';
             @endphp
             <div style="height:{{ $height }};{{ $styleStr }}"></div>
+        @break
+
+        @case('event-countdown')
+            @if(isset($component['countdownData']))
+                @php
+                    $countdownData = $component['countdownData'];
+                    $label = $countdownData['label'] ?? '';
+                    $date = $countdownData['date'] ?? '';
+                    $fontWeight = $countdownData['fontWeight'] ?? 'bold'; // Legacy support
+                    
+                    // Color options for different elements
+                    $numberColor = $countdownData['numberColor'] ?? '#000';
+                    $textColor = $countdownData['textColor'] ?? '#000';
+                    $remainingVerbiageColor = $countdownData['remainingVerbiageColor'] ?? '#000';
+                    
+                    // Font weight options for different elements
+                    $numberFontWeight = $countdownData['numberFontWeight'] ?? 'bold';
+                    $textFontWeight = $countdownData['textFontWeight'] ?? 'normal';
+                    $remainingFontWeight = $countdownData['remainingFontWeight'] ?? 'normal';
+                    
+                    // Show/hide remaining text option
+                    $showRemainingText = $countdownData['showRemainingText'] ?? true;
+                    
+                    // Convert font weight values to CSS
+                    $numberWeight = $numberFontWeight === 'bold' ? 600 : 400;
+                    $textWeight = $textFontWeight === 'bold' ? 600 : 400;
+                    $remainingWeight = $remainingFontWeight === 'bold' ? 600 : 400;
+                    
+                    // Build wrapper style (for margin, etc.)
+                    $wrapperStyle = $wrapperStyleStr;
+                    $backgroundColor = '';
+                    
+                    // Build countdown style (for color, background, padding, etc.)
+                    $countdownStyle = $styleStr;
+                    $color = '#000';
+                    
+                    // Extract color from style (fallback if individual colors not set)
+                    if (isset($style['color'])) {
+                        $color = $style['color'];
+                        // Use main color as fallback if specific colors not provided
+                        if ($countdownData['numberColor'] ?? false === false) $numberColor = $color;
+                        if ($countdownData['textColor'] ?? false === false) $textColor = $color;
+                        if ($countdownData['remainingVerbiageColor'] ?? false === false) $remainingVerbiageColor = $color;
+                    }
+                    
+                    // Legacy fontWeight fallback support
+                    if (!isset($countdownData['numberFontWeight']) && isset($countdownData['fontWeight'])) {
+                        $numberWeight = $fontWeight === 'normal' ? 400 : 600;
+                        $remainingWeight = $fontWeight === 'normal' ? 400 : 600;
+                    }
+                    
+                    // Extract background color
+                    if (isset($style['backgroundColor'])) {
+                        $backgroundColor = $style['backgroundColor'];
+                        $wrapperStyle .= 'background-color:' . $backgroundColor . ';';
+                    }
+                    
+                    // Generate unique IDs for this countdown
+                    $uniqueId = 'countdown_' . uniqid();
+                @endphp
+                <div class="event-countdown" style="padding:24px 16px;border-radius:8px;text-align:center;margin-bottom:24px;{{ $wrapperStyle }}">
+                    <div class="timer text-center mt-5" style="{{ $countdownStyle }}">
+                        <div class="d-flex justify-content-center align-items-center flex-wrap">
+                            <div class="mx-2 counters">
+                                <h1 id="months_{{ $uniqueId }}" class="display-4" style="font-weight:{{ $numberWeight }} !important;color:{{ $numberColor }}">0</h1>
+                                <p style="color:{{ $textColor }};font-weight:{{ $textWeight }} !important">Months</p>
+                            </div>
+                            <div class="mx-2 counters">
+                                <h1 id="days_{{ $uniqueId }}" class="display-4" style="font-weight:{{ $numberWeight }} !important;color:{{ $numberColor }}">0</h1>
+                                <p style="color:{{ $textColor }};font-weight:{{ $textWeight }} !important">Days</p>
+                            </div>
+                            <div class="mx-2 counters">
+                                <h1 id="hours_{{ $uniqueId }}" class="display-4" style="font-weight:{{ $numberWeight }} !important;color:{{ $numberColor }}">0</h1>
+                                <p style="color:{{ $textColor }};font-weight:{{ $textWeight }} !important">Hours</p>
+                            </div>
+                            <div class="mx-2 counters">
+                                <h1 id="minutes_{{ $uniqueId }}" class="display-4" style="font-weight:{{ $numberWeight }} !important;color:{{ $numberColor }}">0</h1>
+                                <p style="color:{{ $textColor }};font-weight:{{ $textWeight }} !important">Minutes</p>
+                            </div>
+                            <div class="mx-2 counters">
+                                <h1 id="seconds_{{ $uniqueId }}" class="display-4" style="font-weight:{{ $numberWeight }} !important;color:{{ $numberColor }}">0</h1>
+                                <p style="color:{{ $textColor }};font-weight:{{ $textWeight }} !important">Seconds</p>
+                            </div>
+                        </div>
+                        @if($showRemainingText && $label)
+                            <p style="font-size: .8em; font-weight:{{ $remainingWeight }} !important; color:{{ $remainingVerbiageColor }}">{{ $label }}</p>
+                        @endif
+                    </div>
+                    <input type="hidden" id="timer_{{ $uniqueId }}" class="date-countdown" value="{{ $date }}">
+                </div>
+                <script>
+                    (function() {
+                        const timerId = "{{ $uniqueId }}";
+                        const dateValue = document.getElementById("timer_" + timerId).value;
+                        
+                        if (!dateValue) return;
+                        
+                        const targetDate = new Date(dateValue).getTime();
+                        
+                        function updateCountdown() {
+                            const now = new Date().getTime();
+                            const timeLeft = targetDate - now;
+                            
+                            if (timeLeft <= 0) {
+                                document.getElementById("months_" + timerId).textContent = 0;
+                                document.getElementById("days_" + timerId).textContent = 0;
+                                document.getElementById("hours_" + timerId).textContent = 0;
+                                document.getElementById("minutes_" + timerId).textContent = 0;
+                                document.getElementById("seconds_" + timerId).textContent = 0;
+                                return;
+                            }
+                            
+                            const months = Math.floor(timeLeft / (1000 * 60 * 60 * 24 * 30));
+                            const days = Math.floor((timeLeft % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                            
+                            document.getElementById("months_" + timerId).textContent = months;
+                            document.getElementById("days_" + timerId).textContent = days;
+                            document.getElementById("hours_" + timerId).textContent = hours;
+                            document.getElementById("minutes_" + timerId).textContent = minutes;
+                            document.getElementById("seconds_" + timerId).textContent = seconds;
+                        }
+                        
+                        // Initial update
+                        updateCountdown();
+                        
+                        // Update every second
+                        setInterval(updateCountdown, 1000);
+                    })();
+                </script>
+            @endif
         @break
 
         @case('custom-banner')
@@ -816,11 +1074,13 @@ h5, .ql-header-5 {
             <div style="{{ $styleStr }}">
                 <div class="col-12 mt-4 donor-list-component">
                     <div class="col-12 mt-4">
-                        <div id="studentTable_wrapper" class="dataTables_wrapper no-footer">
-                            <table id="studentTable" class="display table dataTable no-footer" role="grid">
+                        <div id="donorTable_wrapper" class="dataTables_wrapper no-footer">
+                            <table id="donorTable" class="display table dataTable no-footer" role="grid">
                                 <tbody>
                                     @php
-                                        $domain = request()->getHttpHost();
+                                        $url = url()->current();
+                                        $domain = parse_url($url, PHP_URL_HOST);
+                                        $check = \App\Models\Website::where('domain', $domain)->first();
                                         $website = \App\Models\Website::where('domain', $domain)->first();
                                     @endphp
                                     @if($website)
@@ -1442,7 +1702,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
             @endphp
             
             @if(count($features) > 0)
-                <div class="feature-grid-frontend row">
+                <div class="feature-grid-frontend row" style="{{ $styleStr }}">
                     @foreach($features as $index => $feature)
                         <div class="feature-item col-md-6" style="display: block;">
                             <div class="feature-icon" style="width: 48px; height: 48px; color: {{ $iconColor }}; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
@@ -1487,74 +1747,170 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 $titleColor = $colors['titleColor'] ?? '#22c55e';
                 $descriptionColor = $colors['descriptionColor'] ?? '#374151';
                 $lineColor = $colors['lineColor'] ?? '#22c55e';
+                
+                // Completion status colors
+                $completedBackground = $colors['completedBackground'] ?? '#22c55e';
+                $uncompletedBackground = $colors['uncompletedBackground'] ?? '#e5e7eb';
+                $completedText = $colors['completedText'] ?? '#ffffff';
+                $uncompletedText = $colors['uncompletedText'] ?? '#9ca3af';
+                $completedLineColor = $colors['completedLineColor'] ?? '#22c55e';
+                $uncompletedLineColor = $colors['uncompletedLineColor'] ?? '#e5e7eb';
             @endphp
-            <div class="numbered-timeline" style="display: flex; flex-wrap: wrap; gap: 2rem; position: relative;">
-                @php
-                    $itemsPerColumn = 4;
-                    $columns = array_chunk($items, $itemsPerColumn);
-                @endphp
-                @foreach($columns as $columnIndex => $column)
-                    <div class="timeline-column" style="flex: 1; min-width: 250px; position: relative;">
-                        @foreach($column as $index => $item)
-                            @php
-                                $globalIndex = $columnIndex * $itemsPerColumn + $index;
-                            @endphp
-                            <div class="timeline-item" style="display: flex; align-items: flex-start; margin-bottom: 2rem; position: relative;">
-                                <div class="timeline-number" style="
-                                    width: 50px; 
-                                    height: 50px; 
-                                    border: 3px solid {{ $numberBackground }}; 
-                                    border-radius: 50%; 
-                                    display: flex; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    background: var(--page-bg-color, #fff); 
-                                    color: {{ $numberText }}; 
-                                    font-weight: bold; 
-                                    font-size: 18px; 
-                                    margin-right: 1rem; 
-                                    flex-shrink: 0; 
-                                    position: relative; 
-                                    z-index: 2;
-                                ">
-                                    {{ $item['number'] ?? ($globalIndex + 1) }}
-                                </div>
-                                <div class="timeline-content" style="flex: 1;">
-                                    <h3 style="color: {{ $titleColor }}; margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 600;">
-                                        {{ $item['title'] ?? 'Timeline Item' }}
-                                    </h3>
-                                    <p style="color: {{ $descriptionColor }}; margin: 0; line-height: 1.5;">
-                                        {{ $item['description'] ?? 'Timeline description' }}
-                                    </p>
-                                </div>
-                                @if($index < count($column) - 1)
-                                    <div class="timeline-line" style="
-                                        position: absolute; 
-                                        left: 22px; 
-                                        top: 50px; 
-                                        width: 6px; 
-                                        height: calc(100% + 2rem); 
-                                        border-style: none dashed none none; 
-                                        border-width: 3px; 
-                                        border-color: {{ $lineColor }}; 
-                                        z-index: 1;
-                                    "></div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                @endforeach
-            </div>
+            
             <style>
+                .numbered-timeline-container {
+                    position: relative;
+                    max-width: 100%;
+                    margin: 0 auto;
+                }
+                
+                .timeline-item {
+                    display: flex;
+                    align-items: flex-start;
+                    margin-bottom: 3rem;
+                    position: relative;
+                }
+                
+                .timeline-number {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                    margin-right: 1.5rem;
+                    flex-shrink: 0;
+                    position: relative;
+                    z-index: 3;
+                    transition: all 0.3s ease;
+                }
+                
+                .timeline-content {
+                    flex: 1;
+                    padding-top: 8px;
+                }
+                
+                .timeline-line {
+                    position: absolute;
+                    left: 24px;
+                    top: 50px;
+                    width: 2px;
+                    height: calc(100% + 1rem);
+                    z-index: 1;
+                    transition: background-color 0.3s ease;
+                }
+                
+                /* Desktop layout */
+                @media (min-width: 769px) {
+                    .numbered-timeline {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 2rem;
+                        position: relative;
+                    }
+                    
+                    .timeline-column {
+                        flex: 1;
+                        min-width: 250px;
+                        position: relative;
+                    }
+                }
+                
+                /* Mobile layout - single column with continuous line */
                 @media (max-width: 768px) {
                     .numbered-timeline {
-                        flex-direction: column !important;
+                        display: block !important;
+                        position: relative;
                     }
+                    
                     .timeline-column {
+                        width: 100% !important;
                         min-width: auto !important;
+                    }
+                    
+                    /* Continuous vertical line for mobile */
+                    .numbered-timeline::before {
+                        content: '';
+                        position: absolute;
+                        left: 24px;
+                        top: 50px;
+                        bottom: 50px;
+                        width: 2px;
+                        background: linear-gradient(to bottom, {{ $completedLineColor }} 0%, {{ $completedLineColor }} 70%, {{ $uncompletedLineColor }} 70%, {{ $uncompletedLineColor }} 100%);
+                        z-index: 1;
+                    }
+                    
+                    .timeline-line {
+                        display: none; /* Hide individual lines on mobile */
+                    }
+                    
+                    .timeline-item {
+                        margin-bottom: 2.5rem;
                     }
                 }
             </style>
+            
+            <div class="numbered-timeline-container" style="{{ $styleStr }}">
+                <div class="numbered-timeline">
+                    @php
+                        $itemsPerColumn = 4;
+                        $columns = array_chunk($items, $itemsPerColumn);
+                    @endphp
+                    @foreach($columns as $columnIndex => $column)
+                        <div class="timeline-column">
+                            @foreach($column as $index => $item)
+                                @php
+                                    $globalIndex = $columnIndex * $itemsPerColumn + $index;
+                                    $isCompleted = $item['completed'] ?? true; // Default to completed if not specified
+                                    $isLastInColumn = $index === count($column) - 1;
+                                    $isLastOverall = $globalIndex === count($items) - 1;
+                                    
+                                    // Determine colors based on completion status
+                                    $bgColor = $isCompleted ? $completedBackground : $uncompletedBackground;
+                                    $textColor = $isCompleted ? $completedText : $uncompletedText;
+                                    $itemLineColor = $isCompleted ? $completedLineColor : $uncompletedLineColor;
+                                @endphp
+                                <div class="timeline-item">
+                                    <div class="timeline-number" style="
+                                        background: {{ $bgColor }};
+                                        color: {{ $textColor }};
+                                        {{ !$isCompleted ? 'border: 2px solid ' . $uncompletedBackground . ';' : '' }}
+                                    ">
+                                        {{ $item['number'] ?? ($globalIndex + 1) }}
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h3 style="color: {{ $isCompleted ? $titleColor : $uncompletedText }}; margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 600;">
+                                            {{ $item['title'] ?? 'Timeline Item' }}
+                                        </h3>
+                                        <p style="color: {{ $isCompleted ? $descriptionColor : $uncompletedText }}; margin: 0; line-height: 1.6; opacity: {{ $isCompleted ? '1' : '0.7' }};">
+                                            {{ $item['description'] ?? 'Timeline description' }}
+                                        </p>
+                                        @if(isset($item['status']) && !empty($item['status']))
+                                            <div class="timeline-status" style="
+                                                margin-top: 0.5rem;
+                                                padding: 4px 12px;
+                                                border-radius: 12px;
+                                                font-size: 12px;
+                                                font-weight: 500;
+                                                display: inline-block;
+                                                background: {{ $isCompleted ? 'rgba(34, 197, 94, 0.1)' : 'rgba(156, 163, 175, 0.1)' }};
+                                                color: {{ $isCompleted ? '#059669' : '#6b7280' }};
+                                            ">
+                                                {{ $item['status'] }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    @if(!$isLastInColumn && !$isLastOverall)
+                                        <div class="timeline-line" style="background: {{ $itemLineColor }};"></div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         @break
 
         @case('investment-tier')
@@ -1563,12 +1919,21 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 $tierName = $tierData['tierName'] ?? 'TIER 1';
                 $tierPrice = $tierData['tierPrice'] ?? '$2,500';
                 $tierDescription = $tierData['tierDescription'] ?? '';
+                $receiveLabel = $tierData['receiveLabel'] ?? 'Receive';
                 $buttonText = $tierData['buttonText'] ?? 'INVEST NOW';
                 $buttonUrl = $tierData['buttonUrl'] ?? '#';
                 $buttonTarget = $tierData['buttonTarget'] ?? '_self';
                 $backgroundType = $tierData['backgroundType'] ?? 'color';
                 $backgroundColor = $tierData['backgroundColor'] ?? '#f8f9fa';
                 $backgroundImage = $tierData['backgroundImage'] ?? '';
+                
+                // Color fields with fallbacks
+                $titleColor = $tierData['titleColor'] ?? $tierData['textColor'] ?? '#ffffff';
+                $priceColor = $tierData['priceColor'] ?? $tierData['textColor'] ?? '#ffffff';
+                $receiveLabelColor = $tierData['receiveLabelColor'] ?? $tierData['textColor'] ?? '#ffffff';
+                $descriptionColor = $tierData['descriptionColor'] ?? $tierData['textColor'] ?? '#ffffff';
+                $buttonBgColor = $tierData['buttonBgColor'] ?? '#28a745';
+                $buttonTextColor = $tierData['buttonTextColor'] ?? '#ffffff';
                 
                 // Extract numeric value from tier price for URL parameter
                 $numericPrice = preg_replace('/[^0-9.,]/', '', $tierPrice);
@@ -1618,23 +1983,30 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 }
             </style>
             
-            <div class="investment-tier" style="{{ $backgroundStyle }} padding: 2rem; border-radius: 8px; text-align: center; color: white; margin: 0 auto !important; max-width: 370px;">
-                <h2 style="color: white; margin: 0 0 1rem 0; font-size: 2rem; font-weight: bold;">{{ $tierName }}</h2>
-                <div style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: white;">{{ $tierPrice }}</div>
-                @if($tierDescription)
-                    <p style="color: white; margin: 1rem 0; line-height: 1.6; font-size: 1.1rem;">{{ $tierDescription }}</p>
+            <div class="investment-tier" style="{{ $backgroundStyle }} padding: 2rem; border-radius: 8px; text-align: center; margin: 0 auto !important; max-width: 370px;">
+                <h2 style="color: {{ $titleColor }}; margin: 0 0 1rem 0; font-size: 2rem; font-weight: bold;">{{ $tierName }}</h2>
+                <div style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: {{ $priceColor }};">{{ $tierPrice }}</div>
+                @if($receiveLabel || $tierDescription)
+                    <div style="margin: 1rem 0;">
+                        @if($receiveLabel)
+                            <div style="color: {{ $receiveLabelColor }}; font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem;">{{ $receiveLabel }}</div>
+                        @endif
+                        @if($tierDescription)
+                            <p style="color: {{ $descriptionColor }}; margin: 0; line-height: 1.6; font-size: 1.1rem;">{{ $tierDescription }}</p>
+                        @endif
+                    </div>
                 @endif
                 <a href="{{ $buttonUrl }}" target="{{ $buttonTarget }}" style="
                     display: inline-block; 
-                    background: #22c55e; 
-                    color: white; 
+                    background: {{ $buttonBgColor }}; 
+                    color: {{ $buttonTextColor }}; 
                     padding: 1rem 2rem; 
                     text-decoration: none; 
                     border-radius: 4px; 
                     font-weight: bold; 
                     margin-top: 1rem; 
                     transition: background 0.3s ease;
-                " onmouseover="this.style.background='#16a34a'" onmouseout="this.style.background='#22c55e'">
+                " onmouseover="this.style.background='{{ $buttonBgColor }}ee'" onmouseout="this.style.background='{{ $buttonBgColor }}'">
                     {{ $buttonText }}
                 </a>
             </div>
@@ -1892,29 +2264,51 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
         @case('alert-message')
             @php
+                // Support both old alertData format and new properties format
                 $alertData = $component['alertData'] ?? [];
-                $message = $alertData['message'] ?? 'Alert message';
-                $type = $alertData['type'] ?? 'info';
-                $dismissible = $alertData['dismissible'] ?? false;
+                $properties = $component['properties'] ?? [];
                 
+                $message = $properties['message'] ?? $alertData['message'] ?? $component['html'] ?? $component['text'] ?? 'Alert message';
+                $type = $properties['alert_type'] ?? $alertData['type'] ?? 'info';
+                $dismissible = $properties['dismissible'] ?? $alertData['dismissible'] ?? false;
+                
+                // Custom styling from properties
+                $backgroundColor = $properties['background_color'] ?? $style['backgroundColor'] ?? null;
+                $textColor = $properties['text_color'] ?? $style['color'] ?? null;
+                $borderColor = $properties['border_color'] ?? $style['borderColor'] ?? null;
+                $borderRadius = $properties['border_radius'] ?? $style['borderRadius'] ?? '4px';
+                $padding = $properties['padding'] ?? $style['padding'] ?? '1rem';
+                $margin = $properties['margin'] ?? $style['margin'] ?? '1rem 0';
+                $fontSize = $properties['font_size'] ?? $style['fontSize'] ?? '14px';
+                $fontWeight = $properties['font_weight'] ?? $style['fontWeight'] ?? '400';
+                
+                // Default alert colors if no custom colors are set
                 $alertColors = [
                     'success' => ['bg' => '#d4edda', 'text' => '#155724', 'border' => '#c3e6cb'],
                     'danger' => ['bg' => '#f8d7da', 'text' => '#721c24', 'border' => '#f5c6cb'],
                     'warning' => ['bg' => '#fff3cd', 'text' => '#856404', 'border' => '#ffeaa7'],
                     'info' => ['bg' => '#d1ecf1', 'text' => '#0c5460', 'border' => '#bee5eb']
                 ];
-                $colors = $alertColors[$type] ?? $alertColors['info'];
+                $defaultColors = $alertColors[$type] ?? $alertColors['info'];
+                
+                // Use custom colors if provided, otherwise use defaults
+                $finalBgColor = $backgroundColor ?? $defaultColors['bg'];
+                $finalTextColor = $textColor ?? $defaultColors['text'];
+                $finalBorderColor = $borderColor ?? $defaultColors['border'];
             @endphp
             <div class="alert alert-{{ $type }}" style="
-                background-color: {{ $colors['bg'] }}; 
-                color: {{ $colors['text'] }}; 
-                border: 1px solid {{ $colors['border'] }}; 
-                padding: 1rem; 
-                border-radius: 4px; 
-                margin: 1rem 0;
+                background-color: {{ $finalBgColor }}; 
+                color: {{ $finalTextColor }}; 
+                border: 1px solid {{ $finalBorderColor }}; 
+                padding: {{ $padding }}; 
+                border-radius: {{ $borderRadius }}; 
+                margin: {{ $margin }};
+                font-size: {{ $fontSize }};
+                font-weight: {{ $fontWeight }};
                 {{ $dismissible ? 'position: relative; padding-right: 3rem;' : '' }}
+                {{ $styleStr }}
             ">
-                {{ $message }}
+                {!! $message !!}
                 @if($dismissible)
                     <button type="button" style="
                         position: absolute; 
@@ -1925,7 +2319,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         border: none; 
                         font-size: 1.5rem; 
                         cursor: pointer; 
-                        color: {{ $colors['text'] }};
+                        color: {{ $finalTextColor }};
                     " onclick="this.parentElement.style.display='none'">×</button>
                 @endif
             </div>
@@ -1934,9 +2328,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
         @case('press-card')
             @php
                 $pressCardData = $component['pressCardData'] ?? [];
-                $logoSrc = $pressCardData['logoSrc'] ?? 'https://via.placeholder.com/200x80?text=Press+Logo';
+                $logoSrc = $pressCardData['logoSrc'] ?? '';
                 $logoAlt = $pressCardData['logoAlt'] ?? 'Press Logo';
-                $title = $pressCardData['title'] ?? 'Press Article Title';
+                $title = $pressCardData['title'] ?? '';
                 $url = $pressCardData['url'] ?? '#';
                 $date = $pressCardData['date'] ?? 'Date';
                 $target = $pressCardData['target'] ?? '_blank';
@@ -1962,10 +2356,14 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 ">
                     <!-- Press Logo -->
                     <div style="padding: 20px; text-align: center; background: {{ $logoBackgroundColor }};">
-                        <img src="{{ $logoSrc }}" 
-                             alt="{{ $logoAlt }}" 
-                             style="max-width: 150px; height: auto; filter: brightness(0);" 
-                             class="press-logo">
+                        @if($logoSrc)
+                            <img src="{{ $logoSrc }}" 
+                                 alt="{{ $logoAlt }}" 
+                                 style="max-width: 150px; height: auto; filter: brightness(0);" 
+                                 class="press-logo">
+                        @else
+                            <div style="width: 150px; height: 50px; margin: 0 auto; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">No Logo</div>
+                        @endif
                     </div>
                     
                     <!-- Press Content -->
@@ -2139,9 +2537,159 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 
                 // Generate unique component ID for responsive CSS
                 $uniqueId = 'auction-list-' . uniqid();
+                
+                // Debug logging
+                \Log::info('Auction List Component: Domain=' . $domain . ', Website ID=' . ($check->id ?? 'none') . ', Auction Count=' . $auction->count());
             @endphp
             
+            @if($auction->count() > 0)
             <div class="auction-component-container {{ $uniqueId }}" style="{{ $wrapperStyleStr }}">
+                <!-- Auction Component Styles -->
+                <style>
+                .{{ $uniqueId }} .auction-items-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px;
+                    padding: 20px 0;
+                }
+                
+                .{{ $uniqueId }} .auction-card {
+                    background: #fff;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                    overflow: hidden;
+                }
+                
+                .{{ $uniqueId }} .auction-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__image {
+                    position: relative;
+                    padding-bottom: 60%;
+                    overflow: hidden;
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__image img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__details-wrap {
+                    padding: 15px;
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__title {
+                    margin-bottom: 15px;
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__title a {
+                    text-decoration: none;
+                    color: #333;
+                }
+                
+                .{{ $uniqueId }} .c-node-ai__title a:hover {
+                    color: #007bff;
+                }
+                
+                .{{ $uniqueId }} .auction-details-layout {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+                
+                .{{ $uniqueId }} .auction-timer-section,
+                .{{ $uniqueId }} .auction-price-section {
+                    flex: 1;
+                    min-width: 120px;
+                }
+                
+                .{{ $uniqueId }} .c-timer__title {
+                    font-size: 0.9rem;
+                    color: #666;
+                    margin-bottom: 8px;
+                    font-weight: 500;
+                }
+                
+                .{{ $uniqueId }} .c-timer__body {
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                }
+                
+                .{{ $uniqueId }} .c-timer__element {
+                    text-align: center;
+                    background: #f8f9fa;
+                    padding: 8px 6px;
+                    border-radius: 4px;
+                    min-width: 50px;
+                }
+                
+                .{{ $uniqueId }} .c-timer__value {
+                    display: block;
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    color: #333;
+                }
+                
+                .{{ $uniqueId }} .c-timer__period {
+                    display: block;
+                    font-size: 0.8rem;
+                    color: #666;
+                    margin-top: 2px;
+                }
+                
+                .{{ $uniqueId }} .c-price__title {
+                    font-size: 0.9rem;
+                    color: #666;
+                    margin-bottom: 8px;
+                    font-weight: 500;
+                }
+                
+                .{{ $uniqueId }} .c-price__value {
+                    font-size: 1.3rem;
+                    font-weight: bold;
+                    color: #28a745;
+                    background: #e8f5e8;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                }
+                
+                /* Mobile responsive */
+                @media (max-width: 768px) {
+                    .{{ $uniqueId }} .auction-items-grid {
+                        grid-template-columns: 1fr;
+                        gap: 15px;
+                        padding: 15px 5px;
+                    }
+                    
+                    .{{ $uniqueId }} .auction-details-layout {
+                        flex-direction: column;
+                        gap: 12px;
+                    }
+                    
+                    .{{ $uniqueId }} .c-timer__body {
+                        justify-content: center;
+                    }
+                    
+                    .{{ $uniqueId }} .c-timer__element {
+                        min-width: 45px;
+                        padding: 6px 4px;
+                    }
+                }
+                </style>
+                
                 <div class="auction-main-wrapper">
                     <div class="auction-display-container" style="{{ $styleStr }}">
                         <div class="auction-items-wrapper">
@@ -2240,8 +2788,535 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Auction Timer JavaScript -->
+                <script>
+                // Improved auction timer with better error handling and fallbacks
+                function startAuctionListTimer(deadline, id) {
+                    console.log('Starting auction list timer for auction', id, 'with deadline', deadline);
+                    
+                    function update() {
+                        const now = new Date().getTime();
+                        const target = new Date(deadline).getTime();
+                        let timeLeft = target - now;
+
+                        if (timeLeft <= 0) {
+                            const daysEl = document.getElementById('days-' + id);
+                            const hoursEl = document.getElementById('hours-' + id);
+                            const minutesEl = document.getElementById('minutes-' + id);
+                            
+                            if (daysEl) daysEl.textContent = 0;
+                            if (hoursEl) hoursEl.textContent = 0;
+                            if (minutesEl) minutesEl.textContent = 0;
+                            console.log('Timer expired for auction', id);
+                            return;
+                        }
+
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                        const daysEl = document.getElementById('days-' + id);
+                        const hoursEl = document.getElementById('hours-' + id);
+                        const minutesEl = document.getElementById('minutes-' + id);
+                        
+                        if (daysEl) daysEl.textContent = days;
+                        if (hoursEl) hoursEl.textContent = hours;
+                        if (minutesEl) minutesEl.textContent = minutes;
+                    }
+                    
+                    // Initial update
+                    update();
+                    
+                    // Set interval for updates
+                    const intervalId = setInterval(update, 1000);
+                    
+                    // Store interval ID for potential cleanup
+                    if (!window.auctionListTimers) {
+                        window.auctionListTimers = {};
+                    }
+                    window.auctionListTimers[id] = intervalId;
+                }
+                
+                // Enhanced initialization function
+                function initializeAuctionListTimers() {
+                    console.log('Initializing auction list timers for auction-list component');
+                    @foreach ($auction as $item)
+                        // Check if elements exist before starting timer - no variable declaration needed
+                        if (document.getElementById('auction-timer-{{ $item->id }}')) {
+                            console.log('Found timer container for auction {{ $item->id }}');
+                            startAuctionListTimer("{{ $item->dead_line }}", "{{ $item->id }}");
+                        } else {
+                            console.log('Timer container not found for auction {{ $item->id }}');
+                        }
+                    @endforeach
+                }
+
+                // Initialize timers for auction list component
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Multiple initialization attempts to handle different loading scenarios
+                    setTimeout(initializeAuctionListTimers, 100);
+                    setTimeout(initializeAuctionListTimers, 500);
+                    setTimeout(initializeAuctionListTimers, 1000);
+                });
+                
+                // Also initialize if page is already loaded
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    setTimeout(initializeAuctionListTimers, 100);
+                }
+                </script>
+                
+                <!-- Firebase Real-time Price Updates -->
+                <script type="module">
+                try {
+                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
+                    const { getFirestore, collection, query, where, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
+                        authDomain: "charity-390ca.firebaseapp.com",
+                        projectId: "charity-390ca",
+                        storageBucket: "charity-390ca.firebasestorage.app",
+                        messagingSenderId: "875958450032",
+                        appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
+                        measurementId: "G-FC73HL5XF3"
+                    };
+
+                    const app = initializeApp(firebaseConfig);
+                    const firestore = getFirestore(app);
+
+                    // Function to update auction prices
+                    async function updateAuctionPrices() {
+                        console.log('Updating auction prices from Firebase');
+                        
+                        @foreach ($auction as $item)
+                            {
+                                const auctionId = "{{ $item->id }}";
+                                const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
+                                
+                                if (priceDiv) {
+                                    try {
+                                        const bidsRef = collection(firestore, "bid");
+                                        const q = query(
+                                            bidsRef,
+                                            where("auction_id", "==", auctionId),
+                                            orderBy("amount", "desc"),
+                                            limit(1)
+                                        );
+                                        
+                                        const querySnapshot = await getDocs(q);
+                                        
+                                        if (!querySnapshot.empty) {
+                                            let highestBid = 0;
+                                            querySnapshot.forEach((doc) => {
+                                                const data = doc.data();
+                                                if (data.amount > highestBid) {
+                                                    highestBid = data.amount;
+                                                }
+                                            });
+                                            
+                                            if (highestBid > 0) {
+                                                priceDiv.textContent = `$${highestBid.toLocaleString()}`;
+                                                console.log('Updated price for auction {{ $item->id }}:', highestBid);
+                                            }
+                                        } else {
+                                            // No bids yet, show starting price
+                                            priceDiv.textContent = `${{ $item->starting_price ?? 0 }}`;
+                                        }
+                                    } catch (error) {
+                                        console.log("Firebase query failed for auction {{ $item->id }}:", error);
+                                        // Fallback to starting price if Firebase fails
+                                        priceDiv.textContent = `${{ $item->starting_price ?? 0 }}`;
+                                    }
+                                } else {
+                                    console.log('Price element not found for auction {{ $item->id }}');
+                                }
+                            }
+                        @endforeach
+                    }
+
+                    // Initialize prices when DOM is ready
+                    document.addEventListener('DOMContentLoaded', function() {
+                        setTimeout(updateAuctionPrices, 500);
+                        
+                        // Update prices every 30 seconds
+                        setInterval(updateAuctionPrices, 30000);
+                    });
+                    
+                } catch (error) {
+                    console.log('Firebase initialization failed:', error);
+                    // Ensure fallback prices are displayed
+                    document.addEventListener('DOMContentLoaded', function() {
+                        @foreach ($auction as $item)
+                            const priceDiv{{ $item->id }} = document.getElementById('auction-price-{{ $item->id }}');
+                            if (priceDiv{{ $item->id }}) {
+                                priceDiv{{ $item->id }}.textContent = `${{ $item->starting_price ?? 0 }}`;
+                            }
+                        @endforeach
+                    });
+                }
+                </script>
+            @else
+                <div style="{{ $wrapperStyleStr }}">
+                    <div style="{{ $styleStr }}; padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px; color: #6c757d;">
+                        <i style="font-size: 3em; margin-bottom: 20px; display: block;">🎯</i>
+                        <h3 style="margin-bottom: 10px; color: #495057;">No Active Auctions</h3>
+                        <p style="margin: 0;">There are currently no active auctions to display. Please check back later!</p>
+                    </div>
+                </div>
+            @endif
         @break
+
+        @case('student-leaderboard')
+                @php
+                    $st = App\Models\User::limit(5)->whereIn('role',['individual','group_leader','member'])->where('website_id',$check->id)->get();
+                    $sortedStudents = $st->sortByDesc(function($student) {
+                        return $student->donations->sum('amount');
+                    });
+                    $key = 0 ;
+                    // dd($sortedStudents);
+                @endphp
+                @php
+                    $style = $component['style'] ?? [];
+                    $wrapperStyle = $component['wrapperStyle'] ?? [];
+                    $wrapperStyleStr = '';
+                    foreach ($wrapperStyle as $k => $v) {
+                        if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    $alertStyleStr = '';
+                    foreach ($style as $k => $v) {
+                        if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    // dd($alertStyleStr);
+                @endphp
+                @php
+                        // Ensure background color is applied to the wrapper
+                        if (!empty($style['backgroundColor'])) {
+                            $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                        }
+                        // dd($style);
+                    @endphp
+<div class="col-md-12 mt-4" style="{{ $alertStyleStr }} {{ $wrapperStyleStr }}">
+
+                @foreach($sortedStudents as $student)
+                    <div class="col-lg-12" style="font-size: 12px; margin-bottom: 1rem; ">
+                        <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
+                            style="width: 100%; max-width: 580px; margin-inline: auto; background: #ebebeb;">
+                            <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
+                            <div class="row gy-3 ">
+                                <div class="col-lg-3 d-flex align-items-center">
+                                    <span class="jk" style="font-size: 1.5rem !important; font-weight: bold; margin-right: 1rem;">{{ $key + 1}}</span>
+                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important">
+                                        <img src="{{ asset($student->photo) }}" style="border-radius: 50%; width: 70px; min-width: 70px; height: 70px; min-height: 70px;">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-7 d-flex flex-column justify-content-center" style="margin-top: 0px !important;">
+                                    <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                        {{ $student->name }}
+                                    </h2>
+
+                                    {{-- <span class="opacity-75 text-center text-lg-start mt-2"></span> --}}
+
+                                    <div class="progress" role="progressbar" aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                        aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
+                                        data-secondary-color="#28a745" data-duration="5"
+                                        data-goal-reached="true" style="height: 14px; border: 1px solid #28a745">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
+                                            style="width:@if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal)*100 }}@else 1 @endif%; background-color: #28a745 !important;" > <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal)*100) }}@else 1 @endif% </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="position-absolute top-0 end-0 m-2 opacity-50 small">
+                                <i class="fa-solid fa-award fa-2xl fa-fw position-absolute" aria-hidden="true" style="
+                                @if($key == 0)
+                                    color: #FFDf01;
+                                @elseif($key == 1)
+                                    color: #c0c0c0;
+                                @elseif($key == 2)
+                                    color: #996515;
+                                @else
+                                    display: none;
+                                @endif
+                                    top: 30px; right: 25px; font-size: 2.5rem !important;"></i>
+                                <span class="small fw-bold" style="top: 57px; position: relative; left: -36px; right: unset; font-size: 0.74rem; color: #000;">
+                                    $ {{ $student->donations->sum('amount') }}
+                                </span>
+                            </span>
+                            </a>
+                        </div>
+                    </div>
+                    @php
+                        $key +=1;
+                    @endphp
+                @endforeach
+            </div>
+            <div class="col-md-12 mt-4">
+                <p class="lead text-center mt-3" style="color: {{ $style['color'] }} !important">
+                    @php
+                        $count = App\Models\Donation::where('website_id',$check->id)->count();
+                    @endphp
+                    {{ $count }} donations have been made to this site
+                </p>
+            </div>
+
+@break
+
+@case('sponsorships')
+            @php
+                // Get current website based on domain
+                $url = url()->current();
+                $domain = parse_url($url, PHP_URL_HOST);
+                $check = \App\Models\Website::where('domain', $domain)->first();
+                $sponsors = \App\Models\Sponsor::where('website_id', $check->id ?? 1)->latest()->get();
+                
+                // Debug logging
+                \Log::info('Sponsorships Component: Domain=' . $domain . ', Website ID=' . ($check->id ?? 'none') . ', Sponsors Count=' . $sponsors->count());
+            @endphp
+            
+            <div class="sponsorships-component" style="{{ $styleStr }}">
+                @if($sponsors->count() > 0)
+                    <h4 style="text-align: center; margin-bottom: 2rem;">Our Sponsors</h4>
+                    <div class="row justify-content-center align-items-center g-4">
+                        @foreach($sponsors as $sponsor)
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="sponsor-logo">
+                                    @if($sponsor->image)
+                                    <a href="{{ $sponsor->link }}" target="_blank" rel="noopener noreferrer">
+                                        <img src="{{ asset($sponsor->image) }}" 
+                                             alt="Sponsor {{ $loop->iteration }}" 
+                                             class="img-fluid rounded shadow-sm" 
+                                             style="max-height: 180px; object-fit: contain; width: 100%; transition: transform 0.3s ease;"
+                                             onmouseover="this.style.transform='scale(1.05)'"
+                                             onmouseout="this.style.transform='scale(1)'">
+                                    </a>
+                                    @else
+                                        <div class="sponsor-placeholder" style="height: 100px; background: #f8f9fa; border: 2px dashed #dee2e6; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                            <span style="color: #6c757d; font-size: 14px;">No Image</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div style="text-align: center; padding: 3rem 1rem; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                        <i class="fas fa-handshake" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                        <h5 style="color: #6c757d; margin-bottom: 0.5rem;">No Sponsors Yet</h5>
+                        <p style="color: #6c757d; margin: 0; font-size: 14px;">Sponsors will be displayed here once they are added to this website.</p>
+                    </div>
+                @endif
+            </div>
+                                @break
+
+@case('site-goal')
+                                    @if(isset($component['goalData']))
+                                        @php
+                                        // Example data for the new site-goal component (replace with your dynamic data as needed)
+                                        $goal = isset($component['goalData']['goal']) ? (float)$component['goalData']['goal'] : 10000;
+                                        $raised = isset($component['goalData']['raised']) ? (float)$component['goalData']['raised'] : 3500;
+                                        $percent = $goal > 0 ? min(100, round(($raised / $goal) * 100, 2)) : 0;
+                                        $label = $component['goalData']['label'] ?? 'Fundraising Goal';
+                                        $showTicks = true;
+                                        $ticks = $component['goalData']['ticks'] ?? [0, 0.25, 0.5, 0.75, 1];
+                                        @endphp
+
+                                        @php
+                                            $style = $component['style'] ?? [];
+                                            $wrapperStyle = $component['wrapperStyle'] ?? [];
+                                            $wrapperStyleStr = '';
+                                            foreach ($wrapperStyle as $k => $v) {
+                                                if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            $alertStyleStr = '';
+                                            foreach ($style as $k => $v) {
+                                                if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                                            }
+                                            // dd($alertStyleStr);
+                                        @endphp
+                                        @php
+                                                // Ensure background color is applied to the wrapper
+                                                if (!empty($style['backgroundColor'])) {
+                                                    $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                                                }
+                                            @endphp
+
+                                        <div class="site-goal-modernmb-4" style="{{ $wrapperStyleStr }} {{ $alertStyleStr }}">
+                                            <div class="p-4">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    {{-- <button type="button" class="btn-close" style="font-size: 1.1rem; opacity: 0.7;" aria-label="Close" onclick="this.closest('.site-goal-modern').style.display='none';"></button> --}}
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="fw-semibold" style="color: {{ $component['style']['color'] }};">${{ number_format($raised, 2) }}</span>
+                                                    <span class="mx-2" style="color: {{ $component['style']['color'] }};">/</span>
+                                                    <span style="color: {{ $component['style']['color'] }};">${{ number_format($goal, 2) }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="text-muted small"></span>
+                                                    <span class="text-muted small" style="font-weight: bold; padding-bottom: 10px; color: {{ $component['style']['color'] }} !important">${{ $raised }} Raised</span>
+                                                </div>
+                                                <div class="progress position-relative" style="height: 35px; background: #e5e7eb; border-radius: 9px;">
+                                                @php $barId = 'siteGoalProgressBar_' . uniqid(); @endphp
+                                                <div class="progress-bar" role="progressbar"
+                                                    style="background-color: {{ $component['goalData']['barColor'] ?? '#0d6efd'}}; width:0%; border-radius: 9px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1);"
+                                                    aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"
+                                                    id="{{ $barId }}">
+                                                </div>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                    var bar = document.getElementById('{{ $barId }}');
+                                                    if (bar) {
+                                                        setTimeout(function() {
+                                                        bar.style.width = '{{ $percent }}%';
+                                                        }, 150);
+                                                    }
+                                                    });
+                                                </script>
+                                                <div class="site-goal-ticks position-absolute w-100" style="top: 100%; left: 0; height: 24px; pointer-events: none; z-index: 10;">
+                                                    @foreach($ticks as $tick)
+                                                        @php
+                                                            $tickPercent = 0;
+                                                            $tickValue = 0;
+                                                            if (is_numeric($tick)) {
+                                                                if ($tick <= 1) {
+                                                                    $tickPercent = $tick * 100;
+                                                                    $tickValue = $tick * $goal;
+                                                                } else {
+                                                                    $tickPercent = min($tick / $goal, 1) * 100;
+                                                                    $tickValue = $tick;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        @if($tickPercent >= 0 && $tickPercent <= 100)
+                                                        <div class="site-goal-tick" style="position: absolute; left: {{ $tickPercent }}%; top: 0; width: 2px; height: 24px; background: #6f7c8b; z-index: 11;">
+                                                            <div class="site-goal-tick-label" style="position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 12px; color: {{ $component['style']['color'] ?? '#222' }}; white-space: nowrap; background: #fff; padding: 0 2px; border-radius: 2px; z-index: 12;">
+                                                                ${{ number_format($tickValue, 0) }}
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+{{-- @if($showTicks && !empty($ticks) && $goal > 0)
+@endif --}}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span class="text-muted small"></span>
+                                                    <span class="text-muted small" style="font-weight: bold; color: {{ $component['style']['color'] }} !important">${{ $goal }} Goal</span>
+                                                </div>
+                                                <div class="mt-3" style="font-size: 1.1rem; color: {{ $component['style']['color'] }};">
+                                                    <span class="fw-bold">{{ $percent }}%</span> of goal reached
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @break
+
+@case('student-listing')
+@php
+                    $style = $component['style'] ?? [];
+                    $wrapperStyle = $component['wrapperStyle'] ?? [];
+                    $wrapperStyleStr = '';
+                    foreach ($wrapperStyle as $k => $v) {
+                        if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                    $alertStyleStr = '';
+                    foreach ($style as $k => $v) {
+                        if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                    }
+                @endphp
+                @php
+                        // Ensure background color is applied to the wrapper
+                        if (!empty($style['backgroundColor'])) {
+                            $alertStyleStr .= 'background-color:' . $style['backgroundColor'] . ' !important;';
+                        }
+                    // dd($alertStyleStr);
+
+                    @endphp
+        <div class="row" style="{{ $wrapperStyleStr }}">
+                <div class="col-12 col-md-11 col-lg-9 col-xl-7 d-flex align-items-center" style="margin: auto;">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" class="form-control" id="search" name="search" placeholder="Search">
+                    </div>
+                </div>
+                <div class="col-12 mt-4">
+                        <table id="studentTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+    @php
+        $students = App\Models\User::limit(10)->whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
+    @endphp
+
+    @foreach ($students->chunk(2) as $item)
+        <tr>
+            @foreach ($item as $key => $student)
+                <td style="{{ $alertStyleStr }}">
+                    <!-- full student content here -->
+                    <div class="row">
+                        <div class="col-lg-12 klklklk" style="font-size: 12px;">
+                            <div class="position-relative rounded-3 shadow-sm border listingg"
+                                style="width: 100%; max-width: 580px; margin-inline: auto;">
+                                <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
+                                    <div class="row lsls gy-3" style="padding: 0.5rem;">
+                                        <div class="col-lg-2 d-flex align-items-center">
+                                            <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
+                                                <img src="{{ asset($student->photo) }}" style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-8 d-flex flex-column justify-content-center">
+                                            <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                                {{ $student->name }}
+                                            </h2>
+                                            <span class="opacity-75 text-center text-lg-start mt-2"></span>
+                                            <div class="progress mt-3" role="progressbar"
+                                                aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="{{ $student->goal }}"
+                                                data-primary-color="#2e4053"
+                                                data-secondary-color="#b7bcc4"
+                                                data-duration="5"
+                                                data-goal-reached="true"
+                                                style="height: 14px">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
+                                                    style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}@else 0 @endif%;">
+                                                    <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@else 1 @endif%</span>
+                                                </div>
+                                            </div>
+                                            <span class="fw-semibold d-block text-center mt-2">
+                                                @php $to = $student->donations->sum('amount'); @endphp
+                                                ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">raised</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- {{ $key }} --}}
+                </td>
+            @endforeach
+
+            {{-- Add one empty <td> only if this is the last row and has only one student --}}
+            @if ($loop->last && count($item) < 2)
+                <td></td>
+            @endif
+        </tr>
+    @endforeach
+</tbody>
+
+                        </table>
+                </div>
+            </div>
+@break
 
         @case('sell-tickets')
             @php
@@ -2250,47 +3325,882 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $domain = parse_url($url, PHP_URL_HOST);
                 $check = \App\Models\Website::where('domain', $domain)->first();
                 $tickets = \App\Models\Ticket::where('website_id', $check->id ?? 1)->where('status',1)->latest()->get();
+                
+                // Get sell tickets data with defaults
+                $sellTicketsData = $component['sellTicketsData'] ?? [];
+                $title = $sellTicketsData['title'] ?? 'Buy Tickets';
+                $buttonText = $sellTicketsData['buttonText'] ?? 'Buy Now';
+                $buttonBg = $sellTicketsData['buttonBg'] ?? '#007bff';
+                $buttonColor = $sellTicketsData['buttonColor'] ?? '#fff';
+                $buttonPadding = $sellTicketsData['buttonPadding'] ?? '10px 20px';
+                $buttonRadius = $sellTicketsData['buttonRadius'] ?? '4px';
             @endphp
             
             <section style="{{ $wrapperStyleStr }} {{ $styleStr }}" class="mt-2 mb-2">
-                <div class="row justify-content-center">
-                    <div class="col-md-12">
-                        <form action="/tickets" method="POST">
-                            @csrf
+                @if($tickets->count() > 0)
+                    <div class="row justify-content-center">
+                        <div class="col-md-12">
+                            @if($title && $title !== 'Buy Tickets' || !empty($sellTicketsData))
+                                <div class="text-center mb-4">
+                                    <h3>{{ $title }}</h3>
+                                </div>
+                            @endif
+                            <form action="/tickets" method="POST">
+                                @csrf
                                 @foreach ($tickets as $item)
-                                <div class="card ticket-mask mt-2 mb-2">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="row">
-                                                <div class="col-md-2 col-2">
-                                                    <img src="{{ asset($item->image) }}" width="64px" height="64px;">
-                                                </div>
-                                                <div class="col-md-10 col-10">
-                                                    <h4 style="margin-bottom: 2px;">{{ $item->name }} (${{ $item->price }})</h4>
-                                                    <p style="margin-bottom: 2px;">{{ $item->description }}</p>
-                                                    <span>Only {{ $item->quantity }} left!</span>
+                                    <div class="card ticket-mask mt-2 mb-2">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-2 col-2">
+                                                        <img src="{{ asset($item->image) }}" width="64px" height="64px;" alt="{{ $item->name }}">
+                                                    </div>
+                                                    <div class="col-md-10 col-10" style="color: {{ $buttonColor }};">
+                                                        <h4 style="margin-bottom: 2px;" style="color: {{ $buttonColor }};">{{ $item->name }} (${{ $item->price }})</h4>
+                                                        <p style="margin-bottom: 2px;" style="color: {{ $buttonColor }};">{{ $item->description }}</p>
+                                                        <span style="color: {{ $buttonColor }};">Only {{ $item->quantity }} left!</span>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <input type="hidden" name="ticket[{{ $item->id }}][id]" value="{{ $item->id }}">
+                                                <select name="ticket[{{ $item->id }}][quantity]" class="form-control tickets">
+                                                    <option value="null">Select an option</option>
+                                                    @for ($i = 1; $i <= $item->quantity; $i++)
+                                                        <option value="{{ $i }}">You selected a total of {{ $i }} {{ $item->name }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <input type="hidden" name="ticket[{{ $item->id }}][id]" value="{{ $item->id }}">
-                                            <select name="ticket[{{ $item->id }}][quantity]" class="form-control tickets">
-                                                <option value="null">Select a option</option>
-                                                @for ($i = 1; $i <= $item->quantity; $i++)
-                                                    <option value="{{ $i }}">You selected a total of {{ $i }} {{ $item->name }}</option>
-                                                @endfor
-                                            </select>
+                                    </div>
+                                @endforeach
+                                <div class="col-md-12 text-center mt-4 mb-4">
+                                    <button type="submit" class="btn" style="
+                                        background: {{ $buttonBg }};
+                                        color: {{ $buttonColor }};
+                                        padding: {{ $buttonPadding }};
+                                        border-radius: {{ $buttonRadius }};
+                                        border: none;
+                                        font-size: 16px;
+                                        cursor: pointer;
+                                        transition: all 0.3s ease;
+                                    " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                        {{ $buttonText }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <div class="row justify-content-center">
+                        <div class="col-md-12">
+                            <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px; color: #6c757d;">
+                                <i style="font-size: 3em; margin-bottom: 20px; display: block;">🎫</i>
+                                <h3 style="margin-bottom: 10px; color: #495057;">No Tickets Available</h3>
+                                <p style="margin: 0;">There are currently no tickets available for purchase. Please check back later!</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </section>
+        @break
+
+        @case('newsletter')
+            @php
+                // Get properties (for admin-created components) or data (for direct use)
+                $properties = $component['properties'] ?? [];
+                $componentData = $component['data'] ?? [];
+                
+                // Use properties first, fallback to data, then defaults
+                $title = $properties['title'] ?? $componentData['title'] ?? 'Newsletter';
+                $subtitle = $properties['subtitle'] ?? $componentData['subtitle'] ?? 'Subscribe to our newsletter';
+                $placeholder = $properties['placeholder'] ?? $componentData['placeholder'] ?? 'Enter your email address';
+                $buttonText = $properties['button_text'] ?? $componentData['buttonText'] ?? 'SIGN UP';
+                
+                // Styling properties
+                $backgroundColor = $properties['background_color'] ?? $style['backgroundColor'] ?? '#ffffff';
+                $textColor = $properties['text_color'] ?? $style['color'] ?? '#000000';
+                $buttonColor = $properties['button_color'] ?? $style['buttonColor'] ?? '#28a745';
+                $buttonTextColor = $properties['button_text_color'] ?? $style['buttonTextColor'] ?? '#ffffff';
+                $borderRadius = $properties['border_radius'] ?? $style['borderRadius'] ?? '8';
+                $textAlign = $properties['text_align'] ?? $style['textAlign'] ?? 'center';
+                $maxWidth = $properties['max_width'] ?? $style['maxWidth'] ?? '600';
+                $padding = $properties['padding'] ?? $style['padding'] ?? '40';
+                
+                // Typography
+                $titleFontSize = $properties['title_font_size'] ?? '24';
+                $titleFontWeight = $properties['title_font_weight'] ?? '600';
+                $subtitleFontSize = $properties['subtitle_font_size'] ?? '16';
+                $subtitleFontWeight = $properties['subtitle_font_weight'] ?? '400';
+                $buttonFontSize = $properties['button_font_size'] ?? '16';
+                $buttonFontWeight = $properties['button_font_weight'] ?? '600';
+                $buttonPadding = $properties['button_padding'] ?? '12';
+                
+                // Input styling
+                $inputBorderColor = $properties['input_border_color'] ?? '#ddd';
+                $inputPadding = $properties['input_padding'] ?? '12';
+                $inputFontSize = $properties['input_font_size'] ?? '16';
+                
+                // Convert numeric values to px units
+                $paddingPx = is_numeric($padding) ? $padding . 'px' : $padding;
+                $maxWidthPx = is_numeric($maxWidth) ? $maxWidth . 'px' : $maxWidth;
+                $borderRadiusPx = is_numeric($borderRadius) ? $borderRadius . 'px' : $borderRadius;
+                $titleFontSizePx = is_numeric($titleFontSize) ? $titleFontSize . 'px' : $titleFontSize;
+                $subtitleFontSizePx = is_numeric($subtitleFontSize) ? $subtitleFontSize . 'px' : $subtitleFontSize;
+                $buttonFontSizePx = is_numeric($buttonFontSize) ? $buttonFontSize . 'px' : $buttonFontSize;
+                $buttonPaddingPx = is_numeric($buttonPadding) ? $buttonPadding . 'px' : $buttonPadding;
+                $inputPaddingPx = is_numeric($inputPadding) ? $inputPadding . 'px' : $inputPadding;
+                $inputFontSizePx = is_numeric($inputFontSize) ? $inputFontSize . 'px' : $inputFontSize;
+            @endphp
+            <section class="newsletter-section" style="background-color: {{ $backgroundColor }}; color: {{ $textColor }}; padding: {{ $paddingPx }} 20px; text-align: {{ $textAlign }}; {{ $styleStr }}" id="{{ $componentId }}">
+                <div style="max-width: {{ $maxWidthPx }}; margin: 0 auto;">
+                    @if($title)
+                        <h3 class="newsletter-title" style="margin-bottom: 10px; font-size: {{ $titleFontSizePx }}; font-weight: {{ $titleFontWeight }}; color: {{ $textColor }};">{{ $title }}</h3>
+                    @endif
+                    @if($subtitle)
+                        <p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: {{ $subtitleFontSizePx }}; font-weight: {{ $subtitleFontWeight }}; color: {{ $textColor }};">{{ $subtitle }}</p>
+                    @endif
+                    
+                    <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                        @csrf
+                        <input type="hidden" name="website_id" value="{{ $website->id ?? '' }}">
+                        
+                        <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="form-control newsletter-email" 
+                                placeholder="{{ $placeholder }}" 
+                                required
+                                style="border: 1px solid {{ $inputBorderColor }}; border-radius: {{ $borderRadiusPx }}; padding: {{ $inputPaddingPx }} 15px; font-size: {{ $inputFontSizePx }}; width: 100%; outline: none;"
+                            >
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            class="btn newsletter-submit-btn"
+                            style="background-color: {{ $buttonColor }}; color: {{ $buttonTextColor }}; border: none; border-radius: {{ $borderRadiusPx }}; padding: {{ $buttonPaddingPx }} 25px; font-size: {{ $buttonFontSizePx }}; font-weight: {{ $buttonFontWeight }}; cursor: pointer; transition: all 0.3s ease;"
+                            onmouseover="this.style.opacity='0.9'"
+                            onmouseout="this.style.opacity='1'"
+                        >
+                            {{ $buttonText }}
+                        </button>
+                    </form>
+                    
+                    <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                        <!-- Success/Error messages will appear here -->
+                    </div>
+                </div>
+            </section>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.querySelector('#{{ $componentId }} .newsletter-form');
+                    const messageDiv = document.querySelector('#{{ $componentId }} .newsletter-message');
+                    
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const formData = new FormData(form);
+                            const button = form.querySelector('.newsletter-submit-btn');
+                            const originalText = button.textContent;
+                            
+                            button.textContent = 'Subscribing...';
+                            button.disabled = true;
+                            
+                            fetch(form.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                messageDiv.style.display = 'block';
+                                if (data.success) {
+                                    messageDiv.innerHTML = '<div style="color: green; font-weight: 500;">' + data.message + '</div>';
+                                    form.reset();
+                                } else {
+                                    messageDiv.innerHTML = '<div style="color: red; font-weight: 500;">' + data.message + '</div>';
+                                }
+                            })
+                            .catch(error => {
+                                messageDiv.style.display = 'block';
+                                messageDiv.innerHTML = '<div style="color: red; font-weight: 500;">An error occurred. Please try again.</div>';
+                            })
+                            .finally(() => {
+                                button.textContent = originalText;
+                                button.disabled = false;
+                                
+                                // Hide message after 5 seconds
+                                setTimeout(() => {
+                                    messageDiv.style.display = 'none';
+                                }, 5000);
+                            });
+                        });
+                    }
+                });
+            </script>
+
+            <style>
+                @media (max-width: 768px) {
+                    #{{ $componentId }} .newsletter-form {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+                    
+                    #{{ $componentId }} .newsletter-form > div {
+                        max-width: 100%;
+                    }
+                    
+                    #{{ $componentId }} .newsletter-submit-btn {
+                        width: 100%;
+                        margin-top: 10px;
+                    }
+                }
+                
+                #{{ $componentId }} .newsletter-email:focus {
+                    border-color: {{ $buttonColor }};
+                    box-shadow: 0 0 0 2px rgba({{ hexdec(substr($buttonColor, 1, 2)) }}, {{ hexdec(substr($buttonColor, 3, 2)) }}, {{ hexdec(substr($buttonColor, 5, 2)) }}, 0.25);
+                }
+            </style>
+        @break
+
+        @case('contact-form')
+            @php
+                // Get contact form data with defaults
+                $contactFormData = $component['contactFormData'] ?? [];
+                // dd($component);
+                $hasContactFormData = !empty($contactFormData);
+                
+                // Contact form settings
+                $title = $contactFormData['title'] ?? 'Contact Us';
+                $nameLabel = $contactFormData['nameLabel'] ?? 'Your name';
+                $emailLabel = $contactFormData['emailLabel'] ?? 'Email address';
+                $messageLabel = $contactFormData['messageLabel'] ?? 'Message';
+                $buttonText = $contactFormData['buttonText'] ?? 'Submit';
+                $nameRequired = $contactFormData['nameRequired'] ?? true;
+                $emailRequired = $contactFormData['emailRequired'] ?? true;
+                $messageRequired = $contactFormData['messageRequired'] ?? true;
+                $showPrivacyText = $contactFormData['showPrivacyText'] ?? true;
+                $privacyText = $contactFormData['privacyText'] ?? 'This form is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.';
+                
+                // Styling options
+                $backgroundColor = $contactFormData['backgroundColor'] ?? '#ffffff';
+                $buttonColor = $contactFormData['buttonColor'] ?? '#2e4053';
+                $buttonTextColor = $contactFormData['buttonTextColor'] ?? '#ffffff';
+                $labelColor = $contactFormData['labelColor'] ?? '#000000';
+                $borderRadius = $contactFormData['borderRadius'] ?? '4px';
+                $buttonPadding = $contactFormData['buttonPadding'] ?? '12px 24px';
+                
+                // Legacy support
+                $emails = $component['contactEmails'] ?? [];
+                $style = $component['style'] ?? [];
+                $wrapperStyle = $component['wrapperStyle'] ?? [];
+                $wrapperStyleStr = '';
+                foreach ($wrapperStyle as $k => $v) {
+                    if ($v) $wrapperStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                }
+                $alertStyleStr = '';
+                foreach ($style as $k => $v) {
+                    if ($v) $alertStyleStr .= strtolower(preg_replace('/([A-Z])/', '-$1', $k)) . ":$v;";
+                }
+                
+                // Apply background color to wrapper if set in style
+                if (!empty($style['backgroundColor'])) {
+                    $wrapperStyleStr .= 'background-color:' . $style['backgroundColor'] . ';';
+                }
+            @endphp
+            
+            @if($hasContactFormData)
+                {{-- New contact-form with customizable properties --}}
+                <div class="contact-form-component" style="{{ $wrapperStyleStr }} background-color: {{ $backgroundColor }}; padding: 2rem; border-radius: {{ $borderRadius }};">
+                    @if($title)
+                        <h3 class="text-center mb-4" style="color: {{ $labelColor }};">{{ $title }}</h3>
+                    @endif
+                    
+                    <form method="POST" action="/contact-form">
+                        @csrf
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                                <div class="row gy-3">
+                                    <div class="col-12">
+                                        <label for="name" class="form-label fw-semibold" style="color: {{ $labelColor }};">
+                                            {{ $nameLabel }}@if($nameRequired) <span style="color: red;">*</span>@endif
+                                        </label>
+                                        <input type="text" class="form-control" id="name" name="name" @if($nameRequired) required @endif>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="email" class="form-label fw-semibold" style="color: {{ $labelColor }};">
+                                            {{ $emailLabel }}@if($emailRequired) <span style="color: red;">*</span>@endif
+                                        </label>
+                                        <input type="email" class="form-control" id="email" name="email" @if($emailRequired) required @endif>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="message" class="form-label fw-semibold" style="color: {{ $labelColor }};">
+                                            {{ $messageLabel }}@if($messageRequired) <span style="color: red;">*</span>@endif
+                                        </label>
+                                        <textarea class="form-control" id="message" name="message" rows="8" @if($messageRequired) required @endif></textarea>
+                                    </div>
+                                    
+                                    @foreach($emails as $email)
+                                        <input type="hidden" name="notification_emails[]" value="{{ $email }}">
+                                    @endforeach
+                                    
+                                    @if($showPrivacyText && $privacyText)
+                                        <div class="col-12">
+                                            <small class="text-muted" style="color: {{ $labelColor }} !important;">{!! $privacyText !!}</small>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-3 mt-md-4">
+                            <button type="submit" class="btn btn-lg" style="
+                                background-color: {{ $buttonColor }}; 
+                                color: {{ $buttonTextColor }}; 
+                                border-color: {{ $buttonColor }};
+                                padding: {{ $buttonPadding }};
+                                border-radius: {{ $borderRadius }};
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                {{ $buttonText }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @else
+                {{-- Legacy contact-form with basic styling --}}
+                <form method="POST" action="/contact-form" class="contact-form-component" style="{{ $wrapperStyleStr }} {{ $alertStyleStr }}">
+                    @csrf
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                            <div class="row gy-3">
+                                <div class="col-12">
+                                    <label for="name" class="form-label fw-semibold">
+                                        Your name
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+                                <div class="col-12">
+                                    <label for="email" class="form-label fw-semibold">
+                                        Email address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label fw-semibold">
+                                        Message
+                                    </label>
+                                    <textarea class="form-control" id="message" name="message" rows="8"></textarea>
+                                </div>
+                                <input type="hidden" name="template" value="e7d0b613d125406ea714907d6507c2a9">
+                                @foreach($emails as $email)
+                                    <input type="hidden" name="notification_emails[]" value="{{ $email }}">
+                                @endforeach
+                                <div class="col-12">
+                                    <small class="text-muted">This form is protected by reCAPTCHA and the Google <a
+                                            href="https://policies.google.com/privacy" style="color: #2e4053">Privacy Policy</a>
+                                        and <a href="https://policies.google.com/terms" style="color: #2e4053">Terms of Service</a>
+                                        apply.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3 mt-md-4">
+                        <button type="submit" class="btn btn-primary btn-lg text-white" style="background-color: #2e4053; border-color: #2e4053">
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            @endif
+@break
+
+        @case('auth-form')
+            @php
+                // Check if this is a new auth-form with authFormData or old one with hardcoded HTML
+                $authFormData = $component['authFormData'] ?? [];
+                $hasAuthFormData = !empty($authFormData);
+                
+                // Get colors from authFormData if available, otherwise use defaults
+                $backgroundColor = $authFormData['backgroundColor'] ?? '#ffffff';
+                $buttonColor = $authFormData['buttonColor'] ?? '#2e4053';
+                $buttonTextColor = $authFormData['buttonTextColor'] ?? '#ffffff';
+                $avatarIconColor = $authFormData['avatarIconColor'] ?? '#2e4053';
+                $linkColor = $authFormData['linkColor'] ?? '#2e4053';
+            @endphp
+            @php
+                // Check if this is a new auth-form with authFormData or old one with hardcoded HTML
+                $authFormData = $component['authFormData'] ?? [];
+                $hasAuthFormData = !empty($authFormData);
+                
+                // Get colors from authFormData if available, otherwise use defaults
+                $backgroundColor = $authFormData['backgroundColor'] ?? '#ffffff';
+                $buttonColor = $authFormData['buttonColor'] ?? '#2e4053';
+                $buttonTextColor = $authFormData['buttonTextColor'] ?? '#ffffff';
+                $avatarIconColor = $authFormData['avatarIconColor'] ?? '#2e4053';
+                $linkColor = $authFormData['linkColor'] ?? '#2e4053';
+            @endphp
+            
+            @if($hasAuthFormData)
+                {{-- New auth-form with dynamic colors --}}
+                <style>
+                    /* Auth form background styling */
+                    .auth-form-container {
+                        background-color: {{ $backgroundColor }} !important;
+                        padding: 2rem;
+                        border-radius: 0.5rem;
+                    }
+                </style>
+                <div style="{{ $styleStr }}" class="auth-form-container">
+                    <div class="row">
+                        <div class="col-md-12 mt-4 mb-4 text-center">
+                            <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: {{ $avatarIconColor }} !important;"></i>
+                            <h2 class="display-6 tit">Register</h2>
+                        </div>
+                    </div>
+                    <div class="register">
+                        <div class="container">
+                            <form action="/register" method="POST">
+                                @csrf
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        <label for="first_name" class="form-label">First name</label>
+                                        <input type="text" class="form-control" id="first_name" name="name">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="last_name" class="form-label">Last name</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name">
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        <label for="email" class="form-label">Email address</label>
+                                        <input type="email" class="form-control" id="email" name="email">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="confirm_email" class="form-label">Confirm email address</label>
+                                        <input type="email" class="form-control" id="confirm_email" name="confirm_email">
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        <label for="register_as" class="form-label">Register as</label>
+                                        <select class="form-select" id="register_as" name="register_as" onchange="toggleGroupSelect(this)">
+                                            <option value="individual">Individual</option>
+                                            <option value="group">Group Member</option>
+                                            <option value="group_leader">Group Leader</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4" id="group_select_wrapper" style="display:none;">
+                                        <label for="group_id" class="form-label">Select Group</label>
+                                        <select class="form-select" id="group_id" name="group_id">
+                                            <option value="">Select a group</option>
+                                            @if(isset($groups))
+                                                @foreach($groups as $group)
+                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="confirm_password" class="form-label">Confirm password</label>
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-8">
+                                        <div class="d-grid gap-3 mt-2">
+                                            <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
+                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                                Register
+                                            </button>
+                                            <button class="btn btn-lg p-0 shadow-none view-login-form" type="button" style="color: {{ $linkColor }} !important;">
+                                                Login
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
-                            </div>
-                            <div class="col-md-12 text-center mt-4 mb-4">
-                                <button type="submit" class="btn btn-primary"> Buy </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="login" style="display: none;">
+                        <div class="container">
+                            <form action="/login" method="POST">
+                                @csrf
+                                <div class="row justify-content-center">
+                                    <div class="col-md-4">
+                                        <label for="login_email" class="form-label">Email address</label>
+                                        <input type="email" class="form-control" id="login_email" name="email">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="login_password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="login_password" name="password">
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center">
+                                    <div class="col-8">
+                                        <div class="d-grid gap-3 mt-2">
+                                            <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
+                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                                Login
+                                            </button>
+                                            <button class="btn btn-lg p-0 shadow-none view-register-form" type="button" style="color: {{ $linkColor }} !important;">
+                                                Register
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Toggle between login and register forms
+                            const loginButtons = document.querySelectorAll('.view-login-form');
+                            const registerButtons = document.querySelectorAll('.view-register-form');
+                            const registerForms = document.querySelectorAll('.register');
+                            const loginForms = document.querySelectorAll('.login');
+
+                            loginButtons.forEach(button => {
+                                button.addEventListener('click', function() {
+                                    registerForms.forEach(form => form.style.display = 'none');
+                                    loginForms.forEach(form => form.style.display = 'block');
+                                });
+                            });
+
+                            registerButtons.forEach(button => {
+                                button.addEventListener('click', function() {
+                                    loginForms.forEach(form => form.style.display = 'none');
+                                    registerForms.forEach(form => form.style.display = 'block');
+                                });
+                            });
+                        });
+
+                        function toggleGroupSelect(selectElement) {
+                            const groupWrapper = document.getElementById('group_select_wrapper');
+                            if (selectElement.value === 'group') {
+                                groupWrapper.style.display = 'block';
+                            } else {
+                                groupWrapper.style.display = 'none';
+                            }
+                        }
+                    </script>
                 </div>
-            </section>
+            @else
+                {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
+                <div style="{{ $styleStr }}">
+                    @if(isset($component['html']))
+                        {!! $component['html'] !!}
+                    @else
+                        {{-- Default auth form if no HTML is available --}}
+                        <div class="auth-form-container" style="background-color: {{ $backgroundColor }}; padding: 2rem; border-radius: 0.5rem;">
+                            <div class="row">
+                                <div class="col-md-12 mt-4 mb-4 text-center">
+                                    <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: {{ $avatarIconColor }} !important;"></i>
+                                    <h2 class="display-6 tit">Register</h2>
+                                </div>
+                            </div>
+                            <p class="text-center">Please configure this auth form component in the admin panel.</p>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        @break
+
+        @case('social-share')
+            @php
+                // Always use dynamic rendering for social-share, ignore legacy HTML
+                $shareData = $component['shareData'] ?? [];
+                
+                // If no structured data exists, use smart defaults
+                if (empty($shareData)) {
+                    $shareData = [
+                        'title' => 'I Just Want to Help!',
+                        'show_title' => true,
+                        'icon_size' => '4rem',
+                        'icon_color' => '#1877f2',
+                        'text_color' => '#000000',
+                        'title_color' => '#000000',
+                        'max_columns' => 4,
+                        'platforms' => [
+                            'facebook' => ['enabled' => true, 'url' => '', 'text' => 'Share on Facebook'],
+                            'twitter' => ['enabled' => true, 'url' => '', 'text' => 'Share on Twitter'], 
+                            'linkedin' => ['enabled' => true, 'url' => '', 'text' => 'Share on LinkedIn'],
+                            'instagram' => ['enabled' => true, 'url' => '', 'text' => 'Share on Instagram'],
+                            'tiktok' => ['enabled' => false, 'url' => '', 'text' => 'Share on TikTok'],
+                            'youtube' => ['enabled' => false, 'url' => '', 'text' => 'Share on YouTube'],
+                            'pinterest' => ['enabled' => false, 'url' => '', 'text' => 'Share on Pinterest'],
+                            'whatsapp' => ['enabled' => false, 'url' => '', 'text' => 'Share on WhatsApp'],
+                            'telegram' => ['enabled' => false, 'url' => '', 'text' => 'Share on Telegram'],
+                            'copy' => ['enabled' => true, 'url' => url()->current(), 'text' => 'Copy Link']
+                        ]
+                    ];
+                }
+                
+                $platforms = $shareData['platforms'] ?? [
+                    'facebook' => ['enabled' => true, 'url' => '', 'text' => 'Share on Facebook'],
+                    'twitter' => ['enabled' => true, 'url' => '', 'text' => 'Share on Twitter'], 
+                    'linkedin' => ['enabled' => true, 'url' => '', 'text' => 'Share on LinkedIn'],
+                    'instagram' => ['enabled' => true, 'url' => '', 'text' => 'Share on Instagram'],
+                    'tiktok' => ['enabled' => false, 'url' => '', 'text' => 'Share on TikTok'],
+                    'youtube' => ['enabled' => false, 'url' => '', 'text' => 'Share on YouTube'],
+                    'pinterest' => ['enabled' => false, 'url' => '', 'text' => 'Share on Pinterest'],
+                    'whatsapp' => ['enabled' => false, 'url' => '', 'text' => 'Share on WhatsApp'],
+                    'telegram' => ['enabled' => false, 'url' => '', 'text' => 'Share on Telegram'],
+                    /* 'copy' => ['enabled' => true, 'url' => url()->current(), 'text' => 'Copy Link'] */
+                ];
+                
+                $mainTitle = $shareData['title'] ?? 'I Just Want to Help!';
+                $iconSize = $shareData['icon_size'] ?? $shareData['iconSize'] ?? '4rem';
+                $iconColor = $shareData['icon_color'] ?? $shareData['iconColor'] ?? '';
+                $textColor = $shareData['text_color'] ?? $shareData['textColor'] ?? '#000000';
+                $titleColor = $shareData['title_color'] ?? $shareData['titleColor'] ?? '#000000';
+                $showTitle = $shareData['show_title'] ?? $shareData['showTitle'] ?? true;
+                $layout = $shareData['layout'] ?? 'grid';
+                $maxColumns = $shareData['max_columns'] ?? $shareData['maxColumns'] ?? 4;
+                
+                // Calculate bootstrap class based on maxColumns with better responsive behavior
+                $colXl = 12 / $maxColumns; // Large screens: use max columns
+                $colLg = min(12 / max(1, $maxColumns - 1), 6); // Medium screens: reduce by 1 column, max 6 cols (2 per row)
+                $colMd = min(12 / max(1, $maxColumns - 2), 4); // Small tablets: reduce by 2, max 4 cols (3 per row)
+                $colSm = 6; // Small screens: always 2 per row
+                $col = 12; // Extra small: 1 per row
+                
+                $bootstrapClass = "col-{$col} col-sm-{$colSm} col-md-{$colMd} col-lg-{$colLg} col-xl-{$colXl}";
+                
+                // Get current page URL for sharing
+                $currentUrl = url()->current();
+                $pageTitle = $mainTitle;
+            @endphp
+            
+            <div class="social-share-component" style="{{ $styleStr }}">
+                {{-- Add responsive CSS for better icon layout --}}
+                <style>
+                .social-share-component .row {
+                    --bs-gutter-x: 1rem;
+                    --bs-gutter-y: 1rem;
+                }
+                
+                .social-share-component a {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: transform 0.2s ease, opacity 0.2s ease;
+                    padding: 0.5rem;
+                    border-radius: 0.5rem;
+                }
+                
+                .social-share-component a:hover {
+                    transform: scale(1.1);
+                    opacity: 0.8;
+                }
+                
+                @media (max-width: 576px) {
+                    .social-share-component .row {
+                        --bs-gutter-x: 0.5rem;
+                        --bs-gutter-y: 0.75rem;
+                    }
+                    
+                    .social-share-component a {
+                        padding: 0.25rem;
+                    }
+                }
+                </style>
+                
+                @if($showTitle && $mainTitle)
+                    <div class="text-center mb-4">
+                        <h2 class="display-5 fw-normal" style="color: {{ $titleColor }};">{{ $mainTitle }}</h2>
+                    </div>
+                @endif
+                
+                <div class="row justify-content-center align-items-center">
+                    @foreach($platforms as $platform => $config)
+                        @if($config['enabled'] ?? false)
+                            {{-- <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center"> --}}
+                                    @switch($platform)
+                                        @case('facebook')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://www.facebook.com/sharer/sharer.php?u=" . urlencode($currentUrl);
+                                            @endphp
+                                            <a class="text-center btn-facebook-share" href="{{ $shareUrl }}" target="_blank" 
+                                               style="color: {{ $iconColor ?: '#1877f2' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('twitter')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://twitter.com/intent/tweet?url=" . urlencode($currentUrl) . "&text=" . urlencode($pageTitle);
+                                            @endphp
+                                            <a class="text-center btn-twitter-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#1da1f2' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('linkedin')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://www.linkedin.com/sharing/share-offsite/?url=" . urlencode($currentUrl);
+                                            @endphp
+                                            <a class="text-center btn-linkedin-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#0077b5' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('instagram')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://www.instagram.com/";
+                                            @endphp
+                                            <a class="text-center btn-instagram-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#e1306c' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('tiktok')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://www.tiktok.com/";
+                                            @endphp
+                                            <a class="text-center btn-tiktok-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#000000' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('youtube')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://www.youtube.com/";
+                                            @endphp
+                                            <a class="text-center btn-youtube-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#ff0000' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('pinterest')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://pinterest.com/pin/create/button/?url=" . urlencode($currentUrl) . "&description=" . urlencode($pageTitle);
+                                            @endphp
+                                            <a class="text-center btn-pinterest-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#bd081c' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.404-5.958 1.404-5.958s-.359-.219-.359-1.219c0-1.141.66-1.993 1.482-1.993.699 0 1.037.525 1.037 1.155 0 .703-.449 1.753-.68 2.723-.194.821.412 1.492 1.222 1.492 1.467 0 2.595-1.544 2.595-3.773 0-1.972-1.415-3.353-3.437-3.353-2.343 0-3.718 1.756-3.718 3.571 0 .708.273 1.466.614 1.878.067.082.077.154.057.238-.062.26-.2.814-.227.927-.035.146-.116.177-.268.107-1.001-.465-1.624-1.926-1.624-3.1 0-2.596 1.884-4.982 5.432-4.982 2.851 0 5.071 2.032 5.071 4.75 0 2.837-1.789 5.121-4.27 5.121-.834 0-1.622-.435-1.89-1.013l-.514 1.96c-.185.716-.685 1.613-1.019 2.16C9.394 23.924 10.675 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('whatsapp')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://wa.me/?text=" . urlencode($pageTitle . ' ' . $currentUrl);
+                                            @endphp
+                                            <a class="text-center btn-whatsapp-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#25d366' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                        
+                                        @case('telegram')
+                                         <div class="{{ $bootstrapClass }}">
+                                <div class="d-flex justify-content-center align-items-center">
+                                            @php
+                                                $shareUrl = !empty($config['url']) ? $config['url'] : "https://t.me/share/url?url=" . urlencode($currentUrl) . "&text=" . urlencode($pageTitle);
+                                            @endphp
+                                            <a class="text-center btn-telegram-share" href="{{ $shareUrl }}" target="_blank"
+                                               style="color: {{ $iconColor ?: '#0088cc' }}; text-decoration: none;">
+                                                <div style="font-size: {{ $iconSize }};">
+                                                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                                    </svg>
+                                                </div>
+                                            </a>
+                                            </div>
+                            </div>
+                                        @break
+                                    @endswitch
+                                {{-- </div>
+                            </div> --}}
+                        @endif
+                    @endforeach
+                </div>
+            </div>
         @break
 
         @default
@@ -2299,7 +4209,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 @if(isset($component['html']))
                     {!! $component['html'] !!}
                 @else
-                    <p>Component: {{ $componentType }}</p>
+                    {{-- Silent fallback - no placeholder text displayed --}}
+                    <div style="display: none;"></div>
                 @endif
             </div>
     @endswitch

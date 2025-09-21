@@ -1052,6 +1052,74 @@ window.addEventListener('load', function() {
             padding: 10px !important;
         }
         
+        /* Mobile responsive improvements for edge-to-edge design */
+        .canvas.mobile-view .container,
+        .canvas.mobile-view .container-fluid {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .canvas.mobile-view .component-wrapper,
+        .canvas.mobile-view .component-content {
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Inner sections mobile optimization */
+        .canvas.mobile-view .inner-section-frontend,
+        .canvas.mobile-view .inner-section-fullwidth {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Investment CTA mobile fixes */
+        .invest-cta-wrapper {
+            flex-direction: column !important;
+            padding: 15px !important;
+            gap: 15px !important;
+            text-align: center !important;
+            max-width: 100% !important;
+            margin: 0 auto !important;
+            box-sizing: border-box !important;
+            width: calc(100% - 20px) !important;
+            margin-left: 10px !important;
+            margin-right: 10px !important;
+        }
+        
+        .invest-cta-wrapper .investment-info-wrapper {
+            gap: 15px !important;
+            width: 100% !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+        }
+        
+        .invest-cta-wrapper .investment-info-item {
+            min-width: 0 !important;
+            flex: 1 !important;
+        }
+        
+        .invest-cta-wrapper .invest-cta-button {
+            padding: 12px 25px !important;
+            font-size: 13px !important;
+            width: 100% !important;
+            max-width: 200px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .invest-cta-wrapper .investment-divider {
+            height: 35px !important;
+            width: 2px !important;
+            min-width: 2px !important;
+        }
+        
         /* Form components mobile */
         .form-component, .custom-form-component {
             width: 100% !important;
@@ -1137,7 +1205,7 @@ window.addEventListener('load', function() {
     .canvas.mobile-view {
         width: 375px;
         max-width: 375px;
-        padding: 10px;
+        padding: 5px; /* Reduced from 10px for edge-to-edge preview */
         overflow-x: hidden;
     }
     
@@ -1145,6 +1213,8 @@ window.addEventListener('load', function() {
         max-width: 100% !important;
         margin-bottom: 10px;
         overflow: hidden;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
     
     .canvas.mobile-view .inner-column {
@@ -1152,17 +1222,19 @@ window.addEventListener('load', function() {
         display: block !important;
         float: none !important;
         margin-bottom: 10px;
+        padding-left: 2px !important; /* Reduced padding for mobile edge-to-edge */
+        padding-right: 2px !important;
     }
     
     .canvas.mobile-view .row {
-        margin: 0 -5px;
+        margin: 0 -2px; /* Adjusted for tighter mobile spacing */
         display: flex;
         flex-direction: column;
     }
     
     .canvas.mobile-view .col,
     .canvas.mobile-view [class*="col-"] {
-        padding: 0 5px;
+        padding: 0 2px; /* Reduced from 5px for closer to edge experience */
         flex: 1;
         max-width: 100% !important;
         width: 100% !important;
@@ -2191,6 +2263,7 @@ button a:hover {
                 {{-- <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div> --}}
                 <div class="component-item" draggable="true" data-type="custom-form"><i class="fas fa-wpforms me-2"></i>Custom Form</div>
                 <div class="component-item" draggable="true" data-type="contact-form"><i class="fas fa-envelope me-2"></i>Contact Form</div>
+                <div class="component-item" draggable="true" data-type="newsletter"><i class="fas fa-envelope-open me-2"></i>Newsletter</div>
                 <div class="component-item" draggable="true" data-type="social-share"><i class="fas fa-share-alt me-2"></i>Sharing Buttons</div>
                 <div class="component-item" draggable="true" data-type="auth-form"><i class="fas fa-user-plus me-2"></i>Registration Form</div>
                 <div class="component-item" draggable="true" data-type="student-leaderboard"><i class="fas fa-trophy me-2"></i>Leaderboard</div>
@@ -3421,17 +3494,23 @@ break;
                     {
                         number: '1',
                         title: 'Nashville:',
-                        description: 'Our Nashville CloseCompany project is slated for an early Q2 2025 opening a fully funded project budget.'
+                        description: 'Our Nashville CloseCompany project is slated for an early Q2 2025 opening a fully funded project budget.',
+                        completed: true,
+                        status: 'Completed'
                     },
                     {
                         number: '2',
                         title: 'Atlanta:',
-                        description: 'In Atlanta, we\'ve secured $400 per square foot in Tenant Improvement funds for our second Close Company, coming to the city in 2025.'
+                        description: 'In Atlanta, we\'ve secured $400 per square foot in Tenant Improvement funds for our second Close Company, coming to the city in 2025.',
+                        completed: true,
+                        status: 'In Progress'
                     },
                     {
                         number: '3',
                         title: 'Municipal Grand Savannah:',
-                        description: 'A44 room boutique hotel in the heart of downtown Savannah with three different F&B outlets and a rooftop'
+                        description: 'A44 room boutique hotel in the heart of downtown Savannah with three different F&B outlets and a rooftop',
+                        completed: false,
+                        status: 'Planned'
                     }
                 ],
                 colors: {
@@ -3439,7 +3518,13 @@ break;
                     numberText: '#22c55e',
                     titleColor: '#22c55e',
                     descriptionColor: '#374151',
-                    lineColor: '#22c55e'
+                    lineColor: '#22c55e',
+                    completedBackground: '#22c55e',
+                    completedText: '#ffffff',
+                    completedLineColor: '#22c55e',
+                    uncompletedBackground: '#e5e7eb',
+                    uncompletedText: '#9ca3af',
+                    uncompletedLineColor: '#e5e7eb'
                 }
             };
             
@@ -3462,6 +3547,12 @@ break;
                     columnItems.forEach((item, index) => {
                         const isLastInColumn = index === columnItems.length - 1;
                         const isLastOverall = (columnIndex * itemsPerColumn + index) === d.items.length - 1;
+                        const isCompleted = item.completed !== false; // Default to true if not specified
+                        
+                        // Determine colors based on completion status
+                        const bgColor = isCompleted ? (d.colors.completedBackground || '#22c55e') : (d.colors.uncompletedBackground || '#e5e7eb');
+                        const textColor = isCompleted ? (d.colors.completedText || '#ffffff') : (d.colors.uncompletedText || '#9ca3af');
+                        const itemLineColor = isCompleted ? (d.colors.completedLineColor || '#22c55e') : (d.colors.uncompletedLineColor || '#e5e7eb');
                         
                         itemsHtml += `
                             <div class="timeline-item" style="position: relative; display: flex; align-items: flex-start; margin-bottom: 60px;">
@@ -3470,7 +3561,7 @@ break;
                                     <div class="dash-green-line" style="
                                         border-style: none dashed none none;
                                         border-width: 1px 4px 1px 1px;
-                                        border-color: transparent ${d.colors.lineColor} transparent transparent;
+                                        border-color: transparent ${itemLineColor} transparent transparent;
                                         width: 3px;
                                         height: calc(100% + 60px);
                                         position: absolute;
@@ -3480,11 +3571,11 @@ break;
                                     "></div>
                                 ` : ''}
                                 
-                                <!-- Number circle with dynamic background matching page background -->
+                                <!-- Number circle with completion status styling -->
                                 <div class="timeline-number" style="
-                                    background-color: var(--page-bg-color, #ffffff);
-                                    color: ${d.colors.numberText};
-                                    border: 3px solid ${d.colors.numberBackground};
+                                    background: ${bgColor};
+                                    color: ${textColor};
+                                    ${!isCompleted ? 'border: 2px solid ' + (d.colors.uncompletedBackground || '#e5e7eb') + ';' : ''}
                                     width: 40px;
                                     height: 40px;
                                     border-radius: 50%;
@@ -3496,15 +3587,30 @@ break;
                                     flex-shrink: 0;
                                     position: relative;
                                     z-index: 2;
+                                    transition: all 0.3s ease;
                                 ">
                                     ${item.number}
                                 </div>
                                 
                                 <!-- Content -->
                                 <div class="timeline-content" style="flex: 1; margin-left: 20px; margin-top: 5px;">
-                                    <p style="margin: 0; line-height: 1.6; color: ${d.colors.descriptionColor};">
-                                        <strong style="color: ${d.colors.titleColor};">${item.title}</strong> ${item.description}
+                                    <p style="margin: 0; line-height: 1.6; color: ${isCompleted ? (d.colors.descriptionColor || '#374151') : (d.colors.uncompletedText || '#9ca3af')}; opacity: ${isCompleted ? '1' : '0.7'};">
+                                        <strong style="color: ${isCompleted ? (d.colors.titleColor || '#22c55e') : (d.colors.uncompletedText || '#9ca3af')};">${item.title}</strong> ${item.description}
                                     </p>
+                                    ${item.status ? `
+                                        <div style="
+                                            margin-top: 8px;
+                                            padding: 4px 12px;
+                                            border-radius: 12px;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            display: inline-block;
+                                            background: ${isCompleted ? 'rgba(34, 197, 94, 0.1)' : 'rgba(156, 163, 175, 0.1)'};
+                                            color: ${isCompleted ? '#059669' : '#6b7280'};
+                                        ">
+                                            ${item.status}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         `;
@@ -3853,21 +3959,44 @@ break;
         break;
 
         case 'button':
-            const wrapper = document.createElement('div');
-            const button = document.createElement('button');
-            button.textContent = 'Click Me';
-            button.style.padding = '10px 20px';
-            button.style.fontSize = '16px';
-            button.style.backgroundColor = '#007bff';
-            button.style.color = '#fff';
-            button.style.border = 'none';
-            button.style.borderRadius = '4px';
-            button.style.cursor = 'pointer';
-
-            wrapper.appendChild(button);
-            wrapper.style.textAlign = 'center';
-
-            content = wrapper;
+            content = document.createElement('div');
+            content.className = 'button-component';
+            
+            // Initialize button data
+            content._buttonData = {
+                buttonText: 'Click Me',
+                buttonUrl: '#',
+                buttonTarget: '_self',
+                buttonBgColor: '#007bff',
+                buttonTextColor: '#ffffff',
+                buttonPadding: '10px 20px',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: '400',
+                textAlign: 'center',
+                textDecoration: 'none',
+                border: 'none',
+                boxShadow: 'none',
+                transition: 'all 0.3s ease'
+            };
+            
+            content.renderButton = function() {
+                const d = content._buttonData;
+                content.innerHTML = `
+                    <div style="text-align: ${d.textAlign};">
+                        <a href="${d.buttonUrl}" target="${d.buttonTarget}" 
+                           style="display: inline-block; background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; 
+                                  padding: ${d.buttonPadding}; border-radius: ${d.borderRadius}; font-size: ${d.fontSize}; 
+                                  font-weight: ${d.fontWeight}; text-decoration: ${d.textDecoration}; border: ${d.border}; 
+                                  box-shadow: ${d.boxShadow}; transition: ${d.transition}; cursor: pointer;"
+                           class="btn custom-button">
+                            ${d.buttonText}
+                        </a>
+                    </div>
+                `;
+            };
+            
+            content.renderButton();
         break;
 
         case 'invest-cta':
@@ -3889,7 +4018,7 @@ break;
             };
             content._investCtaData = investCtaData;
             content.innerHTML = `
-                <div class="invest-cta-wrapper" style="background-color: ${investCtaData.bgColor}; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0px;">
+                <div class="invest-cta-wrapper" style="background-color: ${investCtaData.bgColor}; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0px; box-sizing: border-box; width: 100%;">
                     <div class="invest-cta-button-wrap">
                         <a href="/invest" 
                            target="_self" 
@@ -3915,6 +4044,77 @@ break;
                     </div>
                 </div>
             `;
+        break;
+
+        case 'newsletter':
+            content = document.createElement('div');
+            content.className = 'newsletter-component';
+            content._newsletterData = {
+                title: 'Newsletter',
+                subtitle: 'Subscribe to our newsletter',
+                placeholder: 'Enter your email address',
+                buttonText: 'SIGN UP',
+                backgroundColor: '#ffffff',
+                textColor: '#000000',
+                buttonColor: '#28a745',
+                buttonTextColor: '#ffffff',
+                padding: '40',
+                borderRadius: '8',
+                textAlign: 'center',
+                maxWidth: '600',
+                titleFontSize: '24',
+                titleFontWeight: '600',
+                subtitleFontSize: '16',
+                subtitleFontWeight: '400',
+                buttonFontSize: '16',
+                buttonFontWeight: '600',
+                buttonPadding: '12',
+                inputBorderColor: '#ddd',
+                inputPadding: '12',
+                inputFontSize: '16'
+            };
+            
+            content.renderNewsletter = function() {
+                const d = content._newsletterData;
+                if (!d) return;
+                
+                content.innerHTML = `
+                    <section class="newsletter-section" style="background-color: ${d.backgroundColor}; color: ${d.textColor}; padding: ${d.padding}px 20px; text-align: ${d.textAlign};" id="${component.id}">
+                        <div style="max-width: ${d.maxWidth}px; margin: 0 auto;">
+                            ${d.title ? `<h3 class="newsletter-title" style="margin-bottom: 10px; font-size: ${d.titleFontSize}px; font-weight: ${d.titleFontWeight}; color: ${d.textColor};">${d.title}</h3>` : ''}
+                            ${d.subtitle ? `<p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: ${d.subtitleFontSize}px; font-weight: ${d.subtitleFontWeight}; color: ${d.textColor};">${d.subtitle}</p>` : ''}
+                            
+                            <form class="newsletter-form" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                                <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        class="form-control newsletter-email" 
+                                        placeholder="${d.placeholder}" 
+                                        required
+                                        style="border: 1px solid ${d.inputBorderColor}; border-radius: ${d.borderRadius}px; padding: ${d.inputPadding}px 15px; font-size: ${d.inputFontSize}px; width: 100%; outline: none;"
+                                    >
+                                </div>
+                                
+                                <button 
+                                    type="button" 
+                                    class="btn newsletter-submit-btn"
+                                    style="background-color: ${d.buttonColor}; color: ${d.buttonTextColor}; border: none; border-radius: ${d.borderRadius}px; padding: ${d.buttonPadding}px 25px; font-size: ${d.buttonFontSize}px; font-weight: ${d.buttonFontWeight}; cursor: pointer; transition: all 0.3s ease;"
+                                    onclick="alert('Newsletter signup disabled in page builder preview mode')"
+                                >
+                                    ${d.buttonText}
+                                </button>
+                            </form>
+                            
+                            <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                                <!-- Success/Error messages will appear here -->
+                            </div>
+                        </div>
+                    </section>
+                `;
+            };
+            
+            content.renderNewsletter();
         break;
 
         case 'auction-list':
@@ -4523,11 +4723,11 @@ break;
             
             // Store press card data
             content._pressCardData = {
-                logoSrc: 'https://via.placeholder.com/200x80?text=Press+Logo',
+                logoSrc: '',
                 logoAlt: 'Press Logo',
-                title: 'Savannah Gets a Stunning New Hotel and "Living Room" in Municipal Grand',
+                title: '',
                 url: '#',
-                date: 'July 8, 2025',
+                date: 'Date',
                 target: '_blank',
                 cardBackgroundColor: '#ffffff',
                 cardBorderRadius: '8px',
@@ -4554,10 +4754,10 @@ break;
                     ">
                         <!-- Press Logo -->
                         <div style="padding: 20px; text-align: center; background: ${d.logoBackgroundColor || '#f8f9fa'};">
-                            <img src="${d.logoSrc}" 
+                            ${d.logoSrc ? `<img src="${d.logoSrc}" 
                                  alt="${d.logoAlt}" 
                                  style="max-width: 150px; height: auto; filter: brightness(0);" 
-                                 class="press-logo">
+                                 class="press-logo">` : `<div style="width: 150px; height: 50px; margin: 0 auto; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">No Logo</div>`}
                         </div>
                         
                         <!-- Press Content -->
@@ -4677,13 +4877,49 @@ break;
 
         case 'alert-message':
             content = document.createElement('div');
-            content.textContent = 'Alert Message';
-            content.style.backgroundColor = '#fdecea';
-            content.style.color = '#b91c1c';
-            content.style.padding = '15px';
-            content.style.borderRadius = '4px';
-            content.style.border = '1px solid #fca5a5';
-            content.contentEditable = true;
+            content.className = 'alert-message-component';
+            
+            // Initialize alert data
+            content._alertData = {
+                message: 'Alert Message',
+                type: 'info',
+                dismissible: false,
+                backgroundColor: '#d1ecf1',
+                textColor: '#0c5460',
+                borderColor: '#bee5eb',
+                borderRadius: '4px',
+                padding: '1rem',
+                margin: '1rem 0',
+                fontSize: '14px',
+                fontWeight: '400'
+            };
+            
+            content.renderAlert = function() {
+                const d = content._alertData;
+                const dismissibleContent = d.dismissible ? 
+                    `<button type="button" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); 
+                                                   background: none; border: none; font-size: 1.5rem; cursor: pointer; 
+                                                   color: ${d.textColor};" onclick="this.parentElement.style.display='none'">×</button>` : '';
+                
+                content.innerHTML = `
+                    <div class="alert alert-${d.type}" style="
+                        background-color: ${d.backgroundColor}; 
+                        color: ${d.textColor}; 
+                        border: 1px solid ${d.borderColor}; 
+                        padding: ${d.padding}; 
+                        border-radius: ${d.borderRadius}; 
+                        margin: ${d.margin};
+                        font-size: ${d.fontSize};
+                        font-weight: ${d.fontWeight};
+                        ${d.dismissible ? 'position: relative; padding-right: 3rem;' : ''}
+                    ">
+                        ${d.message}
+                        ${dismissibleContent}
+                    </div>
+                `;
+            };
+            
+            content.renderAlert();
         break;
 
         case 'event-countdown':
@@ -4691,20 +4927,46 @@ break;
             // Store countdown data per component
             content._countdownData = {
                 date: '2025-04-30T00:00',
-                label: 'Remaining to Apr 30, 2025 (00:00 PST)'
+                label: 'Remaining to Apr 30, 2025 (00:00 PST)',
+                numberColor: '#000000',
+                textColor: '#000000',
+                remainingVerbiageColor: '#000000',
+                numberFontWeight: 'bold',
+                textFontWeight: 'normal',
+                remainingFontWeight: 'normal',
+                showRemainingText: true
             };
             content.renderCountdown = function() {
-                const { date, label } = content._countdownData;
+                const { 
+                    date, 
+                    label, 
+                    numberColor, 
+                    textColor, 
+                    remainingVerbiageColor,
+                    numberFontWeight,
+                    textFontWeight,
+                    remainingFontWeight,
+                    showRemainingText
+                } = content._countdownData;
+                
+                const numColor = numberColor || '#000000';
+                const txtColor = textColor || '#000000';
+                const verbiageColor = remainingVerbiageColor || '#000000';
+                const numWeight = numberFontWeight === 'bold' ? 'bold' : 'normal';
+                const txtWeight = textFontWeight === 'bold' ? 'bold' : 'normal';
+                const verbiageWeight = remainingFontWeight === 'bold' ? 'bold' : 'normal';
+                const showRemaining = showRemainingText !== false;
+                
                 content.innerHTML = `
                 <div class="timer text-center mt-5">
                     <div class="d-flex justify-content-center align-items-center">
-                        <div class="mx-3"><h1 id="months" class="display-4">0</h1><p>Months</p></div>
-                        <div class="mx-3"><h1 id="days" class="display-4">0</h1><p>Days</p></div>
-                        <div class="mx-3"><h1 id="hours" class="display-4">0</h1><p>Hours</p></div>
-                        <div class="mx-3"><h1 id="minutes" class="display-4">0</h1><p>Minutes</p></div>
-                        <div class="mx-3"><h1 id="seconds" class="display-4">0</h1><p>Seconds</p></div>
+                        <div class="mx-3"><h1 id="months" class="display-4" style="color: ${numColor}; font-weight: ${numWeight}">0</h1><p style="color: ${txtColor}; font-weight: ${txtWeight}">Months</p></div>
+                        <div class="mx-3"><h1 id="days" class="display-4" style="color: ${numColor}; font-weight: ${numWeight}">0</h1><p style="color: ${txtColor}; font-weight: ${txtWeight}">Days</p></div>
+                        <div class="mx-3"><h1 id="hours" class="display-4" style="color: ${numColor}; font-weight: ${numWeight}">0</h1><p style="color: ${txtColor}; font-weight: ${txtWeight}">Hours</p></div>
+                        <div class="mx-3"><h1 id="minutes" class="display-4" style="color: ${numColor}; font-weight: ${numWeight}">0</h1><p style="color: ${txtColor}; font-weight: ${txtWeight}">Minutes</p></div>
+                        <div class="mx-3"><h1 id="seconds" class="display-4" style="color: ${numColor}; font-weight: ${numWeight}">0</h1><p style="color: ${txtColor}; font-weight: ${txtWeight}">Seconds</p></div>
                     </div>
-                    <p style="font-size: .8em;">${label}</p>
+                    ${showRemaining && label ? `<p style="font-size: .8em; color: ${verbiageColor}; font-weight: ${verbiageWeight}">${label}</p>` : ''}
                 </div>
                 `;
                 // Start/update timer
@@ -4858,56 +5120,30 @@ break;
                     style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
                     <div class="block-container container " id="block-086fc842-f2e9-4d56-af2e-be42317d11e7"
                         data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
-
                         style="margin-top: 3rem;">
-
 
                         <form method="POST" action="/donation" class="donation-form-block">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
-                                <div class="card border-primary shadow" style="border-width: 3px; border-color: #2e4053 !important;">
-                                    <div class="card-header bg-primary border-primary rounded-0 text-center text-white fs-2"
-                                        style="border-width: 3px; border-color: #2e4053 !important; background-color: #2e4053 !important;">
-                                        Make a general donation
+                                <div class="card shadow" style="border-width: 3px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
+                                    <div class="card-header rounded-0 text-center fs-2"
+                                        style="border-width: 3px !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; background-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; color: ${getDonationFormValue('headerTextColor', '#ffffff')} !important;">
+                                        ${getDonationFormValue('formTitle', 'Make a general donation')}
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="background-color: ${getDonationFormValue('backgroundColor', '#ffffff')} !important;">
                                         <input type="hidden" name="profile_uuid" value="">
-
                                         <input type="hidden" name="team_uuid" value="">
 
                                         <div class="row gy-3">
-                                            <div
-                                                class="col-12 d-flex flex-column justify-content-center align-items-center">
-                                                <label
-                                                    for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b2"
-                                                    class="form-label " style="color: #000; font-weight: bold;">
-                                                    Donate To the {{ $data->website->name}}
-                                                </label>
-                                                <div></div>
-
-                                                <div class="d-flex justify-content-center flex-wrap">
-                                                    <input type="radio" data-change-amount="1"
-                                                        data-name="4e963109-9506-49a8-b609-a0929944c1b2" data-amount="500"
-                                                        class="form-check btn-check select-amount"
-                                                        name="question_4e963109-9506-49a8-b609-a0929944c1b2"
-                                                        id="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b24479f3e5-aac8-4044-ac77-7c3192197e63"
-                                                        value="4479f3e5-aac8-4044-ac77-7c3192197e63" autocomplete="off">
-                                                    <label class="btn btn-outline-primary m-1"
-                                                    style="color: #2e4053 !important; border-color: #2e4053 !important;"
-                                                        for="178bb66b-0348-4581-8bee-2b14bc8b1949-4e963109-9506-49a8-b609-a0929944c1b24479f3e5-aac8-4044-ac77-7c3192197e63">Donate
-                                                        to the {{ $data->website->name}}</label>
-                                                </div>
-                                            </div>
-
                                             <div class="col-12">
                                                 <div class="input-group input-group-lg">
                                                     <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
-                                                        style="border-width: 2px; border-right-width: 0; border-color: #2e4053 !important;">$</span>
+                                                        style="border-width: 2px; border-right-width: 0; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">$</span>
                                                     <input type="number" placeholder="0"
                                                         class="form-control fs-2 fs-lg-4 text-center border-primary"
-                                                        style="border-width: 2px; border-color: #2e4053 !important;" name="donation_amount" value="">
+                                                        style="border-width: 2px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;" name="donation_amount" value="">
                                                     <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
-                                                        style="border-width: 2px; border-left-width: 0; border-color: #2e4053 !important;">.00</span>
+                                                        style="border-width: 2px; border-left-width: 0; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">.00</span>
                                                 </div>
                                                 <input type="hidden" name="amount" value="">
                                                 <div class="text-center">
@@ -4918,21 +5154,23 @@ break;
                                             </div>
 
                                             <div class="col-12 d-flex justify-content-center align-items-center">
-                                                <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: #2e4053 !important;">
+                                                <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
                                                     <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox" role="switch"
                                                             id="pay_fees" name="pay_fees" checked="">
                                                         <label class="form-check-label fw-semibold" for="pay_fees">
-                                                            I elect to pay the fees
+                                                            ${getDonationFormValue('feeText', 'I elect to pay the fees')}
                                                         </label>
                                                         <i role="button"
-                                                            class="fa-solid fa-circle-info text-info  btn-modal-info  "
+                                                            class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
                                                             data-title="I elect to pay the fees"
-                                                            data-description="By selecting this option, you elect to pay the credit card and transaction fees for this donation.The fees will be displayed in the next step."></i>
+                                                            title="${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}"
+                                                            data-description="${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}"></i>
                                                     </div>
                                                 </div>
                                             </div>
-
 
                                             <div class="col-12">
                                                 <label for="first_name" class="form-label fw-semibold required">
@@ -4950,7 +5188,6 @@ break;
                                                     name="last_name" value="">
                                             </div>
 
-
                                             <div class="col-12">
                                                 <label for="email" class="form-label fw-semibold required">
                                                     Email address
@@ -4964,12 +5201,16 @@ break;
                                                     <input class="form-check-input" type="checkbox" role="switch"
                                                         id="anonymous_donation" name="anonymous_donation">
                                                     <label class="form-check-label fw-semibold" for="anonymous_donation">
-                                                        Anonymous
+                                                        ${getDonationFormValue('anonymousText', 'Anonymous')}
                                                     </label>
                                                     <i role="button"
-                                                        class="fa-solid fa-circle-info text-info  btn-modal-info  "
+                                                        class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
                                                         data-title="Anonymous"
-                                                        data-description="Selecting this option will hide your name from everyone but the organizer."></i>
+                                                        title="${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}"
+                                                        data-description="${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}"></i>
+                                                    <small class="anonymous-description text-muted d-block mt-1">${getDonationFormValue('anonymousDescription', 'Choose to make your donation anonymous')}</small>
                                                 </div>
                                             </div>
 
@@ -4979,20 +5220,14 @@ break;
                                                 </label>
                                                 <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
                                             </div>
-
-
-
-
-
-
-
                                         </div>
                                     </div>
-                                    <div class="card-footer bg-primary border-primary rounded-0 p-0"
-                                        style="border-width: 3px; border-color: #2e4053 !important;">
+                                    <div class="card-footer rounded-0 p-0"
+                                        style="border-width: 3px !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; background-color: ${getDonationFormValue('headerColor', '#2e4053')} !important;">
                                         <button type="submit"
-                                            class="btn btn-primary btn-lg w-100 h-100 text-white rounded-0 shadow-none" style="background: #2e4053 !important; border-color: #2e4053 !important;">
-                                            Donate
+                                            class="btn btn-lg w-100 h-100 rounded-0 shadow-none" 
+                                            style="background: ${getDonationFormValue('headerColor', '#2e4053')} !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; color: ${getDonationFormValue('headerTextColor', '#ffffff')} !important;">
+                                            ${getDonationFormValue('buttonText', 'Donate')}
                                         </button>
                                     </div>
                                 </div>
@@ -5004,48 +5239,30 @@ break;
         case 'donor-list':
             content = document.createElement('div');
             content.innerHTML = `<div class="col-12 mt-4">
-                <table id="studentTable" class="table table-bordered">
+                <table id="donorTable" class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Grade</th>
-                            <th>Grade</th>
+                            <th>Donor</th>
+                            <th>Amount</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $donation = App\Models\Donation::all();
-                        @endphp
-                        @foreach($donation->chunk(3) as $donate)
-                            <tr>
-                                @foreach($donate as $don)
-                                    <td>
-                                        <div class="col-lg-12" style="font-size: 12px;">
-                                            <div class="p-3 rounded text-center position-relative" style="background: #ebebeb">
-
-
-                                                <h4 class="fw-semibold">
-                                                    $ {{ $don->amount }}
-                                                </h4>
-
-                                                <small class="d-block opacity-75 mt-2">
-                                                    <span title="Donor">{{ $don->first_name }} {{ $don->last_name }}</span>
-                                                                            <i class="fa-solid fa-arrow-right-long fa-fw mx-1 text-success" aria-hidden="true"></i>
-                                                        <span title="Participant">{{ $don->user->name }}</span>
-                                                                    </small>
-
-
-                                                <small class="d-block opacity-75 mt-3 p-2 rounded" style="backdrop-filter: brightness(1.5);">
-                                                    <i class="fa-solid fa-calendar-days me-1" aria-hidden="true"></i>
-                                                    {{ $don->created_at->format('M d, Y') }}
-                                                </small>
-
-                                            </div>
-                                        </div>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
+                        <tr>
+                            <td>John Doe</td>
+                            <td>$100</td>
+                            <td>Jan 15, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>$250</td>
+                            <td>Jan 14, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Mike Johnson</td>
+                            <td>$75</td>
+                            <td>Jan 13, 2025</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>`;
@@ -5082,188 +5299,221 @@ break;
             content.renderCustomForm();
         break;
         case 'contact-form':
-            content = document.createElement('form');
-            content.innerHTML = `
-                                <section class="text- bg- section-border- " id="23c0fa9f-1b3e-4ac9-88a8-ac7e0b9ef0d8" data-section=""
-            style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
-            <div class="block-container container " id="block-c55189a5-30b0-4b5d-93fa-c09ba3ea7ae4" data-block=""
-                data-template="38b2386a3ff24269986eb67b1a7316ae"
-                data-action="https://gmu-events.com/ajax/block/23c0fa9f-1b3e-4ac9-88a8-ac7e0b9ef0d8/c55189a5-30b0-4b5d-93fa-c09ba3ea7ae4"
-                style="--block-name:''">
-
-
-                <div class="p-4
-
-col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
-">
-
-                    <div class="row align-items-center gy-3 gy-md-4">
-                        <div class="col-">
-                            <div class="row row-cols-1 gy-3">
-
-
-
-
-
-
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="block-container container " id="block-0b11d839-1966-464e-b7e2-8f30bdd5d69d" data-block=""
-                data-template="e7d0b613d125406ea714907d6507c2a9"
-                data-action="https://gmu-events.com/ajax/block/23c0fa9f-1b3e-4ac9-88a8-ac7e0b9ef0d8/0b11d839-1966-464e-b7e2-8f30bdd5d69d"
-                style="--block-name:''">
-
-
-                <div class="form-submission">
-                    <form method="POST" action="/contact-form">
-                        @csrf
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
-                                <div class="row gy-3">
-                                    <div class="col-12">
-                                        <label for="name" class="form-label fw-semibold">
-                                            Your name
-                                        </label>
-                                        <input type="text" class="form-control" id="name" name="name">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label for="email" class="form-label fw-semibold">
-                                            Email address
-                                        </label>
-                                        <input type="text" class="form-control" id="email" name="email">
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="message" class="form-label fw-semibold">
-                                            Message
-                                        </label>
-                                        <textarea class="form-control" id="message" name="message" rows="8"></textarea>
-                                    </div>
-
-                                    <input type="hidden" name="template" value="e7d0b613d125406ea714907d6507c2a9">
-
-                                    <div class="col-12">
-                                        <small class="text-muted">This form is protected by reCAPTCHA and the Google <a
-                                                href="https://policies.google.com/privacy" style="color: #2e4053">Privacy Policy</a>
-                                            and <a href="https://policies.google.com/terms" style="color: #2e4053">Terms of Service</a>
-                                            apply.</small>
+            content = document.createElement('div');
+            // Store data for serialization and live editing
+            content.contactFormData = {
+                title: 'Contact Us',
+                nameLabel: 'Your name',
+                emailLabel: 'Email address',
+                messageLabel: 'Message',
+                buttonText: 'Submit',
+                nameRequired: true,
+                emailRequired: true,
+                messageRequired: true,
+                showPrivacyText: true,
+                privacyText: 'This form is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.',
+                backgroundColor: '#ffffff',
+                buttonColor: '#2e4053',
+                buttonTextColor: '#ffffff',
+                labelColor: '#000000',
+                borderRadius: '4px',
+                buttonPadding: '12px 24px'
+            };
+            content.renderContactForm = function() {
+                const d = content.contactFormData;
+                content.innerHTML = `
+                    <div class="contact-form-component" style="background-color: ${d.backgroundColor}; padding: 2rem; border-radius: ${d.borderRadius};">
+                        ${d.title ? `<h3 class="text-center mb-4" style="color: ${d.labelColor};">${d.title}</h3>` : ''}
+                        <div class="form-submission">
+                            <form method="POST" action="/contact-form">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                                        <div class="row gy-3">
+                                            <div class="col-12">
+                                                <label for="name" class="form-label fw-semibold" style="color: ${d.labelColor};">
+                                                    ${d.nameLabel}${d.nameRequired ? ' *' : ''}
+                                                </label>
+                                                <input type="text" class="form-control" id="name" name="name" ${d.nameRequired ? 'required' : ''}>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="email" class="form-label fw-semibold" style="color: ${d.labelColor};">
+                                                    ${d.emailLabel}${d.emailRequired ? ' *' : ''}
+                                                </label>
+                                                <input type="email" class="form-control" id="email" name="email" ${d.emailRequired ? 'required' : ''}>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="message" class="form-label fw-semibold" style="color: ${d.labelColor};">
+                                                    ${d.messageLabel}${d.messageRequired ? ' *' : ''}
+                                                </label>
+                                                <textarea class="form-control" id="message" name="message" rows="8" ${d.messageRequired ? 'required' : ''}></textarea>
+                                            </div>
+                                            ${d.showPrivacyText ? `
+                                                <div class="col-12">
+                                                    <small class="text-muted">${d.privacyText}</small>
+                                                </div>
+                                            ` : ''}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="d-flex justify-content-center mt-3 mt-md-4">
+                                    <button type="submit" class="btn btn-lg" style="
+                                        background-color: ${d.buttonColor}; 
+                                        color: ${d.buttonTextColor}; 
+                                        border-color: ${d.buttonColor};
+                                        padding: ${d.buttonPadding};
+                                        border-radius: ${d.borderRadius};
+                                    ">
+                                        ${d.buttonText}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-
-                        <div class="d-flex justify-content-center mt-3 mt-md-4">
-                            <button type="submit" class="btn btn-primary btn-lg text-white" style="background-color: #2e4053; border-color: #2e4053">
-                                Submit
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>`;
+                    </div>
+                `;
+            };
+            content.renderContactForm();
         break;
         case 'social-share':
             content = document.createElement('div');
-            content.innerHTML = `
-                @php
-                        $url = url()->current();
-                        $doamin = parse_url($url, PHP_URL_HOST);
-                        $check = App\Models\Website::where('domain', $doamin)->first();
-                        $user_id = $check->user_id ?? null;
-                        $setting = App\Models\Setting::where('user_id', $user_id)->first();
-                @endphp
-            <section class="text- bg- section-border- " id="a62f69b9-8d0f-4213-b070-a977a437c020" data-section=""
-                    style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
-                    <div class="block-container container " id="block-406491f2-28a9-46fa-be92-5ba2842c8b73" data-block=""
-                        data-template="f60cc48059a24febb0a7cb603b78845d"
-                        data-action="{{ $setting->facebook ?? null}}"
-                        style="--block-name:''">
-
-
-                        <h2 class="display-5 fw-normal text-center">
-                            I Just Want to Help!
-                        </h2>
-                    </div>
-                </section>
-                <section class="text- bg- section-border- " id="facb2c3e-5c13-4096-90e0-30de8e263ba8" data-section=""
-                    style="background-image: url(); --overlay-color: ; --overlay-opacity: 0%; --section-name: '';">
-                    <div class="block-container container " id="block-a24d795a-5479-4e64-8111-729e5a6fd2d5" data-block=""
-                        data-template="f397b6192371496897c61c21339f90a0"
-                        data-action="{{ $setting->linkedin ?? null}}"
-                        style="--block-name:''">
-
-
+            content._shareData = {
+                title: 'I Just Want to Help!',
+                showTitle: true,
+                icon_size: '4rem',
+                iconColor: '',
+                textColor: '#000000',
+                titleColor: '#000000',
+                layout: 'grid',
+                maxColumns: 4,
+                platforms: {
+                    facebook: { enabled: true, url: '#', text: 'Share on Facebook' },
+                    twitter: { enabled: true, url: '#', text: 'Share on Twitter' },
+                    linkedin: { enabled: true, url: '#', text: 'Share on LinkedIn' },
+                    instagram: { enabled: false, url: '#', text: 'Share on Instagram' },
+                    tiktok: { enabled: false, url: '#', text: 'Share on TikTok' },
+                    youtube: { enabled: false, url: '#', text: 'Share on YouTube' },
+                    pinterest: { enabled: false, url: '#', text: 'Share on Pinterest' },
+                    whatsapp: { enabled: false, url: '#', text: 'Share on WhatsApp' },
+                    telegram: { enabled: false, url: '#', text: 'Share on Telegram' },
+                    copy: { enabled: true, url: '', text: 'Copy Link' }
+                }
+            };
+            
+            content.renderSocialShare = function() {
+                // Don't generate HTML - just update the display for preview
+                // The actual data will be saved as shareData for render-component.blade.php
+                const data = content._shareData;
+                const enabledPlatforms = Object.entries(data.platforms).filter(([key, platform]) => platform.enabled);
+                
+                // Create a simple preview without text, using our modern icons
+                const platformHtml = enabledPlatforms.map(([platform, config]) => {
+                    let iconHtml = '';
+                    let color = '';
+                    
+                    switch(platform) {
+                        case 'facebook':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>`;
+                            color = data.icon_color || '#1877f2';
+                            break;
+                        case 'twitter':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>`;
+                            color = data.icon_color || '#1da1f2';
+                            break;
+                        case 'linkedin':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>`;
+                            color = data.icon_color || '#0077b5';
+                            break;
+                        case 'instagram':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>`;
+                            color = data.icon_color || '#e1306c';
+                            break;
+                        case 'tiktok':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                            </svg>`;
+                            color = data.icon_color || '#000000';
+                            break;
+                        case 'youtube':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>`;
+                            color = data.icon_color || '#ff0000';
+                            break;
+                        case 'pinterest':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.404-5.958 1.404-5.958s-.359-.219-.359-1.219c0-1.141.66-1.993 1.482-1.993.699 0 1.037.525 1.037 1.155 0 .703-.449 1.753-.68 2.723-.194.821.412 1.492 1.222 1.492 1.467 0 2.595-1.544 2.595-3.773 0-1.972-1.415-3.353-3.437-3.353-2.343 0-3.718 1.756-3.718 3.571 0 .708.273 1.466.614 1.878.067.082.077.154.057.238-.062.26-.2.814-.227.927-.035.146-.116.177-.268.107-1.001-.465-1.624-1.926-1.624-3.1 0-2.596 1.884-4.982 5.432-4.982 2.851 0 5.071 2.032 5.071 4.75 0 2.837-1.789 5.121-4.27 5.121-.834 0-1.622-.435-1.89-1.013l-.514 1.96c-.185.716-.685 1.613-1.019 2.16C9.394 23.924 10.675 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                            </svg>`;
+                            color = data.icon_color || '#bd081c';
+                            break;
+                        case 'whatsapp':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
+                            </svg>`;
+                            color = data.icon_color || '#25d366';
+                            break;
+                        case 'telegram':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>`;
+                            color = data.icon_color || '#0088cc';
+                            break;
+                        case 'copy':
+                            iconHtml = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>`;
+                            color = data.icon_color || '#6c757d';
+                            break;
+                    }
+                    
+                    const colClass = `col-12 col-sm-6 col-md-${12 / data.max_columns}`;
+                    return `
+                        <div class="${colClass}">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div style="color: ${color}; font-size: ${data.icon_size};">
+                                    ${iconHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Admin preview only - NO text below icons
+                content.innerHTML = `
+                    <div class="social-share-component">
+                        ${data.show_title ? `<div class="text-center mb-4">
+                            <h2 class="display-5 fw-normal" style="color: ${data.title_color};">${data.title}</h2>
+                        </div>` : ''}
                         <div class="row gy-3 gy-md-5 justify-content-center align-items-center">
-
-                            <div class="col-12 col-sm-6 col-md-3">
-                                <div class="d-flex justify-content-center align-items-center">
-
-                                    <a class="text-center btn-facebook-share" href="#" role="button"
-                                        data-title="The SHPS PTO Fundraiser 2025" data-url="{{ $setting->facebook ?? null}}" style="color: #3b5998">
-                                        <i class="fab fa-facebook-square fs-4 text-facebook" role="img"
-                                            aria-hidden="true" style="font-size: 4rem !important"></i>
-
-                                        <h4 class="text-dark mt-2 mt-md-3 fs-1.5">
-                                            Share on Facebook
-                                        </h4>
-                                    </a>
-
-                                </div>
-                            </div>
-
-
-                            <div class="col-12 col-sm-6 col-md-3">
-                                <div class="d-flex justify-content-center align-items-center">
-
-                                    <a class="text-center btn-linkedin-share" href="#" role="button"
-                                        data-title="The SHPS PTO Fundraiser 2025" data-url="{{ $setting->linkedin ?? null}}" style="color: #0077b5">
-                                        <i class="fa-brands fa-linkedin fs-4 text-linkedin" role="img"
-                                            aria-hidden="true" style="font-size: 4rem !important"></i>
-
-                                        <h4 class="text-dark mt-2 mt-md-3 fs-1.5">
-                                            Share on LinkedIn
-                                        </h4>
-                                    </a>
-
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-md-3">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <button class="text-center btn btn-link btn-clipboard" type="button" role="button"
-                                        data-clipboard-text="{{ $doamin }}">
-                                        <i class="fa-solid fa-copy fs-4 text-primary" role="img" aria-hidden="true" style="font-size: 4rem !important; color: #2e4053 !important;"></i>
-
-                                        <h4 class="text-dark mt-2 mt-md-3 fs-1.5">
-                                            Copy to clipboard
-                                        </h4>
-                                    </button>
-
-                                </div>
-                            </div>
-
+                            ${platformHtml}
                         </div>
                     </div>
-                </section>`;
+                `;
+            };
+            
+            content.renderSocialShare();
         break;
         case 'auth-form':
             content = document.createElement('div');
-            // Use the same custom HTML and JS as the public view
-            // Assume customAuthFormHtml and customAuthFormJs are available (from builder state or default)
-            let customHtml = '';
-            let customJs = '';
-            if (window.customAuthFormHtml !== undefined) {
-                customHtml = window.customAuthFormHtml;
-            } else {
-                // Default fallback HTML (edit as needed)
-                customHtml = `<div class="row">
+            content._authFormData = {
+                backgroundColor: '#ffffff',
+                buttonColor: '#2e4053',
+                buttonTextColor: '#ffffff',
+                avatarIconColor: '#2e4053',
+                linkColor: '#2e4053'
+            };
+            
+            content.renderAuthForm = function() {
+                const data = content._authFormData;
+                content.innerHTML = `<div class="row">
             <div class="col-md-12 mt-4 mb-4 text-center">
-                <i class="fa-solid fa-circle-user fa-fw text-primary mb-3" aria-hidden="true" style="font-size: 8rem; color: #2e4053 !important;"></i>
+                <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: ${data.avatarIconColor} !important;"></i>
                 <h2 class="display-6 tit">Register</h2>
             </div>
         </div>
@@ -5277,21 +5527,20 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                             <input type="text" class="form-control" id="first_name" name="name">
                         </div>
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Last name</label>
-                            <input type="text" class="form-control" id="first_name" name="last_name">
+                            <label for="last_name" class="form-label">Last name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="first_name" name="email">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email">
                         </div>
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Confirm email address</label>
-                            <input type="email" class="form-control" id="first_name" name="confirm_email">
+                            <label for="confirm_email" class="form-label">Confirm email address</label>
+                            <input type="email" class="form-control" id="confirm_email" name="confirm_email">
                         </div>
                     </div>
-                    <!-- Add this to your register form in the auth-form component -->
                     <div class="row justify-content-center">
                         <div class="col-md-4">
                             <label for="register_as" class="form-label">Register as</label>
@@ -5305,7 +5554,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                             <label for="group_id" class="form-label">Select Group</label>
                             <select class="form-select" id="group_id" name="group_id">
                                 <option value="">Select a group</option>
-                                <!-- Dynamically populate this with your groups -->
                                 @foreach($groups as $group)
                                     <option value="{{ $group->id }}">{{ $group->name }}</option>
                                 @endforeach
@@ -5314,22 +5562,22 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="first_name" name="password">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password">
                         </div>
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Confirm password</label>
-                            <input type="password" class="form-control" id="first_name" name="confirm_password">
+                            <label for="confirm_password" class="form-label">Confirm password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-8">
                             <div class="d-grid gap-3 mt-2">
-                                <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
+                                <button class="btn btn-lg text-white" type="submit" style="background-color: ${data.buttonColor} !important; border-color: transparent; color: ${data.buttonTextColor} !important;">
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Register
                                 </button>
-                                <button class="btn text-primary btn-lg p-0 shadow-none view-login-form" type="button" style="color: #2e4053 !important;">
+                                <button class="btn btn-lg p-0 shadow-none view-login-form" type="button" style="color: ${data.linkColor} !important;">
                                     Login
                                 </button>
                             </div>
@@ -5345,22 +5593,22 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     @csrf
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="first_name" name="email">
+                            <label for="login_email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="login_email" name="email">
                         </div>
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="first_name" name="password">
+                            <label for="login_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="login_password" name="password">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-8">
                             <div class="d-grid gap-3 mt-2">
-                                <button class="btn btn-primary btn-lg text-white" type="submit" style="background-color: #2e4053 !important; border-color: transparent;">
+                                <button class="btn btn-lg text-white" type="submit" style="background-color: ${data.buttonColor} !important; border-color: transparent; color: ${data.buttonTextColor} !important;">
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Login
                                 </button>
-                                <button class="btn text-primary btn-lg p-0 shadow-none view-register-form" type="button" style="color: #2e4053 !important;">
+                                <button class="btn btn-lg p-0 shadow-none view-register-form" type="button" style="color: ${data.linkColor} !important;">
                                     Register
                                 </button>
                             </div>
@@ -5369,18 +5617,45 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 </form>
             </div>
         </div>`;
+            
+            // Add event listeners after rendering
+            setTimeout(() => {
+                const container = content;
+                const loginButtons = container.querySelectorAll('.view-login-form');
+                const registerButtons = container.querySelectorAll('.view-register-form');
+                const registerForms = container.querySelectorAll('.register');
+                const loginForms = container.querySelectorAll('.login');
+
+                loginButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        registerForms.forEach(form => form.style.display = 'none');
+                        loginForms.forEach(form => form.style.display = 'block');
+                    });
+                });
+
+                registerButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        loginForms.forEach(form => form.style.display = 'none');
+                        registerForms.forEach(form => form.style.display = 'block');
+                    });
+                });
+            }, 100);
+            
+            // Add global toggleGroupSelect function for this component
+            if (!window.toggleGroupSelect) {
+                window.toggleGroupSelect = function(selectElement) {
+                    const groupWrapper = document.getElementById('group_select_wrapper');
+                    if (groupWrapper) {
+                        if (selectElement.value === 'group') {
+                            groupWrapper.style.display = 'block';
+                        } else {
+                            groupWrapper.style.display = 'none';
+                        }
+                    }
+                };
             }
-            if (window.customAuthFormJs !== undefined) {
-                customJs = window.customAuthFormJs;
-            }
-            content.innerHTML = customHtml;
-            // Inject custom JS for live preview (sandboxed)
-            if (customJs) {
-                const script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.textContent = customJs;
-                content.appendChild(script);
-            }
+            };
+            content.renderAuthForm();
         break;
         case 'student-leaderboard':
             content = document.createElement('ol');
@@ -5557,10 +5832,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             content._goalData = {
                 goal: 5000,
                 raised: 500,
-                ticks: [1250, 2500, 4000]
+                ticks: [1250, 2500, 4000],
+                barColor: '#0d6efd'
             };
             content.renderThermometer = function() {
-                const { goal, raised, ticks } = content._goalData;
+                const { goal, raised, ticks, barColor } = content._goalData;
                 // Responsive: set bar to 100% width, fill will be set after render
                 content.innerHTML = `
                 <div class="thermometer-wrapper">
@@ -5584,7 +5860,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         const barWidth = barRect.width;
                         const percent = Math.min(raised / goal, 1);
                         fill.style.width = (barWidth * percent) + 'px';
-                        fill.style.background = '#6f7c8b';
+                        fill.style.background = barColor || '#0d6efd';
                         fill.style.borderRadius = '8px';
                         fill.style.transition = 'width 0.4s';
                         fill.style.height = '16px';
@@ -5747,7 +6023,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                                             backgroundColor: '#111',
                                             backgroundImage: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80', // Example image, replace as needed
                                             backgroundType: 'image',
-                                            textColor: '#fff',
+                                            titleColor: '#ffffff',
+                                            priceColor: '#ffffff',
+                                            receiveLabelColor: '#ffffff',
+                                            descriptionColor: '#ffffff',
                                             buttonBgColor: '#23b04a',
                                             buttonTextColor: '#fff'
                                     };
@@ -5757,17 +6036,17 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                                                     ? `background: linear-gradient(0deg, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0.85) 100%), url('${d.backgroundImage}') center/cover no-repeat;`
                                                     : `background: ${d.backgroundColor};`;
                                             content.innerHTML = `
-                                            <div class="perk-wrap is-full _2" style="${bg} color: ${d.textColor}; border-radius: 8px; padding: 32px 28px 24px 28px; max-width: 370px; margin: 0 auto !important; box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
+                                            <div class="perk-wrap is-full _2" style="${bg} border-radius: 8px; padding: 32px 28px 24px 28px; max-width: 370px; margin: 0 auto !important; box-shadow: 0 4px 24px rgba(0,0,0,0.18);">
                                                 <div class="z-index-1">
                                                     <div class="cell-top-2-2" style="margin-bottom: 12px;">
-                                                        <div class="text-block-94 text-color-white" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">${d.tierName}</div>
-                                                        <div class="number-larger-2 text-color-white" style="font-size: 2rem; font-weight: 700; margin-top: 2px;">${d.tierPrice}</div>
+                                                        <div class="text-block-94" style="font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: ${d.titleColor || '#ffffff'};">${d.tierName}</div>
+                                                        <div class="number-larger-2" style="font-size: 2rem; font-weight: 700; margin-top: 2px; color: ${d.priceColor || '#ffffff'};">${d.tierPrice}</div>
                                                     </div>
                                                     <div class="cell-top-2-2 no-line" style="margin-bottom: 18px;">
                                                         <div class="w-layout-grid grid-45">
-                                                            <div class="div-block-173 text-color-white">
-                                                                <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">Receive</div>
-                                                                <div style="font-size: 0.98rem; line-height: 1.5; color: #fff;">${d.tierDescription}</div>
+                                                            <div class="div-block-173">
+                                                                <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; color: ${d.receiveLabelColor || '#ffffff'};">${d.receiveLabel || 'Receive'}</div>
+                                                                ${d.tierDescription ? `<div style="font-size: 0.98rem; line-height: 1.5; color: ${d.descriptionColor || '#ffffff'};">${d.tierDescription}</div>` : ''}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -5784,6 +6063,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
 
       component.appendChild(controls);
       component.appendChild(content);
+      
+      // DataTables initialization disabled in page builder to prevent conflicts
+      // Tables are shown for preview only
+      console.log('Component added, DataTables disabled in page builder');
 
       // Add click handler for selection
       component.addEventListener('click', (e) => {
@@ -6208,6 +6491,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <small style="color: #666; font-size: 12px;">Background behind the image</small>
+                </div>
+                <div class="form-group">
                     <label>Link (optional)</label>
                     <input type="text" value="${d.link || ''}" oninput="updateImageField(this.value, 'link')">
                 </div>
@@ -6239,6 +6527,17 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                                 <label>Description</label>
                                 <textarea style="min-height: 80px;" oninput="updateTimelineItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
                             </div>
+                            <div class="form-group">
+                                <label>Status (optional)</label>
+                                <input type="text" value="${item.status || ''}" placeholder="e.g., Completed, In Progress, Planned" oninput="updateTimelineItem(${index}, 'status', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Completion Status</label>
+                                <select onchange="updateTimelineItem(${index}, 'completed', this.value === 'true')">
+                                    <option value="true" ${item.completed !== false ? 'selected' : ''}>Completed</option>
+                                    <option value="false" ${item.completed === false ? 'selected' : ''}>Not Completed</option>
+                                </select>
+                            </div>
                             <button type="button" onclick="removeTimelineItem(${index})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove Item</button>
                         </div>
                     `;
@@ -6246,11 +6545,41 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             }
             
             specificControls = `
-                <h4 style="margin: 20px 0 10px 0; color: #333;">Colors</h4>
                 <div class="form-group">
-                    <label>Number Text Color</label>
-                    <input type="color" value="${colors.numberText || '#22c55e'}" oninput="updateTimelineColor('numberText', this.value)">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <small class="text-muted">Background behind the timeline</small>
                 </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Completed State Colors</h4>
+                <div class="form-group">
+                    <label>Completed Background</label>
+                    <input type="color" value="${colors.completedBackground || '#22c55e'}" oninput="updateTimelineColor('completedBackground', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Completed Text</label>
+                    <input type="color" value="${colors.completedText || '#ffffff'}" oninput="updateTimelineColor('completedText', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Completed Line</label>
+                    <input type="color" value="${colors.completedLineColor || '#22c55e'}" oninput="updateTimelineColor('completedLineColor', this.value)">
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">Uncompleted State Colors</h4>
+                <div class="form-group">
+                    <label>Uncompleted Background</label>
+                    <input type="color" value="${colors.uncompletedBackground || '#e5e7eb'}" oninput="updateTimelineColor('uncompletedBackground', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Uncompleted Text</label>
+                    <input type="color" value="${colors.uncompletedText || '#9ca3af'}" oninput="updateTimelineColor('uncompletedText', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Uncompleted Line</label>
+                    <input type="color" value="${colors.uncompletedLineColor || '#e5e7eb'}" oninput="updateTimelineColor('uncompletedLineColor', this.value)">
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">General Colors</h4>
                 <div class="form-group">
                     <label>Title Color</label>
                     <input type="color" value="${colors.titleColor || '#22c55e'}" oninput="updateTimelineColor('titleColor', this.value)">
@@ -6258,10 +6587,6 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 <div class="form-group">
                     <label>Description Color</label>
                     <input type="color" value="${colors.descriptionColor || '#374151'}" oninput="updateTimelineColor('descriptionColor', this.value)">
-                </div>
-                <div class="form-group">
-                    <label>Line Color</label>
-                    <input type="color" value="${colors.lineColor || '#22c55e'}" oninput="updateTimelineColor('lineColor', this.value)">
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Timeline Items</h4>
@@ -6273,14 +6598,72 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
         break;
 
             case 'button':
+            const buttonData = content._buttonData || {
+                buttonText: 'Click Me',
+                buttonUrl: '#',
+                buttonTarget: '_self',
+                buttonBgColor: '#007bff',
+                buttonTextColor: '#ffffff',
+                buttonPadding: '10px 20px',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: '400',
+                textAlign: 'center'
+            };
+            
             specificControls = `
                 <div class="form-group">
-                <label>Alignment</label>
-                <select oninput="updateButtonAlignment(this)">
-                    <option value="center" ${content.parentElement.style.textAlign === 'center' ? 'selected' : ''}>Center</option>
-                    <option value="left" ${content.parentElement.style.textAlign === 'left' ? 'selected' : ''}>Left</option>
-                    <option value="right" ${content.parentElement.style.textAlign === 'right' ? 'selected' : ''}>Right</option>
-                </select>
+                    <label>Button Text</label>
+                    <input type="text" value="${buttonData.buttonText}" oninput="updateButtonField(this.value, 'buttonText')">
+                </div>
+                <div class="form-group">
+                    <label>Button URL</label>
+                    <input type="text" value="${buttonData.buttonUrl}" oninput="updateButtonField(this.value, 'buttonUrl')">
+                </div>
+                <div class="form-group">
+                    <label>Open in</label>
+                    <select oninput="updateButtonField(this.value, 'buttonTarget')">
+                        <option value="_self" ${buttonData.buttonTarget === '_self' ? 'selected' : ''}>Same tab</option>
+                        <option value="_blank" ${buttonData.buttonTarget === '_blank' ? 'selected' : ''}>New tab</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Text Alignment</label>
+                    <select oninput="updateButtonField(this.value, 'textAlign')">
+                        <option value="center" ${buttonData.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                        <option value="left" ${buttonData.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="right" ${buttonData.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${buttonData.buttonBgColor}" oninput="updateButtonField(this.value, 'buttonBgColor')">
+                </div>
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <input type="color" value="${buttonData.buttonTextColor}" oninput="updateButtonField(this.value, 'buttonTextColor')">
+                </div>
+                <div class="form-group">
+                    <label>Padding</label>
+                    <input type="text" value="${buttonData.buttonPadding}" oninput="updateButtonField(this.value, 'buttonPadding')" placeholder="e.g., 10px 20px">
+                </div>
+                <div class="form-group">
+                    <label>Border Radius</label>
+                    <input type="text" value="${buttonData.borderRadius}" oninput="updateButtonField(this.value, 'borderRadius')" placeholder="e.g., 4px">
+                </div>
+                <div class="form-group">
+                    <label>Font Size</label>
+                    <input type="text" value="${buttonData.fontSize}" oninput="updateButtonField(this.value, 'fontSize')" placeholder="e.g., 16px">
+                </div>
+                <div class="form-group">
+                    <label>Font Weight</label>
+                    <select oninput="updateButtonField(this.value, 'fontWeight')">
+                        <option value="300" ${buttonData.fontWeight === '300' ? 'selected' : ''}>Light</option>
+                        <option value="400" ${buttonData.fontWeight === '400' ? 'selected' : ''}>Normal</option>
+                        <option value="500" ${buttonData.fontWeight === '500' ? 'selected' : ''}>Medium</option>
+                        <option value="600" ${buttonData.fontWeight === '600' ? 'selected' : ''}>Semi Bold</option>
+                        <option value="700" ${buttonData.fontWeight === '700' ? 'selected' : ''}>Bold</option>
+                    </select>
                 </div>
             `;
             break;
@@ -6294,6 +6677,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 <div class="form-group">
                     <label>Content</label>
                     <textarea id="${textEditorId}" class="ck5-inline-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${textContent}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${content.style.backgroundColor || '#ffffff'}" oninput="updateStyleProperty('backgroundColor', this.value)">
                 </div>
             `;
 
@@ -6429,6 +6816,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             case 'auction-list':
             specificControls = `
                 <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <small class="text-muted">Background behind the auction list</small>
+                </div>
+                <div class="form-group">
                     <label>Auction List Settings</label>
                     <p>This component displays live auction items from your auction system.</p>
                 </div>
@@ -6457,6 +6849,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 <div class="form-group">
                     <label>Section Title Content</label>
                     <textarea id="${sectionTitleEditorId}" class="quill-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${sectionTitleContent}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
                 </div>
                 <div class="form-group">
                 <small class="text-muted">💡 Use the formatting toolbar above to style your section title with headings (H1-H5), fonts, colors, and more.</small>
@@ -6492,6 +6888,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     textAlign: 'center'
                 };
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the banner</small>
+                    </div>
                     <div class="form-group">
                         <label>Banner Image</label>
                         <input type="file" accept="image/*" onchange="uploadCustomBannerImage(event)">
@@ -6555,6 +6956,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <label>Columns</label>
                         <input type="number" min="1" max="6" value="${galleryData.columns}" oninput="updateGalleryColumns(this.value)">
                     </div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the gallery</small>
+                    </div>
                 `;
             break;
             case 'slider':
@@ -6574,6 +6980,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <div class="form-group">
                         <label>Slide Speed (ms)</label>
                         <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" oninput="updateSliderSlideSpeed(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the slider</small>
                     </div>
                 `;
             break;
@@ -6628,6 +7039,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <small class="text-muted">Video will autoplay when loaded on the frontend</small>
                     </div>
                     
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the video</small>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -6667,6 +7084,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 };
                 
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the entire FAQ section</small>
+                    </div>
                     <h4 style="margin: 20px 0 10px 0; color: #333;">FAQ Questions</h4>
                     <div class="form-group">
                         <button type="button" onclick="addFaqQuestion()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
@@ -6740,6 +7162,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 };
                 
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the comments section</small>
+                    </div>
+                    
                     <h4 style="margin: 20px 0 10px 0; color: #333;">
                         <i class="fas fa-comment-dots" style="margin-right: 8px; color: #007bff;"></i>
                         Simple Comments Settings
@@ -6876,6 +7304,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 };
                 
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the Disqus comments</small>
+                    </div>
+                    
                     <h4 style="margin: 20px 0 10px 0; color: #333;">
                         <i class="fas fa-comments" style="margin-right: 8px; color: #2e9fff;"></i>
                         Disqus Comments Configuration
@@ -6993,6 +7427,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 const fwti = content._fwtiData || {};
                 specificControls = `
                     <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the full-width text and image</small>
+                    </div>
+                    <div class="form-group">
                         <label>Title Text</label>
                         <input type="text" value="${fwti.text1 || ''}" oninput="updateFWTIField(this.value, 'text1')">
                     </div>
@@ -7045,19 +7484,70 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'alert-message':
+            const alertData = content._alertData || {
+                message: 'Alert Message',
+                type: 'info',
+                dismissible: false,
+                backgroundColor: '#d1ecf1',
+                textColor: '#0c5460',
+                borderColor: '#bee5eb',
+                borderRadius: '4px',
+                padding: '1rem',
+                fontSize: '14px',
+                fontWeight: '400'
+            };
+            
             specificControls = `
                 <div class="form-group">
-                <label>Alert Text</label>
-                <input type="text" value="${content.textContent}" oninput="updateContent(this.value)">
+                    <label>Alert Message</label>
+                    <textarea style="min-height: 80px;" oninput="updateAlertField(this.value, 'message')">${alertData.message}</textarea>
                 </div>
                 <div class="form-group">
-                <label>Alert Type</label>
-                <select oninput="updateAlertType(this.value)">
-                    <option value="info">Info</option>
-                    <option value="success">Success</option>
-                    <option value="warning">Warning</option>
-                    <option value="error">Error</option>
-                </select>
+                    <label>Alert Type</label>
+                    <select oninput="updateAlertField(this.value, 'type')">
+                        <option value="info" ${alertData.type === 'info' ? 'selected' : ''}>Info</option>
+                        <option value="success" ${alertData.type === 'success' ? 'selected' : ''}>Success</option>
+                        <option value="warning" ${alertData.type === 'warning' ? 'selected' : ''}>Warning</option>
+                        <option value="danger" ${alertData.type === 'danger' ? 'selected' : ''}>Danger</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dismissible</label>
+                    <input type="checkbox" ${alertData.dismissible ? 'checked' : ''} onchange="updateAlertField(this.checked, 'dismissible')">
+                </div>
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${alertData.backgroundColor}" oninput="updateAlertField(this.value, 'backgroundColor')">
+                </div>
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <input type="color" value="${alertData.textColor}" oninput="updateAlertField(this.value, 'textColor')">
+                </div>
+                <div class="form-group">
+                    <label>Border Color</label>
+                    <input type="color" value="${alertData.borderColor}" oninput="updateAlertField(this.value, 'borderColor')">
+                </div>
+                <div class="form-group">
+                    <label>Border Radius</label>
+                    <input type="text" value="${alertData.borderRadius}" oninput="updateAlertField(this.value, 'borderRadius')" placeholder="e.g., 4px">
+                </div>
+                <div class="form-group">
+                    <label>Padding</label>
+                    <input type="text" value="${alertData.padding}" oninput="updateAlertField(this.value, 'padding')" placeholder="e.g., 1rem">
+                </div>
+                <div class="form-group">
+                    <label>Font Size</label>
+                    <input type="text" value="${alertData.fontSize}" oninput="updateAlertField(this.value, 'fontSize')" placeholder="e.g., 14px">
+                </div>
+                <div class="form-group">
+                    <label>Font Weight</label>
+                    <select oninput="updateAlertField(this.value, 'fontWeight')">
+                        <option value="300" ${alertData.fontWeight === '300' ? 'selected' : ''}>Light</option>
+                        <option value="400" ${alertData.fontWeight === '400' ? 'selected' : ''}>Normal</option>
+                        <option value="500" ${alertData.fontWeight === '500' ? 'selected' : ''}>Medium</option>
+                        <option value="600" ${alertData.fontWeight === '600' ? 'selected' : ''}>Semi Bold</option>
+                        <option value="700" ${alertData.fontWeight === '700' ? 'selected' : ''}>Bold</option>
+                    </select>
                 </div>
             `;
             break;
@@ -7066,7 +7556,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 const pressData = content._pressCardData || {
                     logoSrc: '',
                     logoAlt: 'Press Logo',
-                    title: 'Press Article Title',
+                    title: '',
                     url: '#',
                     date: 'Date',
                     target: '_blank',
@@ -7091,7 +7581,7 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                     <div class="form-group">
                         <label>Article Title</label>
-                        <textarea oninput="updatePressCardField('title', this.value)">${pressData.title}</textarea>
+                        <textarea oninput="updatePressCardField('title', this.value)" placeholder="Enter article title">${pressData.title}</textarea>
                     </div>
                     <div class="form-group">
                         <label>Article URL</label>
@@ -7147,8 +7637,23 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             break;
 
             case 'event-countdown':
-            const countdownData = content._countdownData || { date: '', label: '' };
+            const countdownData = content._countdownData || { 
+                date: '', 
+                label: '',
+                numberColor: '#000000',
+                textColor: '#000000',
+                remainingVerbiageColor: '#000000',
+                numberFontWeight: 'bold',
+                textFontWeight: 'normal',
+                remainingFontWeight: 'normal',
+                showRemainingText: true
+            };
             specificControls = `
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <small class="text-muted">Background behind the countdown timer</small>
+                </div>
                 <div class="form-group">
                     <label>Event Date & Time</label>
                     <input type="datetime-local" value="${countdownData.date}" oninput="updateCountdownDate(this.value)">
@@ -7157,11 +7662,63 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <label>Countdown Label</label>
                     <input type="text" value="${countdownData.label}" oninput="updateCountdownLabel(this.value)">
                 </div>
+                <div class="form-group">
+                    <label>Show Countdown Label</label>
+                    <input type="checkbox" ${countdownData.showRemainingText !== false ? 'checked' : ''} onchange="updateCountdownShowRemaining(this.checked)">
+                    <small>Show/hide the custom label text at bottom</small>
+                </div>
+                <hr>
+                <h6>Number Styling</h6>
+                <div class="form-group">
+                    <label>Number Color</label>
+                    <input type="color" value="${countdownData.numberColor}" oninput="updateCountdownNumberColor(this.value)">
+                    <small>Color for countdown numbers (0, 1, 2, etc.)</small>
+                </div>
+                <div class="form-group">
+                    <label>Number Font Weight</label>
+                    <select onchange="updateCountdownNumberWeight(this.value)">
+                        <option value="normal" ${countdownData.numberFontWeight === 'normal' ? 'selected' : ''}>Normal</option>
+                        <option value="bold" ${countdownData.numberFontWeight === 'bold' ? 'selected' : ''}>Bold</option>
+                    </select>
+                </div>
+                <hr>
+                <h6>Label Styling</h6>
+                <div class="form-group">
+                    <label>Label Color</label>
+                    <input type="color" value="${countdownData.textColor}" oninput="updateCountdownTextColor(this.value)">
+                    <small>Color for labels (Months, Days, Hours, etc.)</small>
+                </div>
+                <div class="form-group">
+                    <label>Label Font Weight</label>
+                    <select onchange="updateCountdownTextWeight(this.value)">
+                        <option value="normal" ${countdownData.textFontWeight === 'normal' ? 'selected' : ''}>Normal</option>
+                        <option value="bold" ${countdownData.textFontWeight === 'bold' ? 'selected' : ''}>Bold</option>
+                    </select>
+                </div>
+                <hr>
+                <h6>Custom Text Styling</h6>
+                <div class="form-group">
+                    <label>Custom Text Color</label>
+                    <input type="color" value="${countdownData.remainingVerbiageColor}" oninput="updateCountdownVerbiageColor(this.value)">
+                    <small>Color for the custom label text at bottom</small>
+                </div>
+                <div class="form-group">
+                    <label>Custom Text Font Weight</label>
+                    <select onchange="updateCountdownVerbiageWeight(this.value)">
+                        <option value="normal" ${countdownData.remainingFontWeight === 'normal' ? 'selected' : ''}>Normal</option>
+                        <option value="bold" ${countdownData.remainingFontWeight === 'bold' ? 'selected' : ''}>Bold</option>
+                    </select>
+                </div>
             `;
             break;
             case 'event-information':
             const eventInfoData = content._eventInfoData || { date: '', address: '', time: '', mapEmbed: '', showMap: true, mapPosition: 'right' };
             specificControls = `
+                <div class="form-group">
+                    <label>Background Color</label>
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <small class="text-muted">Background behind the event information</small>
+                </div>
                 <div class="form-group">
                     <label>Date (When)</label>
                     <input type="date" value="${eventInfoData.date}" oninput="updateEventInfoField(this, 'date')">
@@ -7206,6 +7763,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 };
                 specificControls = `
                     <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the ticket selling section</small>
+                    </div>
+                    <div class="form-group">
                         <label>Title</label>
                         <input type="text" value="${sellData.title}" oninput="updateSellTicketsField(this.value, 'title')">
                     </div>
@@ -7230,6 +7792,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
             case 'whos-coming':
                 specificControls = `
                     <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the attendees list</small>
+                    </div>
+                    <div class="form-group">
                         <label>Attendees (comma separated)</label>
                         <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" oninput="updateWhosComing(this.value)">
                     </div>
@@ -7239,12 +7806,80 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 specificControls = `
                     <div class="form-group">
                         <label>Form Title</label>
-                        <input type="text" value="Donation" oninput="updateDonationFormTitle(this.value)">
+                        <input type="text" value="${getDonationFormValue('formTitle', 'Make a general donation')}" oninput="updateDonationFormTitle(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary Title</label>
+                        <input type="text" value="${getDonationFormValue('secondaryTitle', 'Donate to the')}" oninput="updateDonationFormSecondaryTitle(this.value)">
+                        <small class="text-muted">Text before website name (e.g., "Donate to the [Website Name]")</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" value="${getDonationFormValue('buttonText', 'Donate')}" oninput="updateDonationFormButtonText(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Fee Checkbox Text</label>
+                        <input type="text" value="${getDonationFormValue('feeText', 'I elect to pay the fees')}" oninput="updateDonationFormFeeText(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Fee Tooltip Text</label>
+                        <textarea rows="3" placeholder="Tooltip text for fee info icon" oninput="updateDonationFormFeeTooltip(this.value)">${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anonymous Checkbox Text</label>
+                        <input type="text" value="${getDonationFormValue('anonymousText', 'Anonymous')}" oninput="updateDonationFormAnonymousText(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Anonymous Description</label>
+                        <input type="text" value="${getDonationFormValue('anonymousDescription', 'Choose to make your donation anonymous')}" oninput="updateDonationFormAnonymousDescription(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Anonymous Tooltip Text</label>
+                        <textarea rows="2" placeholder="Tooltip text for anonymous info icon" oninput="updateDonationFormAnonymousTooltip(this.value)">${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}</textarea>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">Color Settings</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Background Color</label>
+                                <small class="text-muted d-block">Color for the form background (white area)</small>
+                                <input type="color" value="${getDonationFormValue('backgroundColor', '#ffffff')}" oninput="updateDonationFormBackgroundColor(this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Header/Button Color</label>
+                                <small class="text-muted d-block">Color for header and button (blue area)</small>
+                                <input type="color" value="${getDonationFormValue('headerColor', '#2e4053')}" oninput="updateDonationFormHeaderColor(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Header Text Color</label>
+                                <small class="text-muted d-block">Text color for header and button</small>
+                                <input type="color" value="${getDonationFormValue('headerTextColor', '#ffffff')}" oninput="updateDonationFormHeaderTextColor(this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Border Color</label>
+                                <small class="text-muted d-block">Color for form borders and accents</small>
+                                <input type="color" value="${getDonationFormValue('borderColor', '#2e4053')}" oninput="updateDonationFormBorderColor(this.value)">
+                            </div>
+                        </div>
                     </div>
                 `;
                 break;
             case 'donor-list':
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the donor list</small>
+                    </div>
                     <div class="form-group">
                         <label>Donors (format: Name - Amount, comma separated)</label>
                         <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" oninput="updateDonorList(this.value)">
@@ -7271,6 +7906,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 const customFormFields = content._customFormFields || [];
                 specificControls = `
                     <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the custom form</small>
+                    </div>
+                    <div class="form-group">
                         <label>Form Fields</label>
                         <div id="customFormFieldsPanel">
                             ${customFormFields.map((field, idx) => `
@@ -7293,25 +7933,360 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 `;
             break;
             case 'contact-form':
+                console.log(content.contactFormData);
+                const contactData = content.contactFormData || {
+                    title: 'Contact Us',
+                    nameLabel: 'Your name',
+                    emailLabel: 'Email address',
+                    messageLabel: 'Message',
+                    buttonText: 'Submit',
+                    nameRequired: true,
+                    emailRequired: true,
+                    messageRequired: true,
+                    showPrivacyText: true,
+                    privacyText: 'This form is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.',
+                    backgroundColor: '#ffffff',
+                    buttonColor: '#2e4053',
+                    buttonTextColor: '#ffffff',
+                    labelColor: '#000000',
+                    borderRadius: '4px',
+                    buttonPadding: '12px 24px'
+                };
+                specificControls = `
+                    <h5 class="mb-3">Contact Form Settings</h5>
+                    
+                    <div class="form-group">
+                        <label>Form Title</label>
+                        <input type="text" value="${contactData.title}" oninput="updateContactFormField(this.value, 'title')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Name Field Label</label>
+                        <input type="text" value="${contactData.nameLabel}" oninput="updateContactFormField(this.value, 'nameLabel')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Field Label</label>
+                        <input type="text" value="${contactData.emailLabel}" oninput="updateContactFormField(this.value, 'emailLabel')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Message Field Label</label>
+                        <input type="text" value="${contactData.messageLabel}" oninput="updateContactFormField(this.value, 'messageLabel')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" value="${contactData.buttonText}" oninput="updateContactFormField(this.value, 'buttonText')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Required Fields</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" ${contactData.nameRequired ? 'checked' : ''} onchange="updateContactFormField(this.checked, 'nameRequired')">
+                            <label class="form-check-label">Name Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" ${contactData.emailRequired ? 'checked' : ''} onchange="updateContactFormField(this.checked, 'emailRequired')">
+                            <label class="form-check-label">Email Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" ${contactData.messageRequired ? 'checked' : ''} onchange="updateContactFormField(this.checked, 'messageRequired')">
+                            <label class="form-check-label">Message Required</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Show Privacy Text</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" ${contactData.showPrivacyText ? 'checked' : ''} onchange="updateContactFormField(this.checked, 'showPrivacyText')">
+                            <label class="form-check-label">Show privacy/reCAPTCHA text</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Privacy Text</label>
+                        <textarea oninput="updateContactFormField(this.value, 'privacyText')" rows="3">${contactData.privacyText}</textarea>
+                    </div>
+                    
+                    <h6 class="mt-4 mb-2">Styling Options</h6>
+                    
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${contactData.backgroundColor}" oninput="updateContactFormField(this.value, 'backgroundColor')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Button Color</label>
+                        <input type="color" value="${contactData.buttonColor}" oninput="updateContactFormField(this.value, 'buttonColor')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <input type="color" value="${contactData.buttonTextColor}" oninput="updateContactFormField(this.value, 'buttonTextColor')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Label Color</label>
+                        <input type="color" value="${contactData.labelColor}" oninput="updateContactFormField(this.value, 'labelColor')">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Border Radius</label>
+                        <input type="text" value="${contactData.borderRadius}" oninput="updateContactFormField(this.value, 'borderRadius')" placeholder="4px">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Button Padding</label>
+                        <input type="text" value="${contactData.buttonPadding}" oninput="updateContactFormField(this.value, 'buttonPadding')" placeholder="12px 24px">
+                    </div>
+                `;
+            break;
             case 'auth-form':
                 specificControls = `
+                    <h5 class="mb-3">Registration Form Settings</h5>
                     <div class="form-group">
-                        <label>Form Fields</label>
-                        <p>Edit fields directly in the component preview.</p>
+                        <label>Form Background Color</label>
+                        <small class="text-muted d-block">Background color for the registration form area</small>
+                        <input type="color" value="${getAuthFormValue('backgroundColor', '#ffffff')}" oninput="updateAuthFormBackgroundColor(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Color</label>
+                        <small class="text-muted d-block">Color for Register and Login buttons</small>
+                        <input type="color" value="${getAuthFormValue('buttonColor', '#2e4053')}" oninput="updateAuthFormButtonColor(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <small class="text-muted d-block">Text color for button text</small>
+                        <input type="color" value="${getAuthFormValue('buttonTextColor', '#ffffff')}" oninput="updateAuthFormButtonTextColor(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Avatar Icon Color</label>
+                        <small class="text-muted d-block">Color for the user avatar icon</small>
+                        <input type="color" value="${getAuthFormValue('avatarIconColor', '#2e4053')}" oninput="updateAuthFormAvatarIconColor(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Link Color</label>
+                        <small class="text-muted d-block">Color for "Login" and "Register" toggle links</small>
+                        <input type="color" value="${getAuthFormValue('linkColor', '#2e4053')}" oninput="updateAuthFormLinkColor(this.value)">
                     </div>
                 `;
                 break;
             case 'social-share':
+                const shareData = content._shareData || {};
+                const platforms = shareData.platforms || {};
+                
                 specificControls = `
                     <div class="form-group">
-                        <label>Share Button Text</label>
-                        <input type="text" value="${content.querySelector('button') ? content.querySelector('button').textContent : ''}" oninput="content.querySelector('button').textContent = this.value">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the social sharing buttons</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Main Title</label>
+                        <input type="text" value="${shareData.title || 'I Just Want to Help!'}" onchange="updateShareField(this, 'title')">
+                    </div>
+                    <div class="form-group">
+                        <label>Show Title</label>
+                        <input type="checkbox" ${shareData.show_title !== false ? 'checked' : ''} onchange="updateShareField(this, 'show_title', 'checkbox')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Color</label>
+                        <input type="color" value="${shareData.title_color || '#000000'}" onchange="updateShareField(this, 'title_color')">
+                    </div>
+                    <div class="form-group">
+                        <label>Text Color</label>
+                        <input type="color" value="${shareData.text_color || '#000000'}" onchange="updateShareField(this, 'text_color')">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon Color (leave empty for default brand colors)</label>
+                        <input type="color" value="${shareData.icon_color || ''}" onchange="updateShareField(this, 'icon_color')">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon Size</label>
+                        <select onchange="updateShareField(this, 'icon_size')">
+                            <option value="2rem" ${shareData.icon_size === '2rem' ? 'selected' : ''}>Small (2rem)</option>
+                            <option value="3rem" ${shareData.icon_size === '3rem' ? 'selected' : ''}>Medium (3rem)</option>
+                            <option value="4rem" ${shareData.icon_size === '4rem' || !shareData.icon_size ? 'selected' : ''}>Large (4rem)</option>
+                            <option value="5rem" ${shareData.icon_size === '5rem' ? 'selected' : ''}>Extra Large (5rem)</option>
+                            <option value="6rem" ${shareData.icon_size === '6rem' ? 'selected' : ''}>XXL (6rem)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Columns</label>
+                        <select onchange="updateShareField(this, 'max_columns', 'number')">
+                            <option value="2" ${shareData.max_columns == 2 ? 'selected' : ''}>2 Columns</option>
+                            <option value="3" ${shareData.max_columns == 3 ? 'selected' : ''}>3 Columns</option>
+                            <option value="4" ${shareData.max_columns == 4 || !shareData.max_columns ? 'selected' : ''}>4 Columns</option>
+                            <option value="5" ${shareData.max_columns == 5 ? 'selected' : ''}>5 Columns</option>
+                            <option value="6" ${shareData.max_columns == 6 ? 'selected' : ''}>6 Columns</option>
+                        </select>
+                    </div>
+                    
+                    <h5 class="mt-4">Social Media Platforms</h5>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.facebook?.enabled !== false ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'facebook')">
+                            Facebook
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.facebook?.text || 'Share on Facebook'}" onchange="updatePlatformText(this, 'facebook')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.facebook?.url || ''}" onchange="updatePlatformUrl(this, 'facebook')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.twitter?.enabled !== false ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'twitter')">
+                            Twitter/X
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.twitter?.text || 'Share on Twitter'}" onchange="updatePlatformText(this, 'twitter')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.twitter?.url || ''}" onchange="updatePlatformUrl(this, 'twitter')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.linkedin?.enabled !== false ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'linkedin')">
+                            LinkedIn
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.linkedin?.text || 'Share on LinkedIn'}" onchange="updatePlatformText(this, 'linkedin')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.linkedin?.url || ''}" onchange="updatePlatformUrl(this, 'linkedin')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.instagram?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'instagram')">
+                            Instagram
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.instagram?.text || 'Share on Instagram'}" onchange="updatePlatformText(this, 'instagram')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.instagram?.url || ''}" onchange="updatePlatformUrl(this, 'instagram')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.tiktok?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'tiktok')">
+                            TikTok
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.tiktok?.text || 'Share on TikTok'}" onchange="updatePlatformText(this, 'tiktok')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.tiktok?.url || ''}" onchange="updatePlatformUrl(this, 'tiktok')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.youtube?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'youtube')">
+                            YouTube
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.youtube?.text || 'Share on YouTube'}" onchange="updatePlatformText(this, 'youtube')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.youtube?.url || ''}" onchange="updatePlatformUrl(this, 'youtube')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.pinterest?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'pinterest')">
+                            Pinterest
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.pinterest?.text || 'Share on Pinterest'}" onchange="updatePlatformText(this, 'pinterest')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.pinterest?.url || ''}" onchange="updatePlatformUrl(this, 'pinterest')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.whatsapp?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'whatsapp')">
+                            WhatsApp
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.whatsapp?.text || 'Share on WhatsApp'}" onchange="updatePlatformText(this, 'whatsapp')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.whatsapp?.url || ''}" onchange="updatePlatformUrl(this, 'whatsapp')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.telegram?.enabled === true ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'telegram')">
+                            Telegram
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.telegram?.text || 'Share on Telegram'}" onchange="updatePlatformText(this, 'telegram')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.telegram?.url || ''}" onchange="updatePlatformUrl(this, 'telegram')" style="width: 45%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${platforms.copy?.enabled !== false ? 'checked' : ''} onchange="updatePlatformEnabled(this, 'copy')">
+                            Copy Link
+                        </label>
+                        <div style="margin-left: 20px; margin-top: 5px;">
+                            <input type="text" placeholder="Custom text" value="${platforms.copy?.text || 'Copy Link'}" onchange="updatePlatformText(this, 'copy')" style="width: 45%; margin-right: 10px;">
+                            <input type="url" placeholder="Custom URL (optional)" value="${platforms.copy?.url || ''}" onchange="updatePlatformUrl(this, 'copy')" style="width: 45%;">
+                        </div>
                     </div>
                 `;
+                
+                // Helper functions for social share
+                window.updateShareField = function(input, field, type = 'text') {
+                    if (!content._shareData) content._shareData = {};
+                    
+                    if (type === 'checkbox') {
+                        content._shareData[field] = input.checked;
+                    } else if (type === 'number') {
+                        content._shareData[field] = parseInt(input.value);
+                    } else {
+                        content._shareData[field] = input.value;
+                    }
+                    
+                    content.renderSocialShare();
+                };
+                
+                window.updatePlatformEnabled = function(input, platform) {
+                    if (!content._shareData) content._shareData = {};
+                    if (!content._shareData.platforms) content._shareData.platforms = {};
+                    if (!content._shareData.platforms[platform]) content._shareData.platforms[platform] = {};
+                    
+                    content._shareData.platforms[platform].enabled = input.checked;
+                    content.renderSocialShare();
+                };
+                
+                window.updatePlatformText = function(input, platform) {
+                    if (!content._shareData) content._shareData = {};
+                    if (!content._shareData.platforms) content._shareData.platforms = {};
+                    if (!content._shareData.platforms[platform]) content._shareData.platforms[platform] = {};
+                    
+                    content._shareData.platforms[platform].text = input.value;
+                    content.renderSocialShare();
+                };
+                
+                window.updatePlatformUrl = function(input, platform) {
+                    if (!content._shareData) content._shareData = {};
+                    if (!content._shareData.platforms) content._shareData.platforms = {};
+                    if (!content._shareData.platforms[platform]) content._shareData.platforms[platform] = {};
+                    
+                    content._shareData.platforms[platform].url = input.value;
+                    content.renderSocialShare();
+                };
+                
                 break;
             case 'student-leaderboard':
             case 'student-listing':
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the student list</small>
+                    </div>
                     <div class="form-group">
                         <label>Students (format: Name - Score, comma separated)</label>
                         <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" oninput="updateStudentList(this.value)">
@@ -7334,14 +8309,29 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 specificControls = `<div class="form-group"><label>Facebook Comments Plugin</label><p>Configure via Facebook.</p></div>`;
                 break;
             case 'sponsorships':
-                specificControls = `<div class="form-group"><label>Sponsors</label><p>Edit sponsors directly in the component preview.</p></div>`;
+                specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the sponsorships section</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Sponsors</label>
+                        <p>Edit sponsors directly in the component preview.</p>
+                    </div>
+                `;
                 break;
             case 'contact-us':
                 specificControls = `<div class="form-group"><label>Contact Info</label><p>Edit contact info directly in the component preview.</p></div>`;
                 break;
             case 'site-goal':
-                const goalData = content._goalData || { goal: 5000, raised: 500, ticks: [1250, 2500, 4000] };
+                const goalData = content._goalData || { goal: 5000, raised: 500, ticks: [1250, 2500, 4000], barColor: '#0d6efd' };
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the site goal section</small>
+                    </div>
                     <div class="form-group">
                         <label>Goal Amount</label>
                         <input type="number" value="${goalData.goal}" min="1" oninput="updateSiteGoalField(this, 'goal')">
@@ -7349,6 +8339,10 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     <div class="form-group">
                         <label>Raised Amount</label>
                         <input type="number" value="${goalData.raised}" min="0" oninput="updateSiteGoalField(this, 'raised')">
+                    </div>
+                    <div class="form-group">
+                        <label>Bar Color</label>
+                        <input type="color" value="${goalData.barColor || '#0d6efd'}" oninput="updateSiteGoalField(this, 'barColor')">
                     </div>
                     <div class="form-group">
                         <label>Tick Marks (comma separated)</label>
@@ -7367,6 +8361,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 let imgWidth = textImagesData.imgWidth || textImagesData.imgSize || '200';
                 let imgHeight = textImagesData.imgHeight || 'auto';
                 specificControls = `
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the text-images section</small>
+                    </div>
                     <div class="form-group">
                         <label>Text Content</label>
                         <textarea oninput="updateTextImagesField(this.value, 'text')" id="${editorId}" class="ck5-inline-editor" style="border: 1px solid #ddd; min-height: 100px; padding: 10px;">${textImagesData.text || ''}</textarea>
@@ -7463,6 +8462,11 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                 });
                 specificControls = `
                     <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <small class="text-muted">Background behind the feature grid</small>
+                    </div>
+                    <div class="form-group">
                         <label>Icon Color</label>
                         <input type="color" value="${featureGridData.iconColor || '#3b82f6'}" onchange="updateFeatureGridColor(this.value, 'iconColor')">
                     </div>
@@ -7496,8 +8500,12 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         <input type="text" value="${investmentTierData.tierPrice || '$2,500'}" oninput="updateInvestmentTierField(this.value, 'tierPrice')">
                     </div>
                     <div class="form-group">
+                        <label>Receive Label</label>
+                        <input type="text" value="${investmentTierData.receiveLabel || 'Receive'}" oninput="updateInvestmentTierField(this.value, 'receiveLabel')">
+                    </div>
+                    <div class="form-group">
                         <label>Description</label>
-                        <textarea rows="4" oninput="updateInvestmentTierField(this.value, 'tierDescription')">${investmentTierData.tierDescription || ''}</textarea>
+                        <textarea rows="4" oninput="updateInvestmentTierField(this.value, 'tierDescription')" placeholder="Enter description (leave empty to hide)">${investmentTierData.tierDescription || ''}</textarea>
                     </div>
                     <div class="form-group">
                         <label>Button Text</label>
@@ -7541,13 +8549,28 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                         </div>
                         <div id="backgroundImagePreview" style="margin-top: 10px; text-align: center;"></div>
                     </div>
+                    <hr style="margin: 1rem 0;">
+                    <h5 style="margin-bottom: 1rem; color: #333;">Text Colors</h5>
                     <div class="form-group">
-                        <label>Text Color</label>
-                        <input type="color" value="${'${investmentTierData.textColor || \'#ffffff\'}'}" onchange="updateInvestmentTierField(this.value, 'textColor')">
+                        <label>Title Color</label>
+                        <input type="color" value="${investmentTierData.titleColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'titleColor')">
                     </div>
                     <div class="form-group">
+                        <label>Price Color</label>
+                        <input type="color" value="${investmentTierData.priceColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'priceColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Receive Label Color</label>
+                        <input type="color" value="${investmentTierData.receiveLabelColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'receiveLabelColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Description Color</label>
+                        <input type="color" value="${investmentTierData.descriptionColor || '#ffffff'}" onchange="updateInvestmentTierField(this.value, 'descriptionColor')">
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
                         <label>Button Background Color</label>
-                        <input type="color" value="${'${investmentTierData.buttonBgColor || \'#28a745\'}'}" onchange="updateInvestmentTierField(this.value, 'buttonBgColor')">
+                        <input type="color" value="${investmentTierData.buttonBgColor || '#28a745'}" onchange="updateInvestmentTierField(this.value, 'buttonBgColor')">
                     </div>
                     <div class="form-group">
                         <label>Button Text Color</label>
@@ -7634,10 +8657,125 @@ col-12 col-xl-6 col-lg-7 col-md-9 mx-auto
                     </div>
                 `;
             break;
+
+            case 'newsletter':
+                const newsletterData = content._newsletterData || {
+                    title: 'Newsletter',
+                    subtitle: 'Subscribe to our newsletter',
+                    placeholder: 'Enter your email address',
+                    buttonText: 'SIGN UP',
+                    backgroundColor: '#ffffff',
+                    textColor: '#000000',
+                    buttonColor: '#28a745',
+                    buttonTextColor: '#ffffff',
+                    padding: '40',
+                    borderRadius: '8',
+                    textAlign: 'center',
+                    maxWidth: '600',
+                    titleFontSize: '24',
+                    titleFontWeight: '600',
+                    subtitleFontSize: '16',
+                    subtitleFontWeight: '400',
+                    buttonFontSize: '16',
+                    buttonFontWeight: '600',
+                    buttonPadding: '12',
+                    inputBorderColor: '#ddd',
+                    inputPadding: '12',
+                    inputFontSize: '16'
+                };
+                specificControls = `
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" value="${newsletterData.title}" oninput="updateNewsletterField(this.value, 'title')">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle</label>
+                        <input type="text" value="${newsletterData.subtitle}" oninput="updateNewsletterField(this.value, 'subtitle')">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Placeholder</label>
+                        <input type="text" value="${newsletterData.placeholder}" oninput="updateNewsletterField(this.value, 'placeholder')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" value="${newsletterData.buttonText}" oninput="updateNewsletterField(this.value, 'buttonText')">
+                    </div>
+                    <div class="form-group">
+                        <label>Text Alignment</label>
+                        <select oninput="updateNewsletterField(this.value, 'textAlign')">
+                            <option value="left" ${newsletterData.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="center" ${newsletterData.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="right" ${newsletterData.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Width (px)</label>
+                        <input type="number" value="${newsletterData.maxWidth}" min="200" max="1200" oninput="updateNewsletterField(this.value, 'maxWidth')">
+                    </div>
+                    <div class="form-group">
+                        <label>Padding (px)</label>
+                        <input type="number" value="${newsletterData.padding}" min="0" max="100" oninput="updateNewsletterField(this.value, 'padding')">
+                    </div>
+                    <div class="form-group">
+                        <label>Border Radius (px)</label>
+                        <input type="number" value="${newsletterData.borderRadius}" min="0" max="50" oninput="updateNewsletterField(this.value, 'borderRadius')">
+                    </div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${newsletterData.backgroundColor}" oninput="updateNewsletterField(this.value, 'backgroundColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Text Color</label>
+                        <input type="color" value="${newsletterData.textColor}" oninput="updateNewsletterField(this.value, 'textColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Background Color</label>
+                        <input type="color" value="${newsletterData.buttonColor}" oninput="updateNewsletterField(this.value, 'buttonColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text Color</label>
+                        <input type="color" value="${newsletterData.buttonTextColor}" oninput="updateNewsletterField(this.value, 'buttonTextColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Input Border Color</label>
+                        <input type="color" value="${newsletterData.inputBorderColor}" oninput="updateNewsletterField(this.value, 'inputBorderColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Font Size (px)</label>
+                        <input type="number" value="${newsletterData.titleFontSize}" min="12" max="48" oninput="updateNewsletterField(this.value, 'titleFontSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>Title Font Weight</label>
+                        <select oninput="updateNewsletterField(this.value, 'titleFontWeight')">
+                            <option value="300" ${newsletterData.titleFontWeight === '300' ? 'selected' : ''}>Light</option>
+                            <option value="400" ${newsletterData.titleFontWeight === '400' ? 'selected' : ''}>Normal</option>
+                            <option value="500" ${newsletterData.titleFontWeight === '500' ? 'selected' : ''}>Medium</option>
+                            <option value="600" ${newsletterData.titleFontWeight === '600' ? 'selected' : ''}>Semi Bold</option>
+                            <option value="700" ${newsletterData.titleFontWeight === '700' ? 'selected' : ''}>Bold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle Font Size (px)</label>
+                        <input type="number" value="${newsletterData.subtitleFontSize}" min="12" max="24" oninput="updateNewsletterField(this.value, 'subtitleFontSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Font Size (px)</label>
+                        <input type="number" value="${newsletterData.buttonFontSize}" min="12" max="20" oninput="updateNewsletterField(this.value, 'buttonFontSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Padding (px)</label>
+                        <input type="number" value="${newsletterData.buttonPadding}" min="8" max="20" oninput="updateNewsletterField(this.value, 'buttonPadding')">
+                    </div>
+                    <div class="form-group">
+                        <label>Input Font Size (px)</label>
+                        <input type="number" value="${newsletterData.inputFontSize}" min="12" max="20" oninput="updateNewsletterField(this.value, 'inputFontSize')">
+                    </div>
+                `;
+            break;
         }
 
         // Common styling controls - skip for components that have their own rich editors
-        const commonControls = (type === 'invest-cta' || type === 'section-title') ? '' : `
+        const commonControls = (type === 'invest-cta' || type === 'section-title' || type === 'newsletter') ? '' : `
             <div class="form-group">
             <label>Font Size</label>
             <input type="text" value="${content.style.fontSize || '16px'}" oninput="updateStyle(this, 'fontSize')">
@@ -8040,6 +9178,17 @@ function updateSellTicketsField(value, field) {
     updatePropertyPanel();
 }
 
+// helper function for contact form
+
+function updateContactFormField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content.contactFormData) return;
+    content.contactFormData[field] = value;
+    if (typeof content.renderContactForm === 'function') content.renderContactForm();
+    updatePropertyPanel();
+}
+
 
 
 
@@ -8070,6 +9219,279 @@ function updateCustomBannerField(value, field) {
         content._customBannerData[field] = value;
     }
     if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
+}
+
+// helper functions for donation form
+
+function getDonationFormValue(field, defaultValue) {
+    if (!selectedComponent) return defaultValue;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) {
+        content._donationFormData = {};
+    }
+    return content._donationFormData[field] || defaultValue;
+}
+
+function updateDonationFormTitle(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.formTitle = value;
+    
+    // Update the form title in the preview
+    const formHeader = content.querySelector('.card-header');
+    if (formHeader) {
+        formHeader.textContent = value;
+    }
+}
+
+function updateDonationFormSecondaryTitle(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.secondaryTitle = value;
+    
+    // Update secondary title in the preview
+    const secondaryLabel = content.querySelector('.form-label[style*="color: #000; font-weight: bold;"]');
+    if (secondaryLabel) {
+        secondaryLabel.innerHTML = value + ' {{ $data->website->name}}';
+    }
+}
+
+function updateDonationFormButtonText(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.buttonText = value;
+    
+    // Update button text in the preview
+    const submitButton = content.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.textContent = value;
+    }
+}
+
+function updateDonationFormFeeText(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.feeText = value;
+    
+    // Update fee checkbox label in the preview
+    const feeLabel = content.querySelector('label[for="pay_fees"]');
+    if (feeLabel) {
+        feeLabel.textContent = value;
+    }
+}
+
+function updateDonationFormFeeTooltip(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.feeTooltip = value;
+    
+    // Update fee tooltip in the preview
+    const feeIcon = content.querySelector('.btn-modal-info[data-title="I elect to pay the fees"]');
+    if (feeIcon) {
+        feeIcon.setAttribute('data-description', value);
+        feeIcon.setAttribute('title', value);
+    }
+}
+
+function updateDonationFormAnonymousText(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.anonymousText = value;
+    
+    // Update anonymous checkbox label in the preview
+    const anonymousLabel = content.querySelector('label[for="anonymous_donation"]');
+    if (anonymousLabel) {
+        anonymousLabel.textContent = value;
+    }
+}
+
+function updateDonationFormAnonymousDescription(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.anonymousDescription = value;
+    
+    // Update anonymous description (this will be added as a small text element)
+    const anonymousDiv = content.querySelector('.form-check:has(#anonymous_donation)');
+    if (anonymousDiv) {
+        let descriptionElement = anonymousDiv.querySelector('.anonymous-description');
+        if (!descriptionElement) {
+            descriptionElement = document.createElement('small');
+            descriptionElement.className = 'anonymous-description text-muted d-block mt-1';
+            anonymousDiv.appendChild(descriptionElement);
+        }
+        descriptionElement.textContent = value;
+    }
+}
+
+function updateDonationFormAnonymousTooltip(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.anonymousTooltip = value;
+    
+    // Update anonymous tooltip in the preview
+    const anonymousIcon = content.querySelector('.btn-modal-info[data-title="Anonymous"]');
+    if (anonymousIcon) {
+        anonymousIcon.setAttribute('data-description', value);
+        anonymousIcon.setAttribute('title', value);
+    }
+}
+
+function updateDonationFormBackgroundColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.backgroundColor = value;
+    
+    // Update background color in the preview
+    const cardBody = content.querySelector('.card-body');
+    if (cardBody) {
+        cardBody.style.setProperty('background-color', value, 'important');
+    }
+}
+
+function updateDonationFormHeaderColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.headerColor = value;
+    
+    // Update header and button color in the preview
+    const cardHeader = content.querySelector('.card-header');
+    const cardFooter = content.querySelector('.card-footer');
+    const submitButton = content.querySelector('.btn');
+    const borderElements = content.querySelectorAll('.border-primary');
+    
+    if (cardHeader) {
+        cardHeader.style.setProperty('background-color', value, 'important');
+        cardHeader.style.setProperty('border-color', value, 'important');
+    }
+    if (cardFooter) {
+        cardFooter.style.setProperty('background-color', value, 'important');
+        cardFooter.style.setProperty('border-color', value, 'important');
+    }
+    if (submitButton) {
+        submitButton.style.setProperty('background-color', value, 'important');
+        submitButton.style.setProperty('border-color', value, 'important');
+    }
+    // Update all border elements
+    borderElements.forEach(element => {
+        element.style.setProperty('border-color', value, 'important');
+    });
+}
+
+function updateDonationFormHeaderTextColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.headerTextColor = value;
+    
+    // Update header and button text color in the preview
+    const cardHeader = content.querySelector('.card-header');
+    const submitButton = content.querySelector('.btn');
+    
+    if (cardHeader) {
+        cardHeader.style.setProperty('color', value, 'important');
+    }
+    if (submitButton) {
+        submitButton.style.setProperty('color', value, 'important');
+    }
+}
+
+function updateDonationFormBorderColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._donationFormData) content._donationFormData = {};
+    content._donationFormData.borderColor = value;
+    
+    // Update border color in the preview
+    const cardElement = content.querySelector('.card');
+    const borderElements = content.querySelectorAll('.border-primary');
+    
+    if (cardElement) {
+        cardElement.style.setProperty('border-color', value, 'important');
+    }
+    // Update all border elements
+    borderElements.forEach(element => {
+        element.style.setProperty('border-color', value, 'important');
+    });
+}
+
+// Auth Form Functions
+function getAuthFormValue(field, defaultValue) {
+    if (!selectedComponent) return defaultValue;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) {
+        content._authFormData = {};
+    }
+    return content._authFormData[field] || defaultValue;
+}
+
+function updateAuthFormBackgroundColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) content._authFormData = {};
+    content._authFormData.backgroundColor = value;
+    
+    // Re-render the auth form with new colors
+    if (content.renderAuthForm) {
+        content.renderAuthForm();
+    }
+}
+
+function updateAuthFormButtonColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) content._authFormData = {};
+    content._authFormData.buttonColor = value;
+    
+    // Re-render the auth form with new colors
+    if (content.renderAuthForm) {
+        content.renderAuthForm();
+    }
+}
+
+function updateAuthFormButtonTextColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) content._authFormData = {};
+    content._authFormData.buttonTextColor = value;
+    
+    // Re-render the auth form with new colors
+    if (content.renderAuthForm) {
+        content.renderAuthForm();
+    }
+}
+
+function updateAuthFormAvatarIconColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) content._authFormData = {};
+    content._authFormData.avatarIconColor = value;
+    
+    // Re-render the auth form with new colors
+    if (content.renderAuthForm) {
+        content.renderAuthForm();
+    }
+}
+
+function updateAuthFormLinkColor(value) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._authFormData) content._authFormData = {};
+    content._authFormData.linkColor = value;
+    
+    // Re-render the auth form with new colors
+    if (content.renderAuthForm) {
+        content.renderAuthForm();
+    }
 }
 
 
@@ -8755,6 +10177,115 @@ function updateSectionVisualIndicator(content, addToMenu) {
         `;
         content.appendChild(indicator);
     }
+}
+
+// Newsletter component field update function
+function updateNewsletterField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize newsletter data if it doesn't exist
+    if (!content._newsletterData) {
+        content._newsletterData = {
+            title: 'Subscribe to Our Newsletter',
+            subtitle: 'Stay updated with our latest news and offers',
+            buttonText: 'Subscribe',
+            placeholder: 'Enter your email address',
+            bgColor: '#f8f9fa',
+            titleColor: '#333333',
+            subtitleColor: '#666666',
+            buttonBgColor: '#007bff',
+            buttonTextColor: '#ffffff',
+            inputBorderColor: '#ddd',
+            showSubtitle: true
+        };
+    }
+    
+    // Update the field
+    content._newsletterData[field] = value;
+    
+    // Re-render the component
+    const wrapper = content.querySelector('.newsletter-wrapper');
+    if (wrapper) {
+        const d = content._newsletterData;
+        wrapper.style.backgroundColor = d.bgColor;
+        wrapper.innerHTML = `
+            <div class="newsletter-content" style="max-width: 500px; margin: 0 auto; text-align: center;">
+                <h3 style="color: ${d.titleColor}; margin-bottom: ${d.showSubtitle ? '10px' : '20px'}; font-size: 24px; font-weight: 600;">${d.title}</h3>
+                ${d.showSubtitle ? `<p style="color: ${d.subtitleColor}; margin-bottom: 20px; font-size: 16px;">${d.subtitle}</p>` : ''}
+                <form class="newsletter-form" style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
+                    <input type="email" placeholder="${d.placeholder}" 
+                           style="flex: 1; padding: 12px 15px; border: 1px solid ${d.inputBorderColor}; border-radius: 4px; font-size: 14px;" 
+                           required>
+                    <button type="submit" 
+                            style="background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; border: none; padding: 12px 20px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        ${d.buttonText}
+                    </button>
+                </form>
+            </div>
+        `;
+    }
+}
+
+// Button component field update function
+function updateButtonField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize button data if it doesn't exist
+    if (!content._buttonData) {
+        content._buttonData = {
+            buttonText: 'Click Me',
+            buttonUrl: '#',
+            buttonTarget: '_self',
+            buttonBgColor: '#007bff',
+            buttonTextColor: '#ffffff',
+            buttonPadding: '10px 20px',
+            borderRadius: '4px',
+            fontSize: '16px',
+            fontWeight: '400',
+            textAlign: 'center',
+            textDecoration: 'none',
+            border: 'none',
+            boxShadow: 'none',
+            transition: 'all 0.3s ease'
+        };
+    }
+    
+    // Update the field
+    content._buttonData[field] = value;
+    
+    // Re-render the component
+    content.renderButton();
+}
+
+// Alert message field update function
+function updateAlertField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize alert data if it doesn't exist
+    if (!content._alertData) {
+        content._alertData = {
+            message: 'Alert Message',
+            type: 'info',
+            dismissible: false,
+            backgroundColor: '#d1ecf1',
+            textColor: '#0c5460',
+            borderColor: '#bee5eb',
+            borderRadius: '4px',
+            padding: '1rem',
+            margin: '1rem 0',
+            fontSize: '14px',
+            fontWeight: '400'
+        };
+    }
+    
+    // Update the field
+    content._alertData[field] = value;
+    
+    // Re-render the component
+    content.renderAlert();
 }
 
     // helper function for full width text and image
@@ -10436,6 +11967,62 @@ function applyResponsiveStyles() {
         if (typeof content.renderCountdown === 'function') content.renderCountdown();
     }
 
+    function updateCountdownNumberColor(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.numberColor = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownTextColor(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.textColor = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownVerbiageColor(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.remainingVerbiageColor = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownNumberWeight(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.numberFontWeight = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownTextWeight(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.textFontWeight = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownVerbiageWeight(value) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.remainingFontWeight = value;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
+    function updateCountdownShowRemaining(checked) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._countdownData) return;
+        content._countdownData.showRemainingText = checked;
+        if (typeof content.renderCountdown === 'function') content.renderCountdown();
+    }
+
     function updateEventInfoField(input, field) {
         if (!selectedComponent) return;
         const content = getContentElement(selectedComponent);
@@ -10455,6 +12042,9 @@ function applyResponsiveStyles() {
         if (field === 'ticks') {
             // Parse comma separated values
             content._goalData.ticks = input.value.split(',').map(v => parseInt(v.trim(), 10)).filter(v => !isNaN(v));
+        } else if (field === 'barColor') {
+            // Keep bar color as string (hex color)
+            content._goalData[field] = input.value;
         } else {
             content._goalData[field] = parseInt(input.value, 10) || 0;
         }
@@ -10791,6 +12381,25 @@ function applyResponsiveStyles() {
                 }
                 break;
 
+            case 'newsletter':
+                data.newsletterData = content._newsletterData;
+                // Also save to properties for front-end compatibility
+                if (content._newsletterData) {
+                    data.properties = data.properties || {};
+                    data.properties.title = content._newsletterData.title || 'Subscribe to Our Newsletter';
+                    data.properties.subtitle = content._newsletterData.subtitle || 'Stay updated with our latest news and offers';
+                    data.properties.button_text = content._newsletterData.buttonText || 'Subscribe';
+                    data.properties.placeholder = content._newsletterData.placeholder || 'Enter your email address';
+                    data.properties.background_color = content._newsletterData.bgColor || '#f8f9fa';
+                    data.properties.title_color = content._newsletterData.titleColor || '#333333';
+                    data.properties.subtitle_color = content._newsletterData.subtitleColor || '#666666';
+                    data.properties.button_bg_color = content._newsletterData.buttonBgColor || '#007bff';
+                    data.properties.button_text_color = content._newsletterData.buttonTextColor || '#ffffff';
+                    data.properties.input_border_color = content._newsletterData.inputBorderColor || '#ddd';
+                    data.properties.show_subtitle = content._newsletterData.showSubtitle !== false;
+                }
+                break;
+
             case 'full-width-text-image':
                 data.fwtiData = content._fwtiData;
                 break;
@@ -10800,6 +12409,25 @@ function applyResponsiveStyles() {
                 console.log('Content _pressCardData:', content._pressCardData);
                 data.pressCardData = content._pressCardData;
                 console.log('Serialized pressCardData:', data.pressCardData);
+                break;
+
+            case 'social-share':
+                console.log('Serializing social-share component');
+                console.log('Content shareData:', content.shareData);
+                data.shareData = content.shareData;
+                // Also save to properties for front-end compatibility
+                if (content._shareData) {
+                    data.properties = data.properties || {};
+                    data.properties.title = content._shareData.title || 'I Just Want to Help!';
+                    data.properties.show_title = content._shareData.show_title !== false;
+                    data.properties.icon_size = content._shareData.icon_size || '4rem';
+                    data.properties.icon_color = content._shareData.icon_color || '';
+                    data.properties.text_color = content._shareData.text_color || '#000000';
+                    data.properties.title_color = content._shareData.title_color || '#000000';
+                    data.properties.max_columns = content._shareData.max_columns || 4;
+                    data.properties.platforms = content._shareData.platforms || {};
+                }
+                console.log('Serialized shareData:', data.shareData);
                 break;
 
           case 'section-title':
@@ -10839,8 +12467,58 @@ function applyResponsiveStyles() {
             console.log('=== END VIDEO SERIALIZATION ===');
             break;
           case 'divider':
-            data.style = Object.assign({}, data.style, { height: content.style.height, backgroundColor: content.style.backgroundColor });
+            // Save to both style (for backward compatibility) and properties (for front-end)
+            data.style = Object.assign({}, data.style, { 
+                height: content.style.height, 
+                backgroundColor: content.style.backgroundColor 
+            });
+            // Also save to properties for front-end compatibility
+            data.properties = data.properties || {};
+            data.properties.height = content.style.height || '2px';
+            data.properties.background_color = content.style.backgroundColor || '#ddd';
             break;
+            
+          case 'button':
+            data.buttonData = content._buttonData;
+            // Also save to properties for front-end compatibility
+            if (content._buttonData) {
+                data.properties = data.properties || {};
+                data.properties.button_text = content._buttonData.buttonText || 'Click Me';
+                data.properties.button_url = content._buttonData.buttonUrl || '#';
+                data.properties.button_target = content._buttonData.buttonTarget || '_self';
+                data.properties.button_bg_color = content._buttonData.buttonBgColor || '#007bff';
+                data.properties.button_text_color = content._buttonData.buttonTextColor || '#ffffff';
+                data.properties.button_padding = content._buttonData.buttonPadding || '10px 20px';
+                data.properties.border_radius = content._buttonData.borderRadius || '4px';
+                data.properties.font_size = content._buttonData.fontSize || '16px';
+                data.properties.font_weight = content._buttonData.fontWeight || '400';
+                data.properties.text_align = content._buttonData.textAlign || 'center';
+                data.properties.text_decoration = content._buttonData.textDecoration || 'none';
+                data.properties.border = content._buttonData.border || 'none';
+                data.properties.box_shadow = content._buttonData.boxShadow || 'none';
+                data.properties.transition = content._buttonData.transition || 'all 0.3s ease';
+            }
+            break;
+            
+          case 'alert-message':
+            data.alertData = content._alertData;
+            // Also save to properties for front-end compatibility
+            if (content._alertData) {
+                data.properties = data.properties || {};
+                data.properties.message = content._alertData.message || 'Alert Message';
+                data.properties.alert_type = content._alertData.type || 'info';
+                data.properties.dismissible = content._alertData.dismissible || false;
+                data.properties.background_color = content._alertData.backgroundColor || '#d1ecf1';
+                data.properties.text_color = content._alertData.textColor || '#0c5460';
+                data.properties.border_color = content._alertData.borderColor || '#bee5eb';
+                data.properties.border_radius = content._alertData.borderRadius || '4px';
+                data.properties.padding = content._alertData.padding || '1rem';
+                data.properties.margin = content._alertData.margin || '1rem 0';
+                data.properties.font_size = content._alertData.fontSize || '14px';
+                data.properties.font_weight = content._alertData.fontWeight || '400';
+            }
+            break;
+            
           case 'site-banner':
             data.src = content.src;
             data.alt = content.alt;
@@ -10976,9 +12654,19 @@ function applyResponsiveStyles() {
                         compData.faqData = compContent._faqData;
                       }
                       break;
+                    case 'social-share':
+                      if (compContent._shareData) {
+                        compData.shareData = compContent._shareData;
+                      }
+                      break;
                     case 'sell-tickets':
                       if (compContent._sellTicketsData) {
                         compData.sellTicketsData = compContent._sellTicketsData;
+                      }
+                      break;
+                    case 'contact-form':
+                      if (compContent.contactFormData) {
+                        compData.contactFormData = compContent.contactFormData;
                       }
                       break;
                     case 'feature-grid':
@@ -11022,6 +12710,12 @@ function applyResponsiveStyles() {
                 return compData;
               });
             });
+            break;
+          case 'auth-form':
+            data.authFormData = content._authFormData;
+            break;
+          case 'contact-form':
+            data.contactFormData = content.contactFormData;
             break;
           // ...add other types as needed...
           default:
@@ -11214,6 +12908,64 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'newsletter':
+                // Load from properties if available (for front-end compatibility)
+                let newsletterDefaults = {
+                    title: 'Subscribe to Our Newsletter',
+                    subtitle: 'Stay updated with our latest news and offers',
+                    buttonText: 'Subscribe',
+                    placeholder: 'Enter your email address',
+                    bgColor: '#f8f9fa',
+                    titleColor: '#333333',
+                    subtitleColor: '#666666',
+                    buttonBgColor: '#007bff',
+                    buttonTextColor: '#ffffff',
+                    inputBorderColor: '#ddd',
+                    showSubtitle: true
+                };
+                
+                // If we have properties from front-end, map them back to builder format
+                if (data.properties) {
+                    newsletterDefaults.title = data.properties.title || newsletterDefaults.title;
+                    newsletterDefaults.subtitle = data.properties.subtitle || newsletterDefaults.subtitle;
+                    newsletterDefaults.buttonText = data.properties.button_text || newsletterDefaults.buttonText;
+                    newsletterDefaults.placeholder = data.properties.placeholder || newsletterDefaults.placeholder;
+                    newsletterDefaults.bgColor = data.properties.background_color || newsletterDefaults.bgColor;
+                    newsletterDefaults.titleColor = data.properties.title_color || newsletterDefaults.titleColor;
+                    newsletterDefaults.subtitleColor = data.properties.subtitle_color || newsletterDefaults.subtitleColor;
+                    newsletterDefaults.buttonBgColor = data.properties.button_bg_color || newsletterDefaults.buttonBgColor;
+                    newsletterDefaults.buttonTextColor = data.properties.button_text_color || newsletterDefaults.buttonTextColor;
+                    newsletterDefaults.inputBorderColor = data.properties.input_border_color || newsletterDefaults.inputBorderColor;
+                    newsletterDefaults.showSubtitle = data.properties.show_subtitle !== false;
+                }
+                
+                actualContent._newsletterData = data.newsletterData || newsletterDefaults;
+                // Re-render the component with saved data
+                const newsletterWrapper = actualContent.querySelector('.newsletter-wrapper');
+                if (newsletterWrapper) {
+                    const d = actualContent._newsletterData;
+                    newsletterWrapper.style.backgroundColor = d.bgColor;
+                    newsletterWrapper.innerHTML = `
+                        <div class="newsletter-content" style="max-width: 500px; margin: 0 auto; text-align: center;">
+                            <h3 style="color: ${d.titleColor}; margin-bottom: ${d.showSubtitle ? '10px' : '20px'}; font-size: 24px; font-weight: 600;">${d.title}</h3>
+                            ${d.showSubtitle ? `<p style="color: ${d.subtitleColor}; margin-bottom: 20px; font-size: 16px;">${d.subtitle}</p>` : ''}
+                            <form class="newsletter-form" style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
+                                <input type="email" placeholder="${d.placeholder}" 
+                                       style="flex: 1; padding: 12px 15px; border: 1px solid ${d.inputBorderColor}; border-radius: 4px; font-size: 14px;" 
+                                       required>
+                                <button type="submit" 
+                                        style="background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; border: none; padding: 12px 20px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                    ${d.buttonText}
+                                </button>
+                            </form>
+                        </div>
+                    `;
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             case 'full-width-text-image':
                 actualContent._fwtiData = data.fwtiData;
                 actualContent.renderFWTI();
@@ -11234,6 +12986,88 @@ function applyResponsiveStyles() {
                 if (data.style) {
                   Object.assign(actualContent.style, data.style);
                 }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'button':
+                // Load from properties if available (for front-end compatibility)
+                let buttonDefaults = {
+                    buttonText: 'Click Me',
+                    buttonUrl: '#',
+                    buttonTarget: '_self',
+                    buttonBgColor: '#007bff',
+                    buttonTextColor: '#ffffff',
+                    buttonPadding: '10px 20px',
+                    borderRadius: '4px',
+                    fontSize: '16px',
+                    fontWeight: '400',
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    border: 'none',
+                    boxShadow: 'none',
+                    transition: 'all 0.3s ease'
+                };
+                
+                // If we have properties from front-end, map them back to builder format
+                if (data.properties) {
+                    buttonDefaults.buttonText = data.properties.button_text || buttonDefaults.buttonText;
+                    buttonDefaults.buttonUrl = data.properties.button_url || buttonDefaults.buttonUrl;
+                    buttonDefaults.buttonTarget = data.properties.button_target || buttonDefaults.buttonTarget;
+                    buttonDefaults.buttonBgColor = data.properties.button_bg_color || buttonDefaults.buttonBgColor;
+                    buttonDefaults.buttonTextColor = data.properties.button_text_color || buttonDefaults.buttonTextColor;
+                    buttonDefaults.buttonPadding = data.properties.button_padding || buttonDefaults.buttonPadding;
+                    buttonDefaults.borderRadius = data.properties.border_radius || buttonDefaults.borderRadius;
+                    buttonDefaults.fontSize = data.properties.font_size || buttonDefaults.fontSize;
+                    buttonDefaults.fontWeight = data.properties.font_weight || buttonDefaults.fontWeight;
+                    buttonDefaults.textAlign = data.properties.text_align || buttonDefaults.textAlign;
+                    buttonDefaults.textDecoration = data.properties.text_decoration || buttonDefaults.textDecoration;
+                    buttonDefaults.border = data.properties.border || buttonDefaults.border;
+                    buttonDefaults.boxShadow = data.properties.box_shadow || buttonDefaults.boxShadow;
+                    buttonDefaults.transition = data.properties.transition || buttonDefaults.transition;
+                }
+                
+                actualContent._buttonData = data.buttonData || buttonDefaults;
+                actualContent.renderButton();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'alert-message':
+                // Load from properties if available (for front-end compatibility)
+                let alertDefaults = {
+                    message: 'Alert Message',
+                    type: 'info',
+                    dismissible: false,
+                    backgroundColor: '#d1ecf1',
+                    textColor: '#0c5460',
+                    borderColor: '#bee5eb',
+                    borderRadius: '4px',
+                    padding: '1rem',
+                    margin: '1rem 0',
+                    fontSize: '14px',
+                    fontWeight: '400'
+                };
+                
+                // If we have properties from front-end, map them back to builder format
+                if (data.properties) {
+                    alertDefaults.message = data.properties.message || alertDefaults.message;
+                    alertDefaults.type = data.properties.alert_type || alertDefaults.type;
+                    alertDefaults.dismissible = data.properties.dismissible || alertDefaults.dismissible;
+                    alertDefaults.backgroundColor = data.properties.background_color || alertDefaults.backgroundColor;
+                    alertDefaults.textColor = data.properties.text_color || alertDefaults.textColor;
+                    alertDefaults.borderColor = data.properties.border_color || alertDefaults.borderColor;
+                    alertDefaults.borderRadius = data.properties.border_radius || alertDefaults.borderRadius;
+                    alertDefaults.padding = data.properties.padding || alertDefaults.padding;
+                    alertDefaults.margin = data.properties.margin || alertDefaults.margin;
+                    alertDefaults.fontSize = data.properties.font_size || alertDefaults.fontSize;
+                    alertDefaults.fontWeight = data.properties.font_weight || alertDefaults.fontWeight;
+                }
+                
+                actualContent._alertData = data.alertData || alertDefaults;
+                actualContent.renderAlert();
+                if (data.style) Object.assign(actualContent.style, data.style);
                 if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
@@ -11300,7 +13134,17 @@ function applyResponsiveStyles() {
                 break;
 
             case 'event-countdown':
-                actualContent._countdownData = data.countdownData;
+                actualContent._countdownData = data.countdownData || {};
+                // Ensure color defaults are set
+                if (!actualContent._countdownData.numberColor) actualContent._countdownData.numberColor = '#000000';
+                if (!actualContent._countdownData.textColor) actualContent._countdownData.textColor = '#000000';
+                if (!actualContent._countdownData.remainingVerbiageColor) actualContent._countdownData.remainingVerbiageColor = '#000000';
+                // Ensure font weight defaults are set
+                if (!actualContent._countdownData.numberFontWeight) actualContent._countdownData.numberFontWeight = 'bold';
+                if (!actualContent._countdownData.textFontWeight) actualContent._countdownData.textFontWeight = 'normal';
+                if (!actualContent._countdownData.remainingFontWeight) actualContent._countdownData.remainingFontWeight = 'normal';
+                // Ensure show remaining text default is set
+                if (actualContent._countdownData.showRemainingText === undefined) actualContent._countdownData.showRemainingText = true;
                 actualContent.renderCountdown();
                 if (data.style) {
                   Object.assign(actualContent.style, data.style);
@@ -11363,23 +13207,130 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'contact-form':
+                // If we have contactFormData, use it directly
+                if (data.contactFormData) {
+                    actualContent.contactFormData = data.contactFormData;
+                } else {
+                    // Parse HTML to extract values (for legacy components saved as HTML)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.html || '';
+                    
+                    // Extract values from HTML
+                    const titleElement = tempDiv.querySelector('h3');
+                    const nameLabel = tempDiv.querySelector('label[for="name"]');
+                    const emailLabel = tempDiv.querySelector('label[for="email"]');
+                    const messageLabel = tempDiv.querySelector('label[for="message"]');
+                    const button = tempDiv.querySelector('button[type="submit"]');
+                    const nameInput = tempDiv.querySelector('input[name="name"]');
+                    const emailInput = tempDiv.querySelector('input[name="email"]');
+                    const messageTextarea = tempDiv.querySelector('textarea[name="message"]');
+                    const privacyText = tempDiv.querySelector('small.text-muted');
+                    const container = tempDiv.querySelector('.contact-form-component');
+                    
+                    // Parse styles from HTML
+                    let backgroundColor = '#ffffff';
+                    let buttonColor = '#2e4053';
+                    let buttonTextColor = '#ffffff';
+                    let labelColor = '#000000';
+                    let borderRadius = '4px';
+                    let buttonPadding = '12px 24px';
+                    
+                    if (container) {
+                        const bgMatch = container.style.backgroundColor || container.getAttribute('style')?.match(/background-color:\s*([^;]+)/);
+                        if (bgMatch) backgroundColor = bgMatch[1] || bgMatch;
+                        
+                        const radiusMatch = container.style.borderRadius || container.getAttribute('style')?.match(/border-radius:\s*([^;]+)/);
+                        if (radiusMatch) borderRadius = radiusMatch[1] || radiusMatch;
+                    }
+                    
+                    if (button) {
+                        const btnStyle = button.getAttribute('style') || '';
+                        const bgMatch = btnStyle.match(/background-color:\s*([^;]+)/);
+                        if (bgMatch) buttonColor = bgMatch[1].trim();
+                        
+                        const colorMatch = btnStyle.match(/color:\s*([^;]+)/);
+                        if (colorMatch) buttonTextColor = colorMatch[1].trim();
+                        
+                        const paddingMatch = btnStyle.match(/padding:\s*([^;]+)/);
+                        if (paddingMatch) buttonPadding = paddingMatch[1].trim();
+                    }
+                    
+                    if (nameLabel) {
+                        const labelStyle = nameLabel.getAttribute('style') || '';
+                        const colorMatch = labelStyle.match(/color:\s*([^;]+)/);
+                        if (colorMatch) labelColor = colorMatch[1].trim();
+                    }
+                    
+                    // Create contactFormData from parsed HTML
+                    actualContent.contactFormData = {
+                        title: titleElement ? titleElement.textContent.trim() : 'Contact Us',
+                        nameLabel: nameLabel ? nameLabel.textContent.replace('*', '').trim() : 'Your name',
+                        emailLabel: emailLabel ? emailLabel.textContent.replace('*', '').trim() : 'Email address',
+                        messageLabel: messageLabel ? messageLabel.textContent.replace('*', '').trim() : 'Message',
+                        buttonText: button ? button.textContent.trim() : 'Submit',
+                        nameRequired: nameInput ? nameInput.hasAttribute('required') : true,
+                        emailRequired: emailInput ? emailInput.hasAttribute('required') : true,
+                        messageRequired: messageTextarea ? messageTextarea.hasAttribute('required') : true,
+                        showPrivacyText: !!privacyText,
+                        privacyText: privacyText ? privacyText.innerHTML : 'This form is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.',
+                        backgroundColor: backgroundColor,
+                        buttonColor: buttonColor,
+                        buttonTextColor: buttonTextColor,
+                        labelColor: labelColor,
+                        borderRadius: borderRadius,
+                        buttonPadding: buttonPadding
+                    };
+                }
+                
+                // Render the contact form with the data
+                actualContent.renderContactForm();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             case 'investment-tier':
+                const loadedTierData = data.investmentTierData || {};
+                
+                // Handle migration from old textColor to separate color fields
+                const fallbackColor = loadedTierData.textColor || '#ffffff';
+                
                 actualContent._investmentTierData = Object.assign({
                     tierName: 'TIER 1',
                     tierPrice: '$2,500',
-                    tierDescription: 'Investment tier description',
+                    tierDescription: '',
+                    receiveLabel: 'Receive',
                     buttonText: 'INVEST NOW',
                     buttonUrl: '#',
                     buttonTarget: '_self',
                     backgroundColor: '#1a1a1a',
                     backgroundImage: '',
                     backgroundType: 'color',
-                    textColor: '#ffffff',
+                    titleColor: fallbackColor,
+                    priceColor: fallbackColor,
+                    receiveLabelColor: fallbackColor,
+                    descriptionColor: fallbackColor,
                     buttonBgColor: '#28a745',
                     buttonTextColor: '#ffffff',
                     borderRadius: '12px',
                     padding: '2rem'
-                }, data.investmentTierData || {});
+                }, loadedTierData);
+                
+                // Ensure new color fields use old textColor as fallback if not set
+                if (loadedTierData.textColor && !loadedTierData.titleColor) {
+                    actualContent._investmentTierData.titleColor = loadedTierData.textColor;
+                }
+                if (loadedTierData.textColor && !loadedTierData.priceColor) {
+                    actualContent._investmentTierData.priceColor = loadedTierData.textColor;
+                }
+                if (loadedTierData.textColor && !loadedTierData.receiveLabelColor) {
+                    actualContent._investmentTierData.receiveLabelColor = loadedTierData.textColor;
+                }
+                if (loadedTierData.textColor && !loadedTierData.descriptionColor) {
+                    actualContent._investmentTierData.descriptionColor = loadedTierData.textColor;
+                }
+                
                 actualContent.renderInvestmentTier();
                 if (data.style) {
                   Object.assign(actualContent.style, data.style);
@@ -11722,7 +13673,17 @@ function applyResponsiveStyles() {
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'event-countdown':
-            content._countdownData = data.countdownData;
+            content._countdownData = data.countdownData || {};
+            // Ensure color defaults are set
+            if (!content._countdownData.numberColor) content._countdownData.numberColor = '#000000';
+            if (!content._countdownData.textColor) content._countdownData.textColor = '#000000';
+            if (!content._countdownData.remainingVerbiageColor) content._countdownData.remainingVerbiageColor = '#000000';
+            // Ensure font weight defaults are set
+            if (!content._countdownData.numberFontWeight) content._countdownData.numberFontWeight = 'bold';
+            if (!content._countdownData.textFontWeight) content._countdownData.textFontWeight = 'normal';
+            if (!content._countdownData.remainingFontWeight) content._countdownData.remainingFontWeight = 'normal';
+            // Ensure show remaining text default is set
+            if (content._countdownData.showRemainingText === undefined) content._countdownData.showRemainingText = true;
             content.renderCountdown();
             if (data.style) {
               Object.assign(content.style, data.style);
@@ -11770,6 +13731,108 @@ function applyResponsiveStyles() {
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
+
+          case 'social-share':
+            // If we have shareData, use it directly
+            if (data.shareData) {
+                content._shareData = data.shareData;
+            } else {
+                // Parse HTML to extract values (for legacy components saved as HTML)
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html || '';
+                
+                // Extract title from HTML
+                const titleElement = tempDiv.querySelector('h2, h1, h3');
+                const titleText = titleElement ? titleElement.textContent.trim() : 'I Just Want to Help!';
+                
+                // Check which platforms are present in HTML
+                const platforms = {
+                    facebook: { enabled: false, url: '#', text: 'Share on Facebook' },
+                    twitter: { enabled: false, url: '#', text: 'Share on Twitter' },
+                    linkedin: { enabled: false, url: '#', text: 'Share on LinkedIn' },
+                    instagram: { enabled: false, url: '#', text: 'Share on Instagram' },
+                    tiktok: { enabled: false, url: '#', text: 'Share on TikTok' },
+                    youtube: { enabled: false, url: '#', text: 'Share on YouTube' },
+                    pinterest: { enabled: false, url: '#', text: 'Share on Pinterest' },
+                    whatsapp: { enabled: false, url: '#', text: 'Share on WhatsApp' },
+                    telegram: { enabled: false, url: '#', text: 'Share on Telegram' },
+                    copy: { enabled: false, url: '', text: 'Copy Link' }
+                };
+                
+                // Check for each platform in the HTML
+                if (tempDiv.querySelector('.btn-facebook-share, [href*="facebook"], [class*="facebook"]')) {
+                    platforms.facebook.enabled = true;
+                    const fbText = tempDiv.querySelector('.btn-facebook-share h4');
+                    if (fbText) platforms.facebook.text = fbText.textContent.trim();
+                }
+                
+                if (tempDiv.querySelector('.btn-twitter-share, .btn-x-share, [href*="twitter"], [class*="twitter"]')) {
+                    platforms.twitter.enabled = true;
+                    const twitterText = tempDiv.querySelector('.btn-twitter-share h4, .btn-x-share h4');
+                    if (twitterText) platforms.twitter.text = twitterText.textContent.trim();
+                }
+                
+                if (tempDiv.querySelector('.btn-linkedin-share, [href*="linkedin"], [class*="linkedin"]')) {
+                    platforms.linkedin.enabled = true;
+                    const linkedinText = tempDiv.querySelector('.btn-linkedin-share h4');
+                    if (linkedinText) platforms.linkedin.text = linkedinText.textContent.trim();
+                }
+                
+                if (tempDiv.querySelector('.btn-clipboard, [onclick*="copy"], [class*="copy"]')) {
+                    platforms.copy.enabled = true;
+                    const copyText = tempDiv.querySelector('.btn-clipboard h4');
+                    if (copyText) platforms.copy.text = copyText.textContent.trim();
+                }
+                
+                // Extract colors from styles
+                let iconColor = '';
+                let textColor = '#000000';
+                let titleColor = '#000000';
+                
+                const firstLink = tempDiv.querySelector('a[style*="color"]');
+                if (firstLink) {
+                    const colorMatch = firstLink.style.color || firstLink.getAttribute('style')?.match(/color:\s*([^;]+)/);
+                    if (colorMatch) iconColor = colorMatch[1] || iconColor;
+                }
+                
+                const firstH4 = tempDiv.querySelector('h4[style*="color"]');
+                if (firstH4) {
+                    const colorMatch = firstH4.style.color || firstH4.getAttribute('style')?.match(/color:\s*([^;]+)/);
+                    if (colorMatch) textColor = colorMatch[1] || textColor;
+                }
+                
+                if (titleElement && titleElement.style.color) {
+                    titleColor = titleElement.style.color;
+                }
+                
+                // Extract icon size
+                let iconSize = '4rem';
+                const iconElement = tempDiv.querySelector('[style*="font-size"]');
+                if (iconElement) {
+                    const sizeMatch = iconElement.style.fontSize || iconElement.getAttribute('style')?.match(/font-size:\s*([^;]+)/);
+                    if (sizeMatch) iconSize = sizeMatch[1] || iconSize;
+                }
+                
+                // Create _shareData from parsed HTML
+                content._shareData = {
+                    title: titleText,
+                    show_title: !!titleElement,
+                    icon_size: iconSize,
+                    icon_color: iconColor,
+                    text_color: textColor,
+                    title_color: titleColor,
+                    layout: 'grid',
+                    max_columns: 4,
+                    platforms: platforms
+                };
+            }
+            
+            content.renderSocialShare();
+            if (data.style) Object.assign(content.style, data.style);
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
+
           case 'investment-tier':
             content._investmentTierData = data.investmentTierData || {};
             content.renderInvestmentTier();
@@ -11902,6 +13965,12 @@ function applyResponsiveStyles() {
                         if (compData.faqData || compData._faqData) {
                           nestedContent._faqData = compData.faqData || compData._faqData;
                           nestedContent.renderFaq();
+                        }
+                        break;
+                      case 'social-share':
+                        if (compData.shareData) {
+                          nestedContent._shareData = compData.shareData;
+                          nestedContent.renderSocialShare();
                         }
                         break;
                       case 'sell-tickets':
@@ -13218,21 +15287,38 @@ function applyResponsiveStyles() {
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable with default search disabled
-        const table = $('#studentTable').DataTable({
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            pageLength: 25
-        });
+    // Global function to safely initialize DataTables (disabled in page builder)
+    function initStudentTable() {
+        // Disabled in page builder to prevent conflicts
+        console.log('DataTables initialization disabled in page builder');
+        return;
+    }
 
-        // Link the custom search input to the DataTable search
-        $('#search').on('keyup', function() {
-            const value = $(this).val();
-            table.search(value).draw();
-        });
+    // Global function to safely initialize Donor DataTables (disabled in page builder)
+    function initDonorTable() {
+        // Disabled in page builder to prevent conflicts
+        console.log('DataTables initialization disabled in page builder');
+        return;
+    }
+
+    // Global function to reinitialize all DataTables
+    function reinitializeAllDataTables() {
+        initStudentTable();
+        initDonorTable();
+    }
+    //     return;
+    //     });
+    // }
+
+    // Global function to reinitialize all DataTables
+    function reinitializeAllDataTables() {
+        initStudentTable();
+        initDonorTable();
+    }
+
+    $(document).ready(function() {
+        // DataTables disabled in page builder to prevent conflicts
+        console.log('Page builder loaded, DataTables disabled for preview');
     });
 </script>
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Goal Bar Color Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; }
+        .progress { height: 35px; background: #e5e7eb; border-radius: 9px; position: relative; }
+        .progress-bar { height: 100%; border-radius: 9px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    </style>
+</head>
+<body>
+    <h1>Site Goal Bar Color Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Default Blue Color (#0d6efd)</h3>
+        <div class="progress">
+            <div class="progress-bar" style="background-color: #0d6efd; width: 60%;"></div>
+        </div>
+        <p>60% progress with default blue color</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Green Color (#28a745)</h3>
+        <div class="progress">
+            <div class="progress-bar" style="background-color: #28a745; width: 45%;"></div>
+        </div>
+        <p>45% progress with green color</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Red Color (#dc3545)</h3>
+        <div class="progress">
+            <div class="progress-bar" style="background-color: #dc3545; width: 80%;"></div>
+        </div>
+        <p>80% progress with red color</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: Purple Color (#6f42c1)</h3>
+        <div class="progress">
+            <div class="progress-bar" style="background-color: #6f42c1; width: 30%;"></div>
+        </div>
+        <p>30% progress with purple color</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Instructions for Testing in Page Builder:</h3>
+        <ol>
+            <li>Open the page builder</li>
+            <li>Drag and drop a "Site Goal" component</li>
+            <li>Select the component to open properties panel</li>
+            <li>Look for the "Bar Color" field with color picker</li>
+            <li>Change the color and verify the bar color updates in the preview</li>
+            <li>Save and check the frontend to confirm the color persists</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Frontend Implementation Check:</h3>
+        <p>The frontend should use: <code>{{ $component['goalData']['barColor'] ?? '#0d6efd'}}</code></p>
+        <p>This code is already implemented in render-component.blade.php at line 3017</p>
+    </div>
+</body>
+</html>

@@ -125,7 +125,7 @@ class PageBuilderController extends Controller
 
     public function show($id)
     {
-        $data = Page::with('website')->find($id);
+        $data = Page::with(['website', 'website.header'])->find($id);
         return view('admin.page.page-builder', compact('data'));
     }
 }

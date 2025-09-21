@@ -53,6 +53,32 @@ class Website extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function header()
+    {
+        return $this->hasOne(Header::class, 'website_id', 'id');
+    }
+
+    public function footer()
+    {
+        return $this->hasOne(Footer::class, 'website_id', 'id');
+    }
+
+    /**
+     * Get the newsletter subscriptions for this website
+     */
+    public function newsletterSubscriptions()
+    {
+        return $this->hasMany(NewsletterSubscription::class);
+    }
+
+    /**
+     * Get only active newsletter subscriptions
+     */
+    public function activeNewsletterSubscriptions()
+    {
+        return $this->hasMany(NewsletterSubscription::class)->where('status', 'active');
+    }
+
     /**
      * Get the payment settings for this website
      */

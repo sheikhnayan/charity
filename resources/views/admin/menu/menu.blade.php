@@ -127,6 +127,351 @@
                                     <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
                                     <input type="number" name="logo_size" value="{{ $data->logo_size }}" class="form-control">
                                 </div>
+                                
+                                @if($website && $website->type === 'investment')
+                                    <!-- Investor Exclusives Section -->
+                                    <div class="col-12">
+                                        <hr class="my-4">
+                                        <h5 class="mb-3"><i class="fa-solid fa-megaphone me-2"></i>Investor Exclusives Top Bar</h5>
+                                        <small class="text-muted">Configure the promotional bar that appears below the menu for investment websites.</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="show_investor_exclusives" class="form-label">
+                                            Show Investor Exclusives Bar
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Investor Exclusives Bar"
+                                            data-description="Display a promotional bar below the menu to highlight exclusive investor content."></i>
+                                        <select class="form-select" id="show_investor_exclusives" name="show_investor_exclusives">
+                                            <option value="1" {{ ($data->show_investor_exclusives ?? 0) == 1 ? 'selected' : '' }}>
+                                                Yes, show the bar
+                                            </option>
+                                            <option value="0" {{ ($data->show_investor_exclusives ?? 0) == 0 ? 'selected' : '' }}>
+                                                No, hide the bar
+                                            </option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="investor_exclusives_text" class="form-label">
+                                            Display Text
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Display Text"
+                                            data-description="The text that will appear in the investor exclusives bar."></i>
+                                        <input type="text" class="form-control" id="investor_exclusives_text" 
+                                               name="investor_exclusives_text" 
+                                               value="{{ $data->investor_exclusives_text ?? 'Exclusive access for investors' }}"
+                                               placeholder="Enter display text">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="investor_exclusives_url" class="form-label">
+                                            Button Link URL
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Button Link"
+                                            data-description="The URL where users will be directed when they click the button."></i>
+                                        <input type="url" class="form-control" id="investor_exclusives_url" 
+                                               name="investor_exclusives_url" 
+                                               value="{{ $data->investor_exclusives_url ?? '#' }}"
+                                               placeholder="https://example.com/investor-portal">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="topbar_background_color" class="form-label">
+                                            Top Bar Background Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Background Color"
+                                            data-description="Choose the background color for the investor exclusives bar."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="topbar_background_color_picker" 
+                                                   value="{{ $data->topbar_background_color ?? '#1e3a8a' }}" 
+                                                   title="Choose background color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="topbar_background_color" 
+                                                   name="topbar_background_color" 
+                                                   value="{{ $data->topbar_background_color ?? '#1e3a8a' }}" 
+                                                   placeholder="#1e3a8a">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('topbar_background_color_picker');
+                                                const textInput = document.getElementById('topbar_background_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="topbar_text_color" class="form-label">
+                                            Top Bar Text Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Text Color"
+                                            data-description="Choose the text color for the investor exclusives bar."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="topbar_text_color_picker" 
+                                                   value="{{ $data->topbar_text_color ?? '#ffffff' }}" 
+                                                   title="Choose text color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="topbar_text_color" 
+                                                   name="topbar_text_color" 
+                                                   value="{{ $data->topbar_text_color ?? '#ffffff' }}" 
+                                                   placeholder="#ffffff">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('topbar_text_color_picker');
+                                                const textInput = document.getElementById('topbar_text_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    
+                                    <!-- Contact Top Bar Section -->
+                                    <div class="col-12">
+                                        <hr class="my-4">
+                                        <h5 class="mb-3"><i class="fa-solid fa-phone me-2"></i>Contact Information Top Bar</h5>
+                                        <small class="text-muted">Configure the contact information bar that appears above the menu for investment websites.</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="show_contact_topbar" class="form-label">
+                                            Show Contact Top Bar
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Contact Top Bar"
+                                            data-description="Display a contact information bar above the menu with phone, email, and address."></i>
+                                        <select class="form-select" id="show_contact_topbar" name="show_contact_topbar">
+                                            <option value="1" {{ ($data->show_contact_topbar ?? 0) == 1 ? 'selected' : '' }}>
+                                                Yes, show the bar
+                                            </option>
+                                            <option value="0" {{ ($data->show_contact_topbar ?? 0) == 0 ? 'selected' : '' }}>
+                                                No, hide the bar
+                                            </option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_phone" class="form-label">
+                                            Phone Number
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Phone Number"
+                                            data-description="The phone number that will appear in the contact bar (clickable)."></i>
+                                        <input type="text" class="form-control" id="contact_phone" 
+                                               name="contact_phone" 
+                                               value="{{ $data->contact_phone ?? '' }}"
+                                               placeholder="425-243-7643">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_email" class="form-label">
+                                            Email Address
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Email Address"
+                                            data-description="The email address that will appear in the contact bar (clickable)."></i>
+                                        <input type="email" class="form-control" id="contact_email" 
+                                               name="contact_email" 
+                                               value="{{ $data->contact_email ?? '' }}"
+                                               placeholder="invest@deathondcompany.com">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_address" class="form-label">
+                                            Address
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Address"
+                                            data-description="The address that will appear in the contact bar."></i>
+                                        <input type="text" class="form-control" id="contact_address" 
+                                               name="contact_address" 
+                                               value="{{ $data->contact_address ?? '' }}"
+                                               placeholder="123 Investment St, City, State 12345">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_cta_text" class="form-label">
+                                            CTA Button Text
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="CTA Button Text"
+                                            data-description="The text for the call-to-action button in the contact bar."></i>
+                                        <input type="text" class="form-control" id="contact_cta_text" 
+                                               name="contact_cta_text" 
+                                               value="{{ $data->contact_cta_text ?? '' }}"
+                                               placeholder="Schedule a call">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_cta_url" class="form-label">
+                                            CTA Button URL
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="CTA Button URL"
+                                            data-description="The URL where users will be directed when they click the CTA button."></i>
+                                        <input type="url" class="form-control" id="contact_cta_url" 
+                                               name="contact_cta_url" 
+                                               value="{{ $data->contact_cta_url ?? '' }}"
+                                               placeholder="https://calendly.com/your-booking-link">
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_topbar_bg_color" class="form-label">
+                                            Contact Bar Background Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Background Color"
+                                            data-description="Choose the background color for the contact top bar."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="contact_topbar_bg_color_picker" 
+                                                   value="{{ $data->contact_topbar_bg_color ?? '#000000' }}" 
+                                                   title="Choose background color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="contact_topbar_bg_color" 
+                                                   name="contact_topbar_bg_color" 
+                                                   value="{{ $data->contact_topbar_bg_color ?? '#000000' }}" 
+                                                   placeholder="#000000">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('contact_topbar_bg_color_picker');
+                                                const textInput = document.getElementById('contact_topbar_bg_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_topbar_text_color" class="form-label">
+                                            Contact Bar Text Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Text Color"
+                                            data-description="Choose the text color for the contact top bar."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="contact_topbar_text_color_picker" 
+                                                   value="{{ $data->contact_topbar_text_color ?? '#ffffff' }}" 
+                                                   title="Choose text color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="contact_topbar_text_color" 
+                                                   name="contact_topbar_text_color" 
+                                                   value="{{ $data->contact_topbar_text_color ?? '#ffffff' }}" 
+                                                   placeholder="#ffffff">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('contact_topbar_text_color_picker');
+                                                const textInput = document.getElementById('contact_topbar_text_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_cta_bg_color" class="form-label">
+                                            CTA Button Background Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="CTA Background Color"
+                                            data-description="Choose the background color for the CTA button."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="contact_cta_bg_color_picker" 
+                                                   value="{{ $data->contact_cta_bg_color ?? '#007bff' }}" 
+                                                   title="Choose button background color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="contact_cta_bg_color" 
+                                                   name="contact_cta_bg_color" 
+                                                   value="{{ $data->contact_cta_bg_color ?? '#007bff' }}" 
+                                                   placeholder="#007bff">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('contact_cta_bg_color_picker');
+                                                const textInput = document.getElementById('contact_cta_bg_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="contact_cta_text_color" class="form-label">
+                                            CTA Button Text Color
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="CTA Text Color"
+                                            data-description="Choose the text color for the CTA button."></i>
+                                        <div class="input-group">
+                                            <input type="color" class="form-control form-control-color" 
+                                                   id="contact_cta_text_color_picker" 
+                                                   value="{{ $data->contact_cta_text_color ?? '#ffffff' }}" 
+                                                   title="Choose button text color" style="max-width: 3rem;">
+                                            <input type="text" class="form-control" id="contact_cta_text_color" 
+                                                   name="contact_cta_text_color" 
+                                                   value="{{ $data->contact_cta_text_color ?? '#ffffff' }}" 
+                                                   placeholder="#ffffff">
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const colorInput = document.getElementById('contact_cta_text_color_picker');
+                                                const textInput = document.getElementById('contact_cta_text_color');
+                                                colorInput.addEventListener('input', function() {
+                                                    textInput.value = colorInput.value;
+                                                });
+                                                textInput.addEventListener('input', function() {
+                                                    const val = textInput.value.trim();
+                                                    if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                        colorInput.value = val;
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                @endif
                             </div>
                             <div class="col-12 mb-4">
                                 <label class="form-label">Menu Order</label>

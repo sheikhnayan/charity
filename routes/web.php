@@ -161,6 +161,9 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 
 Route::post('/contact-form', [FrontendController::class, 'contact_form'])->name('contact-form');
 
+// Newsletter subscription route
+Route::post('/newsletter/subscribe', [FrontendController::class, 'newsletterSubscribe'])->name('newsletter.subscribe');
+
 Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/', [AdminController::class, 'donation']);
 
@@ -258,9 +261,12 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
     Route::post('/footer/store',[AdminController::class, 'store_footer'])->name('admin.footer.store');
 
-
-
-
+    // Newsletter management routes
+    Route::get('/newsletter',[AdminController::class, 'newsletter_index'])->name('admin.newsletter');
+    Route::get('/newsletter/{website_id}',[AdminController::class, 'newsletter_manage'])->name('admin.newsletter.manage');
+    Route::post('/newsletter/send-email',[AdminController::class, 'newsletter_send_email'])->name('admin.newsletter.send');
+    Route::delete('/newsletter/subscription/{id}',[AdminController::class, 'newsletter_delete_subscription'])->name('admin.newsletter.delete');
+    Route::post('/newsletter/export/{website_id}',[AdminController::class, 'newsletter_export'])->name('admin.newsletter.export');
 
     Route::get('/donation', [
         AdminController::class, 'donation'

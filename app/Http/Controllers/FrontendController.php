@@ -35,28 +35,16 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = footer::where('user_id', $user_id)->first();
         
-        if ($check->type == 'investment') {
-            // For investment websites, just show the homepage with menu sections
-            $data = Page::where('user_id', $user_id)->where('default', 1)->first();
-            $menuSections = $this->extractMenuSections($data);
-            
-            if($setting->site_status == 1){
-                return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
-            }else{
-                $data = null;
-                $menuSections = [];
-                return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
-            }
-        } else {
-            // For fundraiser websites, use existing behavior
-            $data = Page::where('user_id', $user_id)->where('default', 1)->first();
-
-            if($setting->site_status == 1){
-                return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
-            }else{
-                $data = null;
-                return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
-            }
+        // Consolidated template - use page-investment.blade.php for both website types
+        $data = Page::where('user_id', $user_id)->where('default', 1)->first();
+        $menuSections = $this->extractMenuSections($data);
+        
+        if($setting->site_status == 1){
+            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
+        }else{
+            $data = null;
+            $menuSections = [];
+            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
         }
     }
 
@@ -473,7 +461,9 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = footer::where('user_id', $user_id)->first();
 
-        return view('page-new', compact('setting', 'header', 'data', 'check','footer'));
+        // Use consolidated template
+        $menuSections = $this->extractMenuSections($data);
+        return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
     }
 
     public function dealmakerDemo()
@@ -573,5 +563,64 @@ class FrontendController extends Controller
         }
 
         return $menuSections;
+    }
+
+    public function newsletterSubscribe(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'website_id' => 'required|exists:websites,id'
+            ]);
+
+            // Check if email already exists for this website
+            $existingSubscription = \App\Models\NewsletterSubscription::where('email', $request->email)
+                ->where('website_id', $request->website_id)
+                ->first();
+
+            if ($existingSubscription) {
+                if ($existingSubscription->status === 'active') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You are already subscribed to our newsletter!'
+                    ]);
+                } else {
+                    // Reactivate subscription
+                    $existingSubscription->update([
+                        'status' => 'active',
+                        'subscribed_at' => now()
+                    ]);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Welcome back! Your subscription has been reactivated.'
+                    ]);
+                }
+            }
+
+            // Create new subscription
+            \App\Models\NewsletterSubscription::create([
+                'email' => $request->email,
+                'website_id' => $request->website_id,
+                'status' => 'active',
+                'subscribed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for subscribing to our newsletter!'
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please enter a valid email address.'
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred. Please try again later.'
+            ], 500);
+        }
     }
 }

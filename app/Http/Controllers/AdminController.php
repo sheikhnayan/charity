@@ -244,6 +244,56 @@ class AdminController extends Controller
         $data->menu = $request->menu;
         $data->floating = $request->floating;
         $data->logo_size = $request->logo_size;
+        
+        // Handle investor exclusives fields for investment websites
+        if ($request->has('show_investor_exclusives')) {
+            $data->show_investor_exclusives = $request->show_investor_exclusives;
+        }
+        if ($request->has('investor_exclusives_text')) {
+            $data->investor_exclusives_text = $request->investor_exclusives_text;
+        }
+        if ($request->has('investor_exclusives_url')) {
+            $data->investor_exclusives_url = $request->investor_exclusives_url;
+        }
+        if ($request->has('topbar_background_color')) {
+            $data->topbar_background_color = $request->topbar_background_color;
+        }
+        if ($request->has('topbar_text_color')) {
+            $data->topbar_text_color = $request->topbar_text_color;
+        }
+        
+        // Handle contact top bar fields for investment websites
+        if ($request->has('show_contact_topbar')) {
+            $data->show_contact_topbar = $request->show_contact_topbar;
+        }
+        if ($request->has('contact_phone')) {
+            $data->contact_phone = $request->contact_phone;
+        }
+        if ($request->has('contact_email')) {
+            $data->contact_email = $request->contact_email;
+        }
+        if ($request->has('contact_address')) {
+            $data->contact_address = $request->contact_address;
+        }
+        if ($request->has('contact_cta_text')) {
+            $data->contact_cta_text = $request->contact_cta_text;
+        }
+        if ($request->has('contact_cta_url')) {
+            $data->contact_cta_url = $request->contact_cta_url;
+        }
+        if ($request->has('contact_topbar_bg_color')) {
+            $data->contact_topbar_bg_color = $request->contact_topbar_bg_color;
+        }
+        if ($request->has('contact_topbar_text_color')) {
+            $data->contact_topbar_text_color = $request->contact_topbar_text_color;
+        }
+        if ($request->has('contact_cta_bg_color')) {
+            $data->contact_cta_bg_color = $request->contact_cta_bg_color;
+        }
+        if ($request->has('contact_cta_text_color')) {
+            $data->contact_cta_text_color = $request->contact_cta_text_color;
+        }
+        
         $data->update();
 
         if ($request->has('menu_order')) {
@@ -425,10 +475,10 @@ class AdminController extends Controller
     public function menu($id)
     {
         $data = Header::find($id);
-
         $pages = \App\Models\Page::where('website_id',$data->website_id)->orderBy('position')->get();
+        $website = \App\Models\Website::find($data->website_id);
 
-        return view('admin.menu.menu', compact('data', 'pages'));
+        return view('admin.menu.menu', compact('data', 'pages', 'website'));
     }
 
     public function menu_index()
@@ -635,6 +685,177 @@ class AdminController extends Controller
                 'message' => 'Upload failed: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Display newsletter management dashboard
+     */
+    public function newsletter_index()
+    {
+        $user = Auth::user();
+        
+        if ($user->role == 'admin') {
+            // Admin can see all websites
+            $websites = Website::with(['activeNewsletterSubscriptions'])->get();
+        } else {
+            // Regular user can only see their websites
+            $websites = Website::where('user_id', $user->id)
+                ->with(['activeNewsletterSubscriptions'])
+                ->get();
+        }
+
+        return view('admin.newsletter.index', compact('websites'));
+    }
+
+    /**
+     * Manage subscriptions for a specific website
+     */
+    public function newsletter_manage($website_id)
+    {
+        $user = Auth::user();
+        
+        // Check if user has access to this website
+        $website = Website::where('id', $website_id);
+        if ($user->role != 'admin') {
+            $website = $website->where('user_id', $user->id);
+        }
+        $website = $website->firstOrFail();
+
+        $subscriptions = \App\Models\NewsletterSubscription::where('website_id', $website_id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(50);
+
+        $stats = [
+            'total' => \App\Models\NewsletterSubscription::where('website_id', $website_id)->count(),
+            'active' => \App\Models\NewsletterSubscription::where('website_id', $website_id)->where('status', 'active')->count(),
+            'inactive' => \App\Models\NewsletterSubscription::where('website_id', $website_id)->where('status', 'inactive')->count(),
+        ];
+
+        return view('admin.newsletter.manage', compact('website', 'subscriptions', 'stats'));
+    }
+
+    /**
+     * Send email to newsletter subscribers
+     */
+    public function newsletter_send_email(Request $request)
+    {
+        $request->validate([
+            'website_id' => 'required|exists:websites,id',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+            'recipient_type' => 'required|in:all,active'
+        ]);
+
+        $user = Auth::user();
+        
+        // Check if user has access to this website
+        $website = Website::where('id', $request->website_id);
+        if ($user->role != 'admin') {
+            $website = $website->where('user_id', $user->id);
+        }
+        $website = $website->firstOrFail();
+
+        // Get subscribers based on recipient type
+        $query = \App\Models\NewsletterSubscription::where('website_id', $request->website_id);
+        if ($request->recipient_type === 'active') {
+            $query->where('status', 'active');
+        }
+        $subscribers = $query->get();
+
+        $emailsSent = 0;
+        $failedEmails = [];
+
+        foreach ($subscribers as $subscriber) {
+            try {
+                \Mail::raw($request->message, function ($message) use ($subscriber, $request, $website) {
+                    $message->to($subscriber->email)
+                           ->subject($request->subject)
+                           ->from(config('mail.from.address', 'noreply@' . $website->domain), $website->name);
+                });
+                $emailsSent++;
+            } catch (\Exception $e) {
+                $failedEmails[] = $subscriber->email;
+                \Log::error('Failed to send newsletter email', [
+                    'email' => $subscriber->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        $message = "Newsletter sent successfully! {$emailsSent} emails sent.";
+        if (!empty($failedEmails)) {
+            $message .= " Failed to send to: " . implode(', ', array_slice($failedEmails, 0, 5));
+            if (count($failedEmails) > 5) {
+                $message .= " and " . (count($failedEmails) - 5) . " more.";
+            }
+        }
+
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Delete a newsletter subscription
+     */
+    public function newsletter_delete_subscription($id)
+    {
+        $user = Auth::user();
+        
+        $subscription = \App\Models\NewsletterSubscription::with('website')->findOrFail($id);
+        
+        // Check if user has access to this website
+        if ($user->role != 'admin' && $subscription->website->user_id != $user->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $subscription->delete();
+
+        return back()->with('success', 'Subscription deleted successfully.');
+    }
+
+    /**
+     * Export newsletter subscriptions to CSV
+     */
+    public function newsletter_export($website_id)
+    {
+        $user = Auth::user();
+        
+        // Check if user has access to this website
+        $website = Website::where('id', $website_id);
+        if ($user->role != 'admin') {
+            $website = $website->where('user_id', $user->id);
+        }
+        $website = $website->firstOrFail();
+
+        $subscriptions = \App\Models\NewsletterSubscription::where('website_id', $website_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $filename = 'newsletter_subscriptions_' . $website->name . '_' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$filename}",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $callback = function() use ($subscriptions) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Email', 'Status', 'Subscribed Date']);
+
+            foreach ($subscriptions as $subscription) {
+                fputcsv($file, [
+                    $subscription->email,
+                    $subscription->status,
+                    $subscription->subscribed_at ? $subscription->subscribed_at->format('Y-m-d H:i:s') : 'N/A'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
 }
