@@ -165,7 +165,11 @@
                                                         <td>${{ $item->amount }}</td>
                                                         <td>${{ $item->amount }}</td>
                                                         <td>${{ ($item->amount / 100)*$payment->fee }}</td>
-                                                        <td>{{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}</td>
+                                                        <td>
+                                                            @if ($item->type != 'sponsor')
+                                                            {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $item->website->name }}</td>
                                                         <td>{{ $item->type }}</td>
                                                         <td>

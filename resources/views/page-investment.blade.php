@@ -1459,6 +1459,32 @@ if (isset($state['components'])) {
                 @endif
             @endforeach
         </div>
+        
+        {{-- Demo Statistics Metric Component --}}
+        {{-- <div style="margin: 4rem 0; padding: 2rem 0;">
+            @include('page-components.render-component', [
+                'component' => [
+                    'type' => 'statistics-metric',
+                    'statisticsData' => [
+                        'metric' => '3X',
+                        'description' => 'More lithium extracted than conventional methods',
+                        'metricColor' => '#14B8A6',
+                        'descriptionColor' => '#FFFFFF',
+                        'backgroundColor' => '#1F2937',
+                        'backgroundType' => 'color',
+                        'borderRadius' => '12px',
+                        'padding' => '3rem 2rem',
+                        'textAlign' => 'center',
+                        'metricFontSize' => '4rem',
+                        'descriptionFontSize' => '1.25rem',
+                        'maxWidth' => '400px'
+                    ],
+                    'style' => []
+                ], 
+                'componentId' => 'demo-statistics-metric',
+                'isNested' => false
+            ])
+        </div> --}}
     </main>
 
     @if ($footer)

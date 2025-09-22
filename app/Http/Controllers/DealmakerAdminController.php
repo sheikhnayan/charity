@@ -46,7 +46,7 @@ class DealmakerAdminController extends Controller
         // Handle video URLs
         if ($request->filled('bg_video_url')) {
             $data['bg_video_url'] = $request->input('bg_video_url');
-            // $data['hero_background_video'] = $request->input('bg_video_url');
+            $data['hero_background_video'] = $request->input('bg_video_url');
         }
 
         // dd($data['bg_video_url']);

@@ -4250,15 +4250,129 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             </div>
         @break
 
+        @case('statistics-metric')
+            @php
+            // dd($component);
+                // Get statistics data from component
+                $statisticsData = $component['statisticsData'] ?? [];
+                $metric = $statisticsData['metric'] ?? '3X';
+                $description = $statisticsData['description'] ?? 'More lithium extracted than conventional methods';
+                $metricColor = $statisticsData['metricColor'] ?? '#14B8A6'; // Teal/cyan default
+                $descriptionColor = $statisticsData['descriptionColor'] ?? '#FFFFFF';
+                $backgroundColor = $statisticsData['backgroundColor'] ?? '#1F2937'; // Dark gray default
+                $backgroundType = $statisticsData['backgroundType'] ?? 'color';
+                $backgroundImage = $statisticsData['backgroundImage'] ?? '';
+                $borderRadius = $statisticsData['borderRadius'] ?? '12px';
+                $padding = $statisticsData['padding'] ?? '3rem 2rem';
+                $textAlign = $statisticsData['textAlign'] ?? 'center';
+                $metricFontSize = $statisticsData['metricFontSize'] ?? '4rem';
+                $descriptionFontSize = $statisticsData['descriptionFontSize'] ?? '1.25rem';
+                $maxWidth = $statisticsData['maxWidth'] ?? '400px';
+                $marginBottom = $statisticsData['marginBottom'] ?? '1.5rem';
+                
+                // Build background style
+                $backgroundStyle = '';
+                if ($backgroundType === 'image' && !empty($backgroundImage)) {
+                    $imageUrl = trim($backgroundImage);
+                    if (!empty($imageUrl)) {
+                        // Add overlay for better text readability
+                        $backgroundStyle = "background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{$imageUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat;";
+                    } else {
+                        $backgroundStyle = "background-color: {$backgroundColor};";
+                    }
+                } else {
+                    $backgroundStyle = "background-color: {$backgroundColor};";
+                }
+            @endphp
+            
+            <div id="{{ $componentId }}" class="statistics-metric-component" style="{{ $styleStr }}">
+                <div class="statistics-metric-card" 
+                     style="{{ $backgroundStyle }} 
+                            padding: {{ $padding }}; 
+                            border-radius: {{ $borderRadius }}; 
+                            text-align: {{ $textAlign }}; 
+                            max-width: {{ $maxWidth }}; 
+                            margin: 0 auto;">
+                    
+                    {{-- Large metric display --}}
+                    <div class="metric-number" 
+                         style="font-size: {{ $metricFontSize }}; 
+                                font-weight: 900; 
+                                color: {{ $metricColor }}; 
+                                line-height: 1; 
+                                margin-bottom: {{ $marginBottom }}; 
+                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                        {{ $metric }}
+                    </div>
+                    
+                    {{-- Description text --}}
+                    <div class="metric-description" 
+                         style="font-size: {{ $descriptionFontSize }}; 
+                                color: {{ $descriptionColor }}; 
+                                line-height: 1.5; 
+                                font-weight: 400; 
+                                margin: 0; 
+                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                        {{ $description }}
+                    </div>
+                </div>
+            </div>
+            
+            {{-- Responsive styles --}}
+            <style>
+                #{{ $componentId }} .statistics-metric-card {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                
+                #{{ $componentId }} .statistics-metric-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                }
+                
+                @media (max-width: 768px) {
+                    #{{ $componentId }} .metric-number {
+                        font-size: calc({{ $metricFontSize }} * 0.75) !important;
+                    }
+                    
+                    #{{ $componentId }} .metric-description {
+                        font-size: calc({{ $descriptionFontSize }} * 0.9) !important;
+                    }
+                    
+                    #{{ $componentId }} .statistics-metric-card {
+                        max-width: 100% !important;
+                        padding: 2rem 1.5rem !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    #{{ $componentId }} .metric-number {
+                        font-size: calc({{ $metricFontSize }} * 0.6) !important;
+                    }
+                    
+                    #{{ $componentId }} .metric-description {
+                        font-size: calc({{ $descriptionFontSize }} * 0.85) !important;
+                    }
+                    
+                    #{{ $componentId }} .statistics-metric-card {
+                        padding: 1.5rem 1rem !important;
+                    }
+                }
+            </style>
+        @break
+
         @default
             {{-- Fallback for any unhandled component types --}}
             <div style="{{ $styleStr }}">
                 @if(isset($component['html']))
+                    
                     {!! $component['html'] !!}
                 @else
                     {{-- Silent fallback - no placeholder text displayed --}}
                     <div style="display: none;"></div>
                 @endif
             </div>
+        {{-- @break --}}
+
+        
     @endswitch
 </div>

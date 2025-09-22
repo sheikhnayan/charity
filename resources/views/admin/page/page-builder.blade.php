@@ -2232,6 +2232,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="text-images"><i class="fas fa-align-left me-2"></i>Text & Images</div>
                 <div class="component-item" draggable="true" data-type="feature-grid"><i class="fas fa-th-large me-2"></i>Feature Grid</div>
                 <div class="component-item" draggable="true" data-type="investment-tier"><i class="fas fa-coins me-2"></i>Investment Tier</div>
+                <div class="component-item" draggable="true" data-type="statistics-metric"><i class="fas fa-chart-line me-2"></i>Statistics Metric</div>
                 <div class="component-item" draggable="true" data-type="section-title"><i class="fas fa-heading me-2"></i>Section Title</div>
                 <div class="component-item" draggable="true" data-type="text"><i class="fas fa-font me-2"></i>Text Box</div>
                 <div class="component-item" draggable="true" data-type="divider"><i class="fas fa-minus me-2"></i>Divider</div>
@@ -6065,6 +6066,63 @@ break;
                                     };
                                     content.renderInvestmentTier();
                                     break;
+        
+        case 'statistics-metric':
+            content = document.createElement('div');
+            content.className = 'statistics-metric-component';
+            content._statisticsData = {
+                metric: '3X',
+                description: 'More lithium extracted than conventional methods',
+                metricColor: '#14B8A6',
+                descriptionColor: '#FFFFFF',
+                backgroundColor: '#1F2937',
+                backgroundType: 'color',
+                backgroundImage: '',
+                borderRadius: '12px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
+                metricFontSize: '4rem',
+                descriptionFontSize: '1.25rem',
+                maxWidth: '400px',
+                marginBottom: '1.5rem'
+            };
+            
+            content.renderStatisticsMetric = function() {
+                const d = content._statisticsData;
+                let bg = d.backgroundType === 'image' && d.backgroundImage
+                    ? `background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${d.backgroundImage}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
+                    : `background-color: ${d.backgroundColor};`;
+                
+                content.innerHTML = `
+                    <div class="statistics-metric-card" style="${bg} 
+                         padding: ${d.padding}; 
+                         border-radius: ${d.borderRadius}; 
+                         text-align: ${d.textAlign}; 
+                         max-width: ${d.maxWidth}; 
+                         margin: 0 auto;">
+                        
+                        <div class="metric-number" style="font-size: ${d.metricFontSize}; 
+                             font-weight: 900; 
+                             color: ${d.metricColor}; 
+                             line-height: 1; 
+                             margin-bottom: ${d.marginBottom}; 
+                             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                            ${d.metric}
+                        </div>
+                        
+                        <div class="metric-description" style="font-size: ${d.descriptionFontSize}; 
+                             color: ${d.descriptionColor}; 
+                             line-height: 1.5; 
+                             font-weight: 400; 
+                             margin: 0; 
+                             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                            ${d.description}
+                        </div>
+                    </div>
+                `;
+            };
+            content.renderStatisticsMetric();
+            break;
       }
 
       component.appendChild(controls);
@@ -6425,7 +6483,8 @@ break;
             'invest-cta': { icon: 'fa-dollar-sign', name: 'Investment CTA' },
             'text-images': { icon: 'fa-align-left', name: 'Text & Images' },
             'feature-grid': { icon: 'fa-th-large', name: 'Feature Grid' },
-            'investment-tier': { icon: 'fa-coins', name: 'Investment Tier' }
+            'investment-tier': { icon: 'fa-coins', name: 'Investment Tier' },
+            'statistics-metric': { icon: 'fa-chart-line', name: 'Statistics Metric' }
         };
         
         return componentInfo[type] || { icon: 'fa-cube', name: 'Component' };
@@ -8589,6 +8648,74 @@ break;
                 `;
             break;
 
+            case 'statistics-metric':
+                const statisticsData = content._statisticsData || {};
+                specificControls = `
+                    <div class="form-group">
+                        <label>Metric Value</label>
+                        <input type="text" value="${statisticsData.metric || '3X'}" oninput="updateStatisticsMetricField(this.value, 'metric')">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea rows="3" oninput="updateStatisticsMetricField(this.value, 'description')">${statisticsData.description || 'More lithium extracted than conventional methods'}</textarea>
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
+                        <label>Metric Color</label>
+                        <input type="color" value="${statisticsData.metricColor || '#14B8A6'}" onchange="updateStatisticsMetricField(this.value, 'metricColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Description Color</label>
+                        <input type="color" value="${statisticsData.descriptionColor || '#FFFFFF'}" onchange="updateStatisticsMetricField(this.value, 'descriptionColor')">
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
+                        <label>Background Type</label>
+                        <select onchange="updateStatisticsMetricField(this.value, 'backgroundType')">
+                            <option value="color" ${statisticsData.backgroundType === 'color' ? 'selected' : ''}>Solid Color</option>
+                            <option value="image" ${statisticsData.backgroundType === 'image' ? 'selected' : ''}>Image</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Background Color</label>
+                        <input type="color" value="${statisticsData.backgroundColor || '#1F2937'}" onchange="updateStatisticsMetricField(this.value, 'backgroundColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Background Image URL (if Image type selected)</label>
+                        <input type="text" value="${statisticsData.backgroundImage || ''}" oninput="updateStatisticsMetricField(this.value, 'backgroundImage')" placeholder="Enter image URL">
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="form-group">
+                        <label>Text Alignment</label>
+                        <select onchange="updateStatisticsMetricField(this.value, 'textAlign')">
+                            <option value="left" ${statisticsData.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="center" ${statisticsData.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="right" ${statisticsData.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Metric Font Size</label>
+                        <input type="text" value="${statisticsData.metricFontSize || '4rem'}" oninput="updateStatisticsMetricField(this.value, 'metricFontSize')" placeholder="e.g., 4rem, 64px">
+                    </div>
+                    <div class="form-group">
+                        <label>Description Font Size</label>
+                        <input type="text" value="${statisticsData.descriptionFontSize || '1.25rem'}" oninput="updateStatisticsMetricField(this.value, 'descriptionFontSize')" placeholder="e.g., 1.25rem, 20px">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Width</label>
+                        <input type="text" value="${statisticsData.maxWidth || '400px'}" oninput="updateStatisticsMetricField(this.value, 'maxWidth')" placeholder="e.g., 400px, 100%">
+                    </div>
+                    <div class="form-group">
+                        <label>Border Radius</label>
+                        <input type="text" value="${statisticsData.borderRadius || '12px'}" oninput="updateStatisticsMetricField(this.value, 'borderRadius')" placeholder="e.g., 12px, 0">
+                    </div>
+                    <div class="form-group">
+                        <label>Padding</label>
+                        <input type="text" value="${statisticsData.padding || '3rem 2rem'}" oninput="updateStatisticsMetricField(this.value, 'padding')" placeholder="e.g., 3rem 2rem">
+                    </div>
+                `;
+            break;
+
             case 'invest-cta':
                 const investCtaData = content._investCtaData || {
                     buttonText: 'INVEST NOW',
@@ -10679,7 +10806,7 @@ function updateResponsiveCSS() {
                 }
                 if (desktopPaddings) {
                     // Apply padding directly to the content element, but exclude investment tier components
-                    css += `#${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${desktopPaddings}; }\n`;
+                    css += `#${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component):not(.statistics-metric-component) { ${desktopPaddings}; }\n`;
                 }
             }
             
@@ -10701,7 +10828,7 @@ function updateResponsiveCSS() {
                 }
                 if (tabletPaddings) {
                     css += `@media screen and (max-width: 991px) and (min-width: 768px) {\n`;
-                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${tabletPaddings}; }\n`;
+                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component):not(.statistics-metric-component) { ${tabletPaddings}; }\n`;
                     css += `}\n`;
                 }
                 
@@ -10710,7 +10837,7 @@ function updateResponsiveCSS() {
                     css += `.canvas.tablet-view #${componentId} { ${tabletMargins}; }\n`;
                 }
                 if (tabletPaddings) {
-                    css += `.canvas.tablet-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${tabletPaddings}; }\n`;
+                    css += `.canvas.tablet-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component):not(.statistics-metric-component) { ${tabletPaddings}; }\n`;
                 }
             }
             
@@ -10732,7 +10859,7 @@ function updateResponsiveCSS() {
                 }
                 if (mobilePaddings) {
                     css += `@media screen and (max-width: 767px) {\n`;
-                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${mobilePaddings}; }\n`;
+                    css += `  #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component):not(.statistics-metric-component) { ${mobilePaddings}; }\n`;
                     css += `}\n`;
                 }
                 
@@ -10741,7 +10868,7 @@ function updateResponsiveCSS() {
                     css += `.canvas.mobile-view #${componentId} { ${mobileMargins}; }\n`;
                 }
                 if (mobilePaddings) {
-                    css += `.canvas.mobile-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component) { ${mobilePaddings}; }\n`;
+                    css += `.canvas.mobile-view #${componentId} > *:not(.component-controls):not(.perk-wrap):not(.investment-tier):not(.investment-tier-component):not(.statistics-metric-component) { ${mobilePaddings}; }\n`;
                 }
             }
         }
@@ -12178,6 +12305,17 @@ function applyResponsiveStyles() {
         if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
     }
 
+    // --- Statistics Metric Functions ---
+    function updateStatisticsMetricField(value, field) {
+        if (!selectedComponent) return;
+        const content = getContentElement(selectedComponent);
+        if (!content._statisticsData) return;
+        
+        content._statisticsData[field] = value;
+        
+        if (typeof content.renderStatisticsMetric === 'function') content.renderStatisticsMetric();
+    }
+
     // Upload image for investment tier background
     function uploadInvestmentTierImage(input) {
         if (!selectedComponent || !input.files || !input.files[0]) return;
@@ -12565,6 +12703,9 @@ function applyResponsiveStyles() {
           case 'investment-tier':
             data.investmentTierData = content._investmentTierData;
             break;
+          case 'statistics-metric':
+            data.statisticsData = content._statisticsData;
+            break;
           case 'custom-form':
             data.customFormFields = content._customFormFields;
             break;
@@ -12689,6 +12830,11 @@ function applyResponsiveStyles() {
                     case 'investment-tier':
                       if (compContent._investmentTierData) {
                         compData.investmentTierData = compContent._investmentTierData;
+                      }
+                      break;
+                    case 'statistics-metric':
+                      if (compContent._statisticsData) {
+                        compData.statisticsData = compContent._statisticsData;
                       }
                       break;
                     case 'full-width-text-image':
@@ -13355,6 +13501,35 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'statistics-metric':
+                const loadedStatisticsData = data.statisticsData || {};
+                
+                // Merge loaded data with defaults
+                actualContent._statisticsData = Object.assign({
+                    metric: '3X',
+                    description: 'More lithium extracted than conventional methods',
+                    metricColor: '#14B8A6',
+                    descriptionColor: '#FFFFFF',
+                    backgroundColor: '#1F2937',
+                    backgroundType: 'color',
+                    backgroundImage: '',
+                    borderRadius: '12px',
+                    padding: '3rem 2rem',
+                    textAlign: 'center',
+                    metricFontSize: '4rem',
+                    descriptionFontSize: '1.25rem',
+                    maxWidth: '400px',
+                    marginBottom: '1.5rem'
+                }, loadedStatisticsData);
+                
+                actualContent.renderStatisticsMetric();
+                if (data.style) {
+                    Object.assign(actualContent.style, data.style);
+                }
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             case 'custom-form':
                 actualContent._customFormFields = data.customFormFields || [];
                 actualContent.renderCustomForm();
@@ -13858,6 +14033,17 @@ function applyResponsiveStyles() {
             if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
+
+          case 'statistics-metric':
+            content._statisticsData = data.statisticsData || {};
+            content.renderStatisticsMetric();
+            if (data.style) {
+              Object.assign(content.style, data.style);
+            }
+            if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+            if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+            break;
+
           case 'custom-form':
             content._customFormFields = data.customFormFields || [];
             content.renderCustomForm();

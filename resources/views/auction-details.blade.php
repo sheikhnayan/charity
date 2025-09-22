@@ -655,7 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script type="module">
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
 
@@ -688,15 +688,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show latest bid on page load
     async function showLatestBid() {
-        const bidRef = ref(db, 'bid/' + auctionId + '/amount');
-        const snapshot = await get(bidRef);
-        let amount = snapshot.val();
-        if (amount !== null) {
-            priceDiv.textContent = '$' + amount;
-            lastBid = parseFloat(amount);
-            if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-        } else {
-            // If not found in Realtime DB, fetch from Firestore
+        try {
+            // Try to get from Realtime DB first
+            const bidRef = ref(db, 'bid/' + auctionId + '/amount');
+            const snapshot = await get(bidRef);
+            let amount = snapshot.val();
+            if (amount !== null) {
+                priceDiv.textContent = '$' + amount;
+                lastBid = parseFloat(amount);
+                if (bidAmountInput) bidAmountInput.min = lastBid + 1;
+                return;
+            }
+        } catch (error) {
+            console.log('Realtime DB read error (fallback to Firestore):', error.message);
+        }
+        
+        // Fallback to Firestore if Realtime DB fails or has no data
+        try {
             const bidsRef = collection(firestore, "bid");
             const q = query(
                 bidsRef,
@@ -707,13 +715,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 const doc = querySnapshot.docs[0];
-                amount = doc.data().amount;
+                const amount = doc.data().amount;
                 priceDiv.textContent = '$' + amount;
                 lastBid = parseFloat(amount);
                 if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-                // Also update Realtime DB for future loads
-                await set(bidRef, amount);
             }
+        } catch (error) {
+            console.error('Error fetching latest bid:', error);
         }
     }
 
@@ -753,6 +761,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         showLatestBid();
         loadBidHistory();
+        
+        // Set up real-time listener for new bids using Firestore
+        const bidsRef = collection(firestore, "bid");
+        const q = query(
+            bidsRef,
+            where("auction_id", "==", auctionId),
+            orderBy("timestamp", "desc"),
+            limit(1)
+        );
+        
+        onSnapshot(q, (querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const latestBid = querySnapshot.docs[0].data();
+                const amount = latestBid.amount;
+                
+                // Update price display if this is a new bid
+                if (amount > lastBid) {
+                    priceDiv.textContent = '$' + amount;
+                    lastBid = parseFloat(amount);
+                    if (bidAmountInput) bidAmountInput.min = lastBid + 1;
+                    
+                    // Refresh bid history to show new bid
+                    loadBidHistory();
+                }
+            }
+        }, (error) => {
+            console.log('Real-time listener error:', error);
+        });
     });
 
     // Modal form logic
@@ -773,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            // Save to Firestore
+            // Save to Firestore (primary storage)
             await addDoc(collection(firestore, "bid"), {
                 auction_id: auctionId,
                 name: name,
@@ -782,8 +818,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 timestamp: new Date()
             });
 
-            // Update Realtime DB for fast access
-            await set(ref(db, 'bid/' + auctionId + '/amount'), amount);
+            // Try to update Realtime DB for fast access (but don't fail if permission denied)
+            try {
+                await set(ref(db, 'bid/' + auctionId + '/amount'), amount);
+                console.log('Successfully updated Realtime DB');
+            } catch (realtimeError) {
+                console.log('Realtime DB update failed (using Firestore only):', realtimeError.message);
+                // This is fine - we'll rely on Firestore for data persistence
+            }
 
             // Update UI
             await showLatestBid();
@@ -802,6 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '/authorize/payment/auction/'+id+'?amount='+amount;
 
         } catch (error) {
+            console.error('Error saving bid:', error);
             alert('Error saving bid: ' + error.message);
         }
     });
