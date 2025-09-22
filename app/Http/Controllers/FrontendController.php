@@ -445,8 +445,41 @@ class FrontendController extends Controller
     public function page($id)
     {
         $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = Website::where('domain', $doamin)->first();
+        $domain = parse_url($url, PHP_URL_HOST);
+        
+        // Check if this is a main site URL
+        $mainSiteUrls = [
+            'ifundup.com',
+            'www.ifundup.com',
+            '127.0.0.1'
+        ];
+
+        
+        if (in_array($domain, $mainSiteUrls)) {
+            // dd($domain);
+            // Main site page logic - look for pages with is_main_site = true
+            $data = Page::mainSite()->where('name', str_replace('-', ' ', $id))->first();
+            
+            if (!$data) {
+                abort(404);
+            }
+            
+            // For main site pages, we don't need website-specific settings
+            $setting = null;
+            $header = null;
+            $footer = null;
+            $check = null;
+            $menuSections = $this->extractMenuSections($data);
+            
+            return view('page-investment', compact('setting', 'header', 'data', 'check', 'footer', 'menuSections'));
+        }
+        
+        // Existing website-specific page logic
+        $check = Website::where('domain', $domain)->first();
+        
+        if (!$check) {
+            abort(404);
+        }
         
         // Check if this is an investment website
         if ($check->type == 'investment') {

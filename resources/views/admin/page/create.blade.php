@@ -87,11 +87,33 @@ label{
                                         @csrf
 
                                         <div class="card-body">
+                                            {{-- Main Site Page Toggle --}}
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
+                                                        <label class="form-label">Page Type</label>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="page_type" id="website_page" value="website" {{ request('main_site') != '1' ? 'checked' : '' }}>
+                                                            <label class="form-check-label" for="website_page">
+                                                                <strong>Website Page</strong> - Belongs to a specific website
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="page_type" id="main_site_page" value="main_site" {{ request('main_site') == '1' ? 'checked' : '' }}>
+                                                            <label class="form-check-label" for="main_site_page">
+                                                                <strong>Main Site Page</strong> - Accessible only on ifundup.com
+                                                            </label>
+                                                        </div>
+                                                        <input type="hidden" name="is_main_site" id="is_main_site" value="{{ request('main_site') == '1' ? '1' : '0' }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row" id="website_selection">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
                                                         <label for="name" class="form-label">Website</label>
-                                                        <select name="website_id" class="form-control" id="website_select" required>
+                                                        <select name="website_id" class="form-control" id="website_select" {{ request('main_site') == '1' ? '' : 'required' }}>
                                                             <option value="">Select Website</option>
                                                             @foreach ($data as $item)
                                                                 <option value="{{ $item->id }}" data-type="{{ $item->type }}">{{ $item->name }} ({{ ucfirst($item->type) }})</option>
@@ -188,30 +210,67 @@ label{
             const websiteTypeInfo = document.getElementById('website-type-info');
             const selectedWebsiteType = document.getElementById('selected-website-type');
             const websiteTypeDescription = document.getElementById('website-type-description');
+            const websitePageRadio = document.getElementById('website_page');
+            const mainSitePageRadio = document.getElementById('main_site_page');
+            const isMainSiteHidden = document.getElementById('is_main_site');
+            const websiteSelection = document.getElementById('website_selection');
             
-            websiteSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const websiteType = selectedOption.getAttribute('data-type');
-                
-                if (websiteType) {
-                    selectedWebsiteType.textContent = websiteType.charAt(0).toUpperCase() + websiteType.slice(1);
-                    
-                    if (websiteType === 'investment') {
-                        websiteTypeDescription.innerHTML = `
-                            <strong>Investment Website:</strong> Pages will appear as sections on a single page with smooth scrolling navigation.
-                            <br><strong>Note:</strong> Create pages normally - they will automatically be converted to sections on the frontend.
-                        `;
-                    } else {
-                        websiteTypeDescription.innerHTML = `
-                            <strong>Fundraiser Website:</strong> Each page will be a separate page with traditional multi-page navigation.
-                        `;
-                    }
-                    
+            // Handle page type change
+            function handlePageTypeChange() {
+                if (mainSitePageRadio.checked) {
+                    isMainSiteHidden.value = '1';
+                    websiteSelection.style.display = 'none';
+                    websiteSelect.removeAttribute('required');
                     websiteTypeInfo.style.display = 'block';
+                    selectedWebsiteType.textContent = 'Main Site';
+                    websiteTypeDescription.innerHTML = `
+                        <strong>Main Site Page:</strong> This page will only be accessible when visiting ifundup.com domain.
+                        <br><strong>URL:</strong> ifundup.com/page/your-page-name
+                        <br><strong>Note:</strong> Main site pages are independent of individual websites.
+                    `;
                 } else {
-                    websiteTypeInfo.style.display = 'none';
+                    isMainSiteHidden.value = '0';
+                    websiteSelection.style.display = 'block';
+                    websiteSelect.setAttribute('required', 'required');
+                    if (!websiteSelect.value) {
+                        websiteTypeInfo.style.display = 'none';
+                    }
+                }
+            }
+            
+            // Handle website selection change
+            websiteSelect.addEventListener('change', function() {
+                if (websitePageRadio.checked) {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const websiteType = selectedOption.getAttribute('data-type');
+                    
+                    if (websiteType) {
+                        selectedWebsiteType.textContent = websiteType.charAt(0).toUpperCase() + websiteType.slice(1);
+                        
+                        if (websiteType === 'investment') {
+                            websiteTypeDescription.innerHTML = `
+                                <strong>Investment Website:</strong> Pages will appear as sections on a single page with smooth scrolling navigation.
+                                <br><strong>Note:</strong> Create pages normally - they will automatically be converted to sections on the frontend.
+                            `;
+                        } else {
+                            websiteTypeDescription.innerHTML = `
+                                <strong>Fundraiser Website:</strong> Each page will be a separate page with traditional multi-page navigation.
+                            `;
+                        }
+                        
+                        websiteTypeInfo.style.display = 'block';
+                    } else {
+                        websiteTypeInfo.style.display = 'none';
+                    }
                 }
             });
+            
+            // Add event listeners for radio buttons
+            websitePageRadio.addEventListener('change', handlePageTypeChange);
+            mainSitePageRadio.addEventListener('change', handlePageTypeChange);
+            
+            // Initialize on page load
+            handlePageTypeChange();
         });
     </script>
                                 </div>

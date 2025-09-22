@@ -74,8 +74,9 @@
                                     </ol>
 
                                     <div class="btn-group" role="group" aria-label="Basic example" style="float: right">
-                                        <a href="/admins/page/create" class="btn btn-primary">Add Page</a>
-                                </nav>
+                                        <a href="/admins/page/create" class="btn btn-primary">Add Website Page</a>
+                                        <a href="/admins/page/create?main_site=1" class="btn btn-success">Add Main Site Page</a>
+                                    </div>
                             </div>
                         </div>
 
@@ -84,7 +85,15 @@
                                 <div class="alert alert-info">
                                     <h5><i class="fas fa-info-circle"></i> How Pages Work</h5>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
+                                            <strong>🌐 Main Site Pages (ifundup.com):</strong>
+                                            <ul class="mb-0 mt-2">
+                                                <li>Accessible only on main domain</li>
+                                                <li>Independent of individual websites</li>
+                                                <li>Example: /page/terms, /page/privacy</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
                                             <strong>📄 Fundraiser Websites:</strong>
                                             <ul class="mb-0 mt-2">
                                                 <li>Each page is a separate URL</li>
@@ -92,7 +101,7 @@
                                                 <li>Example: /page/about, /page/services</li>
                                             </ul>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <strong>💼 Investment Websites:</strong>
                                             <ul class="mb-0 mt-2">
                                                 <li>All pages appear as sections on homepage</li>
@@ -105,8 +114,61 @@
                             </div>
                         </div>
 
+                        {{-- Main Site Pages Section --}}
+                        @if(!empty($mainSitePages) && $mainSitePages->count() > 0)
+                        <div class="row mb-4">
+                            <div class="col-lg">
+                                <h4><i class="fas fa-globe"></i> Main Site Pages (ifundup.com)</h4>
+                                <div class="card-shadow-primary card-border text-white mb-3 card bg-success" style="background: #fff !important;">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>SI</th>
+                                                <th>Name</th>
+                                                <th>URL Preview</th>
+                                                <th>Position/Order</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($mainSitePages as $key => $item)
+                                                <tr>
+                                                    <td>{{ $key + 1 }}</td>
+                                                    <td>{{ $item->name }}</td>
+                                                    <td>
+                                                        <code>ifundup.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
+                                                        <br><small class="text-muted">Only accessible on main domain</small>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
+                                                        <small class="text-muted d-block">Menu order</small>
+                                                    </td>
+                                                    <td>
+                                                        @if ($item->status == 1)
+                                                            <span class="badge bg-success">Active</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Inactive</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <a href="/admins/page/show/{{ $item->id }}" class="btn btn-success btn-sm">Show</a>
+                                                        <a href="/admins/page/edit/{{ $item->id }}" class="btn btn-primary btn-sm">Edit</a>
+                                                        <a href="/admins/page/delete/{{ $item->id }}" class="btn btn-danger btn-sm">Delete</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Website Pages Section --}}
                         <div class="row">
                             <div class="col-lg">
+                                <h4><i class="fas fa-desktop"></i> Website Pages</h4>
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
 
                                     <table class="table">
@@ -125,10 +187,10 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="8" class="text-center">No data found.</td>
+                                                    <td colspan="8" class="text-center">No website pages found.</td>
                                                 </tr>
                                             @else
-                                                @foreach ($data as $key => $item)
+                                                @foreach ($data->where('is_main_site', false) as $key => $item)
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
                                                         <td>{{ $item->name }}</td>

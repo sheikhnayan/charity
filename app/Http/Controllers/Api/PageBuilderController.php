@@ -12,27 +12,30 @@ class PageBuilderController extends Controller
     // Save builder state
     public function save(Request $request, $id)
     {
-        // $request->validate([
-        //     'state' => 'required|array'
-        // ]);
         $userId = Auth::id();
         $pageId = $id;
 
         $page = Page::find($pageId);
-
-        $websiteId = $page->website_id;
-
         $state = $request->input('state');
 
-        $builderState = Page::updateOrCreate(
-            [
-                'website_id' => $websiteId,
-                'id' => $pageId,
-            ],
-            [
-                'state' => $state,
-            ]
-        );
+        if ($page->is_main_site) {
+            // Main site page - update directly
+            $page->update(['state' => $state]);
+        } else {
+            // Regular website page (existing logic)
+            $websiteId = $page->website_id;
+            
+            $builderState = Page::updateOrCreate(
+                [
+                    'website_id' => $websiteId,
+                    'id' => $pageId,
+                ],
+                [
+                    'state' => $state,
+                ]
+            );
+        }
+        
         return response()->json(['success' => true]);
     }
 
@@ -44,11 +47,17 @@ class PageBuilderController extends Controller
 
         $page = Page::find($pageId);
 
-        $websiteId = $page->website_id;
-
-        $builderState = Page::where('website_id', $websiteId)
-            ->where('id', $pageId)
-            ->first();
+        if ($page->is_main_site) {
+            // Main site page
+            $builderState = $page;
+        } else {
+            // Regular website page (existing logic)
+            $websiteId = $page->website_id;
+            $builderState = Page::where('website_id', $websiteId)
+                ->where('id', $pageId)
+                ->first();
+        }
+        
         if ($builderState) {
             return response()->json(['state' => $builderState->state]);
         } else {
@@ -58,8 +67,11 @@ class PageBuilderController extends Controller
 
     public function index()
     {
-        $data = Page::get();
-        return view('admin.page.index', compact('data'));
+        // Get both regular pages and main site pages
+        $data = Page::with(['website'])->get();
+        $mainSitePages = Page::mainSite()->get();
+        
+        return view('admin.page.index', compact('data', 'mainSitePages'));
     }
 
     public function create()
@@ -71,23 +83,42 @@ class PageBuilderController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        $website = Website::find($request->website_id);
-        
-        // Get the next position for this website
-        $nextPosition = Page::where('website_id', $request->website_id)->max('position') + 1;
-        
-        $add = new Page;
-        $add->user_id = $website->user_id;
-        $add->website_id = $request->website_id;
-        $add->name = $request->name;
-        $add->meta_title = $request->meta_title;
-        $add->meta_description = $request->meta_description;
-        $add->background_color = $request->background_color;
-        $add->default = $request->default;
-        $add->position = $nextPosition;
-        $add->status = 1;
-        $add->save();
+        if ($request->has('is_main_site') && $request->is_main_site) {
+            // Creating a main site page
+            $nextPosition = Page::mainSite()->max('position') + 1;
+            
+            $add = new Page;
+            $add->user_id = null; // Main site pages don't belong to specific users
+            $add->website_id = null; // Main site pages don't belong to specific websites
+            $add->is_main_site = true;
+            $add->name = $request->name;
+            $add->meta_title = $request->meta_title;
+            $add->meta_description = $request->meta_description;
+            $add->background_color = $request->background_color;
+            $add->default = $request->default;
+            $add->position = $nextPosition;
+            $add->status = 1;
+            $add->save();
+        } else {
+            // Creating a regular website page (existing logic)
+            $website = Website::find($request->website_id);
+            
+            // Get the next position for this website
+            $nextPosition = Page::where('website_id', $request->website_id)->max('position') + 1;
+            
+            $add = new Page;
+            $add->user_id = $website->user_id;
+            $add->website_id = $request->website_id;
+            $add->is_main_site = false;
+            $add->name = $request->name;
+            $add->meta_title = $request->meta_title;
+            $add->meta_description = $request->meta_description;
+            $add->background_color = $request->background_color;
+            $add->default = $request->default;
+            $add->position = $nextPosition;
+            $add->status = 1;
+            $add->save();
+        }
 
         return redirect()->route('admin.page.index')->with('success', 'Page created successfully.');
     }
@@ -101,8 +132,6 @@ class PageBuilderController extends Controller
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
-         // --- IGNORE ---
         $update = Page::find($id);
         $update->name = $request->name;
         $update->meta_title = $request->meta_title;
@@ -110,6 +139,17 @@ class PageBuilderController extends Controller
         $update->background_color = $request->background_color;
         $update->default = $request->default;
         $update->status = $request->status;
+        
+        // Handle main site page updates
+        if ($request->has('is_main_site') && $request->is_main_site) {
+            $update->is_main_site = true;
+            $update->user_id = null;
+            $update->website_id = null;
+        } else {
+            $update->is_main_site = false;
+            // For regular pages, keep existing website relationship
+        }
+        
         $update->update();
 
         return redirect()->route('admin.page.index')->with('success', 'Page updated successfully.');

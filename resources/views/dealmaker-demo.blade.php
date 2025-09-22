@@ -1776,8 +1776,7 @@ a,
                                         <div class="spacer-medium"></div>
                                     </a>
                                     <div class="spacer-small">
-                                        <div class="text-size-small">{{ $config->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $config->footer_company_address ?? '30 East 23rd St. Fl. 2
-New York, NY 10010' }}
+                                        <div class="text-size-small">{{ $config->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $config->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}
                                         </div>
                                         <div class="spacer-medium"></div>
                                         <div class="w-layout-grid footer3_social-list">

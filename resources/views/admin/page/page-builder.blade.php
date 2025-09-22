@@ -2148,7 +2148,14 @@ button a:hover {
 </head>
 <body>
     @php
-        $groups = \App\Models\User::where('website_id', $data->website ? $data->website->id : 0)->where('role','group_leader')->get();
+        if ($data->is_main_site == 1) {
+            # code...
+            $groups = \App\Models\User::where('role','group_leader')->get();
+        } else {
+            # code...
+            $groups = \App\Models\User::where('website_id', $data->website ? $data->website->id : 0)->where('role','group_leader')->get();
+        }
+        
     @endphp
     <input type="hidden" name="page_id" id="page_id" value="{{ $data->id }}">
     <input type="hidden" name="website_type" id="website_type" value="{{ $data->website ? $data->website->type : 'fundraiser' }}">
@@ -9542,7 +9549,7 @@ function updateDonationFormSecondaryTitle(value) {
     // Update secondary title in the preview
     const secondaryLabel = content.querySelector('.form-label[style*="color: #000; font-weight: bold;"]');
     if (secondaryLabel) {
-        secondaryLabel.innerHTML = value + ' {{ $data->website->name}}';
+        secondaryLabel.innerHTML = value + ' {{ $data->website->name ?? "Main Site"}}';
     }
 }
 

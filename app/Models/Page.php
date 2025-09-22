@@ -21,11 +21,13 @@ class Page extends Model
         'meta_description',
         'background_color',
         'default',
+        'is_main_site',
     ];
 
     protected $casts = [
         'state' => 'array',
         'is_template' => 'boolean',
+        'is_main_site' => 'boolean',
     ];
 
     public function website()
@@ -41,6 +43,38 @@ class Page extends Model
     public function template()
     {
         return $this->belongsTo(PageTemplate::class, 'template_id');
+    }
+    
+    /**
+     * Scope for main site pages
+     */
+    public function scopeMainSite($query)
+    {
+        return $query->where('is_main_site', true);
+    }
+    
+    /**
+     * Scope for website-specific pages
+     */
+    public function scopeWebsitePages($query)
+    {
+        return $query->where('is_main_site', false);
+    }
+    
+    /**
+     * Scope for pages belonging to a specific website
+     */
+    public function scopeForWebsite($query, $websiteId)
+    {
+        return $query->where('website_id', $websiteId)->where('is_main_site', false);
+    }
+    
+    /**
+     * Check if this is a main site page
+     */
+    public function isMainSitePage()
+    {
+        return $this->is_main_site;
     }
     
     /**
