@@ -196,20 +196,20 @@
                                                         <td>{{ $item->name }}</td>
                                                         <td>{{ $item->website->name ?? 'Main Site'}}</td>
                                                         <td>
-                                                            <span class="badge bg-{{ $item->website->type == 'investment' ? 'primary' : 'success' }}">
-                                                                {{ ucfirst($item->website->type) }}
+                                                            <span class="badge bg-{{ $item->website->type ?? 'Main Site' == 'investment' ? 'primary' : 'success' }}">
+                                                                {{ ucfirst($item->website->type ?? 'Main Site') }}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
-                                                            @if ($item->website->type == 'investment')
+                                                            @if ($item->website->type ?? 'Main Site' == 'investment')
                                                                 <small class="text-muted d-block">Section order</small>
                                                             @else
                                                                 <small class="text-muted d-block">Menu order</small>
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if ($item->website->type == 'investment')
+                                                            @if ($item->website->type ?? "Main Site" == 'investment')
                                                                 <small class="text-muted">Section on homepage</small>
                                                             @else
                                                                 <small class="text-muted">Separate page</small>
