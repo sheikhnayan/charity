@@ -2705,9 +2705,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             data-leader="{{ $item->leader_id ?? '' }}" data-status="bidding" data-lec="false"
                                             data-expiry="{{ \Carbon\Carbon::parse($item->dead_line)->timestamp }}">
                                             <div class="c-node-ai__content">
-                                                <div id="air-ai-status-indicator-{{ $item->id }}"
+                                                {{-- <div id="air-ai-status-indicator-{{ $item->id }}"
                                                     class="js-ai-status-indicator c-node-ai__status c-node-ai__status--teaser c-tooltip c-tooltip--n"
-                                                    aria-label="Bidding is under way."></div>
+                                                    aria-label="Bidding is under way."></div> --}}
                                                 <div class="c-node-ai__image-wrap">
                                                     <div class="c-node-ai__image">
                                                         <svg viewBox="0 0 100 100"></svg>
@@ -3407,165 +3407,163 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
         @case('newsletter')
             @php
-                // Get properties (for admin-created components) or data (for direct use)
-                $properties = $component['properties'] ?? [];
-                $componentData = $component['data'] ?? [];
-                
-                // Use properties first, fallback to data, then defaults
-                $title = $properties['title'] ?? $componentData['title'] ?? 'Newsletter';
-                $subtitle = $properties['subtitle'] ?? $componentData['subtitle'] ?? 'Subscribe to our newsletter';
-                $placeholder = $properties['placeholder'] ?? $componentData['placeholder'] ?? 'Enter your email address';
-                $buttonText = $properties['button_text'] ?? $componentData['buttonText'] ?? 'SIGN UP';
-                
-                // Styling properties
-                $backgroundColor = $properties['background_color'] ?? $style['backgroundColor'] ?? '#ffffff';
-                $textColor = $properties['text_color'] ?? $style['color'] ?? '#000000';
-                $buttonColor = $properties['button_color'] ?? $style['buttonColor'] ?? '#28a745';
-                $buttonTextColor = $properties['button_text_color'] ?? $style['buttonTextColor'] ?? '#ffffff';
-                $borderRadius = $properties['border_radius'] ?? $style['borderRadius'] ?? '8';
-                $textAlign = $properties['text_align'] ?? $style['textAlign'] ?? 'center';
-                $maxWidth = $properties['max_width'] ?? $style['maxWidth'] ?? '600';
-                $padding = $properties['padding'] ?? $style['padding'] ?? '40';
-                
-                // Typography
-                $titleFontSize = $properties['title_font_size'] ?? '24';
-                $titleFontWeight = $properties['title_font_weight'] ?? '600';
-                $subtitleFontSize = $properties['subtitle_font_size'] ?? '16';
-                $subtitleFontWeight = $properties['subtitle_font_weight'] ?? '400';
-                $buttonFontSize = $properties['button_font_size'] ?? '16';
-                $buttonFontWeight = $properties['button_font_weight'] ?? '600';
-                $buttonPadding = $properties['button_padding'] ?? '12';
-                
-                // Input styling
-                $inputBorderColor = $properties['input_border_color'] ?? '#ddd';
-                $inputPadding = $properties['input_padding'] ?? '12';
-                $inputFontSize = $properties['input_font_size'] ?? '16';
-                
-                // Convert numeric values to px units
-                $paddingPx = is_numeric($padding) ? $padding . 'px' : $padding;
-                $maxWidthPx = is_numeric($maxWidth) ? $maxWidth . 'px' : $maxWidth;
-                $borderRadiusPx = is_numeric($borderRadius) ? $borderRadius . 'px' : $borderRadius;
-                $titleFontSizePx = is_numeric($titleFontSize) ? $titleFontSize . 'px' : $titleFontSize;
-                $subtitleFontSizePx = is_numeric($subtitleFontSize) ? $subtitleFontSize . 'px' : $subtitleFontSize;
-                $buttonFontSizePx = is_numeric($buttonFontSize) ? $buttonFontSize . 'px' : $buttonFontSize;
-                $buttonPaddingPx = is_numeric($buttonPadding) ? $buttonPadding . 'px' : $buttonPadding;
-                $inputPaddingPx = is_numeric($inputPadding) ? $inputPadding . 'px' : $inputPadding;
-                $inputFontSizePx = is_numeric($inputFontSize) ? $inputFontSize . 'px' : $inputFontSize;
+                // Check if we have saved HTML from page builder
+                $savedHtml = $component['html'] ?? '';
+                $newsletterData = $component['newsletterData'] ?? [];
             @endphp
-            <section class="newsletter-section" style="background-color: {{ $backgroundColor }}; color: {{ $textColor }}; padding: {{ $paddingPx }} 20px; text-align: {{ $textAlign }}; {{ $styleStr }}" id="{{ $componentId }}">
-                <div style="max-width: {{ $maxWidthPx }}; margin: 0 auto;">
-                    @if($title)
-                        <h3 class="newsletter-title" style="margin-bottom: 10px; font-size: {{ $titleFontSizePx }}; font-weight: {{ $titleFontWeight }}; color: {{ $textColor }};">{{ $title }}</h3>
-                    @endif
-                    @if($subtitle)
-                        <p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: {{ $subtitleFontSizePx }}; font-weight: {{ $subtitleFontWeight }}; color: {{ $textColor }};">{{ $subtitle }}</p>
-                    @endif
-                    
-                    <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
-                        @csrf
-                        <input type="hidden" name="website_id" value="{{ $website->id ?? '' }}">
-                        
-                        <div style="flex: 1; min-width: 250px; max-width: 400px;">
-                            <input 
-                                type="email" 
-                                name="email" 
-                                class="form-control newsletter-email" 
-                                placeholder="{{ $placeholder }}" 
-                                required
-                                style="border: 1px solid {{ $inputBorderColor }}; border-radius: {{ $borderRadiusPx }}; padding: {{ $inputPaddingPx }} 15px; font-size: {{ $inputFontSizePx }}; width: 100%; outline: none;"
-                            >
-                        </div>
-                        
-                        <button 
-                            type="submit" 
-                            class="btn newsletter-submit-btn"
-                            style="background-color: {{ $buttonColor }}; color: {{ $buttonTextColor }}; border: none; border-radius: {{ $borderRadiusPx }}; padding: {{ $buttonPaddingPx }} 25px; font-size: {{ $buttonFontSizePx }}; font-weight: {{ $buttonFontWeight }}; cursor: pointer; transition: all 0.3s ease;"
-                            onmouseover="this.style.opacity='0.9'"
-                            onmouseout="this.style.opacity='1'"
-                        >
-                            {{ $buttonText }}
-                        </button>
-                    </form>
-                    
-                    <div class="newsletter-message" style="margin-top: 15px; display: none;">
-                        <!-- Success/Error messages will appear here -->
-                    </div>
+            
+            @if($savedHtml)
+                {{-- Use the saved HTML with styles from page builder --}}
+                <div id="{{ $componentId }}">
+                    {!! $savedHtml !!}
                 </div>
-            </section>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.querySelector('#{{ $componentId }} .newsletter-form');
-                    const messageDiv = document.querySelector('#{{ $componentId }} .newsletter-message');
-                    
-                    if (form) {
-                        form.addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            
-                            const formData = new FormData(form);
-                            const button = form.querySelector('.newsletter-submit-btn');
-                            const originalText = button.textContent;
-                            
-                            button.textContent = 'Subscribing...';
-                            button.disabled = true;
-                            
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                messageDiv.style.display = 'block';
-                                if (data.success) {
-                                    messageDiv.innerHTML = '<div style="color: green; font-weight: 500;">' + data.message + '</div>';
-                                    form.reset();
-                                } else {
-                                    messageDiv.innerHTML = '<div style="color: red; font-weight: 500;">' + data.message + '</div>';
-                                }
-                            })
-                            .catch(error => {
-                                messageDiv.style.display = 'block';
-                                messageDiv.innerHTML = '<div style="color: red; font-weight: 500;">An error occurred. Please try again.</div>';
-                            })
-                            .finally(() => {
-                                button.textContent = originalText;
-                                button.disabled = false;
-                                
-                                // Hide message after 5 seconds
-                                setTimeout(() => {
-                                    messageDiv.style.display = 'none';
-                                }, 5000);
-                            });
-                        });
-                    }
-                });
-            </script>
-
-            <style>
-                @media (max-width: 768px) {
-                    #{{ $componentId }} .newsletter-form {
-                        flex-direction: column;
-                        align-items: stretch;
-                    }
-                    
-                    #{{ $componentId }} .newsletter-form > div {
-                        max-width: 100%;
-                    }
-                    
-                    #{{ $componentId }} .newsletter-submit-btn {
-                        width: 100%;
-                        margin-top: 10px;
-                    }
-                }
                 
-                #{{ $componentId }} .newsletter-email:focus {
-                    border-color: {{ $buttonColor }};
-                    box-shadow: 0 0 0 2px rgba({{ hexdec(substr($buttonColor, 1, 2)) }}, {{ hexdec(substr($buttonColor, 3, 2)) }}, {{ hexdec(substr($buttonColor, 5, 2)) }}, 0.25);
-                }
-            </style>
+                {{-- Add newsletter functionality script --}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const newsletterForm = document.querySelector('#{{ $componentId }} .newsletter-form');
+                        const messageDiv = document.querySelector('#{{ $componentId }} .newsletter-message');
+                        
+                        if (newsletterForm) {
+                            // Remove any existing event listeners to prevent duplicates
+                            newsletterForm.replaceWith(newsletterForm.cloneNode(true));
+                            const form = document.querySelector('#{{ $componentId }} .newsletter-form');
+                            
+                            // Update form action to proper route
+                            form.action = '{{ route("newsletter.subscribe") }}';
+                            form.method = 'POST';
+                            
+                            // Add CSRF token if not present
+                            if (!form.querySelector('input[name="_token"]')) {
+                                const csrfInput = document.createElement('input');
+                                csrfInput.type = 'hidden';
+                                csrfInput.name = '_token';
+                                csrfInput.value = '{{ csrf_token() }}';
+                                form.appendChild(csrfInput);
+                            }
+                            
+                            // Add website_id if not present
+                            if (!form.querySelector('input[name="website_id"]')) {
+                                const websiteInput = document.createElement('input');
+                                websiteInput.type = 'hidden';
+                                websiteInput.name = 'website_id';
+                                websiteInput.value = '{{ $check->id ?? "" }}';
+                                form.appendChild(websiteInput);
+                            }
+                            
+                            form.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                
+                                // Validate email before sending
+                                const emailInput = form.querySelector('input[name="email"]');
+                                if (!emailInput || !emailInput.value.trim()) {
+                                    alert('Please enter an email address.');
+                                    return;
+                                }
+                                
+                                // Basic email validation
+                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                if (!emailRegex.test(emailInput.value.trim())) {
+                                    alert('Please enter a valid email address.');
+                                    return;
+                                }
+                                
+                                const formData = new FormData(form);
+                                const button = form.querySelector('.newsletter-submit-btn, button[type="submit"], input[type="submit"]');
+                                const originalText = button ? (button.textContent || button.value) : '';
+                                
+                                if (button) {
+                                    if (button.tagName === 'INPUT') {
+                                        button.value = 'Subscribing...';
+                                    } else {
+                                        button.textContent = 'Subscribing...';
+                                    }
+                                    button.disabled = true;
+                                }
+                                
+                                fetch(form.action, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (messageDiv) {
+                                        messageDiv.style.display = 'block';
+                                        if (data.success) {
+                                            messageDiv.innerHTML = '<div style="color: green; font-weight: 500; padding: 10px; background: #f0f9ff; border: 1px solid #22c55e; border-radius: 4px;">' + data.message + '</div>';
+                                            form.reset();
+                                        } else {
+                                            messageDiv.innerHTML = '<div style="color: red; font-weight: 500; padding: 10px; background: #fef2f2; border: 1px solid #ef4444; border-radius: 4px;">' + data.message + '</div>';
+                                        }
+                                    }
+                                })
+                                .catch(error => {
+                                    if (messageDiv) {
+                                        messageDiv.style.display = 'block';
+                                        messageDiv.innerHTML = '<div style="color: red; font-weight: 500; padding: 10px; background: #fef2f2; border: 1px solid #ef4444; border-radius: 4px;">An error occurred. Please try again.</div>';
+                                    }
+                                })
+                                .finally(() => {
+                                    if (button) {
+                                        if (button.tagName === 'INPUT') {
+                                            button.value = originalText;
+                                        } else {
+                                            button.textContent = originalText;
+                                        }
+                                        button.disabled = false;
+                                    }
+                                    
+                                    // Hide message after 5 seconds
+                                    if (messageDiv) {
+                                        setTimeout(() => {
+                                            messageDiv.style.display = 'none';
+                                        }, 5000);
+                                    }
+                                });
+                            });
+                        }
+                    });
+                </script>
+            @else
+                {{-- Fallback: render basic newsletter if no saved HTML --}}
+                <section class="newsletter-section" style="background-color: #ffffff; color: #000000; padding: 40px 20px; text-align: center;" id="{{ $componentId }}">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <h3 style="margin-bottom: 10px; font-size: 24px; font-weight: 600;">Newsletter</h3>
+                        <p style="margin-bottom: 30px; font-size: 16px; font-weight: 400;">Subscribe to our newsletter</p>
+                        
+                        <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                            @csrf
+                            <input type="hidden" name="website_id" value="{{ $check->id ?? '' }}">
+                            
+                            <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    class="form-control newsletter-email" 
+                                    placeholder="Enter your email address" 
+                                    required
+                                    style="border: 1px solid #ddd; border-radius: 8px; padding: 12px 15px; font-size: 16px; width: 100%; outline: none;"
+                                >
+                            </div>
+                            
+                            <button 
+                                type="submit" 
+                                class="btn newsletter-submit-btn"
+                                style="background-color: #28a745; color: #ffffff; border: none; border-radius: 8px; padding: 12px 25px; font-size: 16px; font-weight: 600; cursor: pointer;"
+                            >
+                                SIGN UP
+                            </button>
+                        </form>
+                        
+                        <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                            <!-- Success/Error messages will appear here -->
+                        </div>
+                    </div>
+                </section>
+            @endif
         @break
 
         @case('contact-form')
@@ -3738,6 +3736,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 // Check if this is a new auth-form with authFormData or old one with hardcoded HTML
                 $authFormData = $component['authFormData'] ?? [];
                 $hasAuthFormData = !empty($authFormData);
+                // dd($authFormData);
                 
                 // Get colors from authFormData if available, otherwise use defaults
                 $backgroundColor = $authFormData['backgroundColor'] ?? '#ffffff';
@@ -3757,7 +3756,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         border-radius: 0.5rem;
                     }
                 </style>
-                <div style="{{ $styleStr }}" class="auth-form-container">
+                <div id="{{ $componentId }}" style="{{ $styleStr }}" class="auth-form-container">
                     <div class="row">
                         <div class="col-md-12 mt-4 mb-4 text-center">
                             <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: {{ $avatarIconColor }} !important;"></i>
@@ -3826,7 +3825,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                                 Register
                                             </button>
-                                            <button class="btn btn-lg p-0 shadow-none view-login-form" type="button" style="color: {{ $linkColor }} !important;">
+                                            <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginForm('{{ $componentId }}')" style="color: {{ $linkColor }} !important; background-color: {{ $buttonColor }} !important;">
                                                 Login
                                             </button>
                                         </div>
@@ -3857,7 +3856,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                                 Login
                                             </button>
-                                            <button class="btn btn-lg p-0 shadow-none view-register-form" type="button" style="color: {{ $linkColor }} !important;">
+                                            <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterForm('{{ $componentId }}')" style="color: {{ $linkColor }} !important;">
                                                 Register
                                             </button>
                                         </div>
@@ -3868,34 +3867,51 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
 
                     <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Toggle between login and register forms
-                            const loginButtons = document.querySelectorAll('.view-login-form');
-                            const registerButtons = document.querySelectorAll('.view-register-form');
-                            const registerForms = document.querySelectorAll('.register');
-                            const loginForms = document.querySelectorAll('.login');
-
-                            loginButtons.forEach(button => {
-                                button.addEventListener('click', function() {
-                                    registerForms.forEach(form => form.style.display = 'none');
-                                    loginForms.forEach(form => form.style.display = 'block');
-                                });
-                            });
-
-                            registerButtons.forEach(button => {
-                                button.addEventListener('click', function() {
-                                    loginForms.forEach(form => form.style.display = 'none');
-                                    registerForms.forEach(form => form.style.display = 'block');
-                                });
-                            });
-                        });
+                        // Simple onclick functions for form toggling
+                        function showLoginForm(componentId) {
+                            const component = document.getElementById(componentId);
+                            if (!component) {
+                                console.warn('Auth form component not found:', componentId);
+                                return;
+                            }
+                            
+                            const registerForm = component.querySelector('.register');
+                            const loginForm = component.querySelector('.login');
+                            const titleElement = component.querySelector('.tit');
+                            
+                            if (registerForm) registerForm.style.display = 'none';
+                            if (loginForm) loginForm.style.display = 'block';
+                            if (titleElement) titleElement.textContent = 'Login';
+                            
+                            console.log('Switched to login form for component:', componentId);
+                        }
+                        
+                        function showRegisterForm(componentId) {
+                            const component = document.getElementById(componentId);
+                            if (!component) {
+                                console.warn('Auth form component not found:', componentId);
+                                return;
+                            }
+                            
+                            const registerForm = component.querySelector('.register');
+                            const loginForm = component.querySelector('.login');
+                            const titleElement = component.querySelector('.tit');
+                            
+                            if (loginForm) loginForm.style.display = 'none';
+                            if (registerForm) registerForm.style.display = 'block';
+                            if (titleElement) titleElement.textContent = 'Register';
+                            
+                            console.log('Switched to register form for component:', componentId);
+                        }
 
                         function toggleGroupSelect(selectElement) {
                             const groupWrapper = document.getElementById('group_select_wrapper');
-                            if (selectElement.value === 'group') {
-                                groupWrapper.style.display = 'block';
-                            } else {
-                                groupWrapper.style.display = 'none';
+                            if (groupWrapper) {
+                                if (selectElement.value === 'group') {
+                                    groupWrapper.style.display = 'block';
+                                } else {
+                                    groupWrapper.style.display = 'none';
+                                }
                             }
                         }
                     </script>
@@ -3905,6 +3921,37 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 <div style="{{ $styleStr }}">
                     @if(isset($component['html']))
                         {!! $component['html'] !!}
+
+                        <script>
+         // Add global onclick functions for page builder preview
+            if (!window.showLoginFormPreview) {
+                window.showLoginFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    
+                    const registerForm = document.getElementsByClassName('register');
+                    console.log(registerForm);
+                    const loginForm = document.getElementsByClassName('login');
+                    const titleElement = document.getElementsByClassName('tit');
+
+                    if (registerForm) registerForm[0].style.display = 'none';
+                    if (loginForm) loginForm[0].style.display = 'block';
+                    if (titleElement) titleElement[0].textContent = 'Login';
+                };
+            }
+            
+            if (!window.showRegisterFormPreview) {
+                window.showRegisterFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    const registerForm = document.getElementsByClassName('register');
+                    const loginForm = document.getElementsByClassName('login');
+                    const titleElement = document.getElementsByClassName('tit');
+
+                    if (loginForm) loginForm[0].style.display = 'none';
+                    if (registerForm) registerForm[0].style.display = 'block';
+                    if (titleElement) titleElement.textContent = 'Register';
+                };
+            }
+    </script>
                     @else
                         {{-- Default auth form if no HTML is available --}}
                         <div class="auth-form-container" style="background-color: {{ $backgroundColor }}; padding: 2rem; border-radius: 0.5rem;">

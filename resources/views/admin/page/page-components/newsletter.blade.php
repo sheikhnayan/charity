@@ -230,19 +230,52 @@ document.addEventListener('DOMContentLoaded', function() {
     const propertyInputs = document.querySelectorAll('.newsletter-settings .component-property');
     propertyInputs.forEach(input => {
         input.addEventListener('input', function() {
-            updateNewsletterComponent();
+            updateNewsletterPropertyFromPanel(this);
         });
         input.addEventListener('change', function() {
-            updateNewsletterComponent();
+            updateNewsletterPropertyFromPanel(this);
         });
     });
 });
 
-function updateNewsletterComponent() {
-    // This function will be called when properties change
-    // The actual update logic should be handled by the page builder
-    if (typeof updateComponentPreview === 'function') {
-        updateComponentPreview();
+function updateNewsletterPropertyFromPanel(input) {
+    const property = input.dataset.property;
+    const value = input.type === 'checkbox' ? input.checked : input.value;
+    
+    // Map property names from panel to newsletter data structure
+    const propertyMap = {
+        'title': 'title',
+        'subtitle': 'subtitle', 
+        'placeholder': 'placeholder',
+        'button_text': 'buttonText',
+        'background_color': 'backgroundColor',
+        'text_color': 'textColor',
+        'button_color': 'buttonColor',
+        'button_text_color': 'buttonTextColor',
+        'input_border_color': 'inputBorderColor',
+        'border_radius': 'borderRadius',
+        'text_align': 'textAlign',
+        'max_width': 'maxWidth',
+        'padding': 'padding',
+        'title_font_size': 'titleFontSize',
+        'title_font_weight': 'titleFontWeight',
+        'subtitle_font_size': 'subtitleFontSize',
+        'subtitle_font_weight': 'subtitleFontWeight',
+        'button_font_size': 'buttonFontSize',
+        'button_font_weight': 'buttonFontWeight',
+        'button_padding': 'buttonPadding',
+        'input_padding': 'inputPadding',
+        'input_font_size': 'inputFontSize'
+    };
+    
+    const newsletterDataField = propertyMap[property];
+    if (newsletterDataField && typeof updateNewsletterField === 'function') {
+        updateNewsletterField(value, newsletterDataField);
     }
+}
+
+function updateNewsletterComponent() {
+    // Legacy function - no longer needed with proper property handling
+    console.log('updateNewsletterComponent called (legacy)');
 }
 </script>

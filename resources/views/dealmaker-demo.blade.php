@@ -701,51 +701,141 @@ a,
                 loading="lazy" alt="close video button" class="image-8" /></a>
     </div>
     <div class="n_video_bg">
-        <div data-poster-url="{{ $setting->bg_video_poster ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg' }}"
-            data-video-urls="{{ $setting->bg_video_mp4 ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-transcode.mp4' }},{{ $setting->bg_video_webm ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-transcode.webm' }}"
-            data-autoplay="true" data-loop="true" data-wf-ignore="true"
-            class="n_video_bg w-background-video w-background-video-atom"><video
-                id="3083ba91-e1cd-2005-68db-ee23494a5ce6-video" autoplay="" loop=""
-                style="background-image:url(&quot;{{ $setting->bg_video_poster ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg' }}&quot;)"
-                muted="" playsinline="" data-wf-ignore="true" data-object-fit="cover">
-                <source
-                    src="{{ $setting->bg_video_mp4 ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-transcode.mp4' }}"
-                    data-wf-ignore="true" />
-                <source
-                    src="{{ $setting->bg_video_webm ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-transcode.webm' }}"
-                    data-wf-ignore="true" />
-            </video><noscript>
-                <style>
-                    [data-wf-bgvideo-fallback-img] {
-                        display: none;
-                    }
-
-                    @media (prefers-reduced-motion: reduce) {
-                        [data-wf-bgvideo-fallback-img] {
-                            position: absolute;
-                            z-index: -100;
-                            display: inline-block;
-                            height: 100%;
-                            width: 100%;
-                            object-fit: cover;
-                        }
-                    }
-                </style><img data-wf-bgvideo-fallback-img="true"
-                    src="{{ $setting->bg_video_poster ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg' }}"
-                    alt="" />
-            </noscript>
-            <div aria-live="polite"><button type="button" data-w-bg-video-control="true"
-                    aria-controls="3083ba91-e1cd-2005-68db-ee23494a5ce6-video"
-                    class="w-backgroundvideo-backgroundvideoplaypausebutton w-background-video--control"><span><img
-                            src="https://cdn.prod.website-files.com/6022af993a6b2191db3ed10c/628299f8aa233b83918e24fd_Pause.svg"
-                            loading="lazy" alt="Pause video" /></span><span hidden=""><img loading="lazy"
-                            alt="Play video"
-                            src="https://cdn.prod.website-files.com/6022af993a6b2191db3ed10c/628298b20ae0236682d4b87f_Play-24.svg" /></span></button>
+        @php
+            $videoUrl = $setting->bg_video_url ?? $setting->hero_background_video ?? '';
+            // dd($videoUrl);
+            $posterUrl = $setting->bg_video_poster_url ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg';
+            $isYouTube = str_contains($videoUrl, 'youtube.com') || str_contains($videoUrl, 'youtu.be');
+            $isVimeo = str_contains($videoUrl, 'vimeo.com');
+            
+            // Convert YouTube URL to embed format
+            if ($isYouTube) {
+                // dd($videoUrl);
+                if (str_contains($videoUrl, 'watch?v=')) {
+                    parse_str(parse_url($videoUrl, PHP_URL_QUERY), $params);
+                    $videoId = $params['v'] ?? '';
+                } elseif (str_contains($videoUrl, 'youtu.be/')) {
+                    $videoId = basename(parse_url($videoUrl, PHP_URL_PATH));
+                } elseif (str_contains($videoUrl, 'embed/')) {
+                    // Already an embed URL, extract video ID
+                    $parts = explode('embed/', $videoUrl);
+                    $videoId = explode('?', $parts[1] ?? '')[0];
+                } else {
+                    $videoId = '';
+                }
+                
+                if ($videoId) {
+                    // Use more compatible YouTube embed parameters
+                    $embedUrl = "https://www.youtube.com/embed/{$videoId}?autoplay=1&mute=1&loop=1&playlist={$videoId}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0&enablejsapi=1&origin=" . urlencode(request()->getSchemeAndHttpHost());
+                    
+                    // Alternative embed URL for restricted videos
+                    $altEmbedUrl = "https://www.youtube-nocookie.com/embed/{$videoId}?autoplay=1&mute=1&loop=1&playlist={$videoId}&controls=0&modestbranding=1&rel=0";
+                } else {
+                    $embedUrl = $videoUrl;
+                    $altEmbedUrl = $videoUrl;
+                }
+            } elseif ($isVimeo) {
+                $videoId = basename(parse_url($videoUrl, PHP_URL_PATH));
+                $embedUrl = "https://player.vimeo.com/video/{$videoId}?autoplay=1&muted=1&loop=1&background=1&controls=0";
+            } else {
+                $embedUrl = $videoUrl;
+            }
+        @endphp
+        
+        <div class="hero-video-container" style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
+            @if($isYouTube || $isVimeo)
+                {{-- YouTube or Vimeo embedded video --}}
+                <iframe 
+                    src="{{ $embedUrl }}"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                    loading="lazy"
+                    onload="this.style.opacity=1;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1000; transform: translateX(-50%) translateY(-50%); background: url('{{ $posterUrl }}') center center; background-size: cover; opacity: 0; transition: opacity 0.5s;">
+                </iframe>
+                {{-- Fallback for failed video loading --}}
+                <div style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;"></div>
+            @elseif($videoUrl)
+                {{-- Direct video file --}}
+                <video 
+                    autoplay 
+                    loop 
+                    muted 
+                    playsinline 
+                    style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1000; transform: translateX(-50%) translateY(-50%); object-fit: cover;"
+                    poster="{{ $posterUrl }}">
+                    <source src="{{ $videoUrl }}" type="video/mp4">
+                </video>
+            @else
+                {{-- Fallback background image --}}
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;"></div>
+            @endif
+            
+            {{-- Hero content overlay using existing hero section settings --}}
+            <div class="hero-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 1;">
+                <div class="hero-content" style="max-width: 800px; padding: 2rem;">
+                    {{-- Use existing hero section data --}}
+                    <div class="dmn-line max-width-full" style="background: #8EE8DF; height: 2px; width: 100px; margin: 0 auto 1rem;"></div>
+                    <div class="text-block-85" style="font-size: 1rem; margin-bottom: 1rem; color: #8EE8DF;">
+                        {{ $setting->announcement_text ?? 'The Future Of Retail Capital.' }}
+                        <a href="{{ $setting->announcement_url ?? '/connect' }}" style="color: #8EE8DF; text-decoration: none;">
+                            <strong>{{ $setting->hero_subtitle ?? 'Raise Boldly' }}</strong>
+                        </a>
+                    </div>
+                    <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.1;">
+                        {{ $setting->hero_title ?? 'The Future Of Retail Capital' }}
+                    </h1>
+                    @if($setting->hero_cta_text && $setting->hero_cta_url)
+                        <a href="{{ $setting->hero_cta_url }}" 
+                           class="hero-cta-button" 
+                           style="display: inline-block; background: #f31cb6; color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
+                            {{ $setting->hero_cta_text }}
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
-        <div class="n_video_overlay is-darker">
-            <div class="n-play-icon-wrapper"></div>
-        </div>
+        
+        @if($isYouTube)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const iframe = document.querySelector('.hero-video-container iframe');
+                const fallbackDiv = document.querySelector('.hero-video-container iframe + div');
+                
+                // Set a timeout to check if video loads
+                setTimeout(function() {
+                    // If iframe is still not visible (opacity 0), try alternative embed URL
+                    if (iframe && iframe.style.opacity === '0') {
+                        console.log('Primary YouTube embed failed, trying alternative...');
+                        iframe.src = '{{ $altEmbedUrl ?? "" }}';
+                        
+                        // Give alternative URL time to load
+                        setTimeout(function() {
+                            if (iframe.style.opacity === '0') {
+                                console.log('Alternative YouTube embed failed, showing fallback image...');
+                                iframe.style.display = 'none';
+                                if (fallbackDiv) {
+                                    fallbackDiv.style.display = 'block';
+                                }
+                            }
+                        }, 3000);
+                    }
+                }, 5000);
+                
+                // Handle iframe error
+                iframe.addEventListener('error', function() {
+                    console.log('YouTube embed error, showing fallback...');
+                    this.style.display = 'none';
+                    if (fallbackDiv) {
+                        fallbackDiv.style.display = 'block';
+                    }
+                });
+            });
+        </script>
+        @endif
     </div>
     </header>
     <main magic-video="true" class="main" style="margin-top: 38rem;">

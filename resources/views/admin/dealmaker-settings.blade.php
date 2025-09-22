@@ -189,32 +189,19 @@
                                 <i class="fas fa-video me-2"></i>Video Settings
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
-                                    <label class="form-label">Background Video (MP4)</label>
-                                    <input type="file" class="form-control" name="bg_video_mp4" accept="video/mp4">
-                                    @if($setting->bg_video_mp4)
-                                        <div class="mt-2">
-                                            <small class="text-muted">Current: {{ basename($setting->bg_video_mp4) }}</small>
-                                        </div>
-                                    @endif
+                                <div class="col-md-6">
+                                    <label class="form-label">Background Video URL</label>
+                                    <input type="url" class="form-control" name="bg_video_url" 
+                                           value="{{ $setting->bg_video_url ?? $setting->hero_background_video }}" 
+                                           placeholder="https://www.youtube.com/watch?v=... or https://example.com/video.mp4">
+                                    <small class="text-muted">YouTube, Vimeo, or direct video URL supported</small>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Background Video (WebM)</label>
-                                    <input type="file" class="form-control" name="bg_video_webm" accept="video/webm">
-                                    @if($setting->bg_video_webm)
-                                        <div class="mt-2">
-                                            <small class="text-muted">Current: {{ basename($setting->bg_video_webm) }}</small>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Background Video Poster</label>
-                                    <input type="file" class="form-control" name="bg_video_poster" accept="image/*">
-                                    @if($setting->bg_video_poster)
-                                        <div class="mt-2">
-                                            <img src="{{ asset('storage/' . $setting->bg_video_poster) }}" alt="Current poster" style="max-width: 100px; max-height: 60px;">
-                                        </div>
-                                    @endif
+                                <div class="col-md-6">
+                                    <label class="form-label">Video Poster Image URL</label>
+                                    <input type="url" class="form-control" name="bg_video_poster_url" 
+                                           value="{{ $setting->bg_video_poster_url ?? '' }}" 
+                                           placeholder="https://example.com/poster.jpg">
+                                    <small class="text-muted">Poster image for video (optional)</small>
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Modal Video URL (Desktop)</label>

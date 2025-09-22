@@ -4049,7 +4049,7 @@ break;
         case 'newsletter':
             content = document.createElement('div');
             content.className = 'newsletter-component';
-            content._newsletterData = {
+            content.newsletterData = {
                 title: 'Newsletter',
                 subtitle: 'Subscribe to our newsletter',
                 placeholder: 'Enter your email address',
@@ -4075,7 +4075,7 @@ break;
             };
             
             content.renderNewsletter = function() {
-                const d = content._newsletterData;
+                const d = content.newsletterData;
                 if (!d) return;
                 
                 content.innerHTML = `
@@ -4084,8 +4084,8 @@ break;
                             ${d.title ? `<h3 class="newsletter-title" style="margin-bottom: 10px; font-size: ${d.titleFontSize}px; font-weight: ${d.titleFontWeight}; color: ${d.textColor};">${d.title}</h3>` : ''}
                             ${d.subtitle ? `<p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: ${d.subtitleFontSize}px; font-weight: ${d.subtitleFontWeight}; color: ${d.textColor};">${d.subtitle}</p>` : ''}
                             
-                            <form class="newsletter-form" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
-                                <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                            <form class="newsletter-form" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                                <div class="newsletter-input-wrapper" style="flex: 1; min-width: 250px; max-width: 400px;">
                                     <input 
                                         type="email" 
                                         name="email" 
@@ -4097,10 +4097,9 @@ break;
                                 </div>
                                 
                                 <button 
-                                    type="button" 
+                                    type="submit" 
                                     class="btn newsletter-submit-btn"
                                     style="background-color: ${d.buttonColor}; color: ${d.buttonTextColor}; border: none; border-radius: ${d.borderRadius}px; padding: ${d.buttonPadding}px 25px; font-size: ${d.buttonFontSize}px; font-weight: ${d.buttonFontWeight}; cursor: pointer; transition: all 0.3s ease;"
-                                    onclick="alert('Newsletter signup disabled in page builder preview mode')"
                                 >
                                     ${d.buttonText}
                                 </button>
@@ -4111,6 +4110,9 @@ break;
                             </div>
                         </div>
                     </section>
+                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,193,7,0.9); color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; z-index: 100; pointer-events: none;">
+                        Newsletter Preview Mode
+                    </div>
                 `;
             };
             
@@ -5577,7 +5579,7 @@ break;
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Register
                                 </button>
-                                <button class="btn btn-lg p-0 shadow-none view-login-form" type="button" style="color: ${data.linkColor} !important;">
+                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginFormPreview(this)" style="color: ${data.linkColor} !important; background-color: ${data.buttonColor} !important;">
                                     Login
                                 </button>
                             </div>
@@ -5608,7 +5610,7 @@ break;
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Login
                                 </button>
-                                <button class="btn btn-lg p-0 shadow-none view-register-form" type="button" style="color: ${data.linkColor} !important;">
+                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterFormPreview(this)" style="color: ${data.linkColor} !important; background-color: ${data.buttonColor} !important;">
                                     Register
                                 </button>
                             </div>
@@ -5618,28 +5620,32 @@ break;
             </div>
         </div>`;
             
-            // Add event listeners after rendering
-            setTimeout(() => {
-                const container = content;
-                const loginButtons = container.querySelectorAll('.view-login-form');
-                const registerButtons = container.querySelectorAll('.view-register-form');
-                const registerForms = container.querySelectorAll('.register');
-                const loginForms = container.querySelectorAll('.login');
-
-                loginButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        registerForms.forEach(form => form.style.display = 'none');
-                        loginForms.forEach(form => form.style.display = 'block');
-                    });
-                });
-
-                registerButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        loginForms.forEach(form => form.style.display = 'none');
-                        registerForms.forEach(form => form.style.display = 'block');
-                    });
-                });
-            }, 100);
+            // Add global onclick functions for page builder preview
+            if (!window.showLoginFormPreview) {
+                window.showLoginFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    const registerForm = container.querySelector('.register');
+                    const loginForm = container.querySelector('.login');
+                    const titleElement = container.querySelector('.tit');
+                    
+                    if (registerForm) registerForm.style.display = 'none';
+                    if (loginForm) loginForm.style.display = 'block';
+                    if (titleElement) titleElement.textContent = 'Login';
+                };
+            }
+            
+            if (!window.showRegisterFormPreview) {
+                window.showRegisterFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    const registerForm = container.querySelector('.register');
+                    const loginForm = container.querySelector('.login');
+                    const titleElement = container.querySelector('.tit');
+                    
+                    if (loginForm) loginForm.style.display = 'none';
+                    if (registerForm) registerForm.style.display = 'block';
+                    if (titleElement) titleElement.textContent = 'Register';
+                };
+            }
             
             // Add global toggleGroupSelect function for this component
             if (!window.toggleGroupSelect) {
@@ -8659,7 +8665,7 @@ break;
             break;
 
             case 'newsletter':
-                const newsletterData = content._newsletterData || {
+                const newsletterData = content.newsletterData || {
                     title: 'Newsletter',
                     subtitle: 'Subscribe to our newsletter',
                     placeholder: 'Enter your email address',
@@ -10185,45 +10191,39 @@ function updateNewsletterField(value, field) {
     const content = getContentElement(selectedComponent);
     
     // Initialize newsletter data if it doesn't exist
-    if (!content._newsletterData) {
-        content._newsletterData = {
+    if (!content.newsletterData) {
+        content.newsletterData = {
             title: 'Subscribe to Our Newsletter',
             subtitle: 'Stay updated with our latest news and offers',
             buttonText: 'Subscribe',
             placeholder: 'Enter your email address',
-            bgColor: '#f8f9fa',
-            titleColor: '#333333',
-            subtitleColor: '#666666',
-            buttonBgColor: '#007bff',
+            backgroundColor: '#ffffff',
+            textColor: '#000000',
+            buttonColor: '#28a745',
             buttonTextColor: '#ffffff',
+            padding: '40',
+            borderRadius: '8',
+            textAlign: 'center',
+            maxWidth: '600',
+            titleFontSize: '24',
+            titleFontWeight: '600',
+            subtitleFontSize: '16',
+            subtitleFontWeight: '400',
+            buttonFontSize: '16',
+            buttonFontWeight: '600',
+            buttonPadding: '12',
             inputBorderColor: '#ddd',
-            showSubtitle: true
+            inputPadding: '12',
+            inputFontSize: '16'
         };
     }
     
     // Update the field
-    content._newsletterData[field] = value;
+    content.newsletterData[field] = value;
     
-    // Re-render the component
-    const wrapper = content.querySelector('.newsletter-wrapper');
-    if (wrapper) {
-        const d = content._newsletterData;
-        wrapper.style.backgroundColor = d.bgColor;
-        wrapper.innerHTML = `
-            <div class="newsletter-content" style="max-width: 500px; margin: 0 auto; text-align: center;">
-                <h3 style="color: ${d.titleColor}; margin-bottom: ${d.showSubtitle ? '10px' : '20px'}; font-size: 24px; font-weight: 600;">${d.title}</h3>
-                ${d.showSubtitle ? `<p style="color: ${d.subtitleColor}; margin-bottom: 20px; font-size: 16px;">${d.subtitle}</p>` : ''}
-                <form class="newsletter-form" style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
-                    <input type="email" placeholder="${d.placeholder}" 
-                           style="flex: 1; padding: 12px 15px; border: 1px solid ${d.inputBorderColor}; border-radius: 4px; font-size: 14px;" 
-                           required>
-                    <button type="submit" 
-                            style="background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; border: none; padding: 12px 20px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">
-                        ${d.buttonText}
-                    </button>
-                </form>
-            </div>
-        `;
+    // Re-render the component using the existing renderNewsletter function
+    if (content.renderNewsletter) {
+        content.renderNewsletter();
     }
 }
 
@@ -12382,21 +12382,32 @@ function applyResponsiveStyles() {
                 break;
 
             case 'newsletter':
-                data.newsletterData = content._newsletterData;
+                data.newsletterData = content.newsletterData;
                 // Also save to properties for front-end compatibility
-                if (content._newsletterData) {
+                if (content.newsletterData) {
                     data.properties = data.properties || {};
-                    data.properties.title = content._newsletterData.title || 'Subscribe to Our Newsletter';
-                    data.properties.subtitle = content._newsletterData.subtitle || 'Stay updated with our latest news and offers';
-                    data.properties.button_text = content._newsletterData.buttonText || 'Subscribe';
-                    data.properties.placeholder = content._newsletterData.placeholder || 'Enter your email address';
-                    data.properties.background_color = content._newsletterData.bgColor || '#f8f9fa';
-                    data.properties.title_color = content._newsletterData.titleColor || '#333333';
-                    data.properties.subtitle_color = content._newsletterData.subtitleColor || '#666666';
-                    data.properties.button_bg_color = content._newsletterData.buttonBgColor || '#007bff';
-                    data.properties.button_text_color = content._newsletterData.buttonTextColor || '#ffffff';
-                    data.properties.input_border_color = content._newsletterData.inputBorderColor || '#ddd';
-                    data.properties.show_subtitle = content._newsletterData.showSubtitle !== false;
+                    data.properties.title = content.newsletterData.title || 'Subscribe to Our Newsletter';
+                    data.properties.subtitle = content.newsletterData.subtitle || 'Stay updated with our latest news and offers';
+                    data.properties.button_text = content.newsletterData.buttonText || 'Subscribe';
+                    data.properties.placeholder = content.newsletterData.placeholder || 'Enter your email address';
+                    data.properties.background_color = content.newsletterData.backgroundColor || '#ffffff';
+                    data.properties.text_color = content.newsletterData.textColor || '#000000';
+                    data.properties.button_color = content.newsletterData.buttonColor || '#28a745';
+                    data.properties.button_text_color = content.newsletterData.buttonTextColor || '#ffffff';
+                    data.properties.input_border_color = content.newsletterData.inputBorderColor || '#ddd';
+                    data.properties.border_radius = content.newsletterData.borderRadius || '8';
+                    data.properties.text_align = content.newsletterData.textAlign || 'center';
+                    data.properties.max_width = content.newsletterData.maxWidth || '600';
+                    data.properties.padding = content.newsletterData.padding || '40';
+                    data.properties.title_font_size = content.newsletterData.titleFontSize || '24';
+                    data.properties.title_font_weight = content.newsletterData.titleFontWeight || '600';
+                    data.properties.subtitle_font_size = content.newsletterData.subtitleFontSize || '16';
+                    data.properties.subtitle_font_weight = content.newsletterData.subtitleFontWeight || '400';
+                    data.properties.button_font_size = content.newsletterData.buttonFontSize || '16';
+                    data.properties.button_font_weight = content.newsletterData.buttonFontWeight || '600';
+                    data.properties.button_padding = content.newsletterData.buttonPadding || '12';
+                    data.properties.input_padding = content.newsletterData.inputPadding || '12';
+                    data.properties.input_font_size = content.newsletterData.inputFontSize || '16';
                 }
                 break;
 
@@ -12915,13 +12926,24 @@ function applyResponsiveStyles() {
                     subtitle: 'Stay updated with our latest news and offers',
                     buttonText: 'Subscribe',
                     placeholder: 'Enter your email address',
-                    bgColor: '#f8f9fa',
-                    titleColor: '#333333',
-                    subtitleColor: '#666666',
-                    buttonBgColor: '#007bff',
+                    backgroundColor: '#ffffff',
+                    textColor: '#000000',
+                    buttonColor: '#28a745',
                     buttonTextColor: '#ffffff',
+                    padding: '40',
+                    borderRadius: '8',
+                    textAlign: 'center',
+                    maxWidth: '600',
+                    titleFontSize: '24',
+                    titleFontWeight: '600',
+                    subtitleFontSize: '16',
+                    subtitleFontWeight: '400',
+                    buttonFontSize: '16',
+                    buttonFontWeight: '600',
+                    buttonPadding: '12',
                     inputBorderColor: '#ddd',
-                    showSubtitle: true
+                    inputPadding: '12',
+                    inputFontSize: '16'
                 };
                 
                 // If we have properties from front-end, map them back to builder format
@@ -12930,36 +12952,30 @@ function applyResponsiveStyles() {
                     newsletterDefaults.subtitle = data.properties.subtitle || newsletterDefaults.subtitle;
                     newsletterDefaults.buttonText = data.properties.button_text || newsletterDefaults.buttonText;
                     newsletterDefaults.placeholder = data.properties.placeholder || newsletterDefaults.placeholder;
-                    newsletterDefaults.bgColor = data.properties.background_color || newsletterDefaults.bgColor;
-                    newsletterDefaults.titleColor = data.properties.title_color || newsletterDefaults.titleColor;
-                    newsletterDefaults.subtitleColor = data.properties.subtitle_color || newsletterDefaults.subtitleColor;
-                    newsletterDefaults.buttonBgColor = data.properties.button_bg_color || newsletterDefaults.buttonBgColor;
+                    newsletterDefaults.backgroundColor = data.properties.background_color || newsletterDefaults.backgroundColor;
+                    newsletterDefaults.textColor = data.properties.text_color || newsletterDefaults.textColor;
+                    newsletterDefaults.buttonColor = data.properties.button_color || newsletterDefaults.buttonColor;
                     newsletterDefaults.buttonTextColor = data.properties.button_text_color || newsletterDefaults.buttonTextColor;
                     newsletterDefaults.inputBorderColor = data.properties.input_border_color || newsletterDefaults.inputBorderColor;
-                    newsletterDefaults.showSubtitle = data.properties.show_subtitle !== false;
+                    newsletterDefaults.borderRadius = data.properties.border_radius || newsletterDefaults.borderRadius;
+                    newsletterDefaults.textAlign = data.properties.text_align || newsletterDefaults.textAlign;
+                    newsletterDefaults.maxWidth = data.properties.max_width || newsletterDefaults.maxWidth;
+                    newsletterDefaults.padding = data.properties.padding || newsletterDefaults.padding;
+                    newsletterDefaults.titleFontSize = data.properties.title_font_size || newsletterDefaults.titleFontSize;
+                    newsletterDefaults.titleFontWeight = data.properties.title_font_weight || newsletterDefaults.titleFontWeight;
+                    newsletterDefaults.subtitleFontSize = data.properties.subtitle_font_size || newsletterDefaults.subtitleFontSize;
+                    newsletterDefaults.subtitleFontWeight = data.properties.subtitle_font_weight || newsletterDefaults.subtitleFontWeight;
+                    newsletterDefaults.buttonFontSize = data.properties.button_font_size || newsletterDefaults.buttonFontSize;
+                    newsletterDefaults.buttonFontWeight = data.properties.button_font_weight || newsletterDefaults.buttonFontWeight;
+                    newsletterDefaults.buttonPadding = data.properties.button_padding || newsletterDefaults.buttonPadding;
+                    newsletterDefaults.inputPadding = data.properties.input_padding || newsletterDefaults.inputPadding;
+                    newsletterDefaults.inputFontSize = data.properties.input_font_size || newsletterDefaults.inputFontSize;
                 }
                 
-                actualContent._newsletterData = data.newsletterData || newsletterDefaults;
-                // Re-render the component with saved data
-                const newsletterWrapper = actualContent.querySelector('.newsletter-wrapper');
-                if (newsletterWrapper) {
-                    const d = actualContent._newsletterData;
-                    newsletterWrapper.style.backgroundColor = d.bgColor;
-                    newsletterWrapper.innerHTML = `
-                        <div class="newsletter-content" style="max-width: 500px; margin: 0 auto; text-align: center;">
-                            <h3 style="color: ${d.titleColor}; margin-bottom: ${d.showSubtitle ? '10px' : '20px'}; font-size: 24px; font-weight: 600;">${d.title}</h3>
-                            ${d.showSubtitle ? `<p style="color: ${d.subtitleColor}; margin-bottom: 20px; font-size: 16px;">${d.subtitle}</p>` : ''}
-                            <form class="newsletter-form" style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
-                                <input type="email" placeholder="${d.placeholder}" 
-                                       style="flex: 1; padding: 12px 15px; border: 1px solid ${d.inputBorderColor}; border-radius: 4px; font-size: 14px;" 
-                                       required>
-                                <button type="submit" 
-                                        style="background-color: ${d.buttonBgColor}; color: ${d.buttonTextColor}; border: none; padding: 12px 20px; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;">
-                                    ${d.buttonText}
-                                </button>
-                            </form>
-                        </div>
-                    `;
+                actualContent.newsletterData = data.newsletterData || newsletterDefaults;
+                // Re-render the component with saved data using the renderNewsletter function
+                if (actualContent.renderNewsletter) {
+                    actualContent.renderNewsletter();
                 }
                 if (data.style) Object.assign(actualContent.style, data.style);
                 if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);

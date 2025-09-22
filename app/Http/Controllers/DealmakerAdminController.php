@@ -17,6 +17,7 @@ class DealmakerAdminController extends Controller
 
     public function update(Request $request)
     {
+        // dd($request->all());
         \Log::info('DealMaker Admin Update - Request Data: ' . json_encode($request->all()));
         \Log::info('DealMaker Admin Update - Files: ' . json_encode($request->allFiles()));
         
@@ -42,26 +43,16 @@ class DealmakerAdminController extends Controller
         $data['show_facebook'] = $request->has('show_facebook');
         $data['show_instagram'] = $request->has('show_instagram');
 
-        // Handle file uploads
-        if ($request->hasFile('bg_video_mp4')) {
-            $file = $request->file('bg_video_mp4');
-            $filename = time() . '_bg_video.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/dealmaker'), $filename);
-            $data['bg_video_mp4'] = 'uploads/dealmaker/' . $filename;
+        // Handle video URLs
+        if ($request->filled('bg_video_url')) {
+            $data['bg_video_url'] = $request->input('bg_video_url');
+            // $data['hero_background_video'] = $request->input('bg_video_url');
         }
 
-        if ($request->hasFile('bg_video_webm')) {
-            $file = $request->file('bg_video_webm');
-            $filename = time() . '_bg_video_webm.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/dealmaker'), $filename);
-            $data['bg_video_webm'] = 'uploads/dealmaker/' . $filename;
-        }
+        // dd($data['bg_video_url']);
 
-        if ($request->hasFile('bg_video_poster')) {
-            $file = $request->file('bg_video_poster');
-            $filename = time() . '_bg_poster.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/dealmaker'), $filename);
-            $data['bg_video_poster'] = 'uploads/dealmaker/' . $filename;
+        if ($request->filled('bg_video_poster_url')) {
+            $data['bg_video_poster_url'] = $request->input('bg_video_poster_url');
         }
 
         // Handle Final CTA background image uploads
