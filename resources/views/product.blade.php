@@ -506,7 +506,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <script type="module">
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
     /* ──────────────────────────
        1.  Number‑format helper
@@ -517,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
             maximumFractionDigits: decimals
         });
 
-    // Firebase config … (unchanged)
+    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
         authDomain: "charity-390ca.firebaseapp.com",
@@ -525,8 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         storageBucket: "charity-390ca.firebasestorage.app",
         messagingSenderId: "875958450032",
         appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
-        measurementId: "G-FC73HL5XF3",
-        databaseURL: "https://charity-390ca-default-rtdb.firebaseio.com"
+        measurementId: "G-FC73HL5XF3"
     };
 
     // Initialize Firebase only once
@@ -536,7 +534,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         app = getApps()[0];
     }
-    const db = getDatabase(app);
     const firestore = getFirestore(app);
 
     const auctionId   = "{{ $data->id }}";
@@ -548,30 +545,19 @@ document.addEventListener('DOMContentLoaded', function() {
        2.  Show latest bid
        ────────────────────────── */
     async function showLatestBid() {
-        const bidRef  = ref(db, 'bid/' + auctionId + '/amount');
-        const snapshot = await get(bidRef);
-        let amount    = snapshot.val();
-
-        if (amount !== null) {
+        // Get latest bid from Firestore only
+        const q = query(
+            collection(firestore, "bid"),
+            where("auction_id", "==", auctionId),
+            orderBy("amount", "desc"),
+            limit(1)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            const amount = querySnapshot.docs[0].data().amount;
             lastBid = Number(amount);
             priceDiv.textContent = '$' + formatMoney(lastBid, 2);
             if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-        } else {
-            // Fallback to Firestore
-            const q = query(
-                collection(firestore, "bid"),
-                where("auction_id", "==", auctionId),
-                orderBy("amount", "desc"),
-                limit(1)
-            );
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                amount  = querySnapshot.docs[0].data().amount;
-                lastBid = Number(amount);
-                priceDiv.textContent = '$' + formatMoney(lastBid, 2);
-                if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-                await set(bidRef, lastBid);          // cache for next time
-            }
         }
     }
 
@@ -652,9 +638,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 amount,
                 timestamp: new Date()
             });
-
-            // Update realtime cache
-            await set(ref(db, 'bid/' + auctionId + '/amount'), amount);
 
             // Refresh UI
             await showLatestBid();
