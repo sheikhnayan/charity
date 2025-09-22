@@ -382,7 +382,6 @@ a,
                                 </svg></div>
                         </a>
                     </div>
-                </div>
             @endif
             <div class="navbar_container n-new w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><a href="/"
                     aria-current="page" class="navbar_logo-link w-nav-brand w--current">
@@ -563,6 +562,7 @@ a,
                     </div>
                 </div>
             </div>
+        </div>
         </div>
         <div class="code-embed-6 w-embed w-script">
             <script>

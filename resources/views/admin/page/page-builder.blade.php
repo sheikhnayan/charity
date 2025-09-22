@@ -5434,6 +5434,23 @@ break;
                         </form>
                     </div>
                 </section>`;
+                
+                // Initialize tooltips for donation form
+                content.initTooltips = function() {
+                    // Wait for DOM insertion then initialize Bootstrap tooltips
+                    setTimeout(() => {
+                        const tooltips = content.querySelectorAll('[data-bs-toggle="tooltip"]');
+                        tooltips.forEach(tooltip => {
+                            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                                new bootstrap.Tooltip(tooltip);
+                            }
+                        });
+                    }, 100);
+                };
+                
+                // Initialize tooltips when component is first created
+                content.initTooltips();
+                
         break;
         case 'donor-list':
             content = document.createElement('div');
@@ -9590,6 +9607,15 @@ function updateDonationFormFeeTooltip(value) {
     if (feeIcon) {
         feeIcon.setAttribute('data-description', value);
         feeIcon.setAttribute('title', value);
+        
+        // Dispose existing tooltip and create new one
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            const existingTooltip = bootstrap.Tooltip.getInstance(feeIcon);
+            if (existingTooltip) {
+                existingTooltip.dispose();
+            }
+            new bootstrap.Tooltip(feeIcon);
+        }
     }
 }
 
@@ -9636,6 +9662,15 @@ function updateDonationFormAnonymousTooltip(value) {
     if (anonymousIcon) {
         anonymousIcon.setAttribute('data-description', value);
         anonymousIcon.setAttribute('title', value);
+        
+        // Dispose existing tooltip and create new one
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            const existingTooltip = bootstrap.Tooltip.getInstance(anonymousIcon);
+            if (existingTooltip) {
+                existingTooltip.dispose();
+            }
+            new bootstrap.Tooltip(anonymousIcon);
+        }
     }
 }
 
@@ -15884,6 +15919,11 @@ function initializeColumnSortable(column) {
                     sourceDropzone.style.display = 'block';
                 }
                 
+                // Initialize tooltips for donation forms after a short delay
+                setTimeout(() => {
+                    initializeDonationFormTooltips();
+                }, 100);
+                
                 // Select the moved component
                 if (evt.item && evt.item.classList.contains('component')) {
                     setTimeout(() => {
@@ -15912,6 +15952,26 @@ function initializeColumnSortable(column) {
     }
 }
 
+// Global function to initialize tooltips for donation forms
+function initializeDonationFormTooltips() {
+    // Find all donation form components and initialize their tooltips
+    const donationForms = document.querySelectorAll('.donation-form-block');
+    donationForms.forEach(form => {
+        const tooltips = form.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                // Dispose existing tooltip if any
+                const existingTooltip = bootstrap.Tooltip.getInstance(tooltip);
+                if (existingTooltip) {
+                    existingTooltip.dispose();
+                }
+                // Create new tooltip
+                new bootstrap.Tooltip(tooltip);
+            }
+        });
+    });
+}
+
 // Initialize SortableJS for all existing columns on page load
 function initializeAllColumnSortables() {
     const columns = document.querySelectorAll('.inner-column');
@@ -15938,6 +15998,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize existing columns after a short delay to ensure DOM is ready
     setTimeout(() => {
         initializeAllColumnSortables();
+        // Initialize tooltips for any existing donation forms
+        initializeDonationFormTooltips();
     }, 1000);
 });
 </script>

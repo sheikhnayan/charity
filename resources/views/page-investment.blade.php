@@ -2154,6 +2154,40 @@ margin-bottom: 100px;
         });
     </script>
 
+    <script>
+        // Global function to initialize tooltips for donation forms
+function initializeDonationFormTooltips() {
+    // Find all donation form components and initialize their tooltips
+    const donationForms = document.querySelectorAll('.donation-form-block');
+    donationForms.forEach(form => {
+        const tooltips = form.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                // Dispose existing tooltip if any
+                const existingTooltip = bootstrap.Tooltip.getInstance(tooltip);
+                if (existingTooltip) {
+                    existingTooltip.dispose();
+                }
+                // Create new tooltip
+                new bootstrap.Tooltip(tooltip);
+            }
+        });
+    });
+}
+
+setTimeout(() => {
+                    initializeDonationFormTooltips();
+                }, 100);
+
+// Call initialization when the page is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing columns after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        initializeDonationFormTooltips();
+    }, 1000);
+});
+</script>
+
     
 </body>
 </html>
