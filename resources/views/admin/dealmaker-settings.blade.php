@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Announcement URL</label>
-                                    <input type="url" class="form-control" name="announcement_url" 
+                                    <input type="text" class="form-control" name="announcement_url" 
                                            value="{{ $setting->announcement_url ?? '/assetclassconference' }}" 
                                            placeholder="/announcement-link">
                                 </div>
@@ -164,7 +164,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Sign In URL</label>
-                                    <input type="url" class="form-control" name="signin_url" 
+                                    <input type="text" class="form-control" name="signin_url" 
                                            value="{{ $setting->signin_url ?? '/signin' }}" 
                                            placeholder="/signin">
                                 </div>
@@ -176,7 +176,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Main CTA URL</label>
-                                    <input type="url" class="form-control" name="main_cta_url" 
+                                    <input type="text" class="form-control" name="main_cta_url" 
                                            value="{{ $setting->main_cta_url ?? '/connect' }}" 
                                            placeholder="/connect">
                                 </div>
@@ -218,14 +218,14 @@
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Modal Video URL (Desktop)</label>
-                                    <input type="url" class="form-control" name="modal_video_desktop" 
+                                    <input type="text" class="form-control" name="modal_video_desktop" 
                                            value="{{ $setting->modal_video_desktop ?? 'https://player.vimeo.com/video/927222983' }}" 
                                            placeholder="https://player.vimeo.com/video/...">
                                     <small class="text-muted">For Vimeo/YouTube embeds, use URL format</small>
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Modal Video URL (Mobile)</label>
-                                    <input type="url" class="form-control" name="modal_video_mobile" 
+                                    <input type="text" class="form-control" name="modal_video_mobile" 
                                            value="{{ $setting->modal_video_mobile ?? 'https://player.vimeo.com/video/927222983' }}" 
                                            placeholder="https://player.vimeo.com/video/...">
                                     <small class="text-muted">For Vimeo/YouTube embeds, use URL format</small>
@@ -265,7 +265,7 @@
                                 </div>
                                 <div class="col-md-4 mt-3">
                                     <label class="form-label">Background Video URL</label>
-                                    <input type="url" class="form-control" name="hero_background_video" 
+                                    <input type="text" class="form-control" name="hero_background_video" 
                                            value="{{ $setting->hero_background_video ?? '' }}" 
                                            placeholder="https://example.com/video.mp4">
                                 </div>
@@ -455,11 +455,11 @@
                                                            value="{{ $logo['name'] }}" placeholder="Company Name">
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <input type="url" class="form-control" name="client_logos[{{ $index }}][image]" 
+                                                    <input type="text" class="form-control" name="client_logos[{{ $index }}][image]" 
                                                            value="{{ $logo['image'] }}" placeholder="Logo Image URL">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="url" class="form-control" name="client_logos[{{ $index }}][url]" 
+                                                    <input type="text" class="form-control" name="client_logos[{{ $index }}][url]" 
                                                            value="{{ $logo['url'] ?? '' }}" placeholder="Company Website URL (optional)">
                                                 </div>
                                                 <div class="col-md-2">
@@ -491,7 +491,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Phone Image URL</label>
-                                                    <input type="url" class="form-control" name="slider_images[{{ $index }}][image]" 
+                                                    <input type="text" class="form-control" name="slider_images[{{ $index }}][image]" 
                                                            value="{{ $slide['image'] }}" placeholder="Phone mockup image URL">
                                                 </div>
                                                 <div class="col-md-6">
@@ -546,17 +546,17 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Company Logo URL</label>
-                                                    <input type="url" class="form-control" name="case_studies[{{ $index }}][logo]" 
+                                                    <input type="text" class="form-control" name="case_studies[{{ $index }}][logo]" 
                                                            value="{{ $study['logo'] }}" placeholder="Logo Image URL">
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Featured Image URL</label>
-                                                    <input type="url" class="form-control" name="case_studies[{{ $index }}][image]" 
+                                                    <input type="text" class="form-control" name="case_studies[{{ $index }}][image]" 
                                                            value="{{ $study['image'] }}" placeholder="Featured Image URL">
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="form-label">Learn More URL</label>
-                                                    <input type="url" class="form-control" name="case_studies[{{ $index }}][learn_more_url]" 
+                                                    <input type="text" class="form-control" name="case_studies[{{ $index }}][learn_more_url]" 
                                                            value="{{ $study['learn_more_url'] ?? '#' }}" placeholder="Case study URL">
                                                 </div>
                                                 <div class="col-md-6 mt-2">
@@ -609,12 +609,12 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Tab Icon/Image URL</label>
-                                                    <input type="url" class="form-control" name="difference_tabs[{{ $index }}][icon]" 
+                                                    <input type="text" class="form-control" name="difference_tabs[{{ $index }}][icon]" 
                                                            value="{{ $tab['icon'] ?? '' }}" placeholder="Icon/Image URL">
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label class="form-label">Learn More URL</label>
-                                                    <input type="url" class="form-control" name="difference_tabs[{{ $index }}][url]" 
+                                                    <input type="text" class="form-control" name="difference_tabs[{{ $index }}][url]" 
                                                            value="{{ $tab['url'] ?? '/connect' }}" placeholder="/connect">
                                                 </div>
                                                 <div class="col-md-10 mt-2">
@@ -802,7 +802,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">CTA URL</label>
-                                    <input type="url" class="form-control" name="platform_cta_url" 
+                                    <input type="text" class="form-control" name="platform_cta_url" 
                                            value="{{ $setting->platform_cta_url ?? '/new-capital-stack' }}"
                                            placeholder="/new-capital-stack">
                                 </div>
@@ -839,7 +839,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Slide 2 CTA URL</label>
-                                    <input type="url" class="form-control" name="slide_2_cta_url" 
+                                    <input type="text" class="form-control" name="slide_2_cta_url" 
                                            value="{{ $setting->slide_2_cta_url ?? '/connect' }}"
                                            placeholder="/connect">
                                 </div>
@@ -871,7 +871,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Slide 3 CTA URL</label>
-                                    <input type="url" class="form-control" name="slide_3_cta_url" 
+                                    <input type="text" class="form-control" name="slide_3_cta_url" 
                                            value="{{ $setting->slide_3_cta_url ?? '/connect' }}"
                                            placeholder="/connect">
                                 </div>
@@ -950,7 +950,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">URL</label>
-                                    <input type="url" class="form-control" name="reg_cf_url" 
+                                    <input type="text" class="form-control" name="reg_cf_url" 
                                            value="{{ $setting->reg_cf_url ?? '/na-typ' }}"
                                            placeholder="/na-typ">
                                 </div>
@@ -979,7 +979,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">URL</label>
-                                    <input type="url" class="form-control" name="reg_a_url" 
+                                    <input type="text" class="form-control" name="reg_a_url" 
                                            value="{{ $setting->reg_a_url ?? '/na-typ' }}"
                                            placeholder="/na-typ">
                                 </div>
@@ -1008,7 +1008,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">URL</label>
-                                    <input type="url" class="form-control" name="reg_d_url" 
+                                    <input type="text" class="form-control" name="reg_d_url" 
                                            value="{{ $setting->reg_d_url ?? '/na-typ' }}"
                                            placeholder="/na-typ">
                                 </div>
@@ -1045,7 +1045,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Primary Button URL</label>
-                                    <input type="url" class="form-control" name="final_cta_primary_button_url" 
+                                    <input type="text" class="form-control" name="final_cta_primary_button_url" 
                                            value="{{ $setting->final_cta_primary_button_url ?? '/connect' }}"
                                            placeholder="/connect">
                                 </div>
@@ -1057,7 +1057,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Secondary Button URL</label>
-                                    <input type="url" class="form-control" name="final_cta_secondary_button_url" 
+                                    <input type="text" class="form-control" name="final_cta_secondary_button_url" 
                                            value="{{ $setting->final_cta_secondary_button_url ?? '/category/case-studies' }}"
                                            placeholder="/category/case-studies">
                                 </div>
@@ -1160,7 +1160,7 @@ New York, NY 10010' }}</textarea>
                                 </div>
                                 <div class="col-md-12 mt-3">
                                     <label class="form-label">Award/Certificate Image URL</label>
-                                    <input type="url" class="form-control" name="footer_award_image" 
+                                    <input type="text" class="form-control" name="footer_award_image" 
                                            value="{{ $setting->footer_award_image ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/65784614f244b62e543d68de_Deloitte%20Companies%20to%20watch%20award%20(Facebook%20Cover)%20(4)%201.png' }}" 
                                            placeholder="Award image URL">
                                 </div>
@@ -1176,27 +1176,27 @@ New York, NY 10010' }}</textarea>
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label">Terms of Service URL</label>
-                                    <input type="url" class="form-control" name="footer_terms_url" 
+                                    <input type="text" class="form-control" name="footer_terms_url" 
                                            value="{{ $setting->footer_terms_url ?? '/terms' }}" placeholder="/terms">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Privacy Policy URL</label>
-                                    <input type="url" class="form-control" name="footer_privacy_url" 
+                                    <input type="text" class="form-control" name="footer_privacy_url" 
                                            value="{{ $setting->footer_privacy_url ?? '/privacy' }}" placeholder="/privacy">
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Cookies URL</label>
-                                    <input type="url" class="form-control" name="footer_cookies_url" 
+                                    <input type="text" class="form-control" name="footer_cookies_url" 
                                            value="{{ $setting->footer_cookies_url ?? '/cookies' }}" placeholder="/cookies">
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Security URL</label>
-                                    <input type="url" class="form-control" name="footer_security_url" 
+                                    <input type="text" class="form-control" name="footer_security_url" 
                                            value="{{ $setting->footer_security_url ?? '/security' }}" placeholder="/security">
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Accessibility URL</label>
-                                    <input type="url" class="form-control" name="footer_accessibility_url" 
+                                    <input type="text" class="form-control" name="footer_accessibility_url" 
                                            value="{{ $setting->footer_accessibility_url ?? '/accessibility' }}" placeholder="/accessibility">
                                 </div>
                                 <div class="col-md-6 mt-3">
@@ -1222,7 +1222,7 @@ New York, NY 10010' }}</textarea>
                                             <input type="checkbox" name="show_linkedin" value="1" 
                                                    {{ ($setting->show_linkedin ?? true) ? 'checked' : '' }}>
                                         </div>
-                                        <input type="url" class="form-control" name="linkedin_url" 
+                                        <input type="text" class="form-control" name="linkedin_url" 
                                                value="{{ $setting->linkedin_url ?? '' }}" 
                                                placeholder="https://linkedin.com/company/dealmaker">
                                     </div>
@@ -1234,7 +1234,7 @@ New York, NY 10010' }}</textarea>
                                             <input type="checkbox" name="show_twitter" value="1" 
                                                    {{ ($setting->show_twitter ?? true) ? 'checked' : '' }}>
                                         </div>
-                                        <input type="url" class="form-control" name="twitter_url" 
+                                        <input type="text" class="form-control" name="twitter_url" 
                                                value="{{ $setting->twitter_url ?? '' }}" 
                                                placeholder="https://twitter.com/dealmaker">
                                     </div>
@@ -1246,7 +1246,7 @@ New York, NY 10010' }}</textarea>
                                             <input type="checkbox" name="show_facebook" value="1" 
                                                    {{ ($setting->show_facebook ?? true) ? 'checked' : '' }}>
                                         </div>
-                                        <input type="url" class="form-control" name="facebook_url" 
+                                        <input type="text" class="form-control" name="facebook_url" 
                                                value="{{ $setting->facebook_url ?? '' }}" 
                                                placeholder="https://facebook.com/dealmaker">
                                     </div>
@@ -1258,7 +1258,7 @@ New York, NY 10010' }}</textarea>
                                             <input type="checkbox" name="show_instagram" value="1" 
                                                    {{ ($setting->show_instagram ?? true) ? 'checked' : '' }}>
                                         </div>
-                                        <input type="url" class="form-control" name="instagram_url" 
+                                        <input type="text" class="form-control" name="instagram_url" 
                                                value="{{ $setting->instagram_url ?? '' }}" 
                                                placeholder="https://instagram.com/dealmaker">
                                     </div>
@@ -1307,7 +1307,7 @@ New York, NY 10010' }}</textarea>
                                                                            value="{{ $link['title'] ?? '' }}" placeholder="Link Title">
                                                                 </div>
                                                                 <div class="col-md-5">
-                                                                    <input type="url" class="form-control" name="footer_menu_columns[{{ $columnIndex }}][links][{{ $linkIndex }}][url]" 
+                                                                    <input type="text" class="form-control" name="footer_menu_columns[{{ $columnIndex }}][links][{{ $linkIndex }}][url]" 
                                                                            value="{{ $link['url'] ?? '' }}" placeholder="Link URL">
                                                                 </div>
                                                                 <div class="col-md-2">
@@ -1374,11 +1374,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                placeholder="Company Name">
                     </div>
                     <div class="col-md-4">
-                        <input type="url" class="form-control" name="client_logos[${logoIndex}][image]" 
+                        <input type="text" class="form-control" name="client_logos[${logoIndex}][image]" 
                                placeholder="Logo Image URL">
                     </div>
                     <div class="col-md-3">
-                        <input type="url" class="form-control" name="client_logos[${logoIndex}][url]" 
+                        <input type="text" class="form-control" name="client_logos[${logoIndex}][url]" 
                                placeholder="Company Website URL (optional)">
                     </div>
                     <div class="col-md-2">
@@ -1402,7 +1402,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Phone Image URL</label>
-                        <input type="url" class="form-control" name="slider_images[${slideIndex}][image]" 
+                        <input type="text" class="form-control" name="slider_images[${slideIndex}][image]" 
                                placeholder="Phone mockup image URL">
                     </div>
                     <div class="col-md-6">
@@ -1449,17 +1449,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Company Logo URL</label>
-                        <input type="url" class="form-control" name="case_studies[${caseStudyIndex}][logo]" 
+                        <input type="text" class="form-control" name="case_studies[${caseStudyIndex}][logo]" 
                                placeholder="Logo Image URL">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Featured Image URL</label>
-                        <input type="url" class="form-control" name="case_studies[${caseStudyIndex}][image]" 
+                        <input type="text" class="form-control" name="case_studies[${caseStudyIndex}][image]" 
                                placeholder="Featured Image URL">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Learn More URL</label>
-                        <input type="url" class="form-control" name="case_studies[${caseStudyIndex}][learn_more_url]" 
+                        <input type="text" class="form-control" name="case_studies[${caseStudyIndex}][learn_more_url]" 
                                placeholder="Case study URL">
                     </div>
                     <div class="col-md-6 mt-2">
@@ -1504,12 +1504,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tab Icon/Image URL</label>
-                        <input type="url" class="form-control" name="difference_tabs[${serviceTabIndex}][icon]" 
+                        <input type="text" class="form-control" name="difference_tabs[${serviceTabIndex}][icon]" 
                                placeholder="Icon/Image URL">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Learn More URL</label>
-                        <input type="url" class="form-control" name="difference_tabs[${serviceTabIndex}][url]" 
+                        <input type="text" class="form-control" name="difference_tabs[${serviceTabIndex}][url]" 
                                placeholder="/connect">
                     </div>
                     <div class="col-md-10 mt-2">
@@ -1628,7 +1628,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                placeholder="Link Title">
                     </div>
                     <div class="col-md-5">
-                        <input type="url" class="form-control" name="footer_menu_columns[${columnIndex}][links][${linkIndex}][url]" 
+                        <input type="text" class="form-control" name="footer_menu_columns[${columnIndex}][links][${linkIndex}][url]" 
                                placeholder="Link URL">
                     </div>
                     <div class="col-md-2">
