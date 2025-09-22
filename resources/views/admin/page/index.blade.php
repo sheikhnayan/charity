@@ -194,7 +194,7 @@
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
                                                         <td>{{ $item->name }}</td>
-                                                        <td>{{ $item->website->name }}</td>
+                                                        <td>{{ $item->website->name ?? 'Main Site'}}</td>
                                                         <td>
                                                             <span class="badge bg-{{ $item->website->type == 'investment' ? 'primary' : 'success' }}">
                                                                 {{ ucfirst($item->website->type) }}

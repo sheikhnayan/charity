@@ -7861,8 +7861,9 @@ break;
                                 <button type="button" onclick="removePressCard(${index})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Remove</button>
                             </div>
                             <div class="form-group">
-                                <label>Logo URL</label>
-                                <input type="text" value="${card.logoSrc}" oninput="updatePressCardField('cards.${index}.logoSrc', this.value)" placeholder="Enter logo URL">
+                                <label>Logo Image</label>
+                                <input type="file" accept="image/*" onchange="uploadPressCardImage(this, ${index})" style="margin-bottom: 5px;">
+                                ${card.logoSrc ? `<div style="margin-top: 5px;"><img src="${card.logoSrc}" style="max-width: 100px; max-height: 50px; border: 1px solid #ddd; border-radius: 4px;"><br><small style="color: #666;">Current logo</small></div>` : '<small style="color: #999;">No logo uploaded</small>'}
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
@@ -10727,14 +10728,16 @@ function removePressCard(index) {
     }
 }
 
-function uploadPressCardImage(event) {
+function uploadPressCardImage(input, cardIndex) {
     if (!selectedComponent) return;
-    const file = event.target.files[0];
+    const file = input.files[0];
     if (!file) return;
     
     const reader = new FileReader();
     reader.onload = function(e) {
-        updatePressCardField('logoSrc', e.target.result);
+        updatePressCardField(`cards.${cardIndex}.logoSrc`, e.target.result);
+        // Update the property panel to show the new image
+        updatePropertyPanel();
     };
     reader.readAsDataURL(file);
 }
