@@ -2405,99 +2405,231 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
         @case('press-card')
             @php
                 $pressCardData = $component['pressCardData'] ?? [];
-                $logoSrc = $pressCardData['logoSrc'] ?? '';
-                $logoAlt = $pressCardData['logoAlt'] ?? 'Press Logo';
-                $title = $pressCardData['title'] ?? '';
-                $url = $pressCardData['url'] ?? '#';
-                $date = $pressCardData['date'] ?? 'Date';
-                $target = $pressCardData['target'] ?? '_blank';
-                $cardBackgroundColor = $pressCardData['cardBackgroundColor'] ?? '#ffffff';
-                $cardBorderRadius = $pressCardData['cardBorderRadius'] ?? '8px';
-                $cardBoxShadow = $pressCardData['cardBoxShadow'] ?? '0 2px 8px rgba(0,0,0,0.1)';
-                $overlayOpacity = $pressCardData['overlayOpacity'] ?? '0.1';
-                $logoBackgroundColor = $pressCardData['logoBackgroundColor'] ?? '#f8f9fa';
-                $titleColor = $pressCardData['titleColor'] ?? '#1a1a1a';
-                $dateColor = $pressCardData['dateColor'] ?? '#666666';
+                $cards = $pressCardData['cards'] ?? [];
+                $slidesToShow = $pressCardData['slidesToShow'] ?? 3;
+                $autoplay = $pressCardData['autoplay'] ?? true;
+                $autoplaySpeed = $pressCardData['autoplaySpeed'] ?? 3000;
+                $sliderId = 'press-slider-' . ($componentId ?? uniqid());
+                
+                // Global styling options
+                $cardBackgroundColor = $pressCardData['cardBackgroundColor'] ?? '#1a1a1a';
+                $cardBorderRadius = $pressCardData['cardBorderRadius'] ?? '12px';
+                $titleColor = $pressCardData['titleColor'] ?? '#ffffff';
+                $dateColor = $pressCardData['dateColor'] ?? '#b0b0b0';
+                $logoBackgroundColor = $pressCardData['logoBackgroundColor'] ?? '#2a2a2a';
+                
+                // Navigation arrows styling
+                $arrowBackgroundColor = $pressCardData['arrowBackgroundColor'] ?? '#333333';
+                $arrowColor = $pressCardData['arrowColor'] ?? '#ffffff';
+                
+                // If no cards exist, create default one for backward compatibility
+                if (empty($cards)) {
+                    $cards = [[
+                        'logoSrc' => $pressCardData['logoSrc'] ?? '',
+                        'logoAlt' => $pressCardData['logoAlt'] ?? 'Press Logo',
+                        'title' => $pressCardData['title'] ?? 'Press Article Title',
+                        'url' => $pressCardData['url'] ?? '#',
+                        'date' => $pressCardData['date'] ?? date('F j, Y'),
+                        'target' => $pressCardData['target'] ?? '_blank'
+                    ]];
+                }
             @endphp
-            <div style="{{ $styleStr }}">
-                <div class="press-card-2" style="
-                    position: relative;
-                    background: {{ $cardBackgroundColor }};
-                    border-radius: {{ $cardBorderRadius }};
-                    overflow: hidden;
-                    box-shadow: {{ $cardBoxShadow }};
-                    transition: all 0.3s ease;
-                    cursor: pointer;
-                    max-width: 400px;
-                    margin: 0 auto;
-                ">
-                    <!-- Press Logo -->
-                    <div style="padding: 20px; text-align: center; background: {{ $logoBackgroundColor }};">
-                        @if($logoSrc)
-                            <img src="{{ $logoSrc }}" 
-                                 alt="{{ $logoAlt }}" 
-                                 style="max-width: 150px; height: auto; filter: brightness(0);" 
-                                 class="press-logo">
-                        @else
-                            <div style="width: 150px; height: 50px; margin: 0 auto; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">No Logo</div>
-                        @endif
-                    </div>
+             
+            <div class="press-cards-slider" style="{{ $styleStr }}">
+                <style>
+                    #{{ $sliderId }} .owl-nav {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 100%;
+                        z-index: 10;
+                    }
                     
-                    <!-- Press Content -->
-                    <a href="{{ $url }}" 
-                       target="{{ $target }}" 
-                       style="
-                           display: block;
-                           text-decoration: none;
-                           color: inherit;
-                           padding: 20px;
-                           position: relative;
-                       "
-                       class="press-link">
-                        <div class="press-text-wrapper" style="margin-bottom: 15px;">
-                            <div style="
-                                font-size: 16px;
-                                font-weight: 600;
-                                line-height: 1.4;
-                                color: {{ $titleColor }};
-                                margin-bottom: 10px;
+                    #{{ $sliderId }} .owl-prev,
+                    #{{ $sliderId }} .owl-next {
+                        position: absolute;
+                        width: 48px;
+                        height: 48px;
+                        background: {{ $arrowBackgroundColor }};
+                        color: {{ $arrowColor }};
+                        border: none;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 20px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        opacity: 0.8;
+                    }
+                    
+                    #{{ $sliderId }} .owl-prev:hover,
+                    #{{ $sliderId }} .owl-next:hover {
+                        opacity: 1;
+                        transform: scale(1.1);
+                    }
+                    
+                    #{{ $sliderId }} .owl-prev {
+                        left: -24px;
+                    }
+                    
+                    #{{ $sliderId }} .owl-next {
+                        right: -24px;
+                    }
+                    
+                    #{{ $sliderId }} .owl-dots {
+                        text-align: center;
+                        margin-top: 30px;
+                    }
+                    
+                    #{{ $sliderId }} .owl-dot {
+                        width: 12px;
+                        height: 12px;
+                        margin: 0 6px;
+                        background: #666;
+                        border-radius: 50%;
+                        display: inline-block;
+                        transition: all 0.3s ease;
+                    }
+                    
+                    #{{ $sliderId }} .owl-dot.active {
+                        background: {{ $arrowColor }};
+                        transform: scale(1.2);
+                    }
+                    
+                    @media (max-width: 768px) {
+                        #{{ $sliderId }} .owl-prev,
+                        #{{ $sliderId }} .owl-next {
+                            display: none;
+                        }
+                    }
+                </style>
+                
+                <div class="owl-carousel owl-theme" id="{{ $sliderId }}">
+                    @foreach($cards as $card)
+                        <div class="press-card-item">
+                            <div class="press-card" style="
+                                background: {{ $cardBackgroundColor }};
+                                border-radius: {{ $cardBorderRadius }};
+                                overflow: hidden;
+                                transition: all 0.3s ease;
+                                cursor: pointer;
+                                height: 400px;
                                 display: flex;
-                                align-items: flex-start;
-                                justify-content: space-between;
-                                gap: 10px;
+                                flex-direction: column;
+                                margin: 0 10px;
                             ">
-                                <span>{{ $title }}</span>
+                                <!-- Press Logo Section -->
                                 <div style="
-                                    width: 16px;
-                                    height: 16px;
-                                    flex-shrink: 0;
-                                    margin-top: 2px;
-                                    color: {{ $titleColor }};
+                                    background: {{ $logoBackgroundColor }};
+                                    padding: 30px 20px;
+                                    text-align: center;
+                                    flex: 1;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
                                 ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                         width="100%" height="100%" 
-                                         viewBox="0 0 32 32" 
-                                         fill="currentColor">
-                                        <path d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6z"></path>
-                                    </svg>
+                                    @if(!empty($card['logoSrc']))
+                                        <img src="{{ $card['logoSrc'] }}" 
+                                             alt="{{ $card['logoAlt'] ?? 'Press Logo' }}" 
+                                             style="max-width: 180px; max-height: 80px; filter: brightness(0) invert(1);">
+                                    @else
+                                        <div style="
+                                            width: 180px; 
+                                            height: 60px; 
+                                            background: rgba(255,255,255,0.1); 
+                                            border: 2px dashed rgba(255,255,255,0.3); 
+                                            border-radius: 4px; 
+                                            display: flex; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            font-size: 12px; 
+                                            color: rgba(255,255,255,0.5);
+                                        ">Logo</div>
+                                    @endif
                                 </div>
+                                
+                                <!-- Press Content Section -->
+                                <a href="{{ $card['url'] ?? '#' }}" 
+                                   target="{{ $card['target'] ?? '_blank' }}" 
+                                   style="
+                                       display: block;
+                                       text-decoration: none;
+                                       color: inherit;
+                                       padding: 25px 20px;
+                                       border-top: 1px solid rgba(255,255,255,0.1);
+                                   ">
+                                    <div style="
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        line-height: 1.4;
+                                        color: {{ $titleColor }};
+                                        margin-bottom: 15px;
+                                        display: flex;
+                                        align-items: flex-start;
+                                        justify-content: space-between;
+                                        gap: 10px;
+                                        min-height: 44px;
+                                    ">
+                                        <span>{{ $card['title'] ?? 'Press Article Title' }}</span>
+                                        <div style="
+                                            width: 16px;
+                                            height: 16px;
+                                            flex-shrink: 0;
+                                            margin-top: 2px;
+                                            color: {{ $titleColor }};
+                                            opacity: 0.7;
+                                        ">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 width="100%" height="100%" 
+                                                 viewBox="0 0 32 32" 
+                                                 fill="currentColor">
+                                                <path d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div style="
+                                        color: {{ $dateColor }};
+                                        font-size: 14px;
+                                        font-weight: 400;
+                                    ">{{ $card['date'] ?? date('F j, Y') }}</div>
+                                </a>
                             </div>
                         </div>
-                        <div class="press-date" style="
-                            color: {{ $dateColor }};
-                            font-size: 14px;
-                            font-weight: 400;
-                        ">{{ $date }}</div>
-                    </a>
-                    
-                    <!-- Black Overlay (Always visible with adjustable opacity) -->
-                    <div class="black-overlay" style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: rgba(0,0,0,{{ $overlayOpacity }});
+                    @endforeach
+                </div>
+            </div>
+            
+            <script>
+                $(document).ready(function(){
+                    $("#{{ $sliderId }}").owlCarousel({
+                        items: {{ $slidesToShow }},
+                        loop: {{ count($cards) > $slidesToShow ? 'true' : 'false' }},
+                        margin: 0,
+                        nav: true,
+                        dots: true,
+                        autoplay: {{ $autoplay ? 'true' : 'false' }},
+                        autoplayTimeout: {{ $autoplaySpeed }},
+                        autoplayHoverPause: true,
+                        navText: ['<', '>'],
+                        responsive: {
+                            0: { 
+                                items: 1,
+                                nav: false
+                            },
+                            600: { 
+                                items: {{ min(2, $slidesToShow) }},
+                                nav: {{ $slidesToShow > 2 ? 'true' : 'false' }}
+                            },
+                            1000: { 
+                                items: {{ $slidesToShow }},
+                                nav: true
+                            }
+                        }
+                    });
+                });
+            </script>
+        @break
                         transition: opacity 0.3s ease;
                         pointer-events: none;
                     "></div>

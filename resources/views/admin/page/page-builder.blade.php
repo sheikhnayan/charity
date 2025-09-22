@@ -4867,121 +4867,167 @@ break;
             content = document.createElement('div');
             content.className = 'press-card-component';
             
-            // Store press card data
+            // Store press card data with multiple cards support
             content._pressCardData = {
-                logoSrc: '',
-                logoAlt: 'Press Logo',
-                title: '',
-                url: '#',
-                date: 'Date',
-                target: '_blank',
-                cardBackgroundColor: '#ffffff',
-                cardBorderRadius: '8px',
-                cardBoxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                overlayOpacity: '0.1',
-                logoBackgroundColor: '#f8f9fa',
-                titleColor: '#1a1a1a',
-                dateColor: '#666666'
+                cards: [{
+                    logoSrc: '',
+                    logoAlt: 'Press Logo',
+                    title: 'Press Article Title',
+                    url: '#',
+                    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    target: '_blank'
+                }],
+                slidesToShow: 3,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                cardBackgroundColor: '#1a1a1a',
+                cardBorderRadius: '12px',
+                titleColor: '#ffffff',
+                dateColor: '#b0b0b0',
+                logoBackgroundColor: '#2a2a2a',
+                arrowBackgroundColor: '#333333',
+                arrowColor: '#ffffff'
             };
             
             content.renderPressCard = function() {
                 const d = content._pressCardData;
-                content.innerHTML = `
-                    <div class="press-card-2" style="
-                        position: relative;
-                        background: ${d.cardBackgroundColor || '#fff'};
-                        border-radius: ${d.cardBorderRadius || '8px'};
-                        overflow: hidden;
-                        box-shadow: ${d.cardBoxShadow || '0 2px 8px rgba(0,0,0,0.1)'};
-                        transition: all 0.3s ease;
-                        cursor: pointer;
-                        max-width: 400px;
-                        margin: 0 auto;
-                    ">
-                        <!-- Press Logo -->
-                        <div style="padding: 20px; text-align: center; background: ${d.logoBackgroundColor || '#f8f9fa'};">
-                            ${d.logoSrc ? `<img src="${d.logoSrc}" 
-                                 alt="${d.logoAlt}" 
-                                 style="max-width: 150px; height: auto; filter: brightness(0);" 
-                                 class="press-logo">` : `<div style="width: 150px; height: 50px; margin: 0 auto; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #6c757d;">No Logo</div>`}
-                        </div>
-                        
-                        <!-- Press Content -->
-                        <a href="${d.url}" 
-                           target="${d.target}" 
-                           style="
-                               display: block;
-                               text-decoration: none;
-                               color: inherit;
-                               padding: 20px;
-                               position: relative;
-                           "
-                           class="press-link">
-                            <div class="press-text-wrapper" style="margin-bottom: 15px;">
+                const sliderId = 'press-slider-' + Date.now();
+                
+                let cardsHtml = '';
+                d.cards.forEach(card => {
+                    cardsHtml += `
+                        <div class="press-card-item">
+                            <div class="press-card" style="
+                                background: ${d.cardBackgroundColor};
+                                border-radius: ${d.cardBorderRadius};
+                                overflow: hidden;
+                                transition: all 0.3s ease;
+                                cursor: pointer;
+                                height: 400px;
+                                display: flex;
+                                flex-direction: column;
+                                margin: 0 10px;
+                            ">
                                 <div style="
-                                    font-size: 16px;
-                                    font-weight: 600;
-                                    line-height: 1.4;
-                                    color: ${d.titleColor || '#1a1a1a'};
-                                    margin-bottom: 10px;
+                                    background: ${d.logoBackgroundColor};
+                                    padding: 30px 20px;
+                                    text-align: center;
+                                    flex: 1;
                                     display: flex;
-                                    align-items: flex-start;
-                                    justify-content: space-between;
-                                    gap: 10px;
+                                    align-items: center;
+                                    justify-content: center;
                                 ">
-                                    <span>${d.title}</span>
-                                    <div style="
-                                        width: 16px;
-                                        height: 16px;
-                                        flex-shrink: 0;
-                                        margin-top: 2px;
-                                        color: ${d.titleColor || '#1a1a1a'};
-                                    ">
-                                        <svg xmlns="http://www.w3.org/2000/svg" 
-                                             width="100%" height="100%" 
-                                             viewBox="0 0 32 32" 
-                                             fill="currentColor">
-                                            <path d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6z"></path>
-                                        </svg>
-                                    </div>
+                                    ${card.logoSrc ? 
+                                        `<img src="${card.logoSrc}" alt="${card.logoAlt}" style="max-width: 180px; max-height: 80px; filter: brightness(0) invert(1);">` :
+                                        `<div style="width: 180px; height: 60px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgba(255,255,255,0.5);">Logo</div>`
+                                    }
                                 </div>
+                                <a href="${card.url}" target="${card.target}" style="
+                                    display: block;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    padding: 25px 20px;
+                                    border-top: 1px solid rgba(255,255,255,0.1);
+                                ">
+                                    <div style="
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        line-height: 1.4;
+                                        color: ${d.titleColor};
+                                        margin-bottom: 15px;
+                                        display: flex;
+                                        align-items: flex-start;
+                                        justify-content: space-between;
+                                        gap: 10px;
+                                        min-height: 44px;
+                                    ">
+                                        <span>${card.title}</span>
+                                        <div style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: ${d.titleColor}; opacity: 0.7;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
+                                                <path d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div style="color: ${d.dateColor}; font-size: 14px; font-weight: 400;">${card.date}</div>
+                                </a>
                             </div>
-                            <div class="press-date" style="
-                                color: ${d.dateColor || '#666'};
-                                font-size: 14px;
-                                font-weight: 400;
-                            ">${d.date}</div>
-                        </a>
-                        
-                        <!-- Black Overlay (Always visible with adjustable opacity) -->
-                        <div class="black-overlay" style="
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background: rgba(0,0,0,${d.overlayOpacity || '0.1'});
-                            transition: opacity 0.3s ease;
-                            pointer-events: none;
-                        "></div>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = `
+                    <div class="press-cards-slider">
+                        <style>
+                            #${sliderId} .owl-nav {
+                                position: absolute;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width: 100%;
+                                z-index: 10;
+                            }
+                            #${sliderId} .owl-prev, #${sliderId} .owl-next {
+                                position: absolute;
+                                width: 48px;
+                                height: 48px;
+                                background: ${d.arrowBackgroundColor};
+                                color: ${d.arrowColor};
+                                border: none;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 20px;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                opacity: 0.8;
+                            }
+                            #${sliderId} .owl-prev { left: -24px; }
+                            #${sliderId} .owl-next { right: -24px; }
+                            #${sliderId} .owl-dots {
+                                text-align: center;
+                                margin-top: 30px;
+                            }
+                            #${sliderId} .owl-dot {
+                                width: 12px;
+                                height: 12px;
+                                margin: 0 6px;
+                                background: #666;
+                                border-radius: 50%;
+                                display: inline-block;
+                                transition: all 0.3s ease;
+                            }
+                            #${sliderId} .owl-dot.active {
+                                background: ${d.arrowColor};
+                                transform: scale(1.2);
+                            }
+                        </style>
+                        <div class="owl-carousel owl-theme" id="${sliderId}">
+                            ${cardsHtml}
+                        </div>
                     </div>
-                    
-                    <style>
-                        .press-card-2:hover .black-overlay {
-                            opacity: 1;
-                            background: rgba(0,0,0,${(parseFloat(d.overlayOpacity || '0.1') + 0.1).toFixed(1)});
-                        }
-                        
-                        .press-card-2:hover {
-                            transform: translateY(-2px);
-                            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-                        }
-                        
-                        .press-link:hover {
-                            text-decoration: none !important;
-                        }
-                    </style>
                 `;
+                
+                // Initialize owl carousel after a short delay
+                setTimeout(() => {
+                    if (window.$ && window.$.fn.owlCarousel) {
+                        $(`#${sliderId}`).owlCarousel({
+                            items: d.slidesToShow,
+                            loop: d.cards.length > d.slidesToShow,
+                            margin: 0,
+                            nav: true,
+                            dots: true,
+                            autoplay: d.autoplay,
+                            autoplayTimeout: d.autoplaySpeed,
+                            autoplayHoverPause: true,
+                            navText: ['<', '>'],
+                            responsive: {
+                                0: { items: 1, nav: false },
+                                600: { items: Math.min(2, d.slidesToShow), nav: d.slidesToShow > 2 },
+                                1000: { items: d.slidesToShow, nav: true }
+                            }
+                        });
+                    }
+                }, 100);
             };
             
             content.renderPressCard();
@@ -5268,7 +5314,7 @@ break;
                         data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
                         style="margin-top: 3rem;">
 
-                        <form method="POST" action="/donation" class="donation-form-block">
+                        <form method="POST" action="/donation-general" class="donation-form-block">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
                                 <div class="card shadow" style="border-width: 3px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
@@ -7762,77 +7808,108 @@ break;
 
             case 'press-card':
                 const pressData = content._pressCardData || {
-                    logoSrc: '',
-                    logoAlt: 'Press Logo',
-                    title: '',
-                    url: '#',
-                    date: 'Date',
-                    target: '_blank',
-                    cardBackgroundColor: '#ffffff',
-                    cardBorderRadius: '8px',
-                    cardBoxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    overlayOpacity: '0.1',
-                    logoBackgroundColor: '#f8f9fa',
-                    titleColor: '#1a1a1a',
-                    dateColor: '#666666'
+                    cards: [{
+                        logoSrc: '',
+                        logoAlt: 'Press Logo',
+                        title: 'Press Article Title',
+                        url: '#',
+                        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        target: '_blank'
+                    }],
+                    slidesToShow: 3,
+                    autoplay: true,
+                    autoplaySpeed: 3000,
+                    cardBackgroundColor: '#1a1a1a',
+                    cardBorderRadius: '12px',
+                    titleColor: '#ffffff',
+                    dateColor: '#b0b0b0',
+                    logoBackgroundColor: '#2a2a2a',
+                    arrowBackgroundColor: '#333333',
+                    arrowColor: '#ffffff'
                 };
+                
+                let cardsListHtml = '';
+                pressData.cards.forEach((card, index) => {
+                    cardsListHtml += `
+                        <div class="press-card-item" data-index="${index}" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; background: #f9f9f9;">
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                                <h6 style="margin: 0; color: #333;">Card ${index + 1}</h6>
+                                <button type="button" onclick="removePressCard(${index})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Remove</button>
+                            </div>
+                            <div class="form-group">
+                                <label>Logo URL</label>
+                                <input type="text" value="${card.logoSrc}" oninput="updatePressCardField('cards.${index}.logoSrc', this.value)" placeholder="Enter logo URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <textarea oninput="updatePressCardField('cards.${index}.title', this.value)" placeholder="Article title">${card.title}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>URL</label>
+                                <input type="url" value="${card.url}" oninput="updatePressCardField('cards.${index}.url', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="text" value="${card.date}" oninput="updatePressCardField('cards.${index}.date', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Target</label>
+                                <select oninput="updatePressCardField('cards.${index}.target', this.value)">
+                                    <option value="_blank" ${card.target === '_blank' ? 'selected' : ''}>New Tab</option>
+                                    <option value="_self" ${card.target === '_self' ? 'selected' : ''}>Same Tab</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                });
+                
                 specificControls = `
-                    <div class="form-group">
-                        <label>Press Logo</label>
-                        <input type="file" accept="image/*" onchange="uploadPressCardImage(event)" class="form-control mb-2">
-                        <input type="text" value="${pressData.logoSrc}" oninput="updatePressCardField('logoSrc', this.value)" placeholder="Or enter image URL">
-                        <small class="text-muted">Upload an image or enter a URL</small>
+                    <h5 style="margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Press Cards</h5>
+                    <div id="press-cards-list">
+                        ${cardsListHtml}
                     </div>
+                    <button type="button" onclick="addPressCard()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-bottom: 20px;">+ Add Card</button>
+                    
+                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Slider Settings</h5>
                     <div class="form-group">
-                        <label>Logo Alt Text</label>
-                        <input type="text" value="${pressData.logoAlt}" oninput="updatePressCardField('logoAlt', this.value)">
-                    </div>
-                    <div class="form-group">
-                        <label>Article Title</label>
-                        <textarea oninput="updatePressCardField('title', this.value)" placeholder="Enter article title">${pressData.title}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Article URL</label>
-                        <input type="url" value="${pressData.url}" oninput="updatePressCardField('url', this.value)">
-                    </div>
-                    <div class="form-group">
-                        <label>Publication Date</label>
-                        <input type="text" value="${pressData.date}" oninput="updatePressCardField('date', this.value)">
-                    </div>
-                    <div class="form-group">
-                        <label>Link Target</label>
-                        <select oninput="updatePressCardField('target', this.value)">
-                            <option value="_blank" ${pressData.target === '_blank' ? 'selected' : ''}>New Tab</option>
-                            <option value="_self" ${pressData.target === '_self' ? 'selected' : ''}>Same Tab</option>
+                        <label>Cards to Show</label>
+                        <select oninput="updatePressCardField('slidesToShow', parseInt(this.value))">
+                            <option value="1" ${pressData.slidesToShow === 1 ? 'selected' : ''}>1</option>
+                            <option value="2" ${pressData.slidesToShow === 2 ? 'selected' : ''}>2</option>
+                            <option value="3" ${pressData.slidesToShow === 3 ? 'selected' : ''}>3</option>
+                            <option value="4" ${pressData.slidesToShow === 4 ? 'selected' : ''}>4</option>
+                            <option value="5" ${pressData.slidesToShow === 5 ? 'selected' : ''}>5</option>
                         </select>
                     </div>
-                    
-                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Card Design</h5>
                     <div class="form-group">
-                        <label>Card Background Color</label>
+                        <label>
+                            <input type="checkbox" ${pressData.autoplay ? 'checked' : ''} onchange="updatePressCardField('autoplay', this.checked)">
+                            Auto Play
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Auto Play Speed (ms)</label>
+                        <input type="number" value="${pressData.autoplaySpeed}" min="1000" max="10000" step="500" oninput="updatePressCardField('autoplaySpeed', parseInt(this.value))">
+                    </div>
+                    
+                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Design</h5>
+                    <div class="form-group">
+                        <label>Card Background</label>
                         <input type="color" value="${pressData.cardBackgroundColor}" oninput="updatePressCardField('cardBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
-                        <label>Logo Area Background</label>
+                        <label>Logo Background</label>
                         <input type="color" value="${pressData.logoBackgroundColor}" oninput="updatePressCardField('logoBackgroundColor', this.value)">
-                        <small class="text-muted">Background color for the logo section</small>
                     </div>
                     <div class="form-group">
-                        <label>Card Shadow</label>
-                        <select oninput="updatePressCardField('cardBoxShadow', this.value)">
-                            <option value="none" ${pressData.cardBoxShadow === 'none' ? 'selected' : ''}>No Shadow</option>
-                            <option value="0 2px 8px rgba(0,0,0,0.1)" ${pressData.cardBoxShadow === '0 2px 8px rgba(0,0,0,0.1)' ? 'selected' : ''}>Light Shadow</option>
-                            <option value="0 4px 16px rgba(0,0,0,0.15)" ${pressData.cardBoxShadow === '0 4px 16px rgba(0,0,0,0.15)' ? 'selected' : ''}>Medium Shadow</option>
-                            <option value="0 8px 32px rgba(0,0,0,0.2)" ${pressData.cardBoxShadow === '0 8px 32px rgba(0,0,0,0.2)' ? 'selected' : ''}>Strong Shadow</option>
+                        <label>Border Radius</label>
+                        <select oninput="updatePressCardField('cardBorderRadius', this.value)">
+                            <option value="0px" ${pressData.cardBorderRadius === '0px' ? 'selected' : ''}>None</option>
+                            <option value="8px" ${pressData.cardBorderRadius === '8px' ? 'selected' : ''}>Small</option>
+                            <option value="12px" ${pressData.cardBorderRadius === '12px' ? 'selected' : ''}>Medium</option>
+                            <option value="16px" ${pressData.cardBorderRadius === '16px' ? 'selected' : ''}>Large</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Black Overlay Opacity</label>
-                        <input type="range" min="0" max="0.5" step="0.05" value="${pressData.overlayOpacity}" oninput="updatePressCardField('overlayOpacity', this.value)">
-                        <small class="text-muted">Current: ${(parseFloat(pressData.overlayOpacity) * 100).toFixed(0)}%</small>
-                    </div>
-                    
-                    <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Text Colors</h5>
                     <div class="form-group">
                         <label>Title Color</label>
                         <input type="color" value="${pressData.titleColor}" oninput="updatePressCardField('titleColor', this.value)">
@@ -7840,6 +7917,14 @@ break;
                     <div class="form-group">
                         <label>Date Color</label>
                         <input type="color" value="${pressData.dateColor}" oninput="updatePressCardField('dateColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Arrow Background</label>
+                        <input type="color" value="${pressData.arrowBackgroundColor}" oninput="updatePressCardField('arrowBackgroundColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Arrow Color</label>
+                        <input type="color" value="${pressData.arrowColor}" oninput="updatePressCardField('arrowColor', this.value)">
                     </div>
                 `;
             break;
@@ -10519,7 +10604,26 @@ function updatePressCardField(field, value) {
     }
     
     console.log('Current _pressCardData before update:', content._pressCardData);
-    content._pressCardData[field] = value;
+    
+    // Handle nested field updates for cards array
+    if (field.startsWith('cards.')) {
+        const pathParts = field.split('.');
+        const cardIndex = parseInt(pathParts[1]);
+        const cardField = pathParts[2];
+        
+        if (!content._pressCardData.cards) {
+            content._pressCardData.cards = [];
+        }
+        
+        if (!content._pressCardData.cards[cardIndex]) {
+            content._pressCardData.cards[cardIndex] = {};
+        }
+        
+        content._pressCardData.cards[cardIndex][cardField] = value;
+    } else {
+        content._pressCardData[field] = value;
+    }
+    
     console.log('Updated _pressCardData:', content._pressCardData);
     
     if (typeof content.renderPressCard === 'function') {
@@ -10529,13 +10633,56 @@ function updatePressCardField(field, value) {
         console.log('renderPressCard function not found');
     }
     
-    // Auto-save the page data to ensure changes persist
-    // setTimeout(() => {
-    //     console.log('Auto-saving page data after press card field change');
-    //     saveBuilderState();
-    // }, 1000);
-    
     console.log('=== END updatePressCardField ===');
+}
+
+function addPressCard() {
+    if (!selectedComponent) return;
+    
+    const content = getContentElement(selectedComponent);
+    if (!content._pressCardData) return;
+    
+    if (!content._pressCardData.cards) {
+        content._pressCardData.cards = [];
+    }
+    
+    const newCard = {
+        logoSrc: '',
+        logoAlt: 'Press Logo',
+        title: 'New Press Article',
+        url: '#',
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        target: '_blank'
+    };
+    
+    content._pressCardData.cards.push(newCard);
+    
+    // Refresh the settings panel to show the new card
+    updatePropertyPanel();
+    
+    if (typeof content.renderPressCard === 'function') {
+        content.renderPressCard();
+    }
+}
+
+function removePressCard(index) {
+    if (!selectedComponent) return;
+    
+    const content = getContentElement(selectedComponent);
+    if (!content._pressCardData || !content._pressCardData.cards) return;
+    
+    if (content._pressCardData.cards.length > 1) {
+        content._pressCardData.cards.splice(index, 1);
+        
+        // Refresh the settings panel to remove the card
+        updatePropertyPanel();
+        
+        if (typeof content.renderPressCard === 'function') {
+            content.renderPressCard();
+        }
+    } else {
+        alert('You must have at least one card.');
+    }
 }
 
 function uploadPressCardImage(event) {
