@@ -14,7 +14,7 @@ class DealmakerConfig extends Model
         'hero_background_video', 'hero_background_image',
         
         // Site Branding
-        'site_logo', 'site_tagline',
+        'site_logo', 'site_tagline', 'uploaded_logo',
         
         // Statistics
         'stat_1_number', 'stat_1_text', 'stat_2_number', 'stat_2_text', 'stat_3_number', 'stat_3_text',
@@ -22,8 +22,13 @@ class DealmakerConfig extends Model
         // Announcement
         'announcement_text', 'announcement_badge', 'announcement_url',
         
-        // Navigation
+        // Navigation & CTA
+        'signin_text', 'signin_url', 'main_cta_text', 'main_cta_url',
         'navigation_items',
+        
+        // Video Settings
+        'bg_video_mp4', 'bg_video_webm', 'bg_video_poster', 
+        'modal_video_desktop', 'modal_video_mobile',
         
         // About Section
         'about_title', 'about_description', 'about_image',
@@ -39,9 +44,10 @@ class DealmakerConfig extends Model
         
         // Social Media
         'linkedin_url', 'youtube_url', 'tiktok_url', 'facebook_url', 'instagram_url', 'twitter_url',
+        'show_linkedin', 'show_twitter', 'show_facebook', 'show_instagram',
         
         // SEO Meta
-        'meta_title', 'meta_description', 'meta_keywords', 'og_image',
+        'meta_title', 'meta_description', 'meta_keywords', 'og_image', 'uploaded_og_image',
         
         // Custom Code
         'custom_css', 'custom_js', 'custom_head_code',
@@ -49,13 +55,40 @@ class DealmakerConfig extends Model
         // Footer
         'footer_text', 'footer_copyright', 'footer_company_description', 'footer_address',
         'footer_menu_raise_capital', 'footer_menu_solutions', 'footer_menu_company', 'footer_menu_resources',
-        'footer_newsletter_title', 'footer_newsletter_description',
+        'footer_menu_columns', 'footer_newsletter_title', 'footer_newsletter_description',
+        'footer_award_image', 'footer_terms_url', 'footer_privacy_url', 'footer_cookies_url', 
+        'footer_security_url', 'footer_accessibility_url', 'footer_copyright_text', 'footer_company_address',
         
         // Case Studies Section
         'case_studies_title', 'case_studies',
         
         // DealMaker Difference Section (Tabs)
         'difference_section_title', 'difference_eyebrow_text', 'difference_tabs',
+        
+        // Capital Raising Steps (Plan, Raise, Engage, Repeat)
+        'plan_title', 'plan_description', 'plan_button_text', 'plan_button_url',
+        'raise_title', 'raise_description', 'raise_button_text', 'raise_button_url',
+        'engage_title', 'engage_description', 'engage_button_text', 'engage_button_url',
+        'repeat_title', 'repeat_description', 'repeat_button_text', 'repeat_button_url',
+        
+        // Navigation Menu Items
+        'nav_raise_capital_title', 'nav_products_title', 'nav_resources_title',
+        
+        // Platform Section Content 
+        'platform_section_title', 'platform_section_description', 'platform_cta_text', 'platform_cta_url',
+        
+        // Slider Content (static slides)
+        'slide_2_title', 'slide_2_description', 'slide_2_cta_text', 'slide_2_cta_url',
+        'slide_3_title', 'slide_3_description', 'slide_3_cta_text', 'slide_3_cta_url',
+        
+        // Case Study Labels
+        'case_study_capital_raised_label', 'case_study_investors_label', 'case_study_learn_more_text',
+        
+        // Tab Button Text
+        'tab_plan_button_text', 'tab_raise_button_text', 'tab_engage_button_text', 'tab_repeat_button_text',
+        
+        // Additional Content
+        'main_slider_default_description', 'testimonials_intro_text',
         
         // Testimonials Section
         'testimonials_section_title', 'testimonials_section_subtitle',
@@ -70,9 +103,21 @@ class DealmakerConfig extends Model
         // Slider Images for Phone Section
         'slider_images',
         
+        // Capital Revolutionized Section 
+        'capital_revolutionized_title', 'capital_revolutionized_description',
+        'reg_cf_title', 'reg_cf_subtitle', 'reg_cf_investor_text', 'reg_cf_url',
+        'reg_a_title', 'reg_a_subtitle', 'reg_a_investor_text', 'reg_a_url',
+        'reg_d_title', 'reg_d_subtitle', 'reg_d_investor_text', 'reg_d_url',
+        
+        // Final CTA Section (New)
+        'final_cta_main_title', 'final_cta_main_description',
+        'final_cta_primary_button_text', 'final_cta_primary_button_url',
+        'final_cta_secondary_button_text', 'final_cta_secondary_button_url',
+        'final_cta_growth_image', 'final_cta_sky_image', 'final_cta_city_image',
+        
         // Section Toggles
         'show_hero', 'show_stats', 'show_about', 'show_services', 'show_testimonials', 'show_contact',
-        'show_case_studies', 'show_difference_section', 'show_capital_raising', 'show_final_cta'
+        'show_announcement', 'show_case_studies', 'show_difference_section', 'show_capital_raising', 'show_final_cta'
     ];
 
     protected $casts = [
@@ -88,12 +133,18 @@ class DealmakerConfig extends Model
         'footer_menu_solutions' => 'array',
         'footer_menu_company' => 'array',
         'footer_menu_resources' => 'array',
+        'footer_menu_columns' => 'array',
+        'show_linkedin' => 'boolean',
+        'show_twitter' => 'boolean',
+        'show_facebook' => 'boolean',
+        'show_instagram' => 'boolean',
         'show_hero' => 'boolean',
         'show_stats' => 'boolean',
         'show_about' => 'boolean',
         'show_services' => 'boolean',
         'show_testimonials' => 'boolean',
         'show_contact' => 'boolean',
+        'show_announcement' => 'boolean',
         'show_case_studies' => 'boolean',
         'show_difference_section' => 'boolean',
         'show_capital_raising' => 'boolean',

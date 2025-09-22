@@ -461,12 +461,12 @@ h5, .ql-header-5 {
                 $bootstrapClass = '';
                 switch($columns) {
                     case 1: $bootstrapClass = 'col-12'; break;
-                    case 2: $bootstrapClass = 'col-lg-6 col-md-6 col-sm-12'; break;
-                    case 3: $bootstrapClass = 'col-lg-4 col-md-6 col-sm-12'; break;
-                    case 4: $bootstrapClass = 'col-lg-3 col-md-6 col-sm-12'; break;
+                    case 2: $bootstrapClass = 'col-lg-6 col-md-6'; break;
+                    case 3: $bootstrapClass = 'col-lg-4 col-md-6'; break;
+                    case 4: $bootstrapClass = 'col-lg-3 col-md-6'; break;
                     case 5: $bootstrapClass = 'col-lg-2 col-md-4 col-sm-6 col-12'; break;
                     case 6: $bootstrapClass = 'col-lg-2 col-md-4 col-sm-6 col-12'; break;
-                    default: $bootstrapClass = 'col-lg-4 col-md-6 col-sm-12';
+                    default: $bootstrapClass = 'col-lg-4 col-md-6';
                 }
             @endphp
             
