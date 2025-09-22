@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\BidController;
 use Illuminate\Support\Facades\Log;
 
 Route::middleware('auth')->group(function () {
@@ -14,6 +15,11 @@ Route::middleware('auth')->group(function () {
 // Public comment routes (no auth required for posting comments)
 Route::post('/comments', [CommentController::class, 'store']);
 Route::get('/comments', [CommentController::class, 'index']);
+
+// Auction bid routes (public - no auth required)
+Route::post('/auction/bid', [BidController::class, 'store']);
+Route::get('/auction/{auctionId}/latest-bid', [BidController::class, 'getLatestBid']);
+Route::get('/auction/{auctionId}/bids', [BidController::class, 'getBids']);
 
 // Simple logger endpoint for debugging
 Route::post('/logger', function (Request $request) {

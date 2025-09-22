@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Auction</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
@@ -653,71 +654,21 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 </script>
 
-<script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
-
-    // Firebase config
-    const firebaseConfig = {
-        apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
-        authDomain: "charity-390ca.firebaseapp.com",
-        projectId: "charity-390ca",
-        storageBucket: "charity-390ca.firebasestorage.app",
-        messagingSenderId: "875958450032",
-        appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
-        measurementId: "G-FC73HL5XF3",
-        databaseURL: "https://charity-390ca-default-rtdb.firebaseio.com"
-    };
-
-    // Initialize Firebase only once
-    let app;
-    if (!getApps().length) {
-        app = initializeApp(firebaseConfig);
-    } else {
-        app = getApps()[0];
-    }
-    const db = getDatabase(app);
-    const firestore = getFirestore(app);
-
+<script>
     const auctionId = "{{ $data->id }}";
     let lastBid = parseFloat("{{ $data->starting_price ?? 0 }}");
     const priceDiv = document.getElementById('auction-price-{{ $data->id }}');
     const bidAmountInput = document.getElementById('bidAmount');
 
-    // Show latest bid on page load
+    // Show latest bid on page load using Laravel API
     async function showLatestBid() {
         try {
-            // Try to get from Realtime DB first
-            const bidRef = ref(db, 'bid/' + auctionId + '/amount');
-            const snapshot = await get(bidRef);
-            let amount = snapshot.val();
-            if (amount !== null) {
-                priceDiv.textContent = '$' + amount;
-                lastBid = parseFloat(amount);
-                if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-                return;
-            }
-        } catch (error) {
-            console.log('Realtime DB read error (fallback to Firestore):', error.message);
-        }
-        
-        // Fallback to Firestore if Realtime DB fails or has no data
-        try {
-            const bidsRef = collection(firestore, "bid");
-            const q = query(
-                bidsRef,
-                where("auction_id", "==", auctionId),
-                orderBy("amount", "desc"),
-                limit(1)
-            );
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                const doc = querySnapshot.docs[0];
-                const amount = doc.data().amount;
-                priceDiv.textContent = '$' + amount;
-                lastBid = parseFloat(amount);
+            const response = await fetch(`/api/auction/${auctionId}/latest-bid`);
+            const data = await response.json();
+            
+            if (data.success && data.amount) {
+                priceDiv.textContent = '$' + data.amount;
+                lastBid = parseFloat(data.amount);
                 if (bidAmountInput) bidAmountInput.min = lastBid + 1;
             }
         } catch (error) {
@@ -725,70 +676,62 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Load bid history (latest first)
+    // Load bid history using Laravel API
     async function loadBidHistory() {
-        const bidsRef = collection(firestore, "bid");
-        const q = query(
-            bidsRef,
-            where("auction_id", "==", auctionId),
-            orderBy("timestamp", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const tbody = document.getElementById('bid-history-body');
-        tbody.innerHTML = '';
-        if (querySnapshot.empty) {
-            tbody.innerHTML = `<tr><td colspan="3" class="text-center">No bids yet.</td></tr>`;
-            return;
+        try {
+            const response = await fetch(`/api/auction/${auctionId}/bids`);
+            const data = await response.json();
+            const tbody = document.getElementById('bid-history-body');
+            tbody.innerHTML = '';
+            
+            if (!data.success || data.bids.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center">No bids yet.</td></tr>`;
+                return;
+            }
+            
+            data.bids.forEach(bid => {
+                const date = new Date(bid.created_at);
+                const formattedDate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' +
+                                      date.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="c-views-table__field c-views-table__field--name">${bid.name || ''}</td>
+                        <td class="c-views-table__field c-views-table__field--created">${formattedDate}</td>
+                        <td class="c-views-table__field c-views-table__field--bid-amount">$${bid.amount}</td>
+                    </tr>
+                `;
+            });
+        } catch (error) {
+            console.error('Error loading bid history:', error);
         }
-        querySnapshot.forEach(doc => {
-            const bid = doc.data();
-            const date = bid.timestamp && bid.timestamp.toDate
-                ? bid.timestamp.toDate()
-                : new Date(bid.timestamp);
-            const formattedDate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' +
-                                  date.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
-            tbody.innerHTML += `
-                <tr>
-                    <td class="c-views-table__field c-views-table__field--name">${bid.name || ''}</td>
-                    <td class="c-views-table__field c-views-table__field--created">${formattedDate}</td>
-                    <td class="c-views-table__field c-views-table__field--bid-amount">$${bid.amount}</td>
-                </tr>
-            `;
-        });
+    }
+
+    // Poll for new bids every 5 seconds
+    function startBidPolling() {
+        setInterval(async () => {
+            try {
+                const response = await fetch(`/api/auction/${auctionId}/latest-bid`);
+                const data = await response.json();
+                
+                if (data.success && data.amount && data.amount > lastBid) {
+                    priceDiv.textContent = '$' + data.amount;
+                    lastBid = parseFloat(data.amount);
+                    if (bidAmountInput) bidAmountInput.min = lastBid + 1;
+                    
+                    // Refresh bid history to show new bid
+                    loadBidHistory();
+                }
+            } catch (error) {
+                console.log('Polling error:', error);
+            }
+        }, 5000); // Poll every 5 seconds
     }
 
     // On page load
     document.addEventListener('DOMContentLoaded', function() {
         showLatestBid();
         loadBidHistory();
-        
-        // Set up real-time listener for new bids using Firestore
-        const bidsRef = collection(firestore, "bid");
-        const q = query(
-            bidsRef,
-            where("auction_id", "==", auctionId),
-            orderBy("timestamp", "desc"),
-            limit(1)
-        );
-        
-        onSnapshot(q, (querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const latestBid = querySnapshot.docs[0].data();
-                const amount = latestBid.amount;
-                
-                // Update price display if this is a new bid
-                if (amount > lastBid) {
-                    priceDiv.textContent = '$' + amount;
-                    lastBid = parseFloat(amount);
-                    if (bidAmountInput) bidAmountInput.min = lastBid + 1;
-                    
-                    // Refresh bid history to show new bid
-                    loadBidHistory();
-                }
-            }
-        }, (error) => {
-            console.log('Real-time listener error:', error);
-        });
+        startBidPolling();
     });
 
     // Modal form logic
@@ -809,39 +752,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            // Save to Firestore (primary storage)
-            await addDoc(collection(firestore, "bid"), {
-                auction_id: auctionId,
-                name: name,
-                email: email,
-                amount: amount,
-                timestamp: new Date()
+            // Save to Laravel backend
+            const response = await fetch('/api/auction/bid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    auction_id: auctionId,
+                    name: name,
+                    email: email,
+                    amount: amount
+                })
             });
 
-            // Try to update Realtime DB for fast access (but don't fail if permission denied)
-            try {
-                await set(ref(db, 'bid/' + auctionId + '/amount'), amount);
-                console.log('Successfully updated Realtime DB');
-            } catch (realtimeError) {
-                console.log('Realtime DB update failed (using Firestore only):', realtimeError.message);
-                // This is fine - we'll rely on Firestore for data persistence
+            const result = await response.json();
+
+            if (result.success) {
+                // Update UI
+                await showLatestBid();
+                await loadBidHistory();
+
+                // Close modal
+                const modalEl = document.getElementById('bidModal');
+                let modal = bootstrap.Modal.getInstance(modalEl);
+                if (!modal) {
+                    modal = new bootstrap.Modal(modalEl);
+                }
+                modal.hide();
+
+                var id = document.getElementById('product-id').value;
+                window.location.href = '/authorize/payment/auction/'+id+'?amount='+amount;
+            } else {
+                alert('Error saving bid: ' + (result.message || 'Unknown error'));
             }
-
-            // Update UI
-            await showLatestBid();
-            await loadBidHistory();
-
-            // Close modal
-            const modalEl = document.getElementById('bidModal');
-            let modal = bootstrap.Modal.getInstance(modalEl);
-            if (!modal) {
-                modal = new bootstrap.Modal(modalEl);
-            }
-            modal.hide();
-
-            var id = document.getElementById('product-id').value;
-
-            window.location.href = '/authorize/payment/auction/'+id+'?amount='+amount;
 
         } catch (error) {
             console.error('Error saving bid:', error);
