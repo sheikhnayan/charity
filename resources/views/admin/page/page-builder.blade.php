@@ -4051,28 +4051,13 @@ break;
             content = document.createElement('div');
             content.className = 'newsletter-component';
             content.newsletterData = {
-                title: 'Newsletter',
-                subtitle: 'Subscribe to our newsletter',
-                placeholder: 'Enter your email address',
-                buttonText: 'SIGN UP',
-                backgroundColor: '#ffffff',
-                textColor: '#000000',
-                buttonColor: '#28a745',
-                buttonTextColor: '#ffffff',
-                padding: '40',
-                borderRadius: '8',
-                textAlign: 'center',
-                maxWidth: '600',
-                titleFontSize: '24',
-                titleFontWeight: '600',
-                subtitleFontSize: '16',
-                subtitleFontWeight: '400',
-                buttonFontSize: '16',
-                buttonFontWeight: '600',
-                buttonPadding: '12',
-                inputBorderColor: '#ddd',
-                inputPadding: '12',
-                inputFontSize: '16'
+                buttonText: 'DOWNLOAD STUDY',
+                buttonColor: '#20b2aa',
+                backgroundColor: '#2d2d2d',
+                textColor: '#ffffff',
+                labelColor: '#9ca3af',
+                privacyText: 'By submitting this form and signing up for texts, you consent to receive marketing text messages (e.g. promos, cart reminders) from EnergyX at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available).',
+                padding: '40'
             };
             
             content.renderNewsletter = function() {
@@ -4080,36 +4065,194 @@ break;
                 if (!d) return;
                 
                 content.innerHTML = `
-                    <section class="newsletter-section" style="background-color: ${d.backgroundColor}; color: ${d.textColor}; padding: ${d.padding}px 20px; text-align: ${d.textAlign};" id="${component.id}">
-                        <div style="max-width: ${d.maxWidth}px; margin: 0 auto;">
-                            ${d.title ? `<h3 class="newsletter-title" style="margin-bottom: 10px; font-size: ${d.titleFontSize}px; font-weight: ${d.titleFontWeight}; color: ${d.textColor};">${d.title}</h3>` : ''}
-                            ${d.subtitle ? `<p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: ${d.subtitleFontSize}px; font-weight: ${d.subtitleFontWeight}; color: ${d.textColor};">${d.subtitle}</p>` : ''}
-                            
-                            <form class="newsletter-form" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
-                                <div class="newsletter-input-wrapper" style="flex: 1; min-width: 250px; max-width: 400px;">
-                                    <input 
-                                        type="email" 
-                                        name="email" 
-                                        class="form-control newsletter-email" 
-                                        placeholder="${d.placeholder}" 
-                                        required
-                                        style="border: 1px solid ${d.inputBorderColor}; border-radius: ${d.borderRadius}px; padding: ${d.inputPadding}px 15px; font-size: ${d.inputFontSize}px; width: 100%; outline: none;"
-                                    >
+                    <section class="newsletter-section" style="background-color: ${d.backgroundColor}; color: ${d.textColor}; padding: ${d.padding}px 20px;" id="${component.id}">
+                        <div style="max-width: 600px; margin: 0 auto;">
+                            <form class="newsletter-form" action="#" method="POST" style="width: 100%;">
+                                <!-- Name Fields Row -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                    <div>
+                                        <label style="display: block; color: ${d.labelColor}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">FIRST NAME</label>
+                                        <input 
+                                            type="text" 
+                                            name="first_name" 
+                                            placeholder="First name"
+                                            required
+                                            style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                        >
+                                    </div>
+                                    <div>
+                                        <label style="display: block; color: ${d.labelColor}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">LAST NAME</label>
+                                        <input 
+                                            type="text" 
+                                            name="last_name" 
+                                            placeholder="Last name"
+                                            required
+                                            style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                        >
+                                    </div>
                                 </div>
                                 
+                                <!-- Phone and Email Row -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                                    <div>
+                                        <label style="display: block; color: ${d.labelColor}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">PHONE</label>
+                                        <div style="display: flex; background-color: #f5f5f5; border-radius: 8px; overflow: hidden;">
+                                            <select 
+                                                name="country_code" 
+                                                style="padding: 15px 12px; background-color: #e5e5e5; border: none; border-right: 1px solid #d1d5db; font-size: 16px; color: #333; font-weight: 500; outline: none; cursor: pointer; min-width: 80px;"
+                                            >
+                                                <option value="+1" selected>🇺🇸 +1</option>
+                                                <option value="+44">🇬🇧 +44</option>
+                                                <option value="+33">🇫🇷 +33</option>
+                                                <option value="+49">🇩🇪 +49</option>
+                                                <option value="+39">🇮🇹 +39</option>
+                                                <option value="+34">🇪🇸 +34</option>
+                                                <option value="+31">🇳🇱 +31</option>
+                                                <option value="+32">🇧🇪 +32</option>
+                                                <option value="+41">🇨🇭 +41</option>
+                                                <option value="+43">🇦🇹 +43</option>
+                                                <option value="+45">🇩🇰 +45</option>
+                                                <option value="+46">🇸🇪 +46</option>
+                                                <option value="+47">🇳🇴 +47</option>
+                                                <option value="+358">🇫🇮 +358</option>
+                                                <option value="+420">🇨🇿 +420</option>
+                                                <option value="+48">🇵🇱 +48</option>
+                                                <option value="+351">🇵🇹 +351</option>
+                                                <option value="+30">🇬🇷 +30</option>
+                                                <option value="+36">🇭🇺 +36</option>
+                                                <option value="+353">🇮🇪 +353</option>
+                                                <option value="+1">🇨🇦 +1</option>
+                                                <option value="+52">🇲🇽 +52</option>
+                                                <option value="+55">🇧🇷 +55</option>
+                                                <option value="+54">🇦🇷 +54</option>
+                                                <option value="+56">🇨🇱 +56</option>
+                                                <option value="+57">🇨🇴 +57</option>
+                                                <option value="+51">🇵🇪 +51</option>
+                                                <option value="+598">🇺🇾 +598</option>
+                                                <option value="+595">🇵🇾 +595</option>
+                                                <option value="+591">🇧🇴 +591</option>
+                                                <option value="+593">🇪🇨 +593</option>
+                                                <option value="+594">🇬🇫 +594</option>
+                                                <option value="+61">🇦� +61</option>
+                                                <option value="+64">🇳🇿 +64</option>
+                                                <option value="+81">🇯🇵 +81</option>
+                                                <option value="+82">🇰🇷 +82</option>
+                                                <option value="+86">🇨🇳 +86</option>
+                                                <option value="+91">🇮🇳 +91</option>
+                                                <option value="+92">🇵🇰 +92</option>
+                                                <option value="+880">🇧🇩 +880</option>
+                                                <option value="+94">🇱🇰 +94</option>
+                                                <option value="+977">🇳🇵 +977</option>
+                                                <option value="+975">🇧🇹 +975</option>
+                                                <option value="+960">🇲🇻 +960</option>
+                                                <option value="+65">🇸🇬 +65</option>
+                                                <option value="+60">🇲🇾 +60</option>
+                                                <option value="+66">🇹🇭 +66</option>
+                                                <option value="+84">🇻🇳 +84</option>
+                                                <option value="+63">🇵🇭 +63</option>
+                                                <option value="+62">🇮🇩 +62</option>
+                                                <option value="+673">🇧🇳 +673</option>
+                                                <option value="+856">🇱🇦 +856</option>
+                                                <option value="+855">🇰🇭 +855</option>
+                                                <option value="+95">🇲🇲 +95</option>
+                                                <option value="+20">🇪🇬 +20</option>
+                                                <option value="+27">🇿🇦 +27</option>
+                                                <option value="+234">🇳🇬 +234</option>
+                                                <option value="+254">🇰🇪 +254</option>
+                                                <option value="+256">🇺🇬 +256</option>
+                                                <option value="+255">🇹🇿 +255</option>
+                                                <option value="+251">🇪🇹 +251</option>
+                                                <option value="+233">🇬🇭 +233</option>
+                                                <option value="+225">🇨🇮 +225</option>
+                                                <option value="+221">🇸🇳 +221</option>
+                                                <option value="+212">🇲🇦 +212</option>
+                                                <option value="+216">🇹🇳 +216</option>
+                                                <option value="+218">🇱🇾 +218</option>
+                                                <option value="+213">🇩🇿 +213</option>
+                                                <option value="+966">🇸🇦 +966</option>
+                                                <option value="+971">🇦🇪 +971</option>
+                                                <option value="+974">🇶🇦 +974</option>
+                                                <option value="+965">🇰🇼 +965</option>
+                                                <option value="+973">🇧🇭 +973</option>
+                                                <option value="+968">🇴🇲 +968</option>
+                                                <option value="+964">🇮🇶 +964</option>
+                                                <option value="+963">🇸🇾 +963</option>
+                                                <option value="+962">🇯🇴 +962</option>
+                                                <option value="+961">🇱🇧 +961</option>
+                                                <option value="+972">🇮🇱 +972</option>
+                                                <option value="+970">🇵🇸 +970</option>
+                                                <option value="+90">🇹🇷 +90</option>
+                                                <option value="+98">🇮🇷 +98</option>
+                                                <option value="+93">🇦🇫 +93</option>
+                                                <option value="+7">🇷🇺 +7</option>
+                                                <option value="+380">🇺🇦 +380</option>
+                                                <option value="+375">🇧🇾 +375</option>
+                                                <option value="+373">🇲🇩 +373</option>
+                                                <option value="+382">🇲🇪 +382</option>
+                                                <option value="+381">🇷🇸 +381</option>
+                                                <option value="+385">🇭🇷 +385</option>
+                                                <option value="+387">🇧🇦 +387</option>
+                                                <option value="+389">🇲🇰 +389</option>
+                                                <option value="+383">🇽🇰 +383</option>
+                                                <option value="+355">🇦🇱 +355</option>
+                                                <option value="+359">🇧🇬 +359</option>
+                                                <option value="+40">🇷🇴 +40</option>
+                                            </select>
+                                            <input 
+                                                type="tel" 
+                                                name="phone" 
+                                                placeholder="Phone number"
+                                                required
+                                                style="flex: 1; padding: 15px; border: none; font-size: 16px; background-color: transparent; color: #333; outline: none;"
+                                            >
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; color: ${d.labelColor}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">EMAIL</label>
+                                        <input 
+                                            type="email" 
+                                            name="email" 
+                                            placeholder="Enter your email"
+                                            required
+                                            style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                        >
+                                    </div>
+                                </div>
+                                
+                                <!-- Submit Button -->
                                 <button 
                                     type="submit" 
-                                    class="btn newsletter-submit-btn"
-                                    style="background-color: ${d.buttonColor}; color: ${d.buttonTextColor}; border: none; border-radius: ${d.borderRadius}px; padding: ${d.buttonPadding}px 25px; font-size: ${d.buttonFontSize}px; font-weight: ${d.buttonFontWeight}; cursor: pointer; transition: all 0.3s ease;"
+                                    class="newsletter-submit-btn"
+                                    style="width: 100%; background-color: ${d.buttonColor}; color: #ffffff; border: none; border-radius: 8px; padding: 18px; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 20px;"
                                 >
                                     ${d.buttonText}
                                 </button>
+                                
+                                <!-- Privacy Text -->
+                                <p style="font-size: 12px; color: ${d.labelColor}; line-height: 1.5; margin: 0; text-align: left;">
+                                    ${d.privacyText}
+                                </p>
                             </form>
                             
-                            <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                            <div class="newsletter-message" style="margin-top: 20px; display: none;">
                                 <!-- Success/Error messages will appear here -->
                             </div>
                         </div>
+                        
+                        <!-- Mobile Responsive Styles -->
+                        <style>
+                            @media (max-width: 768px) {
+                                #${component.id} .newsletter-form > div[style*="grid-template-columns"] {
+                                    display: block !important;
+                                }
+                                #${component.id} .newsletter-form > div[style*="grid-template-columns"] > div {
+                                    margin-bottom: 20px;
+                                }
+                                #${component.id} .newsletter-form > div[style*="grid-template-columns"] > div:last-child {
+                                    margin-bottom: 0;
+                                }
+                            }
+                        </style>
                     </section>
                     <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,193,7,0.9); color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; z-index: 100; pointer-events: none;">
                         Newsletter Preview Mode
@@ -8793,65 +8936,22 @@ break;
 
             case 'newsletter':
                 const newsletterData = content.newsletterData || {
-                    title: 'Newsletter',
-                    subtitle: 'Subscribe to our newsletter',
-                    placeholder: 'Enter your email address',
-                    buttonText: 'SIGN UP',
-                    backgroundColor: '#ffffff',
-                    textColor: '#000000',
-                    buttonColor: '#28a745',
-                    buttonTextColor: '#ffffff',
-                    padding: '40',
-                    borderRadius: '8',
-                    textAlign: 'center',
-                    maxWidth: '600',
-                    titleFontSize: '24',
-                    titleFontWeight: '600',
-                    subtitleFontSize: '16',
-                    subtitleFontWeight: '400',
-                    buttonFontSize: '16',
-                    buttonFontWeight: '600',
-                    buttonPadding: '12',
-                    inputBorderColor: '#ddd',
-                    inputPadding: '12',
-                    inputFontSize: '16'
+                    buttonText: 'DOWNLOAD STUDY',
+                    buttonColor: '#20b2aa',
+                    backgroundColor: '#2d2d2d',
+                    textColor: '#ffffff',
+                    labelColor: '#9ca3af',
+                    privacyText: 'By submitting this form and signing up for texts, you consent to receive marketing text messages (e.g. promos, cart reminders) from EnergyX at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available).',
+                    padding: '40'
                 };
                 specificControls = `
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" value="${newsletterData.title}" oninput="updateNewsletterField(this.value, 'title')">
-                    </div>
-                    <div class="form-group">
-                        <label>Subtitle</label>
-                        <input type="text" value="${newsletterData.subtitle}" oninput="updateNewsletterField(this.value, 'subtitle')">
-                    </div>
-                    <div class="form-group">
-                        <label>Email Placeholder</label>
-                        <input type="text" value="${newsletterData.placeholder}" oninput="updateNewsletterField(this.value, 'placeholder')">
-                    </div>
                     <div class="form-group">
                         <label>Button Text</label>
                         <input type="text" value="${newsletterData.buttonText}" oninput="updateNewsletterField(this.value, 'buttonText')">
                     </div>
                     <div class="form-group">
-                        <label>Text Alignment</label>
-                        <select oninput="updateNewsletterField(this.value, 'textAlign')">
-                            <option value="left" ${newsletterData.textAlign === 'left' ? 'selected' : ''}>Left</option>
-                            <option value="center" ${newsletterData.textAlign === 'center' ? 'selected' : ''}>Center</option>
-                            <option value="right" ${newsletterData.textAlign === 'right' ? 'selected' : ''}>Right</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Max Width (px)</label>
-                        <input type="number" value="${newsletterData.maxWidth}" min="200" max="1200" oninput="updateNewsletterField(this.value, 'maxWidth')">
-                    </div>
-                    <div class="form-group">
-                        <label>Padding (px)</label>
-                        <input type="number" value="${newsletterData.padding}" min="0" max="100" oninput="updateNewsletterField(this.value, 'padding')">
-                    </div>
-                    <div class="form-group">
-                        <label>Border Radius (px)</label>
-                        <input type="number" value="${newsletterData.borderRadius}" min="0" max="50" oninput="updateNewsletterField(this.value, 'borderRadius')">
+                        <label>Button Background Color</label>
+                        <input type="color" value="${newsletterData.buttonColor}" oninput="updateNewsletterField(this.value, 'buttonColor')">
                     </div>
                     <div class="form-group">
                         <label>Background Color</label>
@@ -8862,46 +8962,16 @@ break;
                         <input type="color" value="${newsletterData.textColor}" oninput="updateNewsletterField(this.value, 'textColor')">
                     </div>
                     <div class="form-group">
-                        <label>Button Background Color</label>
-                        <input type="color" value="${newsletterData.buttonColor}" oninput="updateNewsletterField(this.value, 'buttonColor')">
+                        <label>Label Color</label>
+                        <input type="color" value="${newsletterData.labelColor}" oninput="updateNewsletterField(this.value, 'labelColor')">
                     </div>
                     <div class="form-group">
-                        <label>Button Text Color</label>
-                        <input type="color" value="${newsletterData.buttonTextColor}" oninput="updateNewsletterField(this.value, 'buttonTextColor')">
+                        <label>Padding (px)</label>
+                        <input type="number" value="${newsletterData.padding}" min="0" max="100" oninput="updateNewsletterField(this.value, 'padding')">
                     </div>
                     <div class="form-group">
-                        <label>Input Border Color</label>
-                        <input type="color" value="${newsletterData.inputBorderColor}" oninput="updateNewsletterField(this.value, 'inputBorderColor')">
-                    </div>
-                    <div class="form-group">
-                        <label>Title Font Size (px)</label>
-                        <input type="number" value="${newsletterData.titleFontSize}" min="12" max="48" oninput="updateNewsletterField(this.value, 'titleFontSize')">
-                    </div>
-                    <div class="form-group">
-                        <label>Title Font Weight</label>
-                        <select oninput="updateNewsletterField(this.value, 'titleFontWeight')">
-                            <option value="300" ${newsletterData.titleFontWeight === '300' ? 'selected' : ''}>Light</option>
-                            <option value="400" ${newsletterData.titleFontWeight === '400' ? 'selected' : ''}>Normal</option>
-                            <option value="500" ${newsletterData.titleFontWeight === '500' ? 'selected' : ''}>Medium</option>
-                            <option value="600" ${newsletterData.titleFontWeight === '600' ? 'selected' : ''}>Semi Bold</option>
-                            <option value="700" ${newsletterData.titleFontWeight === '700' ? 'selected' : ''}>Bold</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Subtitle Font Size (px)</label>
-                        <input type="number" value="${newsletterData.subtitleFontSize}" min="12" max="24" oninput="updateNewsletterField(this.value, 'subtitleFontSize')">
-                    </div>
-                    <div class="form-group">
-                        <label>Button Font Size (px)</label>
-                        <input type="number" value="${newsletterData.buttonFontSize}" min="12" max="20" oninput="updateNewsletterField(this.value, 'buttonFontSize')">
-                    </div>
-                    <div class="form-group">
-                        <label>Button Padding (px)</label>
-                        <input type="number" value="${newsletterData.buttonPadding}" min="8" max="20" oninput="updateNewsletterField(this.value, 'buttonPadding')">
-                    </div>
-                    <div class="form-group">
-                        <label>Input Font Size (px)</label>
-                        <input type="number" value="${newsletterData.inputFontSize}" min="12" max="20" oninput="updateNewsletterField(this.value, 'inputFontSize')">
+                        <label>Privacy Text</label>
+                        <textarea rows="4" oninput="updateNewsletterField(this.value, 'privacyText')" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">${newsletterData.privacyText}</textarea>
                     </div>
                 `;
             break;

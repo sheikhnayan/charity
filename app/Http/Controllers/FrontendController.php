@@ -569,7 +569,11 @@ class FrontendController extends Controller
     {
         try {
             $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
                 'email' => 'required|email',
+                'phone' => 'required|string|max:20',
+                'country_code' => 'nullable|string|max:5',
                 'website_id' => 'required|exists:websites,id'
             ]);
 
@@ -585,8 +589,12 @@ class FrontendController extends Controller
                         'message' => 'You are already subscribed to our newsletter!'
                     ]);
                 } else {
-                    // Reactivate subscription
+                    // Reactivate subscription and update with new data
                     $existingSubscription->update([
+                        'first_name' => $request->first_name,
+                        'last_name' => $request->last_name,
+                        'phone' => $request->phone,
+                        'country_code' => $request->country_code ?? '+1',
                         'status' => 'active',
                         'subscribed_at' => now()
                     ]);
@@ -600,7 +608,11 @@ class FrontendController extends Controller
 
             // Create new subscription
             \App\Models\NewsletterSubscription::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
                 'email' => $request->email,
+                'phone' => $request->phone,
+                'country_code' => $request->country_code ?? '+1',
                 'website_id' => $request->website_id,
                 'status' => 'active',
                 'subscribed_at' => now()

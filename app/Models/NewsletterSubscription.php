@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class NewsletterSubscription extends Model
 {
     protected $fillable = [
+        'first_name',
+        'last_name',
         'email',
+        'phone',
+        'country_code',
         'website_id',
         'status',
         'subscribed_at'

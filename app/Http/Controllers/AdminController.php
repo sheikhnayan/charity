@@ -842,11 +842,15 @@ class AdminController extends Controller
 
         $callback = function() use ($subscriptions) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Email', 'Status', 'Subscribed Date']);
+            fputcsv($file, ['First Name', 'Last Name', 'Email', 'Phone', 'Country Code', 'Status', 'Subscribed Date']);
 
             foreach ($subscriptions as $subscription) {
                 fputcsv($file, [
+                    $subscription->first_name ?? '',
+                    $subscription->last_name ?? '',
                     $subscription->email,
+                    $subscription->phone ?? '',
+                    $subscription->country_code ?? '',
                     $subscription->status,
                     $subscription->subscribed_at ? $subscription->subscribed_at->format('Y-m-d H:i:s') : 'N/A'
                 ]);

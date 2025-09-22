@@ -698,18 +698,58 @@ h5, .ql-header-5 {
 
         @case('button')
             @php
-                // Support both old format and new properties format
-                $text = $component['properties']['button_text'] ?? $component['html'] ?? $component['text'] ?? 'Button';
-                $href = $component['properties']['button_url'] ?? $component['href'] ?? '#';
-                $target = $component['properties']['button_target'] ?? (($component['openInNewTab'] ?? false) ? '_blank' : '_self');
+                // Check if we have saved HTML from page builder that contains the full structure
+                $savedHtml = $component['html'] ?? '';
                 
-                // Button styling from properties
-                $buttonBgColor = $component['properties']['button_bg_color'] ?? $style['backgroundColor'] ?? '#007bff';
-                $buttonTextColor = $component['properties']['button_text_color'] ?? $style['color'] ?? '#ffffff';
-                $buttonPadding = $component['properties']['button_padding'] ?? $style['padding'] ?? '10px 20px';
-                $borderRadius = $component['properties']['border_radius'] ?? $style['borderRadius'] ?? '4px';
-                $fontSize = $component['properties']['font_size'] ?? $style['fontSize'] ?? '16px';
-                $fontWeight = $component['properties']['font_weight'] ?? $style['fontWeight'] ?? '400';
+                // If saved HTML contains the full button structure, extract just the text
+                if (strpos($savedHtml, '<a href') !== false && strpos($savedHtml, 'class="btn custom-button"') !== false) {
+                    // Extract text from HTML using regex
+                    preg_match('/>([^<]+)<\/a>/', $savedHtml, $matches);
+                    $buttonText = isset($matches[1]) ? trim($matches[1]) : 'Click Me';
+                    
+                    // Extract href from HTML
+                    preg_match('/href="([^"]+)"/', $savedHtml, $hrefMatches);
+                    $buttonUrl = isset($hrefMatches[1]) ? $hrefMatches[1] : '#';
+                    
+                    // Extract target from HTML
+                    preg_match('/target="([^"]+)"/', $savedHtml, $targetMatches);
+                    $buttonTarget = isset($targetMatches[1]) ? $targetMatches[1] : '_self';
+                    
+                    // Extract styles from HTML
+                    preg_match('/background-color:\s*([^;]+);/', $savedHtml, $bgMatches);
+                    $buttonBgColor = isset($bgMatches[1]) ? trim($bgMatches[1]) : '#007bff';
+                    
+                    // More specific regex for text color (not background-color)
+                    preg_match('/(?<!background-)color:\s*([^;]+);/', $savedHtml, $colorMatches);
+                    $buttonTextColor = isset($colorMatches[1]) ? trim($colorMatches[1]) : '#ffffff';
+                    
+                    preg_match('/padding:\s*([^;]+);/', $savedHtml, $paddingMatches);
+                    $buttonPadding = isset($paddingMatches[1]) ? trim($paddingMatches[1]) : '10px 20px';
+                    
+                    preg_match('/border-radius:\s*([^;]+);/', $savedHtml, $radiusMatches);
+                    $borderRadius = isset($radiusMatches[1]) ? trim($radiusMatches[1]) : '4px';
+                    
+                    preg_match('/font-size:\s*([^;]+);/', $savedHtml, $fontSizeMatches);
+                    $fontSize = isset($fontSizeMatches[1]) ? trim($fontSizeMatches[1]) : '16px';
+                    
+                    preg_match('/font-weight:\s*([^;]+);/', $savedHtml, $fontWeightMatches);
+                    $fontWeight = isset($fontWeightMatches[1]) ? trim($fontWeightMatches[1]) : '400';
+                } else {
+                    // Use the new _buttonData structure or fallback to properties
+                    $buttonData = $component['_buttonData'] ?? $component['buttonData'] ?? [];
+                    $buttonText = $buttonData['buttonText'] ?? $component['properties']['button_text'] ?? $component['text'] ?? 'Click Me';
+                    $buttonUrl = $buttonData['buttonUrl'] ?? $component['properties']['button_url'] ?? $component['href'] ?? '#';
+                    $buttonTarget = $buttonData['buttonTarget'] ?? $component['properties']['button_target'] ?? (($component['openInNewTab'] ?? false) ? '_blank' : '_self');
+                    
+                    // Button styling
+                    $buttonBgColor = $buttonData['buttonBgColor'] ?? $component['properties']['button_bg_color'] ?? $style['backgroundColor'] ?? '#007bff';
+                    $buttonTextColor = $buttonData['buttonTextColor'] ?? $component['properties']['button_text_color'] ?? $style['color'] ?? '#ffffff';
+                    $buttonPadding = $buttonData['buttonPadding'] ?? $component['properties']['button_padding'] ?? $style['padding'] ?? '10px 20px';
+                    $borderRadius = $buttonData['borderRadius'] ?? $component['properties']['border_radius'] ?? $style['borderRadius'] ?? '4px';
+                    $fontSize = $buttonData['fontSize'] ?? $component['properties']['font_size'] ?? $style['fontSize'] ?? '16px';
+                    $fontWeight = $buttonData['fontWeight'] ?? $component['properties']['font_weight'] ?? $style['fontWeight'] ?? '400';
+                }
+                
                 $textAlign = $component['properties']['text_align'] ?? $style['textAlign'] ?? 'center';
                 $textDecoration = $component['properties']['text_decoration'] ?? 'none';
                 $border = $component['properties']['border'] ?? $style['border'] ?? 'none';
@@ -717,13 +757,13 @@ h5, .ql-header-5 {
                 $transition = $component['properties']['transition'] ?? 'all 0.3s ease';
             @endphp
             <div style="text-align: {{ $textAlign }}; {{ $styleStr }}">
-                <a href="{{ $href }}" target="{{ $target }}" 
+                <a href="{{ $buttonUrl }}" target="{{ $buttonTarget }}" 
                    style="display: inline-block; background-color: {{ $buttonBgColor }}; color: {{ $buttonTextColor }}; 
                           padding: {{ $buttonPadding }}; border-radius: {{ $borderRadius }}; font-size: {{ $fontSize }}; 
                           font-weight: {{ $fontWeight }}; text-decoration: {{ $textDecoration }}; border: {{ $border }}; 
                           box-shadow: {{ $boxShadow }}; transition: {{ $transition }}; cursor: pointer;"
                    class="btn custom-button">
-                    {{ $text }}
+                    {{ $buttonText }}
                 </a>
             </div>
         @break
@@ -3447,6 +3487,16 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 // Check if we have saved HTML from page builder
                 $savedHtml = $component['html'] ?? '';
                 $newsletterData = $component['newsletterData'] ?? [];
+                
+                // Get component settings with defaults
+                $buttonText = $newsletterData['buttonText'] ?? 'DOWNLOAD STUDY';
+                $buttonColor = $newsletterData['buttonColor'] ?? '#20b2aa';
+                $backgroundColor = $newsletterData['backgroundColor'] ?? '#2d2d2d';
+                $textColor = $newsletterData['textColor'] ?? '#ffffff';
+                $labelColor = $newsletterData['labelColor'] ?? '#9ca3af';
+                $privacyText = $newsletterData['privacyText'] ?? 'By submitting this form and signing up for texts, you consent to receive marketing text messages (e.g. promos, cart reminders) from EnergyX at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available).';
+                $privacyPolicyUrl = $newsletterData['privacyPolicyUrl'] ?? '#';
+                $termsUrl = $newsletterData['termsUrl'] ?? '#';
             @endphp
             
             @if($savedHtml)
@@ -3491,10 +3541,29 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             form.addEventListener('submit', function(e) {
                                 e.preventDefault();
                                 
-                                // Validate email before sending
+                                // Validate required fields
                                 const emailInput = form.querySelector('input[name="email"]');
+                                const firstNameInput = form.querySelector('input[name="first_name"]');
+                                const lastNameInput = form.querySelector('input[name="last_name"]');
+                                const phoneInput = form.querySelector('input[name="phone"]');
+                                
                                 if (!emailInput || !emailInput.value.trim()) {
                                     alert('Please enter an email address.');
+                                    return;
+                                }
+                                
+                                if (!firstNameInput || !firstNameInput.value.trim()) {
+                                    alert('Please enter your first name.');
+                                    return;
+                                }
+                                
+                                if (!lastNameInput || !lastNameInput.value.trim()) {
+                                    alert('Please enter your last name.');
+                                    return;
+                                }
+                                
+                                if (!phoneInput || !phoneInput.value.trim()) {
+                                    alert('Please enter your phone number.');
                                     return;
                                 }
                                 
@@ -3511,9 +3580,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 
                                 if (button) {
                                     if (button.tagName === 'INPUT') {
-                                        button.value = 'Subscribing...';
+                                        button.value = 'Submitting...';
                                     } else {
-                                        button.textContent = 'Subscribing...';
+                                        button.textContent = 'Submitting...';
                                     }
                                     button.disabled = true;
                                 }
@@ -3565,40 +3634,200 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     });
                 </script>
             @else
-                {{-- Fallback: render basic newsletter if no saved HTML --}}
-                <section class="newsletter-section" style="background-color: #ffffff; color: #000000; padding: 40px 20px; text-align: center;" id="{{ $componentId }}">
+                {{-- New Advanced Newsletter Form Design --}}
+                <section class="newsletter-section" style="background-color: {{ $backgroundColor }}; color: {{ $textColor }}; padding: 40px 20px;" id="{{ $componentId }}">
                     <div style="max-width: 600px; margin: 0 auto;">
-                        <h3 style="margin-bottom: 10px; font-size: 24px; font-weight: 600;">Newsletter</h3>
-                        <p style="margin-bottom: 30px; font-size: 16px; font-weight: 400;">Subscribe to our newsletter</p>
-                        
-                        <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                        <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" style="width: 100%;">
                             @csrf
                             <input type="hidden" name="website_id" value="{{ $check->id ?? '' }}">
                             
-                            <div style="flex: 1; min-width: 250px; max-width: 400px;">
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    class="form-control newsletter-email" 
-                                    placeholder="Enter your email address" 
-                                    required
-                                    style="border: 1px solid #ddd; border-radius: 8px; padding: 12px 15px; font-size: 16px; width: 100%; outline: none;"
-                                >
+                            <!-- Name Fields Row -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; color: {{ $labelColor }}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">FIRST NAME</label>
+                                    <input 
+                                        type="text" 
+                                        name="first_name" 
+                                        placeholder="First name"
+                                        required
+                                        style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                    >
+                                </div>
+                                <div>
+                                    <label style="display: block; color: {{ $labelColor }}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">LAST NAME</label>
+                                    <input 
+                                        type="text" 
+                                        name="last_name" 
+                                        placeholder="Last name"
+                                        required
+                                        style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                    >
+                                </div>
                             </div>
                             
+                            <!-- Phone and Email Row -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                                <div>
+                                    <label style="display: block; color: {{ $labelColor }}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">PHONE</label>
+                                    <div style="display: flex; background-color: #f5f5f5; border-radius: 8px; overflow: hidden;">
+                                        <select 
+                                            name="country_code" 
+                                            style="padding: 15px 12px; background-color: #e5e5e5; border: none; border-right: 1px solid #d1d5db; font-size: 16px; color: #333; font-weight: 500; outline: none; cursor: pointer; min-width: 80px;"
+                                        >
+                                            <option value="+1" selected>🇺🇸 +1</option>
+                                            <option value="+44">🇬🇧 +44</option>
+                                            <option value="+33">🇫🇷 +33</option>
+                                            <option value="+49">🇩🇪 +49</option>
+                                            <option value="+39">🇮🇹 +39</option>
+                                            <option value="+34">🇪🇸 +34</option>
+                                            <option value="+31">🇳🇱 +31</option>
+                                            <option value="+32">🇧🇪 +32</option>
+                                            <option value="+41">🇨🇭 +41</option>
+                                            <option value="+43">🇦🇹 +43</option>
+                                            <option value="+45">🇩🇰 +45</option>
+                                            <option value="+46">🇸🇪 +46</option>
+                                            <option value="+47">🇳🇴 +47</option>
+                                            <option value="+358">🇫🇮 +358</option>
+                                            <option value="+420">🇨🇿 +420</option>
+                                            <option value="+48">🇵🇱 +48</option>
+                                            <option value="+351">🇵🇹 +351</option>
+                                            <option value="+30">🇬🇷 +30</option>
+                                            <option value="+36">🇭🇺 +36</option>
+                                            <option value="+353">🇮🇪 +353</option>
+                                            <option value="+1">🇨🇦 +1</option>
+                                            <option value="+52">🇲🇽 +52</option>
+                                            <option value="+55">🇧🇷 +55</option>
+                                            <option value="+54">🇦🇷 +54</option>
+                                            <option value="+56">🇨🇱 +56</option>
+                                            <option value="+57">🇨🇴 +57</option>
+                                            <option value="+51">🇵🇪 +51</option>
+                                            <option value="+598">🇺🇾 +598</option>
+                                            <option value="+595">🇵🇾 +595</option>
+                                            <option value="+591">🇧🇴 +591</option>
+                                            <option value="+593">🇪🇨 +593</option>
+                                            <option value="+594">🇬🇫 +594</option>
+                                            <option value="+61">🇦� +61</option>
+                                            <option value="+64">🇳🇿 +64</option>
+                                            <option value="+81">🇯🇵 +81</option>
+                                            <option value="+82">🇰🇷 +82</option>
+                                            <option value="+86">🇨🇳 +86</option>
+                                            <option value="+91">🇮🇳 +91</option>
+                                            <option value="+92">🇵🇰 +92</option>
+                                            <option value="+880">🇧🇩 +880</option>
+                                            <option value="+94">🇱🇰 +94</option>
+                                            <option value="+977">🇳🇵 +977</option>
+                                            <option value="+975">🇧🇹 +975</option>
+                                            <option value="+960">🇲🇻 +960</option>
+                                            <option value="+65">🇸🇬 +65</option>
+                                            <option value="+60">🇲🇾 +60</option>
+                                            <option value="+66">🇹🇭 +66</option>
+                                            <option value="+84">🇻🇳 +84</option>
+                                            <option value="+63">🇵🇭 +63</option>
+                                            <option value="+62">🇮🇩 +62</option>
+                                            <option value="+673">🇧🇳 +673</option>
+                                            <option value="+856">🇱🇦 +856</option>
+                                            <option value="+855">🇰🇭 +855</option>
+                                            <option value="+95">🇲🇲 +95</option>
+                                            <option value="+20">🇪🇬 +20</option>
+                                            <option value="+27">🇿🇦 +27</option>
+                                            <option value="+234">🇳🇬 +234</option>
+                                            <option value="+254">🇰🇪 +254</option>
+                                            <option value="+256">🇺🇬 +256</option>
+                                            <option value="+255">🇹🇿 +255</option>
+                                            <option value="+251">🇪🇹 +251</option>
+                                            <option value="+233">🇬🇭 +233</option>
+                                            <option value="+225">🇨🇮 +225</option>
+                                            <option value="+221">🇸🇳 +221</option>
+                                            <option value="+212">🇲🇦 +212</option>
+                                            <option value="+216">🇹🇳 +216</option>
+                                            <option value="+218">🇱🇾 +218</option>
+                                            <option value="+213">🇩🇿 +213</option>
+                                            <option value="+966">🇸🇦 +966</option>
+                                            <option value="+971">🇦🇪 +971</option>
+                                            <option value="+974">🇶🇦 +974</option>
+                                            <option value="+965">🇰🇼 +965</option>
+                                            <option value="+973">🇧🇭 +973</option>
+                                            <option value="+968">🇴🇲 +968</option>
+                                            <option value="+964">🇮🇶 +964</option>
+                                            <option value="+963">🇸🇾 +963</option>
+                                            <option value="+962">🇯🇴 +962</option>
+                                            <option value="+961">🇱🇧 +961</option>
+                                            <option value="+972">🇮🇱 +972</option>
+                                            <option value="+970">🇵🇸 +970</option>
+                                            <option value="+90">🇹🇷 +90</option>
+                                            <option value="+98">🇮🇷 +98</option>
+                                            <option value="+93">🇦🇫 +93</option>
+                                            <option value="+7">🇷🇺 +7</option>
+                                            <option value="+380">🇺🇦 +380</option>
+                                            <option value="+375">🇧🇾 +375</option>
+                                            <option value="+373">🇲🇩 +373</option>
+                                            <option value="+382">🇲🇪 +382</option>
+                                            <option value="+381">🇷🇸 +381</option>
+                                            <option value="+385">🇭🇷 +385</option>
+                                            <option value="+387">🇧🇦 +387</option>
+                                            <option value="+389">🇲🇰 +389</option>
+                                            <option value="+383">🇽🇰 +383</option>
+                                            <option value="+355">🇦🇱 +355</option>
+                                            <option value="+359">🇧🇬 +359</option>
+                                            <option value="+40">🇷🇴 +40</option>
+                                        </select>
+                                        <input 
+                                            type="tel" 
+                                            name="phone" 
+                                            placeholder="Phone number"
+                                            required
+                                            style="flex: 1; padding: 15px; border: none; font-size: 16px; background-color: transparent; color: #333; outline: none;"
+                                        >
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="display: block; color: {{ $labelColor }}; font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">EMAIL</label>
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        placeholder="Enter your email"
+                                        required
+                                        style="width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; background-color: #f5f5f5; color: #333; outline: none; box-sizing: border-box;"
+                                    >
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
                             <button 
                                 type="submit" 
-                                class="btn newsletter-submit-btn"
-                                style="background-color: #28a745; color: #ffffff; border: none; border-radius: 8px; padding: 12px 25px; font-size: 16px; font-weight: 600; cursor: pointer;"
+                                class="newsletter-submit-btn"
+                                style="width: 100%; background-color: {{ $buttonColor }}; color: #ffffff; border: none; border-radius: 8px; padding: 18px; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 20px;"
+                                onmouseover="this.style.backgroundColor='{{ $buttonColor }}dd'"
+                                onmouseout="this.style.backgroundColor='{{ $buttonColor }}'"
                             >
-                                SIGN UP
+                                {{ $buttonText }}
                             </button>
+                            
+                            <!-- Privacy Text -->
+                            <p style="font-size: 12px; color: {{ $labelColor }}; line-height: 1.5; margin: 0; text-align: left;">
+                                {{ $privacyText }}
+                            </p>
                         </form>
                         
-                        <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                        <div class="newsletter-message" style="margin-top: 20px; display: none;">
                             <!-- Success/Error messages will appear here -->
                         </div>
                     </div>
+                    
+                    <!-- Mobile Responsive Styles -->
+                    <style>
+                        @media (max-width: 768px) {
+                            #{{ $componentId }} .newsletter-form > div[style*="grid-template-columns"] {
+                                display: block !important;
+                            }
+                            #{{ $componentId }} .newsletter-form > div[style*="grid-template-columns"] > div {
+                                margin-bottom: 20px;
+                            }
+                            #{{ $componentId }} .newsletter-form > div[style*="grid-template-columns"] > div:last-child {
+                                margin-bottom: 0;
+                            }
+                        }
+                    </style>
                 </section>
             @endif
         @break

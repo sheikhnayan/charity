@@ -117,7 +117,9 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Name</th>
                                         <th>Email</th>
+                                        <th>Phone</th>
                                         <th>Status</th>
                                         <th>Subscribed Date</th>
                                         <th>Actions</th>
@@ -126,7 +128,21 @@
                                 <tbody>
                                     @foreach($subscriptions as $subscription)
                                         <tr>
+                                            <td>
+                                                @if($subscription->first_name || $subscription->last_name)
+                                                    {{ trim($subscription->first_name . ' ' . $subscription->last_name) }}
+                                                @else
+                                                    <em class="text-muted">Not provided</em>
+                                                @endif
+                                            </td>
                                             <td>{{ $subscription->email }}</td>
+                                            <td>
+                                                @if($subscription->phone)
+                                                    {{ $subscription->country_code ?? '+1' }} {{ $subscription->phone }}
+                                                @else
+                                                    <em class="text-muted">Not provided</em>
+                                                @endif
+                                            </td>
                                             <td>
                                                 @if($subscription->status === 'active')
                                                     <span class="badge bg-success">Active</span>
