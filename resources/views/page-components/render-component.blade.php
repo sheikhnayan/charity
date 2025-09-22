@@ -1816,6 +1816,11 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                         min-width: 250px;
                         position: relative;
                     }
+                    
+                    /* Hide lines after every 4th item on desktop */
+                    .timeline-line.desktop-hidden {
+                        display: none !important;
+                    }
                 }
                 
                 /* Mobile layout - single column with continuous line */
@@ -1830,20 +1835,26 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                         min-width: auto !important;
                     }
                     
-                    /* Continuous vertical line for mobile */
-                    .numbered-timeline::before {
-                        content: '';
+                    /* Show individual lines on mobile based on completion status */
+                    .timeline-line {
+                        display: block !important; /* Show lines on mobile */
                         position: absolute;
                         left: 24px;
                         top: 50px;
-                        bottom: 50px;
                         width: 2px;
-                        background: linear-gradient(to bottom, {{ $completedLineColor }} 0%, {{ $completedLineColor }} 70%, {{ $uncompletedLineColor }} 70%, {{ $uncompletedLineColor }} 100%);
+                        height: calc(100% + 1rem);
                         z-index: 1;
+                        transition: background-color 0.3s ease;
                     }
                     
-                    .timeline-line {
-                        display: none; /* Hide individual lines on mobile */
+                    /* Override desktop-hidden class on mobile - show all lines */
+                    .timeline-line.desktop-hidden {
+                        display: block !important;
+                    }
+                    
+                    /* Hide the continuous line approach */
+                    .numbered-timeline::before {
+                        display: none;
                     }
                     
                     .timeline-item {
@@ -1867,10 +1878,34 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                                     $isLastInColumn = $index === count($column) - 1;
                                     $isLastOverall = $globalIndex === count($items) - 1;
                                     
+                                    // Desktop: Hide line after every 4th item (end of column)
+                                    $isDesktopColumnEnd = ($globalIndex + 1) % $itemsPerColumn === 0;
+                                    
+                                    // Check if next item exists and determine line logic
+                                    $showCompletedLine = false;
+                                    $showIncompleteLine = false;
+                                    
+                                    if (!$isLastOverall) {
+                                        $nextGlobalIndex = $globalIndex + 1;
+                                        if ($nextGlobalIndex < count($items)) {
+                                            $nextItemCompleted = $items[$nextGlobalIndex]['completed'] ?? true;
+                                            
+                                            if ($isCompleted && $nextItemCompleted) {
+                                                // Both current and next are completed - show completed line
+                                                $showCompletedLine = true;
+                                            } else if ($isCompleted && !$nextItemCompleted) {
+                                                // Current is completed, next is not - show incomplete line to connect to remaining items
+                                                $showIncompleteLine = true;
+                                            } else if (!$isCompleted) {
+                                                // Current is incomplete - show incomplete line to next item (if not last)
+                                                $showIncompleteLine = true;
+                                            }
+                                        }
+                                    }
+                                    
                                     // Determine colors based on completion status
                                     $bgColor = $isCompleted ? $completedBackground : $uncompletedBackground;
                                     $textColor = $isCompleted ? $completedText : $uncompletedText;
-                                    $itemLineColor = $isCompleted ? $completedLineColor : $uncompletedLineColor;
                                 @endphp
                                 <div class="timeline-item">
                                     <div class="timeline-number" style="
@@ -1902,8 +1937,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                                             </div>
                                         @endif
                                     </div>
-                                    @if(!$isLastInColumn && !$isLastOverall)
-                                        <div class="timeline-line" style="background: {{ $itemLineColor }};"></div>
+                                    @if($showCompletedLine)
+                                        <div class="timeline-line {{ $isDesktopColumnEnd ? 'desktop-hidden' : '' }}" style="background: {{ $completedLineColor }};"></div>
+                                    @elseif($showIncompleteLine)
+                                        <div class="timeline-line {{ $isDesktopColumnEnd ? 'desktop-hidden' : '' }}" style="background: {{ $uncompletedLineColor }};"></div>
                                     @endif
                                 </div>
                             @endforeach
