@@ -430,7 +430,7 @@ a,
                     @endif
                 </a>
                 <article role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">
-                    <div data-wf--nav-links--variant="base" class="n_navbar-links">
+                    <div data-wf--nav-links--variant="base" style="display:none;" class="n_navbar-links">
                         <div data-delay="0" data-hover="true" data-w-id="99145d29-4884-e5b0-ba1a-76705e0667ae"
                             class="navbar_menu-dropdown w-dropdown">
                             <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
