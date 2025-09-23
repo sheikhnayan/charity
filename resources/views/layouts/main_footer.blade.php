@@ -1,10 +1,10 @@
 @php
-    $main_setting = \App\Models\DealmakerConfig::first();
+    $main_setting = \App\Models\DealmakerConfig::getInstance();
 @endphp
 
-@if ($config->show_footer ?? true)
-        <div dark-bg="1" class="footer">
-            <footer dark-bg="1" class="footer_component">
+@if ($main_setting->show_footer ?? true)
+        <div dark-bg="1" class="footer" style="background-color: {{ $main_setting ? $main_setting->getSectionBackgroundColor('footer', '#000000') : '#000000' }};">
+            <footer dark-bg="1" class="footer_component" style="background-color: {{ $main_setting ? $main_setting->getSectionBackgroundColor('footer', '#000000') : '#000000' }};">
                 <div id="footer" class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-large">
@@ -59,7 +59,8 @@
                                         <div class="spacer-medium"></div>
                                     </a>
                                     <div class="spacer-small">
-                                        <div class="text-size-small">{{ $config->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $config->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}
+                                        <div class="text-size-small">
+                                            {{ $main_setting->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $main_setting->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}
                                         </div>
                                         <div class="spacer-medium"></div>
                                         <div class="w-layout-grid footer3_social-list">
@@ -226,7 +227,7 @@
                                             <div class="line-sepearation is-small"></div>
                                             <div class="spacer-small"></div>
                                             <div class="text-size-small">
-                                                {{ $config->footer_newsletter_description ?? 'Subscribe to our newsletter for the latest updates and insights on capital raising.' }}
+                                                {{ $main_setting->footer_newsletter_description ?? 'Subscribe to our newsletter for the latest updates and insights on capital raising.' }}
                                             </div>
                                             <div class="spacer-medium"></div>
                                             <div class="w-embed w-script">
@@ -276,7 +277,7 @@
                                                     }
 
                                                     .hs_email .input {
-                                                        background-color: black;
+                                                        background-color: {{ $main_setting ? $main_setting->getSectionBackgroundColor('footer', '#000000') : '#000000' }};
                                                         border: 0 solid #ededed;
                                                         border-bottom: 0;
                                                         height: auto !important;
@@ -296,7 +297,7 @@
                                                     }
 
                                                     .hs_email ul {
-                                                        background-color: #1b1b1b;
+                                                        background-color: {{ $main_setting ? $main_setting->getSectionBackgroundColor('footer', '#000000') : '#000000' }};
                                                         font-size: 14px;
                                                         border-radius: 10px;
                                                         color: white !important;
@@ -318,9 +319,9 @@
                                                         white-space: pre-wrap;
                                                         width: 100%;
                                                         padding: 8px;
-                                                        color: #0b3834;
+                                                        color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
                                                         border: 0;
-                                                        background-color: #8ee8df;
+                                                        background-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
                                                     }
 
                                                     /* Fix for the thank you message */
@@ -340,18 +341,18 @@
                     </div>
                 </div>
             </footer>
-            <div class="footer-lower">
+            <div class="footer-lower" style="background-color: {{ $main_setting ? $main_setting->getSectionBackgroundColor('footer', '#000000') : '#000000' }};">
                 <div class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-xsmall">
                             <div class="footer-lower_grid">
-                                <div class="w-layout-hflex flex-block-18"><a href="{{ $config->footer_terms_url ?? '/terms' }}"
-                                        class="footer-lower_link">Terms of Service</a><a href="{{ $config->footer_privacy_url ?? '/privacy' }}"
-                                        class="footer-lower_link">Privacy Policy</a><a href="{{ $config->footer_cookies_url ?? '/cookies' }}"
-                                        class="footer-lower_link">Cookies</a><a href="{{ $config->footer_security_url ?? '/security' }}"
-                                        class="footer-lower_link">Security</a><a href="{{ $config->footer_accessibility_url ?? '/accessibility' }}"
-                                        class="footer-lower_link">Accessibility</a></div>
-                                <div>{{ $config->footer_copyright_text ?? '© 2025 DealMaker. All rights reserved.' }}</div>
+                                {{-- <div class="w-layout-hflex flex-block-18"><a href="{{ $main_setting->footer_terms_url ?? '/terms' }}"
+                                        class="footer-lower_link">Terms of Service</a><a href="{{ $main_setting->footer_privacy_url ?? '/privacy' }}"
+                                        class="footer-lower_link">Privacy Policy</a><a href="{{ $main_setting->footer_cookies_url ?? '/cookies' }}"
+                                        class="footer-lower_link">Cookies</a><a href="{{ $main_setting->footer_security_url ?? '/security' }}"
+                                        class="footer-lower_link">Security</a><a href="{{ $main_setting->footer_accessibility_url ?? '/accessibility' }}"
+                                        class="footer-lower_link">Accessibility</a></div> --}}
+                                <div>{{ $main_setting->footer_copyright_text ?? '© 2025 DealMaker. All rights reserved.' }}</div>
                             </div>
                         </div>
                     </div>
@@ -421,6 +422,84 @@
     <style>
         .cta_component {
             backdrop-filter: blur(40px);
+        }
+        
+        /* Apply primary button color to all non-transparent buttons */
+        .n_button:not(.is-ghost),
+        .hero-cta-button,
+        .w-button {
+            background-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            border-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Hover and active states for buttons */
+        .n_button:not(.is-ghost):hover,
+        .n_button:not(.is-ghost):active,
+        .n_button:not(.is-ghost):focus,
+        .hero-cta-button:hover,
+        .hero-cta-button:active,
+        .hero-cta-button:focus,
+        .w-button:hover,
+        .w-button:active,
+        .w-button:focus {
+            background-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            border-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Include all button variations except is-ghost */
+        .n_button.is-small:not(.is-ghost),
+        .n_button.is-darker:not(.is-ghost),
+        .n_button.is-alternate:not(.is-ghost) {
+            background-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            border-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        .n_button.is-small:not(.is-ghost):hover,
+        .n_button.is-small:not(.is-ghost):active,
+        .n_button.is-small:not(.is-ghost):focus,
+        .n_button.is-darker:not(.is-ghost):hover,
+        .n_button.is-darker:not(.is-ghost):active,
+        .n_button.is-darker:not(.is-ghost):focus,
+        .n_button.is-alternate:not(.is-ghost):hover,
+        .n_button.is-alternate:not(.is-ghost):active,
+        .n_button.is-alternate:not(.is-ghost):focus {
+            background-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            border-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Keep transparent buttons (is-ghost) unchanged */
+        .n_button.is-ghost {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        .n_button.is-ghost:hover,
+        .n_button.is-ghost:active,
+        .n_button.is-ghost:focus {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        /* Social Icon Styling */
+        .footer3_social-link {
+            background-color: {{ $main_setting->social_icon_bg_color ?? '#f31cb6' }} !important;
+            border-radius: 8px !important;
+            padding: 12px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .footer3_social-link:hover {
+            background-color: {{ $main_setting->social_icon_hover_color ?? '#d1179a' }} !important;
+        }
+        
+        .footer3_social-link svg,
+        .footer3_social-link .footer-icon svg {
+            color: {{ $main_setting->social_icon_color ?? '#ffffff' }} !important;
+            fill: {{ $main_setting->social_icon_color ?? '#ffffff' }} !important;
         }
     </style><!-- [Attributes by Finsweet] Number Count -->
     <script defer src="https://cdn.jsdelivr.net/npm/@finsweet/attributes-numbercount@1/numbercount.js"></script>

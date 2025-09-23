@@ -30,6 +30,110 @@
         name="google-site-verification" />
     <link href="{{ asset('css/dealmaker-main.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/dealmaker-fonts.css') }}" rel="stylesheet" type="text/css" />
+    
+    <!-- Button Color Customization -->
+    <style>
+        /* Apply primary button color to all non-transparent buttons */
+        .n_button:not(.is-ghost),
+        .hero-cta-button,
+        .w-button {
+            background-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+            border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+            color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Hover and active states for buttons */
+        .n_button:not(.is-ghost):hover,
+        .n_button:not(.is-ghost):active,
+        .n_button:not(.is-ghost):focus,
+        .hero-cta-button:hover,
+        .hero-cta-button:active,
+        .hero-cta-button:focus,
+        .w-button:hover,
+        .w-button:active,
+        .w-button:focus {
+            background-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
+            border-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
+            color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Include all button variations except is-ghost */
+        .n_button.is-small:not(.is-ghost),
+        .n_button.is-darker:not(.is-ghost),
+        .n_button.is-alternate:not(.is-ghost) {
+            background-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+            border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+            color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        .n_button.is-small:not(.is-ghost):hover,
+        .n_button.is-small:not(.is-ghost):active,
+        .n_button.is-small:not(.is-ghost):focus,
+        .n_button.is-darker:not(.is-ghost):hover,
+        .n_button.is-darker:not(.is-ghost):active,
+        .n_button.is-darker:not(.is-ghost):focus,
+        .n_button.is-alternate:not(.is-ghost):hover,
+        .n_button.is-alternate:not(.is-ghost):active,
+        .n_button.is-alternate:not(.is-ghost):focus {
+            background-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
+            border-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
+            color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Keep transparent buttons (is-ghost) unchanged */
+        .n_button.is-ghost {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        .n_button.is-ghost:hover,
+        .n_button.is-ghost:active,
+        .n_button.is-ghost:focus {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        /* Social Icon Styling */
+        .footer3_social-link {
+            background-color: {{ $setting->social_icon_bg_color ?? '#f31cb6' }} !important;
+            border-radius: 8px !important;
+            padding: 12px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .footer3_social-link:hover {
+            background-color: {{ $setting->social_icon_hover_color ?? '#d1179a' }} !important;
+        }
+        
+        .footer3_social-link svg,
+        .footer3_social-link .footer-icon svg {
+            color: {{ $setting->social_icon_color ?? '#ffffff' }} !important;
+            fill: {{ $setting->social_icon_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Smooth scroll behavior for navigation links */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        
+        /* Navbar link styling for section navigation */
+        .navbar_link {
+            color: inherit;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar_link:hover {
+            color: {{ $setting->button_primary_color ?? '#f31cb6' }};
+        }
+    </style>
+    
     <script src="{{ asset('js/webfont.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
         WebFont.load({
@@ -91,6 +195,36 @@
 
         .header-update-video {
             display: block !important;
+        }
+
+        /* Ensure hero section takes full height */
+        .n_video_bg {
+            min-height: 100vh !important;
+            position: relative !important;
+            overflow: hidden;
+        }
+
+        /* Ensure video container covers full area */
+        .hero-video-container {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 0 !important;
+        }
+
+        /* Ensure content is above video */
+        .hero-overlay {
+            position: relative !important;
+            z-index: 10 !important;
+            min-height: 100vh !important;
+        }
+
+        /* Prevent main content from overlapping */
+        main.main {
+            position: relative;
+            z-index: 5;
         }
     </style><!-- Include Swiper CSS -->
     <link rel="stylesheet" href="{{ asset('css/swiper-bundle.min.css') }}" />
@@ -343,19 +477,33 @@ a,
                 .no-scrollbar::-webkit-scrollbar {
                     display: none;
                 }
+
+                .tab-link-tab-4.w--current{
+                    background-color: {{ $setting->button_primary_color ?? '#f31cb6' }};
+                    color: {{ $setting->button_text_color ?? '#ffffff' }};
+                }
+
+                .text-color-pink{
+                    color: {{ $setting->button_text_color ?? '#ffffff' }};
+                }
+
+                .n_testimonial-text{
+                    color: {{ $setting->button_hover_color ?? '#d1179a' }};
+                }
             </style>
         </div>
         <div data-animation="default" class="n_navbar-25 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-nav"
             data-easing2="ease" data-wf--main-nav--variant="announcement" data-easing="ease" data-collapse="medium"
             data-w-id="111ce1d9-5d52-f117-6d9c-068c2f584c20" role="banner" data-no-scroll="1" data-duration="400">
             @if ($setting->show_announcement ?? true)
-                <div class="div-block-20 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
+                 <div class="div-block-20 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background-color: {{ $setting->getSectionBackgroundColor('announcement', '#f8f9fa') }};">
                     <div class="div-block-21 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
                         <div class="div-block-22 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
-                            <div class="breaking-news-wr w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><img
+                            <div class="breaking-news-wr w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background: #e63cb8 !important">
+                                {{-- <img
                                     src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6873ea75996d3b8bd33a2d13_Rectangle%2066.svg"
                                     loading="lazy" alt=""
-                                    class="image-76 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" />
+                                    class="image-76 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" /> --}}
                                 <div class="breaking-text w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
                                     {{ $setting->announcement_badge ?? 'GET READY' }}</div>
                             </div>
@@ -432,108 +580,18 @@ a,
                     @endif
                 </a>
                 <article role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">
-                    <div data-wf--nav-links--variant="base" style="display:none;" class="n_navbar-links">
-                        <div data-delay="0" data-hover="true" data-w-id="99145d29-4884-e5b0-ba1a-76705e0667ae"
-                            class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $setting->nav_raise_capital_title ?? 'Raise Capital' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list is_new w-dropdown-list">
-                                <div class="container-large is_white">
-                                    <div class="navbar_dropdown-wrap"><a href="/offering-types"
-                                            class="navbar_dropdown-link">Offering types</a><a href="/raise-capital"
-                                            class="navbar_dropdown-link">Why DealMaker</a><a href="/sports"
-                                            class="navbar_dropdown-link">Sports</a></div>
-                                </div>
-                            </nav>
-                        </div>
-                        <div data-delay="0" data-hover="true" class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $setting->nav_products_title ?? 'Products' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list is_new w-dropdown-list">
-                                <div class="container-large is_white">
-                                    <div class="navbar_dropdown-wrap"><a href="/capital-raise-tech"
-                                            class="navbar_dropdown-link w-dropdown-link">Capital raise tech</a><a
-                                            href="/investor-relations"
-                                            class="navbar_dropdown-link w-dropdown-link">Investor services</a><a
-                                            href="/dealmaker-marketing-services"
-                                            class="navbar_dropdown-link w-dropdown-link">Campaign marketing</a><a
-                                            href="/platforms" class="navbar_dropdown-link w-dropdown-link">Tech
-                                            licensing</a><a href="/reservation-campaigns"
-                                            class="navbar_dropdown-link w-dropdown-link">Reservation Campaigns</a>
-                                    </div>
-                                </div>
-                            </nav>
-                        </div>
-                        <div data-delay="0" data-hover="true" data-w-id="99145d29-4884-e5b0-ba1a-76705e0667cc"
-                            class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $setting->nav_resources_title ?? 'Resources' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list mega-menu is_new w-dropdown-list">
-                                <div class="div-block-19">
-                                    <div class="navbar_dropdown-wrap drop-shorter"><a href="/about-us"
-                                            class="navbar_dropdown-link w-dropdown-link">About Us</a><a href="/guides"
-                                            class="navbar_dropdown-link w-dropdown-link">Guides</a><a href="/blog"
-                                            class="navbar_dropdown-link w-dropdown-link">Blog</a><a
-                                            href="/category/case-studies"
-                                            class="navbar_dropdown-link w-dropdown-link">Case studies</a><a
-                                            href="http://help.dealmaker.tech/"
-                                            class="navbar_dropdown-link w-dropdown-link">Issuer FAQ</a><a
-                                            href="http://support.dealmaker.tech/"
-                                            class="navbar_dropdown-link w-dropdown-link">Investor FAQ</a></div><a
-                                        href="/raising-capital" class="mega-menu-wrapper w-inline-block"><img
-                                            width="960" sizes="100vw" alt=""
-                                            src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025.png"
-                                            loading="lazy"
-                                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-1600.png 1600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025.png 1920w"
-                                            class="max-width-full is-large" /></a>
-                                </div>
-                            </nav>
-                        </div>
+                    <div data-wf--nav-links--variant="base" class="n_navbar-links">
+                        {{-- Dynamic Section Menu Items --}}
+                        @php
+                            $enabledMenuItems = $setting->getEnabledMenuItems();
+                        @endphp
+                        @if(count($enabledMenuItems) > 0)
+                            @foreach($enabledMenuItems as $menuItem)
+                                <a href="{{ $menuItem['anchor'] }}" class="navbar_link smooth-scroll">
+                                    {{ $menuItem['title'] }}
+                                </a>
+                            @endforeach
+                        @endif
                     </div>
                     <div class="navbar_menu-buttons"><a style="display: none;"
                             href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}"
@@ -702,7 +760,7 @@ a,
                 src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6601bb203ce160061a094c39_close-pop.svg"
                 loading="lazy" alt="close video button" class="image-8" /></a>
     </div>
-    <div class="n_video_bg">
+    <div id="hero" class="n_video_bg" style="background-color: {{ $setting->getSectionBackgroundColor('hero', '#000000') }}; min-height: 100vh; position: relative; display: flex; align-items: center;">
         @php
             $videoUrl = $setting->bg_video_url ?? ($setting->hero_background_video ?? '');
             // dd($videoUrl);
@@ -748,7 +806,7 @@ a,
             }
         @endphp
 
-        <div class="hero-video-container" style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
+        <div class="hero-video-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0;">
             @if ($isYouTube || $isVimeo)
                 {{-- YouTube or Vimeo embedded video --}}
                 <iframe src="{{ $embedUrl }}" frameborder="0"
@@ -778,7 +836,7 @@ a,
 
             {{-- Hero content overlay using existing hero section settings --}}
             <div class="hero-overlay"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 1;">
+                style="position: relative; width: 100%; min-height: 100vh; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 10;">
                 <div class="hero-content" style="max-width: 800px; padding: 2rem;">
                     {{-- Use existing hero section data --}}
                     <div class="dmn-line max-width-full"
@@ -795,7 +853,7 @@ a,
                     </h1>
                     @if ($setting->hero_cta_text && $setting->hero_cta_url)
                         <a href="{{ $setting->hero_cta_url }}" class="hero-cta-button"
-                            style="display: inline-block; background: #f31cb6; color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
+                            style="display: inline-block; background: #f31cb6; color: white; padding: 1rem 2rem; border-radius: 1rem; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
                             {{ $setting->hero_cta_text }}
                         </a>
                     @endif
@@ -843,9 +901,9 @@ a,
         @endif
     </div>
     </header>
-    <main magic-video="true" class="main" style="margin-top: 38rem;">
+    <main magic-video="true" class="main" style="margin-top: 0;">
         <div data-w-id="85d6703c-aa1b-21a4-683e-686ff485134c" class="new-nav-trigger"></div>
-        <header class="n_section_platform_app" style="display:none;">
+        <header id="services" class="n_section_platform_app" style="display:none;">
             <div class="n_padding-global">
                 <div class="container-large">
                     <div class="padding-section-small">
@@ -1078,26 +1136,28 @@ a,
                 </defs>
             </svg></div>
 
-        <!-- Client logos section moved to bottom of video section -->
-        <section class="n_section_logos">
+        <!-- About section placeholder -->
+        {{-- <section id="about" style="background-color: {{ $setting->getSectionBackgroundColor('about', '#f8f9fa') }}; padding: 60px 0;">
             <div class="n_padding-global">
                 <div class="container-large">
-                    <div class="w-layout-grid grid-17">
-                        @foreach ($setting->client_logos as $item)
-                            <img src="{{ $item['image'] }}"
-                                loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
-                                alt="{{ $item['name'] }}"
-                                srcset="{{ $item['image'] }}"
-                                sizes="105.5px" class="logo-news" />      
-                        @endforeach
+                    <div class="padding-section-large">
+                        <div class="text-align-center">
+                            <h2 class="n_heading-size-h2">{{ $setting->about_title ?? 'About Our Company' }}</h2>
+                            <div class="spacer-medium"></div>
+                            <p class="text-color-black max-width-medium">
+                                {{ $setting->about_description ?? 'We are dedicated to revolutionizing capital raising through innovative technology solutions.' }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
+
+        
 
         @if ($setting->show_case_studies ?? true)
             <div class="spacer-large menu-icon1_line-middle d-none" style="display: none;"></div>
-            <section class="section_casestudies">
+            <section id="case-studies" class="section_casestudies" style="background-color: {{ $setting->getSectionBackgroundColor('case_studies', '#f8f9fa') }};">
                 <div class="w-layout-grid grid-16">
                     @if (is_array($setting->case_studies) && count($setting->case_studies) > 0)
                         @foreach ($setting->case_studies as $index => $case_study)
@@ -1235,10 +1295,28 @@ a,
                 </div>
             </section>
         @endif
+        @if ($setting->show_client_logos ?? true)
+            <!-- Client logos section moved to bottom of video section -->
+            <section id="partners" class="n_section_logos" style="background-color: {{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}; background-image: linear-gradient({{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}, #000)">
+                <div class="n_padding-global">
+                    <div class="container-large">
+                        <div class="w-layout-grid grid-17">
+                            @foreach ($setting->client_logos as $item)
+                                <img src="{{ $item['image'] }}"
+                                    loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
+                                    alt="{{ $item['name'] }}"
+                                    srcset="{{ $item['image'] }}"
+                                    sizes="105.5px" class="logo-news" />      
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
 
         @if ($setting->show_difference_section ?? true)
             <div class="spacer-large" style="display:none;"></div>
-            <header class="n_section_capital">
+            <header id="why-us" class="n_section_capital" style="background-color: {{ $setting->getSectionBackgroundColor('difference_section', '#ffffff') }};">
                 <div class="n_padding-global">
                     <div class="container-large">
                         <div class="padding-section-large-4">
@@ -1506,17 +1584,17 @@ a,
                 </div>
             </header>
         @endif
-        <header class="n_section_testimonial">
+        <header id="testimonials" class="n_section_testimonial" style="background-color: {{ $setting->getSectionBackgroundColor('testimonials', '#f8f9fa') }};">
             <div class="n_padding-global">
                 <div class="container-large">
                     <div swp-enabled="true" swp-m-enabled="true" class="swiper_container" swp-autoplay="false"
                         swp-loop="false" swp-m-space="30" swp-m-loop="true" swp-space="45" swp-s-enabled="true"
                         swp-s-space="10" swp-s-centered="false" swp-slide-count="1" swp-m-slide-count="1"
                         swp-centered="false" swp-m-centered="false" swp-s-slide-count="1" swp-s-loop="true">
-                        <div class="swiper-wrapper is-testimonial">
+                        <div class="swiper-wrapper is-testimonial" style="background-color: {{ $setting->getSectionBackgroundColor('testimonials', '#f8f9fa') }};">
                             @if ($setting->testimonials && count($setting->testimonials) > 0)
                                 @foreach ($setting->testimonials as $testimonial)
-                                    <div class="swiper-slide is-testimonial">
+                                    <div class="swiper-slide is-testimonial" style="background-color: {{ $setting->getSectionBackgroundColor('testimonials', '#f8f9fa') }};">
                                         <div class="code-embed-9 w-embed"><svg width="auto" height="auto"
                                                 viewBox="0 0 651 291" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -1547,7 +1625,7 @@ a,
                                                         alt="{{ $testimonial['name'] ?? 'Client' }}"
                                                         class="n_testimonial-png" />
                                                 @endif
-                                                <div>{{ strtoupper($testimonial['name'] ?? 'CLIENT NAME') }}</div>
+                                                <div style="color: {{ $setting->button_hover_color ?? '#d1179a' }}">{{ strtoupper($testimonial['name'] ?? 'CLIENT NAME') }}</div>
                                                 <div class="text-color-pink text-style-allcaps">
                                                     {{ strtoupper($testimonial['company'] ?? 'COMPANY') }}</div>
                                             </div>
@@ -1619,130 +1697,134 @@ a,
                 <div class="container-large"></div>
             </div>
         </div>
-        <header class="n_section_play">
+        <header id="solutions" class="solutions-section" style="background-color: {{ $setting->getSectionBackgroundColor('capital_revolutionized', '#ffffff') }}; padding: 80px 0;">
             <div class="n_padding-global">
                 <div class="container-large">
-                    <div class="padding-section-large-2 padding-bottom-custom">
-                        <h2 class="n_heading-size-h2">
+                    <div class="text-align-center" style="margin-bottom: 60px;">
+                        <h2 class="n_heading-size-h2 text-color-black">
                             {{ $setting->capital_revolutionized_title ?? 'Capital raising, revolutionized' }}</h2>
                         <div class="spacer-medium"></div>
-                        <p class="text-color-black max-width-medium">
+                        <p class="text-color-black max-width-medium" style="margin: 0 auto;">
                             {{ $setting->capital_revolutionized_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' }}
                         </p>
-                        <div class="spacer-large"></div>
-                        <div class="w-layout-grid n_grid_wrapper is-3columns">
-                            <div id="w-node-_103bce8a-919e-03bb-dbb3-35116f71632a-4a773f3e"
-                                data-w-id="103bce8a-919e-03bb-dbb3-35116f71632a" class="n_circles_cover">
-                                <div style="opacity:0" class="n_circles_bg is-purple-shadow"></div>
-                                <div style="opacity:1" class="n_circles_bg is-shadow"></div><img
-                                    src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859a42dd145d6dc6c3dba94_5m.svg"
-                                    loading="lazy" alt="" class="n_circles_image" />
-                                <div data-w-id="3f8838eb-c45c-6ba7-cf4a-f755d554c10f" class="n_circle_inside">
-                                    <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">
-                                            {{ $setting->reg_cf_title ?? 'Via Reg CF' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_cf_subtitle ?? 'Raise up to' }}
-                                        </div>
-                                    </div><a href="{{ $setting->reg_cf_url ?? '/na-typ' }}"
-                                        class="link-block-7 w-inline-block">
-                                        <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">
-                                                {{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}</div>
-                                            <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
-                                                    width="auto" height="auto" viewBox="0 0 38 38"
-                                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M34.2598 18.8799C34.2597 10.3858 27.374 3.5 18.8799 3.5C10.3858 3.50006 3.50006 10.3858 3.5 18.8799C3.5 27.374 10.3858 34.2597 18.8799 34.2598C27.374 34.2598 34.2598 27.374 34.2598 18.8799ZM37.2598 18.8799C37.2598 29.0309 29.0309 37.2598 18.8799 37.2598C8.72894 37.2597 0.5 29.0308 0.5 18.8799C0.500063 8.72898 8.72898 0.500063 18.8799 0.5C29.0308 0.5 37.2597 8.72894 37.2598 18.8799Z"
-                                                        fill="non" />
-                                                    <path
-                                                        d="M16.9915 27.59C16.4062 28.1761 15.4566 28.1762 14.8704 27.591C14.2843 27.0056 14.2832 26.0561 14.8685 25.4699L16.9915 27.59ZM14.8695 11.0792C15.4552 10.4934 16.4048 10.4934 16.9905 11.0792L24.181 18.2687C24.7665 18.8542 24.7661 19.8039 24.181 20.3898L16.9915 27.59L14.8685 25.4699L20.9984 19.3302L14.8695 13.2003C14.2837 12.6145 14.2837 11.665 14.8695 11.0792Z"
-                                                        fill="currentColor" />
-                                                </svg></div>
-                                        </div>
-                                    </a>
-                                </div>
+                    </div>
+                    
+                    <!-- Statistics Cards Container -->
+                    <div class="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto;">
+                        
+                        <!-- Reg CF Card -->
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%); border: 2px solid #e1f5f4; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #8ee8df 0%, #6fd9ce 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <div style="color: #ffffff; font-size: 28px; font-weight: bold;">$5M</div>
                             </div>
-                            <div id="w-node-_8540e8b8-0179-2cb9-74c7-d7eaf418bada-4a773f3e"
-                                data-w-id="8540e8b8-0179-2cb9-74c7-d7eaf418bada" class="n_circles_cover">
-                                <div style="opacity:0" class="n_circles_bg is-purple-shadow"></div>
-                                <div style="opacity:1" class="n_circles_bg is-shadow"></div><img
-                                    src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859a42d18777cc2019fa7b5_75m.svg"
-                                    loading="lazy" alt="" class="n_circles_image" />
-                                <div data-w-id="8540e8b8-0179-2cb9-74c7-d7eaf418bade" class="n_circle_inside">
-                                    <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">
-                                            {{ $setting->reg_a_title ?? 'Via Reg A' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_a_subtitle ?? 'Raise up to' }}
-                                        </div>
-                                    </div><a href="{{ $setting->reg_a_url ?? '/na-typ' }}"
-                                        class="link-block-7 w-inline-block">
-                                        <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">
-                                                {{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}</div>
-                                            <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
-                                                    width="auto" height="auto" viewBox="0 0 38 38"
-                                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M34.2598 18.8799C34.2597 10.3858 27.374 3.5 18.8799 3.5C10.3858 3.50006 3.50006 10.3858 3.5 18.8799C3.5 27.374 10.3858 34.2597 18.8799 34.2598C27.374 34.2598 34.2598 27.374 34.2598 18.8799ZM37.2598 18.8799C37.2598 29.0309 29.0309 37.2598 18.8799 37.2598C8.72894 37.2597 0.5 29.0308 0.5 18.8799C0.500063 8.72898 8.72898 0.500063 18.8799 0.5C29.0308 0.5 37.2597 8.72894 37.2598 18.8799Z"
-                                                        fill="non" />
-                                                    <path
-                                                        d="M16.9915 27.59C16.4062 28.1761 15.4566 28.1762 14.8704 27.591C14.2843 27.0056 14.2832 26.0561 14.8685 25.4699L16.9915 27.59ZM14.8695 11.0792C15.4552 10.4934 16.4048 10.4934 16.9905 11.0792L24.181 18.2687C24.7665 18.8542 24.7661 19.8039 24.181 20.3898L16.9915 27.59L14.8685 25.4699L20.9984 19.3302L14.8695 13.2003C14.2837 12.6145 14.2837 11.665 14.8695 11.0792Z"
-                                                        fill="currentColor" />
-                                                </svg></div>
-                                        </div>
-                                    </a>
-                                </div>
+                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
+                                {{ $setting->reg_cf_title ?? 'Via Reg CF' }}
+                            </h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                                {{ $setting->reg_cf_subtitle ?? 'Raise up to' }}
+                            </p>
+                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
+                                {{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}
+                            </p>
+                            <a href="{{ $setting->reg_cf_url ?? '/na-typ' }}" 
+                               style="display: inline-flex; align-items: center; background: #8ee8df; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
+                               onmouseover="this.style.background='#6fd9ce'; this.style.transform='translateY(-2px)'"
+                               onmouseout="this.style.background='#8ee8df'; this.style.transform='translateY(0)'">
+                                Learn More
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
+                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Reg A Card -->
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #faf8ff 100%); border: 2px solid #e8e1f5; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #d1179a 0%, #b8156e 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <div style="color: #ffffff; font-size: 24px; font-weight: bold;">$75M</div>
                             </div>
-                            <div id="w-node-_7b6bf369-5b18-1fbe-c90e-b8e8e72fe1c1-4a773f3e"
-                                data-w-id="7b6bf369-5b18-1fbe-c90e-b8e8e72fe1c1" class="n_circles_cover">
-                                <div style="opacity:0" class="n_circles_bg is-purple-shadow"></div>
-                                <div style="opacity:1" class="n_circles_bg is-shadow"></div><img
-                                    src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859a42d8850de78a20a5744_Subtract.svg"
-                                    loading="lazy" alt="" class="n_circles_image" />
-                                <div data-w-id="7b6bf369-5b18-1fbe-c90e-b8e8e72fe1c5" class="n_circle_inside">
-                                    <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">
-                                            {{ $setting->reg_d_title ?? 'Via Reg D' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_d_subtitle ?? 'Raise up to' }}
-                                        </div>
-                                    </div><a href="{{ $setting->reg_d_url ?? '/na-typ' }}"
-                                        class="link-block-7 w-inline-block">
-                                        <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">
-                                                {{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}
-                                            </div>
-                                            <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
-                                                    width="auto" height="auto" viewBox="0 0 38 38"
-                                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M34.2598 18.8799C34.2597 10.3858 27.374 3.5 18.8799 3.5C10.3858 3.50006 3.50006 10.3858 3.5 18.8799C3.5 27.374 10.3858 34.2597 18.8799 34.2598C27.374 34.2598 34.2598 27.374 34.2598 18.8799ZM37.2598 18.8799C37.2598 29.0309 29.0309 37.2598 18.8799 37.2598C8.72894 37.2597 0.5 29.0308 0.5 18.8799C0.500063 8.72898 8.72898 0.500063 18.8799 0.5C29.0308 0.5 37.2597 8.72894 37.2598 18.8799Z"
-                                                        fill="non" />
-                                                    <path
-                                                        d="M16.9915 27.59C16.4062 28.1761 15.4566 28.1762 14.8704 27.591C14.2843 27.0056 14.2832 26.0561 14.8685 25.4699L16.9915 27.59ZM14.8695 11.0792C15.4552 10.4934 16.4048 10.4934 16.9905 11.0792L24.181 18.2687C24.7665 18.8542 24.7661 19.8039 24.181 20.3898L16.9915 27.59L14.8685 25.4699L20.9984 19.3302L14.8695 13.2003C14.2837 12.6145 14.2837 11.665 14.8695 11.0792Z"
-                                                        fill="currentColor" />
-                                                </svg></div>
-                                        </div>
-                                    </a>
-                                </div>
+                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
+                                {{ $setting->reg_a_title ?? 'Via Reg A' }}
+                            </h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                                {{ $setting->reg_a_subtitle ?? 'Raise up to' }}
+                            </p>
+                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
+                                {{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}
+                            </p>
+                            <a href="{{ $setting->reg_a_url ?? '/na-typ' }}" 
+                               style="display: inline-flex; align-items: center; background: #d1179a; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
+                               onmouseover="this.style.background='#b8156e'; this.style.transform='translateY(-2px)'"
+                               onmouseout="this.style.background='#d1179a'; this.style.transform='translateY(0)'">
+                                Learn More
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
+                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Reg D Card -->
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 2px solid #e1e5e9; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <div style="color: #ffffff; font-size: 20px; font-weight: bold;">∞</div>
                             </div>
+                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
+                                {{ $setting->reg_d_title ?? 'Via Reg D' }}
+                            </h3>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                                {{ $setting->reg_d_subtitle ?? 'Raise up to' }}
+                            </p>
+                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
+                                {{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}
+                            </p>
+                            <a href="{{ $setting->reg_d_url ?? '/na-typ' }}" 
+                               style="display: inline-flex; align-items: center; background: #2c3e50; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
+                               onmouseover="this.style.background='#1a252f'; this.style.transform='translateY(-2px)'"
+                               onmouseout="this.style.background='#2c3e50'; this.style.transform='translateY(0)'">
+                                Learn More
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
+                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
+                                </svg>
+                            </a>
                         </div>
                     </div>
+
+                    <!-- Add responsive styles -->
+                    <style>
+                        @media (max-width: 768px) {
+                            .stats-container {
+                                grid-template-columns: 1fr !important;
+                                gap: 30px !important;
+                            }
+                            .stat-card {
+                                padding: 30px 20px !important;
+                            }
+                            .stat-icon {
+                                width: 70px !important;
+                                height: 70px !important;
+                            }
+                        }
+                        
+                        .stat-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+                        }
+                    </style>
                 </div>
             </div>
         </header>
-        <header class="n_final-section _2">
+        <header id="get-started" class="n_final-section _2" style="background-color: {{ $setting->getSectionBackgroundColor('final_cta', '#000000') }};">
             <div data-w-id="16f9ff2b-4fe9-b9b5-8b71-e8b50186f420" class="n_parallax-section _2"><img
-                    src="{{ $setting->final_cta_growth_image ? '/' . $setting->final_cta_growth_image : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth.png' }}"
+                    src="{{ $setting->final_cta_growth_image ? asset($setting->final_cta_growth_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth.png' }}"
                     loading="lazy" sizes="100vw"
-                    srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth.png 2069w"
+                    srcset=" {{  $setting->final_cta_growth_image ? asset($setting->final_cta_growth_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b193cf00b21417f73cd1_growth.png'  }}"
                     alt="" class="n_parallax-text _2" /><img
-                    src="{{ $setting->final_cta_sky_image ? '/' . $setting->final_cta_sky_image : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky.jpg' }}"
+                    src="{{ $setting->final_cta_sky_image ? asset($setting->final_cta_sky_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky.jpg' }}"
                     loading="lazy" sizes="100vw"
-                    srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-500.jpg 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-800.jpg 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-1080.jpg 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-1600.jpg 1600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-2000.jpg 2000w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-2600.jpg 2600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky-p-3200.jpg 3200w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky.jpg 3605w"
+                    srcset="{{ $setting->final_cta_sky_image ? asset($setting->final_cta_sky_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b163237d41bfac95cd80_city-sky.jpg' }}"
                     alt="" class="n_sky _2" /><img
-                    src="{{ $setting->final_cta_city_image ? '/' . $setting->final_cta_city_image : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city.png' }}"
+                    src="{{ $setting->final_cta_city_image ? asset($setting->final_cta_city_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city.png' }}"
                     loading="lazy" sizes="100vw"
-                    srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-1600.png 1600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-2000.png 2000w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-2600.png 2600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city.png 2884w"
+                    srcset="{{ $setting->final_cta_city_image ? asset($setting->final_cta_city_image) : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city.png' }}"
                     alt="" class="n_base _2" />
                 <div class="n_text-wrapper max-width-medium on-home">
                     <h2 class="n_heading-size-h2 text-align-center text-color-white larger">
@@ -1768,8 +1850,8 @@ a,
     </main>
 
     @if ($config->show_footer ?? true)
-        <div dark-bg="1" class="footer">
-            <footer dark-bg="1" class="footer_component">
+        <div dark-bg="1" class="footer" style="background-color: {{ $setting->getSectionBackgroundColor('footer', '#000000') }};">
+            <footer dark-bg="1" class="footer_component" style="background-color: {{ $setting->getSectionBackgroundColor('footer', '#000000') }};">
                 <div id="footer" class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-large">
@@ -2051,7 +2133,7 @@ a,
                                                     }
 
                                                     .hs_email .input {
-                                                        background-color: black;
+                                                        background-color: {{ $setting->getSectionBackgroundColor('footer', '#000000') }};;
                                                         border: 0 solid #ededed;
                                                         border-bottom: 0;
                                                         height: auto !important;
@@ -2071,7 +2153,7 @@ a,
                                                     }
 
                                                     .hs_email ul {
-                                                        background-color: #1b1b1b;
+                                                        background-color: {{ $setting->getSectionBackgroundColor('footer', '#000000') }};;
                                                         font-size: 14px;
                                                         border-radius: 10px;
                                                         color: white !important;
@@ -2093,9 +2175,9 @@ a,
                                                         white-space: pre-wrap;
                                                         width: 100%;
                                                         padding: 8px;
-                                                        color: #0b3834;
+                                                        color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
                                                         border: 0;
-                                                        background-color: #8ee8df;
+                                                        background-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
                                                     }
 
                                                     /* Fix for the thank you message */
@@ -2104,6 +2186,30 @@ a,
                                                     .submitted-message span {
                                                         color: white !important;
                                                         /* Force all thank you message text to be white */
+                                                    }
+
+                                                    .swiper-btn.swiper_btn_next.abs{
+                                                        color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                        border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                    }
+                                                    .swiper-btn.swiper_btn_next.abs:hover{
+                                                        background-color: {{ $setting->button_hover_color ?? '#f31cb6' }} !important;
+                                                        color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+                                                        border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                    }
+
+                                                    .swiper-btn.swiper_btn_prev.is-abs{
+                                                        color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                        border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                    }
+                                                    .swiper-btn.swiper_btn_prev.is-abs:hover{
+                                                        background-color: {{ $setting->button_hover_color ?? '#f31cb6' }} !important;
+                                                        color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+                                                        border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
+                                                    }
+
+                                                    .line-sepearation.is-small{
+                                                        border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
                                                     }
                                                 </style>
                                             </div>
@@ -2115,7 +2221,7 @@ a,
                     </div>
                 </div>
             </footer>
-            <div class="footer-lower">
+            <div class="footer-lower" style="background-color: {{ $setting->getSectionBackgroundColor('footer', '#000000') }};">
                 <div class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-xsmall">

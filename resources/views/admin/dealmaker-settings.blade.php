@@ -203,7 +203,7 @@
                                            placeholder="https://example.com/poster.jpg">
                                     <small class="text-muted">Poster image for video (optional)</small>
                                 </div>
-                                <div class="col-md-6 mt-3">
+                                {{-- <div class="col-md-6 mt-3">
                                     <label class="form-label">Modal Video URL (Desktop)</label>
                                     <input type="text" class="form-control" name="modal_video_desktop" 
                                            value="{{ $setting->modal_video_desktop ?? 'https://player.vimeo.com/video/927222983' }}" 
@@ -216,7 +216,7 @@
                                            value="{{ $setting->modal_video_mobile ?? 'https://player.vimeo.com/video/927222983' }}" 
                                            placeholder="https://player.vimeo.com/video/...">
                                     <small class="text-muted">For Vimeo/YouTube embeds, use URL format</small>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 
@@ -260,7 +260,7 @@
                         </div>
 
                         <!-- Statistics Section -->
-                        <div class="form-section">
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-chart-bar me-2"></i>Statistics Section
                             </div>
@@ -296,7 +296,7 @@
                                            placeholder="Offerings">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Capital Raising Steps Section -->
                         <div class="form-section">
@@ -465,7 +465,7 @@
                         </div>
 
                         <!-- Phone Slider Section -->
-                        <div class="form-section">
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-mobile-alt me-2"></i>Phone Slider Content
                             </div>
@@ -512,7 +512,7 @@
                             <button type="button" id="add-slide" class="btn btn-success">
                                 <i class="fas fa-plus me-2"></i>Add New Slide
                             </button>
-                        </div>
+                        </div> --}}
 
                         <!-- Case Studies Section -->
                         <div class="form-section">
@@ -578,7 +578,7 @@
                         </div>
 
                         <!-- Service Tabs Section -->
-                        <div class="form-section">
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-th-large me-2"></i>Service Tabs Content
                             </div>
@@ -623,7 +623,7 @@
                             <button type="button" id="add-service-tab" class="btn btn-success">
                                 <i class="fas fa-plus me-2"></i>Add New Service Tab
                             </button>
-                        </div>
+                        </div> --}}
 
                         <!-- Section Visibility Controls -->
                         <div class="form-section">
@@ -735,8 +735,229 @@
                             </div>
                         </div>
 
-                        <!-- Navigation Menu Section -->
+                        <!-- Section Background Colors -->
                         <div class="form-section">
+                            <div class="section-header">
+                                <i class="fas fa-palette me-2"></i>Section Background Colors
+                            </div>
+                            @php
+                                $backgroundColors = $setting->getAllSectionBackgroundColors() ?? [];
+                            @endphp
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Hero Section Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[hero]" 
+                                           value="{{ $backgroundColors['hero'] ?? '#000000' }}">
+                                    <small class="text-muted">Background color for the main hero section</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Announcement Bar Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[announcement]" 
+                                           value="{{ $backgroundColors['announcement'] ?? '#f8f9fa' }}">
+                                    <small class="text-muted">Background color for the announcement bar</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                {{-- <div class="col-md-6">
+                                    <label class="form-label">Statistics Section Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[stats]" 
+                                           value="{{ $backgroundColors['stats'] ?? '#ffffff' }}">
+                                    <small class="text-muted">Background color for the statistics section</small>
+                                </div> --}}
+                                <div class="col-md-6">
+                                    <label class="form-label">Client Logos Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[client_logos]" 
+                                           value="{{ $backgroundColors['client_logos'] ?? '#ffffff' }}">
+                                    <small class="text-muted">Background color for the client logos section</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Case Studies Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[case_studies]" 
+                                           value="{{ $backgroundColors['case_studies'] ?? '#f8f9fa' }}">
+                                    <small class="text-muted">Background color for the case studies section</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Capital Raising Steps Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[difference_section]" 
+                                           value="{{ $backgroundColors['difference_section'] ?? '#ffffff' }}">
+                                    <small class="text-muted">Background color for the capital raising steps section</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Testimonials Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[testimonials]" 
+                                           value="{{ $backgroundColors['testimonials'] ?? '#f8f9fa' }}">
+                                    <small class="text-muted">Background color for the testimonials section</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Capital Revolutionized Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[capital_revolutionized]" 
+                                           value="{{ $backgroundColors['capital_revolutionized'] ?? '#ffffff' }}">
+                                    <small class="text-muted">Background color for the capital revolutionized section</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Final CTA Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[final_cta]" 
+                                           value="{{ $backgroundColors['final_cta'] ?? '#000000' }}">
+                                    <small class="text-muted">Background color for the final call-to-action section</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Footer Background</label>
+                                    <input type="color" class="form-control" name="section_background_colors[footer]" 
+                                           value="{{ $backgroundColors['footer'] ?? '#000000' }}">
+                                    <small class="text-muted">Background color for the footer section</small>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h6 class="mb-3"><i class="fas fa-mouse-pointer me-2"></i>Button Colors</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Primary Button Color</label>
+                                    <input type="color" class="form-control" name="button_primary_color" 
+                                           value="{{ $setting->button_primary_color ?? '#f31cb6' }}">
+                                    <small class="text-muted">Default color for buttons (excluding transparent buttons)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Button Hover/Active Color</label>
+                                    <input type="color" class="form-control" name="button_hover_color" 
+                                           value="{{ $setting->button_hover_color ?? '#d1179a' }}">
+                                    <small class="text-muted">Color when hovering or clicking buttons</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Button Text Color</label>
+                                    <input type="color" class="form-control" name="button_text_color" 
+                                           value="{{ $setting->button_text_color ?? '#ffffff' }}">
+                                    <small class="text-muted">Text color for all buttons (excluding transparent buttons)</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Social Icon Colors Section -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h6 class="mb-3"><i class="fas fa-share-alt me-2"></i>Social Icon Colors</h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Social Icon Background Color</label>
+                                    <input type="color" class="form-control" name="social_icon_bg_color" 
+                                           value="{{ $setting->social_icon_bg_color ?? '#f31cb6' }}">
+                                    <small class="text-muted">Background color for social media icons</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Social Icon Hover Color</label>
+                                    <input type="color" class="form-control" name="social_icon_hover_color" 
+                                           value="{{ $setting->social_icon_hover_color ?? '#d1179a' }}">
+                                    <small class="text-muted">Background color when hovering social icons</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Social Icon Color</label>
+                                    <input type="color" class="form-control" name="social_icon_color" 
+                                           value="{{ $setting->social_icon_color ?? '#ffffff' }}">
+                                    <small class="text-muted">Color of the actual social media icons</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section Menu Toggles -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <i class="fas fa-list me-2"></i>Section Menu Toggles
+                                <small class="text-muted d-block mt-1">Enable sections to appear in the navigation menu with smooth scroll links</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_hero" 
+                                               {{ $setting->menu_hero ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-home me-2"></i>Hero Section (Home)
+                                        </label>
+                                    </div>
+                                </div>
+                                {{-- <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_about" 
+                                               {{ $setting->menu_about ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-info-circle me-2"></i>About Section
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_services" 
+                                               {{ $setting->menu_services ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-cogs me-2"></i>Services Section
+                                        </label>
+                                    </div>
+                                </div> --}}
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_logos" 
+                                               {{ $setting->menu_logos ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-handshake me-2"></i>Partners Section
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_cases" 
+                                               {{ $setting->menu_cases ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-briefcase me-2"></i>Case Studies
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_difference" 
+                                               {{ $setting->menu_difference ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-star me-2"></i>Why Us Section
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_testimonials" 
+                                               {{ $setting->menu_testimonials ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-quote-right me-2"></i>Testimonials
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_solutions" 
+                                               {{ $setting->menu_solutions ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-lightbulb me-2"></i>Solutions Section
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="menu_cta" 
+                                               {{ $setting->menu_cta ? 'checked' : '' }}>
+                                        <label class="form-check-label">
+                                            <i class="fas fa-rocket me-2"></i>Get Started Section
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Menu Section -->
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-bars me-2"></i>Navigation Menu
                             </div>
@@ -760,10 +981,10 @@
                                            placeholder="Resources">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Platform Section Content -->
-                        <div class="form-section">
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-chart-line me-2"></i>Platform Section (Capital Redefined)
                             </div>
@@ -794,10 +1015,10 @@
                                            placeholder="/new-capital-stack">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Slider Content Section -->
-                        <div class="form-section">
+                        {{-- <div class="form-section">
                             <div class="section-header">
                                 <i class="fas fa-images me-2"></i>Slider Content
                             </div>
@@ -863,7 +1084,7 @@
                                            placeholder="/connect">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Case Study Labels Section -->
                         <div class="form-section">
@@ -1052,6 +1273,9 @@
                             
                             <!-- Background Images -->
                             <h5 class="mt-4 mb-3">Background Images</h5>
+                            <div class="alert alert-info">
+                                <small><i class="fas fa-info-circle"></i> <strong>Upload Requirements:</strong> Images must be under 2MB. Supported formats: JPEG, PNG, JPG, GIF, WEBP. Please compress large images before uploading.</small>
+                            </div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <label class="form-label">Growth Image</label>
@@ -1059,6 +1283,7 @@
                                     @if($setting && $setting->final_cta_growth_image)
                                         <small class="text-muted">Current: {{ basename($setting->final_cta_growth_image) }}</small>
                                     @endif
+                                    <small class="text-muted">Max size: 2MB</small>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Sky Image</label>
@@ -1066,6 +1291,7 @@
                                     @if($setting && $setting->final_cta_sky_image)
                                         <small class="text-muted">Current: {{ basename($setting->final_cta_sky_image) }}</small>
                                     @endif
+                                    <small class="text-muted">Max size: 2MB</small>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">City Image</label>
@@ -1073,6 +1299,7 @@
                                     @if($setting && $setting->final_cta_city_image)
                                         <small class="text-muted">Current: {{ basename($setting->final_cta_city_image) }}</small>
                                     @endif
+                                    <small class="text-muted">Max size: 2MB</small>
                                 </div>
                             </div>
                         </div>
@@ -1142,8 +1369,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Company Address</label>
                                     <textarea class="form-control" name="footer_company_address" rows="4" 
-                                              placeholder="30 East 23rd St. Fl. 2, New York, NY 10010">{{ $setting->footer_company_address ?? '30 East 23rd St. Fl. 2
-New York, NY 10010' }}</textarea>
+                                              placeholder="30 East 23rd St. Fl. 2, New York, NY 10010">{{ $setting->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}</textarea>
                                 </div>
                                 <div class="col-md-12 mt-3">
                                     <label class="form-label">Award/Certificate Image URL</label>

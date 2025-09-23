@@ -3,29 +3,29 @@
 <html data-wf-domain="www.dealmaker.tech" data-wf-page="68547489207784144a773f3e" data-wf-site="656f55af4b70f4ce7ae4b997"
     lang="en">
 @php
-    $main_setting = \App\Models\DealmakerConfig::first();
+    $main_setting = \App\Models\DealmakerConfig::getInstance();;
 @endphp
 <head>
     <meta charset="utf-8" />
-    <title>{{ $main_setting->meta_title ?? 'DealMaker | Raise Capital Online' }}</title>
+    <title>{{ ($main_setting && $main_setting->meta_title) ? $main_setting->meta_title : 'DealMaker | Raise Capital Online' }}</title>
     <meta
-        content="{{ $main_setting->meta_description ?? 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
+        content="{{ ($main_setting && $main_setting->meta_description) ? $main_setting->meta_description : 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
         name="description" />
-    <meta content="{{ $main_setting->meta_title ?? 'DealMaker | Raise Capital Online' }}" property="og:title" />
+    <meta content="{{ ($main_setting && $main_setting->meta_title) ? $main_setting->meta_title : 'DealMaker | Raise Capital Online' }}" property="og:title" />
     <meta
-        content="{{ $main_setting->meta_description ?? 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
+        content="{{ ($main_setting && $main_setting->meta_description) ? $main_setting->meta_description : 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
         property="og:description" />
     <meta
-        content="{{ $main_setting->uploaded_og_image ? asset($main_setting->uploaded_og_image) : ($main_setting->og_image ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d988c9d3abae4ca097302_opengraphimage.png') }}"
+        content="{{ ($main_setting && $main_setting->uploaded_og_image) ? asset($main_setting->uploaded_og_image) : (($main_setting && $main_setting->og_image) ? $main_setting->og_image : 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d988c9d3abae4ca097302_opengraphimage.png') }}"
         property="og:image" />
-    <meta content="{{ $main_setting->meta_title ?? 'DealMaker | Raise Capital Online' }}" property="twitter:title" />
+    <meta content="{{ ($main_setting && $main_setting->meta_title) ? $main_setting->meta_title : 'DealMaker | Raise Capital Online' }}" property="twitter:title" />
     <meta
-        content="{{ $main_setting->meta_description ?? 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
+        content="{{ ($main_setting && $main_setting->meta_description) ? $main_setting->meta_description : 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
         property="twitter:description" />
     <meta property="og:type" content="website" />
     <meta content="summary_large_image" name="twitter:card" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    @if ($main_setting->meta_keywords)
+    @if ($main_setting && $main_setting->meta_keywords)
         <meta name="keywords" content="{{ $main_setting->meta_keywords }}" />
     @endif
     <meta content="google-site-verification=cfRfTejLrKY67Lsv3uWZ-Dt1WC9ny_7amMPApbAw-fc"
@@ -71,11 +71,11 @@
     </script>
     <!-- End Google Tag Manager -->
 
-    @if ($main_setting->custom_head_code)
+    @if ($main_setting && $main_setting->custom_head_code)
         {!! $main_setting->custom_head_code !!}
     @endif
 
-    @if ($main_setting->custom_css)
+    @if ($main_setting && $main_setting->custom_css)
         <style>
             {!! $main_setting->custom_css !!}
         </style>
@@ -128,6 +128,84 @@
             background-color: #FFFFFF !important;
             -webkit-transition: all 642ms cubic-bezier(.23, 1, .32, 1);
             transition: all 642ms cubic-bezier(.23, 1, .32, 1);
+        }
+        
+        /* Apply primary button color to all non-transparent buttons */
+        .n_button:not(.is-ghost),
+        .hero-cta-button,
+        .w-button {
+            background-color: {{ ($main_setting && $main_setting->button_primary_color) ? $main_setting->button_primary_color : '#f31cb6' }} !important;
+            border-color: {{ ($main_setting && $main_setting->button_primary_color) ? $main_setting->button_primary_color : '#f31cb6' }} !important;
+            color: {{ ($main_setting && $main_setting->button_text_color) ? $main_setting->button_text_color : '#ffffff' }} !important;
+        }
+        
+        /* Hover and active states for buttons */
+        .n_button:not(.is-ghost):hover,
+        .n_button:not(.is-ghost):active,
+        .n_button:not(.is-ghost):focus,
+        .hero-cta-button:hover,
+        .hero-cta-button:active,
+        .hero-cta-button:focus,
+        .w-button:hover,
+        .w-button:active,
+        .w-button:focus {
+            background-color: {{ ($main_setting && $main_setting->button_hover_color) ? $main_setting->button_hover_color : '#d1179a' }} !important;
+            border-color: {{ ($main_setting && $main_setting->button_hover_color) ? $main_setting->button_hover_color : '#d1179a' }} !important;
+            color: {{ ($main_setting && $main_setting->button_text_color) ? $main_setting->button_text_color : '#ffffff' }} !important;
+        }
+        
+        /* Include all button variations except is-ghost */
+        .n_button.is-small:not(.is-ghost),
+        .n_button.is-darker:not(.is-ghost),
+        .n_button.is-alternate:not(.is-ghost) {
+            background-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            border-color: {{ $main_setting->button_primary_color ?? '#f31cb6' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        .n_button.is-small:not(.is-ghost):hover,
+        .n_button.is-small:not(.is-ghost):active,
+        .n_button.is-small:not(.is-ghost):focus,
+        .n_button.is-darker:not(.is-ghost):hover,
+        .n_button.is-darker:not(.is-ghost):active,
+        .n_button.is-darker:not(.is-ghost):focus,
+        .n_button.is-alternate:not(.is-ghost):hover,
+        .n_button.is-alternate:not(.is-ghost):active,
+        .n_button.is-alternate:not(.is-ghost):focus {
+            background-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            border-color: {{ $main_setting->button_hover_color ?? '#d1179a' }} !important;
+            color: {{ $main_setting->button_text_color ?? '#ffffff' }} !important;
+        }
+        
+        /* Keep transparent buttons (is-ghost) unchanged */
+        .n_button.is-ghost {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        .n_button.is-ghost:hover,
+        .n_button.is-ghost:active,
+        .n_button.is-ghost:focus {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+        
+        /* Social Icon Styling */
+        .footer3_social-link {
+            background-color: {{ $main_setting->social_icon_bg_color ?? '#f31cb6' }} !important;
+            border-radius: 8px !important;
+            padding: 12px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .footer3_social-link:hover {
+            background-color: {{ $main_setting->social_icon_hover_color ?? '#d1179a' }} !important;
+        }
+        
+        .footer3_social-link svg,
+        .footer3_social-link .footer-icon svg {
+            color: {{ $main_setting->social_icon_color ?? '#ffffff' }} !important;
+            fill: {{ $main_setting->social_icon_color ?? '#ffffff' }} !important;
         }
     </style>
 </head>
@@ -350,14 +428,15 @@ a,
         <div data-animation="default" class="n_navbar-25 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-nav"
             data-easing2="ease" data-wf--main-nav--variant="announcement" data-easing="ease" data-collapse="medium"
             data-w-id="111ce1d9-5d52-f117-6d9c-068c2f584c20" role="banner" data-no-scroll="1" data-duration="400">
-            @if ($main_setting->show_announcement ?? true)
-                <div class="div-block-20 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
+            @if ($main_setting && ($main_setting->show_announcement ?? true))
+                <div class="div-block-20 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background-color: {{ $main_setting->getSectionBackgroundColor('announcement', '#f8f9fa') }};">
                     <div class="div-block-21 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
                         <div class="div-block-22 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
-                            <div class="breaking-news-wr w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><img
+                            <div class="breaking-news-wr w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background: #e63cb8 !important">
+                                {{-- <img
                                     src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6873ea75996d3b8bd33a2d13_Rectangle%2066.svg"
                                     loading="lazy" alt=""
-                                    class="image-76 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" />
+                                    class="image-76 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" /> --}}
                                 <div class="breaking-text w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
                                     {{ $main_setting->announcement_badge ?? 'GET READY' }}</div>
                             </div>
@@ -385,9 +464,9 @@ a,
             @endif
             <div class="navbar_container n-new w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><a href="/"
                     aria-current="page" class="navbar_logo-link w-nav-brand w--current">
-                    @if($main_setting->uploaded_logo)
+                    @if($main_setting && $main_setting->uploaded_logo)
                         <img src="{{ asset($main_setting->uploaded_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
-                    @elseif($main_setting->site_logo)
+                    @elseif($main_setting && $main_setting->site_logo)
                         <img src="{{ asset($main_setting->site_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
                     @else
                         <div class="navbar_logo w-embed"><svg width="auto" height="auto" viewBox="0 0 1345 237"
@@ -432,109 +511,7 @@ a,
                     @endif
                 </a>
                 <article role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">
-                    <div data-wf--nav-links--variant="base" style="display:none;" class="n_navbar-links">
-                        <div data-delay="0" data-hover="true" data-w-id="99145d29-4884-e5b0-ba1a-76705e0667ae"
-                            class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $main_setting->nav_raise_capital_title ?? 'Raise Capital' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list is_new w-dropdown-list">
-                                <div class="container-large is_white">
-                                    <div class="navbar_dropdown-wrap"><a href="/offering-types"
-                                            class="navbar_dropdown-link">Offering types</a><a href="/raise-capital"
-                                            class="navbar_dropdown-link">Why DealMaker</a><a href="/sports"
-                                            class="navbar_dropdown-link">Sports</a></div>
-                                </div>
-                            </nav>
-                        </div>
-                        <div data-delay="0" data-hover="true" class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $main_setting->nav_products_title ?? 'Products' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list is_new w-dropdown-list">
-                                <div class="container-large is_white">
-                                    <div class="navbar_dropdown-wrap"><a href="/capital-raise-tech"
-                                            class="navbar_dropdown-link w-dropdown-link">Capital raise tech</a><a
-                                            href="/investor-relations"
-                                            class="navbar_dropdown-link w-dropdown-link">Investor services</a><a
-                                            href="/dealmaker-marketing-services"
-                                            class="navbar_dropdown-link w-dropdown-link">Campaign marketing</a><a
-                                            href="/platforms" class="navbar_dropdown-link w-dropdown-link">Tech
-                                            licensing</a><a href="/reservation-campaigns"
-                                            class="navbar_dropdown-link w-dropdown-link">Reservation Campaigns</a>
-                                    </div>
-                                </div>
-                            </nav>
-                        </div>
-                        <div data-delay="0" data-hover="true" data-w-id="99145d29-4884-e5b0-ba1a-76705e0667cc"
-                            class="navbar_menu-dropdown w-dropdown">
-                            <div class="navbar_dropdown-toggle is-new w-dropdown-toggle">
-                                <div>{{ $main_setting->nav_resources_title ?? 'Resources' }}</div>
-                                <div class="dropdown-chevron w-embed"><svg width="15" height="15"
-                                        viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_216_500)">
-                                            <path
-                                                d="M7.5 0.5C5.51088 0.5 3.60322 1.2375 2.1967 2.55025C0.790176 3.86301 0 5.64348 0 7.5C0 9.35652 0.790176 11.137 2.1967 12.4497C3.60322 13.7625 5.51088 14.5 7.5 14.5C9.48912 14.5 11.3968 13.7625 12.8033 12.4497C14.2098 11.137 15 9.35652 15 7.5C15 5.64348 14.2098 3.86301 12.8033 2.55025C11.3968 1.2375 9.48912 0.5 7.5 0.5ZM7.00195 9.93359L3.95508 7.08984L3.45703 6.625L4.45312 5.69805L4.95117 6.16289L7.5 8.5418L10.0488 6.16289L10.5469 5.69805L11.54 6.625L11.042 7.08984L7.99805 9.93359L7.5 10.3984L7.00195 9.93359Z"
-                                                fill="#2E9990" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_216_500">
-                                                <rect width="15" height="14" fill="white"
-                                                    transform="translate(0 0.5)" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg></div>
-                            </div>
-                            <nav class="navbar_dropdown-list mega-menu is_new w-dropdown-list">
-                                <div class="div-block-19">
-                                    <div class="navbar_dropdown-wrap drop-shorter"><a href="/about-us"
-                                            class="navbar_dropdown-link w-dropdown-link">About Us</a><a href="/guides"
-                                            class="navbar_dropdown-link w-dropdown-link">Guides</a><a href="/blog"
-                                            class="navbar_dropdown-link w-dropdown-link">Blog</a><a
-                                            href="/category/case-studies"
-                                            class="navbar_dropdown-link w-dropdown-link">Case studies</a><a
-                                            href="http://help.dealmaker.tech/"
-                                            class="navbar_dropdown-link w-dropdown-link">Issuer FAQ</a><a
-                                            href="http://support.dealmaker.tech/"
-                                            class="navbar_dropdown-link w-dropdown-link">Investor FAQ</a></div><a
-                                        href="/raising-capital" class="mega-menu-wrapper w-inline-block"><img
-                                            width="960" sizes="100vw" alt=""
-                                            src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025.png"
-                                            loading="lazy"
-                                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025-p-1600.png 1600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6867e5863e9f8a6ea36b0a0b_The%20Ultimate%20%20Guide%20to%20Raising%20%20Capital%20Online%202025.png 1920w"
-                                            class="max-width-full is-large" /></a>
-                                </div>
-                            </nav>
-                        </div>
-                    </div>
+                 
                     <div class="navbar_menu-buttons"><a
                       style="display: none;"
                             href="{{ $main_setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}"

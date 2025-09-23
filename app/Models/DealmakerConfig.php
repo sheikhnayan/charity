@@ -117,7 +117,20 @@ class DealmakerConfig extends Model
         
         // Section Toggles
         'show_hero', 'show_stats', 'show_about', 'show_services', 'show_testimonials', 'show_contact',
-        'show_announcement', 'show_case_studies', 'show_difference_section', 'show_capital_raising', 'show_final_cta'
+        'show_announcement', 'show_case_studies', 'show_difference_section', 'show_capital_raising', 'show_final_cta',
+        
+        // Section Background Colors (JSON field)
+        'section_background_colors',
+        
+        // Button Colors
+        'button_primary_color', 'button_hover_color', 'button_text_color',
+        
+        // Social Icon Colors
+        'social_icon_bg_color', 'social_icon_hover_color', 'social_icon_color',
+        
+        // Menu Toggle Fields for Sections
+        'menu_hero', 'menu_about', 'menu_services', 'menu_logos',
+        'menu_cases', 'menu_difference', 'menu_testimonials', 'menu_solutions', 'menu_cta'
     ];
 
     protected $casts = [
@@ -134,6 +147,7 @@ class DealmakerConfig extends Model
         'footer_menu_company' => 'array',
         'footer_menu_resources' => 'array',
         'footer_menu_columns' => 'array',
+        'section_background_colors' => 'array',
         'show_linkedin' => 'boolean',
         'show_twitter' => 'boolean',
         'show_facebook' => 'boolean',
@@ -148,7 +162,16 @@ class DealmakerConfig extends Model
         'show_case_studies' => 'boolean',
         'show_difference_section' => 'boolean',
         'show_capital_raising' => 'boolean',
-        'show_final_cta' => 'boolean'
+        'show_final_cta' => 'boolean',
+        'menu_hero' => 'boolean',
+        'menu_about' => 'boolean',
+        'menu_services' => 'boolean',
+        'menu_logos' => 'boolean',
+        'menu_cases' => 'boolean',
+        'menu_difference' => 'boolean',
+        'menu_testimonials' => 'boolean',
+        'menu_solutions' => 'boolean',
+        'menu_cta' => 'boolean'
     ];
 
     /**
@@ -313,5 +336,115 @@ class DealmakerConfig extends Model
         }
         
         return $config;
+    }
+    
+    /**
+     * Get section background color with default fallback
+     */
+    public function getSectionBackgroundColor($section, $default = '#ffffff')
+    {
+        $colors = $this->section_background_colors ?? [];
+        return $colors[$section] ?? $default;
+    }
+    
+    /**
+     * Get all section background colors with defaults
+     */
+    public function getAllSectionBackgroundColors()
+    {
+        return [
+            'hero' => $this->getSectionBackgroundColor('hero', '#000000'),
+            'announcement' => $this->getSectionBackgroundColor('announcement', '#f8f9fa'),
+            'stats' => $this->getSectionBackgroundColor('stats', '#ffffff'),
+            'client_logos' => $this->getSectionBackgroundColor('client_logos', '#ffffff'),
+            'case_studies' => $this->getSectionBackgroundColor('case_studies', '#f8f9fa'),
+            'difference_section' => $this->getSectionBackgroundColor('difference_section', '#ffffff'),
+            'testimonials' => $this->getSectionBackgroundColor('testimonials', '#f8f9fa'),
+            'capital_revolutionized' => $this->getSectionBackgroundColor('capital_revolutionized', '#ffffff'),
+            'final_cta' => $this->getSectionBackgroundColor('final_cta', '#000000'),
+            'footer' => $this->getSectionBackgroundColor('footer', '#000000')
+        ];
+    }
+    
+    /**
+     * Get enabled menu items with their titles and anchor links
+     */
+    public function getEnabledMenuItems()
+    {
+        $menuItems = [];
+        
+        if ($this->menu_hero) {
+            $menuItems[] = [
+                'title' => 'Home',
+                'anchor' => '#hero',
+                'section' => 'hero'
+            ];
+        }
+        
+        if ($this->menu_about) {
+            $menuItems[] = [
+                'title' => 'About',
+                'anchor' => '#about',
+                'section' => 'about'
+            ];
+        }
+        
+        if ($this->menu_services) {
+            $menuItems[] = [
+                'title' => 'Services',
+                'anchor' => '#services',
+                'section' => 'services'
+            ];
+        }
+        
+        if ($this->menu_logos) {
+            $menuItems[] = [
+                'title' => 'Partners',
+                'anchor' => '#partners',
+                'section' => 'client_logos'
+            ];
+        }
+        
+        if ($this->menu_cases) {
+            $menuItems[] = [
+                'title' => 'Case Studies',
+                'anchor' => '#case-studies',
+                'section' => 'case_studies'
+            ];
+        }
+        
+        if ($this->menu_difference) {
+            $menuItems[] = [
+                'title' => 'Why Us',
+                'anchor' => '#why-us',
+                'section' => 'difference_section'
+            ];
+        }
+        
+        if ($this->menu_testimonials) {
+            $menuItems[] = [
+                'title' => 'Testimonials',
+                'anchor' => '#testimonials',
+                'section' => 'testimonials'
+            ];
+        }
+        
+        if ($this->menu_solutions) {
+            $menuItems[] = [
+                'title' => 'Solutions',
+                'anchor' => '#solutions',
+                'section' => 'capital_revolutionized'
+            ];
+        }
+        
+        if ($this->menu_cta) {
+            $menuItems[] = [
+                'title' => 'Get Started',
+                'anchor' => '#get-started',
+                'section' => 'final_cta'
+            ];
+        }
+        
+        return $menuItems;
     }
 }
