@@ -72,6 +72,7 @@ class WebsiteController extends Controller
             // Add investment-specific fields if type is investment
             if ($request->type === 'investment') {
                 $add->share_price = $request->share_price;
+                $add->investment_disclaimer = $request->investment_disclaimer ?? null;
                 $add->min_investment = $request->min_investment;
                 $add->investment_tiers = $request->investment_tiers;
             }
@@ -211,6 +212,7 @@ class WebsiteController extends Controller
         $update->type = $request->type;
         $update->status = $request->status;
         if ($request->type === 'investment') {
+            $update->investment_disclaimer = $request->investment_disclaimer ?? null;
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;
             $update->investment_tiers = $request->investment_tiers;

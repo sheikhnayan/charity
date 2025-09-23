@@ -14,7 +14,8 @@ class Website extends Model
         'status',
         'share_price',
         'min_investment',
-        'investment_tiers'
+        'investment_tiers',
+        'investment_disclaimer'
     ];
 
     /**

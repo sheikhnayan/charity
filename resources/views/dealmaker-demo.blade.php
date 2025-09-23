@@ -14,7 +14,7 @@
         content="{{ $setting->meta_description ?? 'DealMaker empowers founders to raise capital online via Reg A, CF, and D. Our tools help companies reach investors and build community from seed to IPO.' }}"
         property="og:description" />
     <meta
-        content="{{ $setting->uploaded_og_image ? asset($setting->uploaded_og_image) : ($setting->og_image ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d988c9d3abae4ca097302_opengraphimage.png') }}"
+        content="{{ $setting->uploaded_og_image ? asset($setting->uploaded_og_image) : $setting->og_image ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d988c9d3abae4ca097302_opengraphimage.png' }}"
         property="og:image" />
     <meta content="{{ $setting->meta_title ?? 'DealMaker | Raise Capital Online' }}" property="twitter:title" />
     <meta
@@ -383,10 +383,12 @@ a,
             @endif
             <div class="navbar_container n-new w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><a href="/"
                     aria-current="page" class="navbar_logo-link w-nav-brand w--current">
-                    @if($setting->uploaded_logo)
-                        <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
+                    @if ($setting->uploaded_logo)
+                        <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" class="navbar_logo"
+                            style="height: 40px; width: auto;" />
                     @elseif($setting->site_logo)
-                        <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
+                        <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" class="navbar_logo"
+                            style="height: 40px; width: auto;" />
                     @else
                         <div class="navbar_logo w-embed"><svg width="auto" height="auto" viewBox="0 0 1345 237"
                                 fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -533,8 +535,7 @@ a,
                             </nav>
                         </div>
                     </div>
-                    <div class="navbar_menu-buttons"><a
-                      style="display: none;"
+                    <div class="navbar_menu-buttons"><a style="display: none;"
                             href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}"
                             class="n_button is-ghost w-inline-block">
                             <div class="signin_icon w-embed"><svg width="auto" height="auto" viewBox="0 0 38 38"
@@ -544,8 +545,7 @@ a,
                                         fill="currentColor" />
                                 </svg></div>
                             <div>{{ $setting->signin_text ?? 'Sign In' }}</div>
-                        </a><a 
-                            href="{{ $setting->main_cta_url ?? '/connect' }}"
+                        </a><a href="{{ $setting->main_cta_url ?? '/connect' }}"
                             class="n_button is-small w-inline-block">
                             <div>{{ $setting->main_cta_text ?? 'Get Started' }}</div>
                         </a></div>
@@ -601,14 +601,16 @@ a,
                     "container-large is-hero" > < div class = "n_padding-section-hero" > < div class = "rl_header44_component" > <
                     div class = "w-layout-vflex" > < div class = "rl_header44_spacing-block-2" > <
                     /div><div class="rl_header44_dmn-flex space margin-bottom margin-medium"><div class="dmn-line max-width-full"></div >
-                    < div class = "text-block-85" > {{ $setting->announcement_text ?? 'The Future Of Retail Capital.' }} < a href =
+                    <
+                    div class = "text-block-85" > {{ $setting->announcement_text ?? 'The Future Of Retail Capital.' }} < a href =
                         "{{ $setting->announcement_url ?? '/connect' }}"
                     class = "link-4" > < span class = "text-color-brand-green" > < strong >
                         {{ $setting->hero_subtitle ?? 'Raise Boldly' }} < /strong></span > <
                         /a><span class="text-color-brand-green"><strong>.</strong > < /span></div > < /div>if ( / *
                         ___directives_script_1___ *
                         / ) {<div class="w-layout-grid grid-15 on-home-page"><div id="w-node-_7ba4bfb3-22be-9448-20ac-427d4bb0aec6-4a773f3e" class="rl_header44_number-wrapper less-opacity"><div class="counter_number"><div class="n_large-numbers text-color-white">$</div >
-                        < div fs - numbercount - threshold = "0"
+                        <
+                        div fs - numbercount - threshold = "0"
                     fs - numbercount - element = "number"
                     fs - numbercount - start = "1"
                     fs - numbercount - end = "{{ $setting->stat_1_number ?? '2' }}"
@@ -617,7 +619,8 @@ a,
                         /div><div class="rl_header44_dmn-flex space"><div class="dmn-line"></div > < div >
                         {{ $setting->stat_1_text ?? 'Raised by customers' }} < /div></div > <
                         /div><div id="w-node-_7ba4bfb3-22be-9448-20ac-427d4bb0aed2-4a773f3e" class="rl_header44_number-wrapper less-opacity"><div class="counter_number"><div class="n_large-numbers text-color-white">{{ substr($setting->stat_2_number ?? '1.5', 0, strpos($setting->stat_2_number ?? '1.5', '.') ?: 1) }}.</div >
-                        < div fs - numbercount - threshold = "0"
+                        <
+                        div fs - numbercount - threshold = "0"
                     fs - numbercount - element = "number"
                     fs - numbercount - start = "0"
                     fs - numbercount - end =
@@ -628,7 +631,8 @@ a,
                         /div><div class="rl_header44_dmn-flex space"><div class="dmn-line"></div > < div >
                         {{ $setting->stat_2_text ?? 'Investments processed' }} < /div></div > <
                         /div><div id="w-node-_7ba4bfb3-22be-9448-20ac-427d4bb0aede-4a773f3e" class="rl_header44_number-wrapper less-opacity"><div class="counter_number"><div fs-numbercount-threshold="0" fs-numbercount-element="number" fs-numbercount-start="624" fs-numbercount-end="{{ $setting->stat_3_number ?? '900' }}" class="n_large-numbers text-color-white">{{ $setting->stat_3_number ?? '100' }}</div >
-                        < div class = "n_large-numbers text-color-white" > + < /div></div > < div class =
+                        <
+                        div class = "n_large-numbers text-color-white" > + < /div></div > < div class =
                         "rl_header44_dmn-flex space" > < div class = "dmn-line" > <
                         /div><div>{{ $setting->stat_3_text ?? 'Offerings' }}</div > < /div></div > < /div>/ ** *
                         script_placeholder ** * /} / * ___directives_script_2___ * /</div > < /div></div > < /div></div >
@@ -667,8 +671,7 @@ a,
                 frameborder = "0"
                 allow = "autoplay; fullscreen; picture-in-picture; clipboard-write"
                 style = "position:absolute;top:0;left:0;width:100%;height:100%;"
-                title = "Sizzle Reel" > < /iframe> <
-                    !--Replace only this-- >
+                title = "Sizzle Reel" > < /iframe> <!--Replace only this-- >
 
                     <
                     /div>
@@ -687,27 +690,28 @@ a,
                 frameborder = "0"
                 allow = "autoplay; fullscreen; picture-in-picture; clipboard-write"
                 style = "position:absolute;top:0;left:0;width:100%;height:100%;"
-                title = "Sizzle Reel" > < /iframe> <
-                    !--Replace only this-- >
-                    <
+                title = "Sizzle Reel" > < /iframe> <!--Replace only this-- > <
                     /div>
 
                     <
                     script src = "{{ asset('js/vimeo-player.js') }}" >
             </script>
         </div>
-        <div class="bg-behind bg-closed" style="display: none;"></div><a style="display: none;" href="#" class="bg-closed video-close w-inline-block"><img
+        <div class="bg-behind bg-closed" style="display: none;"></div><a style="display: none;" href="#"
+            class="bg-closed video-close w-inline-block"><img
                 src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6601bb203ce160061a094c39_close-pop.svg"
                 loading="lazy" alt="close video button" class="image-8" /></a>
     </div>
     <div class="n_video_bg">
         @php
-            $videoUrl = $setting->bg_video_url ?? $setting->hero_background_video ?? '';
+            $videoUrl = $setting->bg_video_url ?? ($setting->hero_background_video ?? '');
             // dd($videoUrl);
-            $posterUrl = $setting->bg_video_poster_url ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg';
+            $posterUrl =
+                $setting->bg_video_poster_url ??
+                'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997%2F686d6096b46c58223d7cc59b_homepage_loop5_1-poster-00001.jpg';
             $isYouTube = str_contains($videoUrl, 'youtube.com') || str_contains($videoUrl, 'youtu.be');
             $isVimeo = str_contains($videoUrl, 'vimeo.com');
-            
+
             // Convert YouTube URL to embed format
             if ($isYouTube) {
                 // dd($videoUrl);
@@ -723,11 +727,13 @@ a,
                 } else {
                     $videoId = '';
                 }
-                
+
                 if ($videoId) {
                     // Use more compatible YouTube embed parameters
-                    $embedUrl = "https://www.youtube.com/embed/{$videoId}?autoplay=1&mute=1&loop=1&playlist={$videoId}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0&enablejsapi=1&origin=" . urlencode(request()->getSchemeAndHttpHost());
-                    
+                    $embedUrl =
+                        "https://www.youtube.com/embed/{$videoId}?autoplay=1&mute=1&loop=1&playlist={$videoId}&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0&enablejsapi=1&origin=" .
+                        urlencode(request()->getSchemeAndHttpHost());
+
                     // Alternative embed URL for restricted videos
                     $altEmbedUrl = "https://www.youtube-nocookie.com/embed/{$videoId}?autoplay=1&mute=1&loop=1&playlist={$videoId}&controls=0&modestbranding=1&rel=0";
                 } else {
@@ -741,100 +747,99 @@ a,
                 $embedUrl = $videoUrl;
             }
         @endphp
-        
+
         <div class="hero-video-container" style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
-            @if($isYouTube || $isVimeo)
+            @if ($isYouTube || $isVimeo)
                 {{-- YouTube or Vimeo embedded video --}}
-                <iframe 
-                    src="{{ $embedUrl }}"
-                    frameborder="0" 
+                <iframe src="{{ $embedUrl }}" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                    loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
                     onload="this.style.opacity=1;"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                     style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1000; transform: translateX(-50%) translateY(-50%); background: url('{{ $posterUrl }}') center center; background-size: cover; opacity: 0; transition: opacity 0.5s;">
                 </iframe>
                 {{-- Fallback for failed video loading --}}
-                <div style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;"></div>
+                <div
+                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;">
+                </div>
             @elseif($videoUrl)
                 {{-- Direct video file --}}
-                <video 
-                    autoplay 
-                    loop 
-                    muted 
-                    playsinline 
+                <video autoplay loop muted playsinline
                     style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1000; transform: translateX(-50%) translateY(-50%); object-fit: cover;"
                     poster="{{ $posterUrl }}">
                     <source src="{{ $videoUrl }}" type="video/mp4">
                 </video>
             @else
                 {{-- Fallback background image --}}
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;"></div>
+                <div
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{ $posterUrl }}') center center; background-size: cover; z-index: -1000;">
+                </div>
             @endif
-            
+
             {{-- Hero content overlay using existing hero section settings --}}
-            <div class="hero-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 1;">
+            <div class="hero-overlay"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; text-align: center; color: white; z-index: 1;">
                 <div class="hero-content" style="max-width: 800px; padding: 2rem;">
                     {{-- Use existing hero section data --}}
-                    <div class="dmn-line max-width-full" style="background: #8EE8DF; height: 2px; width: 100px; margin: 0 auto 1rem;"></div>
+                    <div class="dmn-line max-width-full"
+                        style="background: #8EE8DF; height: 2px; width: 100px; margin: 0 auto 1rem;"></div>
                     <div class="text-block-85" style="font-size: 1rem; margin-bottom: 1rem; color: #8EE8DF;">
                         {{ $setting->announcement_text ?? 'The Future Of Retail Capital.' }}
-                        <a href="{{ $setting->announcement_url ?? '/connect' }}" style="color: #8EE8DF; text-decoration: none;">
+                        <a href="{{ $setting->announcement_url ?? '/connect' }}"
+                            style="color: #8EE8DF; text-decoration: none;">
                             <strong>{{ $setting->hero_subtitle ?? 'Raise Boldly' }}</strong>
                         </a>
                     </div>
                     <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.1;">
                         {{ $setting->hero_title ?? 'The Future Of Retail Capital' }}
                     </h1>
-                    @if($setting->hero_cta_text && $setting->hero_cta_url)
-                        <a href="{{ $setting->hero_cta_url }}" 
-                           class="hero-cta-button" 
-                           style="display: inline-block; background: #f31cb6; color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
+                    @if ($setting->hero_cta_text && $setting->hero_cta_url)
+                        <a href="{{ $setting->hero_cta_url }}" class="hero-cta-button"
+                            style="display: inline-block; background: #f31cb6; color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
                             {{ $setting->hero_cta_text }}
                         </a>
                     @endif
                 </div>
             </div>
         </div>
-        
-        @if($isYouTube)
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const iframe = document.querySelector('.hero-video-container iframe');
-                const fallbackDiv = document.querySelector('.hero-video-container iframe + div');
-                
-                // Set a timeout to check if video loads
-                setTimeout(function() {
-                    // If iframe is still not visible (opacity 0), try alternative embed URL
-                    if (iframe && iframe.style.opacity === '0') {
-                        console.log('Primary YouTube embed failed, trying alternative...');
-                        iframe.src = '{{ $altEmbedUrl ?? "" }}';
-                        
-                        // Give alternative URL time to load
-                        setTimeout(function() {
-                            if (iframe.style.opacity === '0') {
-                                console.log('Alternative YouTube embed failed, showing fallback image...');
-                                iframe.style.display = 'none';
-                                if (fallbackDiv) {
-                                    fallbackDiv.style.display = 'block';
+
+        @if ($isYouTube)
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const iframe = document.querySelector('.hero-video-container iframe');
+                    const fallbackDiv = document.querySelector('.hero-video-container iframe + div');
+
+                    // Set a timeout to check if video loads
+                    setTimeout(function() {
+                        // If iframe is still not visible (opacity 0), try alternative embed URL
+                        if (iframe && iframe.style.opacity === '0') {
+                            console.log('Primary YouTube embed failed, trying alternative...');
+                            iframe.src = '{{ $altEmbedUrl ?? '' }}';
+
+                            // Give alternative URL time to load
+                            setTimeout(function() {
+                                if (iframe.style.opacity === '0') {
+                                    console.log(
+                                        'Alternative YouTube embed failed, showing fallback image...');
+                                    iframe.style.display = 'none';
+                                    if (fallbackDiv) {
+                                        fallbackDiv.style.display = 'block';
+                                    }
                                 }
-                            }
-                        }, 3000);
-                    }
-                }, 5000);
-                
-                // Handle iframe error
-                iframe.addEventListener('error', function() {
-                    console.log('YouTube embed error, showing fallback...');
-                    this.style.display = 'none';
-                    if (fallbackDiv) {
-                        fallbackDiv.style.display = 'block';
-                    }
+                            }, 3000);
+                        }
+                    }, 5000);
+
+                    // Handle iframe error
+                    iframe.addEventListener('error', function() {
+                        console.log('YouTube embed error, showing fallback...');
+                        this.style.display = 'none';
+                        if (fallbackDiv) {
+                            fallbackDiv.style.display = 'block';
+                        }
+                    });
                 });
-            });
-        </script>
+            </script>
         @endif
     </div>
     </header>
@@ -920,12 +925,16 @@ a,
                                                 <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685c3250128602cb8c4f0743_dm-p.svg"
                                                     loading="lazy" alt="" class="platform_logo" />
                                                 <div class="spacer-large"></div>
-                                                <h2 class="n_heading-size-h2 text-color-white"><strong>{{ $setting->slide_2_title ?? 'Raise Boldly.<br />Own Your Future.' }}</strong></h2>
+                                                <h2 class="n_heading-size-h2 text-color-white">
+                                                    <strong>{{ $setting->slide_2_title ?? 'Raise Boldly.<br />Own Your Future.' }}</strong>
+                                                </h2>
                                                 <div class="spacer-small"></div>
-                                                <p>{{ $setting->slide_2_description ?? 'Unlock the power of retail capital. Raise the capital you need to drive growth while building your brand and community. And unlike venture capital or private equity - you control the terms.' }}</p>
+                                                <p>{{ $setting->slide_2_description ?? 'Unlock the power of retail capital. Raise the capital you need to drive growth while building your brand and community. And unlike venture capital or private equity - you control the terms.' }}
+                                                </p>
                                                 <div class="spacer-small"></div>
                                                 <div class="n_button_wrapper">
-                                                    <a href="{{ $setting->slide_2_cta_url ?? '/connect' }}" class="n_button w-button">{{ $setting->slide_2_cta_text ?? 'Start Now' }}</a>
+                                                    <a href="{{ $setting->slide_2_cta_url ?? '/connect' }}"
+                                                        class="n_button w-button">{{ $setting->slide_2_cta_text ?? 'Start Now' }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -942,12 +951,16 @@ a,
                                                 <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685c3250128602cb8c4f0743_dm-p.svg"
                                                     loading="lazy" alt="" class="platform_logo" />
                                                 <div class="spacer-large"></div>
-                                                <h2 class="n_heading-size-h2 text-color-white"><strong>{{ $setting->slide_3_title ?? 'Real Capital.<br />Retail Experience.' }}</strong></h2>
+                                                <h2 class="n_heading-size-h2 text-color-white">
+                                                    <strong>{{ $setting->slide_3_title ?? 'Real Capital.<br />Retail Experience.' }}</strong>
+                                                </h2>
                                                 <div class="spacer-small"></div>
-                                                <p>{{ $setting->slide_3_description ?? 'Raise up to $75M annually with Reg A offerings. The capital you need - no road shows, no trips to Sand Hill Road, no waiting for a term sheet. Digital capital raising is changing the game.' }}</p>
+                                                <p>{{ $setting->slide_3_description ?? 'Raise up to $75M annually with Reg A offerings. The capital you need - no road shows, no trips to Sand Hill Road, no waiting for a term sheet. Digital capital raising is changing the game.' }}
+                                                </p>
                                                 <div class="spacer-small"></div>
                                                 <div class="n_button_wrapper">
-                                                    <a href="{{ $setting->slide_3_cta_url ?? '/connect' }}" class="n_button w-button">{{ $setting->slide_3_cta_text ?? 'Start Now' }}</a>
+                                                    <a href="{{ $setting->slide_3_cta_url ?? '/connect' }}"
+                                                        class="n_button w-button">{{ $setting->slide_3_cta_text ?? 'Start Now' }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -964,15 +977,19 @@ a,
                         </div>
                         <div class="w-layout-grid grid-18 is-flex">
                             <h2 id="w-node-e1ef9db3-d16a-2372-20b1-54ec616ba536-4a773f3e"
-                                class="n_text_custom max-width-small">{{ $setting->platform_section_title ?? 'Capital Redefined' }}</h2>
+                                class="n_text_custom max-width-small">
+                                {{ $setting->platform_section_title ?? 'Capital Redefined' }}</h2>
                             <div class="n_platform_texts max-width-small mobile-show">
                                 <div class="div-block-18"></div>
                                 <div class="spacer-medium"></div>
                                 <div class="w-layout-hflex flex-block-25">
-                                    <p class="n_platform_line">{{ $setting->platform_section_description ?? 'Capture the power of individual investors with our guide to the new capital stack.' }}</p><a href="{{ $setting->platform_cta_url ?? '/new-capital-stack' }}"
+                                    <p class="n_platform_line">
+                                        {{ $setting->platform_section_description ?? 'Capture the power of individual investors with our guide to the new capital stack.' }}
+                                    </p><a href="{{ $setting->platform_cta_url ?? '/new-capital-stack' }}"
                                         class="link-block-6 w-inline-block">
                                         <div class="w-layout-vflex flex-block-24 flex-cta">
-                                            <div class="n_circle_text">{{ $setting->platform_cta_text ?? 'Download Now' }}</div>
+                                            <div class="n_circle_text">
+                                                {{ $setting->platform_cta_text ?? 'Download Now' }}</div>
                                             <div class="n_icon in-circle w-embed"><svg width="auto" height="auto"
                                                     viewBox="0 0 38 38" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -992,10 +1009,13 @@ a,
                                 <div class="div-block-18"></div>
                                 <div class="spacer-medium"></div>
                                 <div class="w-layout-hflex flex-block-25">
-                                    <p class="n_platform_line">{{ $setting->platform_section_description ?? 'Capture the power of individual investors with our guide to the new capital stack.' }}</p><a href="{{ $setting->platform_cta_url ?? '/new-capital-stack' }}"
+                                    <p class="n_platform_line">
+                                        {{ $setting->platform_section_description ?? 'Capture the power of individual investors with our guide to the new capital stack.' }}
+                                    </p><a href="{{ $setting->platform_cta_url ?? '/new-capital-stack' }}"
                                         class="link-block-6 w-inline-block">
                                         <div class="w-layout-vflex flex-block-24 flex-cta">
-                                            <div class="n_circle_text">{{ $setting->platform_cta_text ?? 'Download Now' }}</div>
+                                            <div class="n_circle_text">
+                                                {{ $setting->platform_cta_text ?? 'Download Now' }}</div>
                                             <div class="n_icon in-circle w-embed"><svg width="auto" height="auto"
                                                     viewBox="0 0 38 38" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -1062,30 +1082,15 @@ a,
         <section class="n_section_logos">
             <div class="n_padding-global">
                 <div class="container-large">
-                    <div class="w-layout-grid grid-17"><img
-                            src="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 0) {{ $setting->client_logos[0]['image'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png' }}@else{{ 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png' }} @endif"
-                            loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
-                            alt="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 0) {{ $setting->client_logos[0]['name'] ?? 'Client Logo' }}@else{{ 'EnergyX' }} @endif"
-                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png 1446w"
-                            sizes="105.5px" class="logo-news" /><img
-                            src="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 1) {{ $setting->client_logos[1]['image'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png' }}@else{{ 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png' }} @endif"
-                            loading="lazy" width="105.5" id="w-node-_11721cf7-8577-fee5-63da-8292dcc96dd8-4a773f3e"
-                            alt="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 1) {{ $setting->client_logos[1]['name'] ?? 'Client Logo' }}@else{{ 'Pacaso' }} @endif"
-                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png 600w"
-                            sizes="105.5px" class="logo-news" /><img
-                            src="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 2) {{ $setting->client_logos[2]['image'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png' }}@else{{ 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png' }} @endif"
-                            loading="lazy" width="105.5" id="w-node-e146dd25-98e1-6676-39a1-df47f588d5da-4a773f3e"
-                            alt="@if (isset($setting->client_logos) && is_array($setting->client_logos) && count($setting->client_logos) > 2) {{ $setting->client_logos[2]['name'] ?? 'Client Logo' }}@else{{ 'Monument' }} @endif"
-                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png 700w"
-                            sizes="105.5px" class="logo-news" /><img
-                            src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo.png"
-                            loading="lazy" width="105.5" id="w-node-_7055e64d-071f-c3e2-d970-b84aff0a9b54-4a773f3e"
-                            alt=""
-                            srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo.png 2542w"
-                            sizes="105.5px" class="logo-news" /><img
-                            src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d6f9e20e71e81f421_death%20and%20co%20(1).png"
-                            loading="lazy" width="105.5" id="w-node-c37f567e-cbae-3357-4e35-168f10104b4f-4a773f3e"
-                            alt="" class="logo-news" /></div>
+                    <div class="w-layout-grid grid-17">
+                        @foreach ($setting->client_logos as $item)
+                            <img src="{{ $item['image'] }}"
+                                loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
+                                alt="{{ $item['name'] }}"
+                                srcset="{{ $item['image'] }}"
+                                sizes="105.5px" class="logo-news" />      
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </section>
@@ -1117,7 +1122,9 @@ a,
                                             <div class="rl_header44_number-wrapper">
                                                 <div class="rl_header44_dmn-flex space">
                                                     <div class="dmn-line is-full"></div>
-                                                    <div class="n_text-size-tiny">{{ $setting->case_study_capital_raised_label ?? 'Capital Raised' }}</div>
+                                                    <div class="n_text-size-tiny">
+                                                        {{ $setting->case_study_capital_raised_label ?? 'Capital Raised' }}
+                                                    </div>
                                                     <div class="w-layout-hflex">
                                                         <div class="n_large-numbers text-color-white">$</div>
                                                         <div fs-numbercount-threshold="0"
@@ -1130,7 +1137,8 @@ a,
                                                 </div>
                                                 <div class="rl_header44_dmn-flex space">
                                                     <div class="dmn-line is-full"></div>
-                                                    <div class="n_text-size-tiny">{{ $setting->case_study_investors_label ?? 'Investors' }}</div>
+                                                    <div class="n_text-size-tiny">
+                                                        {{ $setting->case_study_investors_label ?? 'Investors' }}</div>
                                                     <div class="w-layout-hflex">
                                                         <div fs-numbercount-threshold="0"
                                                             fs-numbercount-element="number" fs-numbercount-start="1"
@@ -1148,7 +1156,8 @@ a,
                                                 <a data-w-id="ecd82eb6-55e6-b64f-6fe7-4b8c58107d5{{ $index + 4 }}"
                                                     href="{{ $case_study['learn_more_url'] ?? '#' }}"
                                                     class="n_button is-small w-inline-block">
-                                                    <div>{{ $setting->case_study_learn_more_text ?? 'Learn More' }}</div>
+                                                    <div>{{ $setting->case_study_learn_more_text ?? 'Learn More' }}
+                                                    </div>
                                                 </a>
                                             </div>
                                         </div>
@@ -1300,11 +1309,14 @@ a,
                                                     <strong>{{ $setting->plan_title ?? 'Personalized Raise Strategy' }}</strong>
                                                 </h2>
                                                 <div class="spacer-medium"></div>
-                                                <p class="text-color-black">{!! $setting->plan_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' !!}</p>
+                                                <p class="text-color-black">{!! $setting->plan_description ??
+                                                    'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' !!}</p>
                                                 <div class="spacer-medium"></div>
                                                 <div class="spacer-medium"></div>
-                                                <div class="n_button_wrapper"><a href="{{ $setting->plan_button_url ?? '#' }}"
-                                                        class="n_button is-darker w-button">{{ $setting->plan_button_text }}</a></div>
+                                                <div class="n_button_wrapper"><a
+                                                        href="{{ $setting->plan_button_url ?? '#' }}"
+                                                        class="n_button is-darker w-button">{{ $setting->plan_button_text }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1355,11 +1367,14 @@ a,
                                                     <strong>{{ $setting->raise_title ?? 'End-To-End<br/>Raise Platform' }}</strong>
                                                 </h2>
                                                 <div class="spacer-medium"></div>
-                                                <p class="text-color-black">{!! $setting->raise_description ?? 'Successful capital raises start with the right strategy. DealMaker works with you to plan every aspect of your raise strategy - whether it&#x27;s your first retail raise or you’re a multiple raise professional.' !!}</p>
+                                                <p class="text-color-black">{!! $setting->raise_description ??
+                                                    'Successful capital raises start with the right strategy. DealMaker works with you to plan every aspect of your raise strategy - whether it&#x27;s your first retail raise or you’re a multiple raise professional.' !!}</p>
                                                 <div class="spacer-medium"></div>
                                                 <div class="spacer-medium"></div>
-                                                <div class="n_button_wrapper"><a href="{{ $setting->raise_button_url ?? '/connect' }}"
-                                                        class="n_button is-darker w-button">{{ $setting->raise_button_text ?? 'Learn More' }}</a></div>
+                                                <div class="n_button_wrapper"><a
+                                                        href="{{ $setting->raise_button_url ?? '/connect' }}"
+                                                        class="n_button is-darker w-button">{{ $setting->raise_button_text ?? 'Learn More' }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1410,12 +1425,15 @@ a,
                                                     <strong>{{ $setting->engage_title ?? 'Community <br/>Engagement' }}</strong>
                                                 </h2>
                                                 <div class="spacer-medium"></div>
-                                                <p class="text-color-black">{!! $setting->engage_description ?? 'Engage your community with targeted marketing campaigns, investor updates, and seamless communication tools. Build lasting relationships that drive growth and success.' !!}
+                                                <p class="text-color-black">{!! $setting->engage_description ??
+                                                    'Engage your community with targeted marketing campaigns, investor updates, and seamless communication tools. Build lasting relationships that drive growth and success.' !!}
                                                 </p>
                                                 <div class="spacer-medium"></div>
                                                 <div class="spacer-medium"></div>
-                                                <div class="n_button_wrapper"><a href="{{ $setting->engage_button_url ?? '/connect' }}"
-                                                        class="n_button is-darker w-button">{{ $setting->engage_button_text ?? 'Learn More' }}</a></div>
+                                                <div class="n_button_wrapper"><a
+                                                        href="{{ $setting->engage_button_url ?? '/connect' }}"
+                                                        class="n_button is-darker w-button">{{ $setting->engage_button_text ?? 'Learn More' }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1470,11 +1488,14 @@ a,
                                                     <strong>{{ $setting->repeat_title ?? 'Capitalize On<br/>Multiple Raises' }}</strong>
                                                 </h2>
                                                 <div class="spacer-medium"></div>
-                                                <p class="text-color-black">{!! $setting->repeat_description ?? 'With DealMaker, every raise builds momentum for the next. Leverage your growing investor base and streamline future raises with our repeatable, efficient processes.' !!}
+                                                <p class="text-color-black">{!! $setting->repeat_description ??
+                                                    'With DealMaker, every raise builds momentum for the next. Leverage your growing investor base and streamline future raises with our repeatable, efficient processes.' !!}
                                                 </p>
                                                 <div class="spacer-medium"></div>
-                                                <div class="n_button_wrapper"><a href="{{ $setting->repeat_button_url ?? '/connect' }}"
-                                                        class="n_button is-darker w-button">{{ $setting->repeat_button_text ?? 'Learn More' }}</a></div>
+                                                <div class="n_button_wrapper"><a
+                                                        href="{{ $setting->repeat_button_url ?? '/connect' }}"
+                                                        class="n_button is-darker w-button">{{ $setting->repeat_button_text ?? 'Learn More' }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1493,11 +1514,12 @@ a,
                         swp-s-space="10" swp-s-centered="false" swp-slide-count="1" swp-m-slide-count="1"
                         swp-centered="false" swp-m-centered="false" swp-s-slide-count="1" swp-s-loop="true">
                         <div class="swiper-wrapper is-testimonial">
-                            @if($setting->testimonials && count($setting->testimonials) > 0)
-                                @foreach($setting->testimonials as $testimonial)
+                            @if ($setting->testimonials && count($setting->testimonials) > 0)
+                                @foreach ($setting->testimonials as $testimonial)
                                     <div class="swiper-slide is-testimonial">
                                         <div class="code-embed-9 w-embed"><svg width="auto" height="auto"
-                                                viewBox="0 0 651 291" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                viewBox="0 0 651 291" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_8239_122)">
                                                     <g opacity="0.45">
                                                         <path
@@ -1515,13 +1537,19 @@ a,
                                                 </defs>
                                             </svg></div>
                                         <div class="n_testimonial-texts">
-                                            <div class="n_testimonial-text">&quot;{{ $testimonial['quote'] ?? 'Testimonial quote here' }}&quot;</div>
+                                            <div class="n_testimonial-text">
+                                                &quot;{{ $testimonial['quote'] ?? 'Testimonial quote here' }}&quot;
+                                            </div>
                                             <div class="w-layout-vflex flex-block-23">
-                                                @if(isset($testimonial['image']) && $testimonial['image'])
-                                                    <img src="{{ strpos($testimonial['image'], 'http') === 0 ? $testimonial['image'] : asset($testimonial['image']) }}" loading="lazy" width="109" alt="{{ $testimonial['name'] ?? 'Client' }}" class="n_testimonial-png" />
+                                                @if (isset($testimonial['image']) && $testimonial['image'])
+                                                    <img src="{{ strpos($testimonial['image'], 'http') === 0 ? $testimonial['image'] : asset($testimonial['image']) }}"
+                                                        loading="lazy" width="109"
+                                                        alt="{{ $testimonial['name'] ?? 'Client' }}"
+                                                        class="n_testimonial-png" />
                                                 @endif
                                                 <div>{{ strtoupper($testimonial['name'] ?? 'CLIENT NAME') }}</div>
-                                                <div class="text-color-pink text-style-allcaps">{{ strtoupper($testimonial['company'] ?? 'COMPANY') }}</div>
+                                                <div class="text-color-pink text-style-allcaps">
+                                                    {{ strtoupper($testimonial['company'] ?? 'COMPANY') }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -1548,7 +1576,8 @@ a,
                                             </defs>
                                         </svg></div>
                                     <div class="n_testimonial-texts">
-                                        <div class="n_testimonial-text">&quot;DealMaker provides very stable and efficient
+                                        <div class="n_testimonial-text">&quot;DealMaker provides very stable and
+                                            efficient
                                             technology that our venture studio can rely on. It&#x27;s error-free and
                                             seamless.&quot;</div>
                                         <div class="w-layout-vflex flex-block-23"><img
@@ -1594,9 +1623,12 @@ a,
             <div class="n_padding-global">
                 <div class="container-large">
                     <div class="padding-section-large-2 padding-bottom-custom">
-                        <h2 class="n_heading-size-h2">{{ $setting->capital_revolutionized_title ?? 'Capital raising, revolutionized' }}</h2>
+                        <h2 class="n_heading-size-h2">
+                            {{ $setting->capital_revolutionized_title ?? 'Capital raising, revolutionized' }}</h2>
                         <div class="spacer-medium"></div>
-                        <p class="text-color-black max-width-medium">{{ $setting->capital_revolutionized_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' }}</p>
+                        <p class="text-color-black max-width-medium">
+                            {{ $setting->capital_revolutionized_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' }}
+                        </p>
                         <div class="spacer-large"></div>
                         <div class="w-layout-grid n_grid_wrapper is-3columns">
                             <div id="w-node-_103bce8a-919e-03bb-dbb3-35116f71632a-4a773f3e"
@@ -1607,11 +1639,15 @@ a,
                                     loading="lazy" alt="" class="n_circles_image" />
                                 <div data-w-id="3f8838eb-c45c-6ba7-cf4a-f755d554c10f" class="n_circle_inside">
                                     <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">{{ $setting->reg_cf_title ?? 'Via Reg CF' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_cf_subtitle ?? 'Raise up to' }}</div>
-                                    </div><a href="{{ $setting->reg_cf_url ?? '/na-typ' }}" class="link-block-7 w-inline-block">
+                                        <div class="n_circle_text n_text-size-large">
+                                            {{ $setting->reg_cf_title ?? 'Via Reg CF' }}</div>
+                                        <div class="text-size-tiny">{{ $setting->reg_cf_subtitle ?? 'Raise up to' }}
+                                        </div>
+                                    </div><a href="{{ $setting->reg_cf_url ?? '/na-typ' }}"
+                                        class="link-block-7 w-inline-block">
                                         <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">{{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}</div>
+                                            <div class="n_circle_text">
+                                                {{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}</div>
                                             <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
                                                     width="auto" height="auto" viewBox="0 0 38 38"
                                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -1634,11 +1670,15 @@ a,
                                     loading="lazy" alt="" class="n_circles_image" />
                                 <div data-w-id="8540e8b8-0179-2cb9-74c7-d7eaf418bade" class="n_circle_inside">
                                     <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">{{ $setting->reg_a_title ?? 'Via Reg A' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_a_subtitle ?? 'Raise up to' }}</div>
-                                    </div><a href="{{ $setting->reg_a_url ?? '/na-typ' }}" class="link-block-7 w-inline-block">
+                                        <div class="n_circle_text n_text-size-large">
+                                            {{ $setting->reg_a_title ?? 'Via Reg A' }}</div>
+                                        <div class="text-size-tiny">{{ $setting->reg_a_subtitle ?? 'Raise up to' }}
+                                        </div>
+                                    </div><a href="{{ $setting->reg_a_url ?? '/na-typ' }}"
+                                        class="link-block-7 w-inline-block">
                                         <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">{{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}</div>
+                                            <div class="n_circle_text">
+                                                {{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}</div>
                                             <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
                                                     width="auto" height="auto" viewBox="0 0 38 38"
                                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -1661,11 +1701,16 @@ a,
                                     loading="lazy" alt="" class="n_circles_image" />
                                 <div data-w-id="7b6bf369-5b18-1fbe-c90e-b8e8e72fe1c5" class="n_circle_inside">
                                     <div class="w-layout-vflex n_align-center">
-                                        <div class="n_circle_text n_text-size-large">{{ $setting->reg_d_title ?? 'Via Reg D' }}</div>
-                                        <div class="text-size-tiny">{{ $setting->reg_d_subtitle ?? 'Raise up to' }}</div>
-                                    </div><a href="{{ $setting->reg_d_url ?? '/na-typ' }}" class="link-block-7 w-inline-block">
+                                        <div class="n_circle_text n_text-size-large">
+                                            {{ $setting->reg_d_title ?? 'Via Reg D' }}</div>
+                                        <div class="text-size-tiny">{{ $setting->reg_d_subtitle ?? 'Raise up to' }}
+                                        </div>
+                                    </div><a href="{{ $setting->reg_d_url ?? '/na-typ' }}"
+                                        class="link-block-7 w-inline-block">
                                         <div class="w-layout-vflex flex-block-24">
-                                            <div class="n_circle_text">{{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}</div>
+                                            <div class="n_circle_text">
+                                                {{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}
+                                            </div>
                                             <div style="color:rgb(142,232,223)" class="n_icon in-circle w-embed"><svg
                                                     width="auto" height="auto" viewBox="0 0 38 38"
                                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -1700,18 +1745,21 @@ a,
                     srcset="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-500.png 500w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-800.png 800w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-1080.png 1080w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-1600.png 1600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-2000.png 2000w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city-p-2600.png 2600w, https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6859b2b0aa44fdff048f17f3_city.png 2884w"
                     alt="" class="n_base _2" />
                 <div class="n_text-wrapper max-width-medium on-home">
-                    <h2 class="n_heading-size-h2 text-align-center text-color-white larger">{{ $setting->final_cta_main_title ?? 'Your vision. Your terms.' }}
+                    <h2 class="n_heading-size-h2 text-align-center text-color-white larger">
+                        {{ $setting->final_cta_main_title ?? 'Your vision. Your terms.' }}
                     </h2>
                     <div class="spacer-medium"></div>
-                    <p>{{ $setting->final_cta_main_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' }}</p>
+                    <p>{{ $setting->final_cta_main_description ?? 'Craft the perfect offering with control over raise amount, valuation, voting rights, and beyond. With us, your strategy takes center stage.' }}
+                    </p>
                     <div class="spacer-medium"></div>
                     <div class="w-layout-hflex button-wrapper-new is-flex"><a dmr-track="Clicked-Demo-CTA"
-                            data-w-id="16f9ff2b-4fe9-b9b5-8b71-e8b50186f42c" href="{{ $setting->final_cta_primary_button_url ?? '/connect' }}" target="_blank"
+                            data-w-id="16f9ff2b-4fe9-b9b5-8b71-e8b50186f42c"
+                            href="{{ $setting->final_cta_primary_button_url ?? '/connect' }}" target="_blank"
                             class="n_button is-small w-inline-block">
                             <div>{{ $setting->final_cta_primary_button_text ?? 'Book a Call' }}</div>
                         </a><a dmr-track="Clicked-Demo-CTA" data-w-id="16f9ff2b-4fe9-b9b5-8b71-e8b50186f42f"
-                            href="{{ $setting->final_cta_secondary_button_url ?? '/category/case-studies' }}" target="_blank"
-                            class="n_button is-alternate w-inline-block">
+                            href="{{ $setting->final_cta_secondary_button_url ?? '/category/case-studies' }}"
+                            target="_blank" class="n_button is-alternate w-inline-block">
                             <div>{{ $setting->final_cta_secondary_button_text ?? 'View Case Studies' }}</div>
                         </a></div>
                 </div>
@@ -1728,59 +1776,66 @@ a,
                             <div class="w-layout-grid footer3_top-wrapper">
                                 <div class="footer3_left-wrapper"><a href="/old-home-4"
                                         class="footer3_logo-link w-nav-brand">
-                                        @if($setting->uploaded_logo)
-                        <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
-                    @elseif($setting->site_logo)
-                        <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" class="navbar_logo" style="height: 40px; width: auto;" />
-                    @else
-                        <div class="navbar_logo w-embed"><svg width="auto" height="auto" viewBox="0 0 1345 237"
-                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_8230_71)">
-                                    <path
-                                        d="M869.37 158.33V235.07H848.21V159.61C848.21 133.81 836.86 120.39 816.99 120.39C795.06 120.39 781.64 136.9 781.64 163.73V235.06H760.48V159.6C760.48 133.8 748.87 120.38 728.75 120.38C707.08 120.38 693.92 138.44 693.92 164.76V235.06H672.76V102.6H691.08L693.92 120.66C700.88 111.12 711.98 101.05 732.36 101.05C750.68 101.05 766.42 109.31 773.9 126.08C781.9 111.89 796.09 101.05 819.57 101.05C846.92 101.05 869.36 116.79 869.36 158.33H869.37Z"
-                                        fill="white" />
-                                    <path
-                                        d="M182.43 54.41L121.51 0V105.71L60.78 51.18V181.13L121.76 235.56V180.53L182.43 235.07V54.41Z"
-                                        fill="white" />
-                                    <path
-                                        d="M323.75 54.0098H344.94V234.87H326.59L323.75 213.68C314.96 225.82 300.75 236.42 278.53 236.42C242.1 236.42 215.23 211.87 215.23 168.99C215.23 128.68 242.1 101.55 278.53 101.55C300.75 101.55 315.74 110.6 323.75 123.26V54.0098ZM324 169.5C324 140.56 306.43 120.41 280.6 120.41C254.77 120.41 236.93 140.31 236.93 168.99C236.93 197.67 254.5 217.56 280.6 217.56C306.7 217.56 324 197.66 324 169.5Z"
-                                        fill="white" />
-                                    <path
-                                        d="M357.99 168.99C357.99 128.94 383.31 101.55 420.51 101.55C457.71 101.55 482 125.06 483.04 164.08C483.04 166.92 482.78 170.02 482.52 173.12H380.2V174.93C380.98 199.99 396.74 217.56 421.8 217.56C440.41 217.56 454.87 207.74 459.27 190.69H480.72C475.55 217.05 453.85 236.42 423.36 236.42C383.83 236.42 357.99 209.29 357.99 168.99ZM460.3 155.55C458.23 132.81 442.73 120.15 420.77 120.15C401.39 120.15 383.56 134.1 381.5 155.55H460.31H460.3Z"
-                                        fill="white" />
-                                    <path
-                                        d="M998.02 149.09C998.02 118.34 978.64 101.55 945.06 101.55C913.28 101.55 892.35 116.8 889.25 142.63H910.44C913.02 129.19 925.43 120.41 944.03 120.41C964.7 120.41 976.84 130.75 976.84 147.8V156.84H938.09C903.47 156.84 885.12 171.57 885.12 197.92C885.12 221.95 904.76 236.42 933.69 236.42C955.89 236.42 968.97 226.81 977.27 215.29L980.01 234.57L998.1 234.67L998.03 149.09H998.02ZM976.84 181.13C976.84 203.09 961.6 218.34 935.24 218.34C917.67 218.34 906.56 209.55 906.56 196.64C906.56 181.65 917.15 174.67 936.01 174.67H976.83V181.13H976.84Z"
-                                        fill="white" />
-                                    <path
-                                        d="M607.67 149.09C607.67 118.34 588.29 101.55 554.71 101.55C522.93 101.55 502 116.8 498.9 142.63H520.09C522.67 129.19 535.08 120.41 553.68 120.41C574.35 120.41 586.49 130.75 586.49 147.8V156.84H547.74C513.12 156.84 494.77 171.57 494.77 197.92C494.77 221.95 514.41 236.42 543.34 236.42C565.54 236.42 578.62 226.81 586.92 215.29L589.66 234.57L607.75 234.67L607.68 149.09H607.67ZM586.48 181.13C586.48 203.09 571.24 218.34 544.88 218.34C527.31 218.34 516.2 209.55 516.2 196.64C516.2 181.65 526.79 174.67 545.65 174.67H586.47V181.13H586.48Z"
-                                        fill="white" />
-                                    <path d="M650.83 54.0098H629.64V234.87H650.83V54.0098Z" fill="white" />
-                                    <path
-                                        d="M1019.85 54.0098H1041.04V173.12L1107.18 103.1H1133.28L1081.86 157.62L1136.89 234.88H1111.31L1067.65 172.87L1041.04 200.26V234.88H1019.85V54.0098Z"
-                                        fill="white" />
-                                    <path
-                                        d="M1131.83 168.99C1131.83 128.94 1157.15 101.55 1194.35 101.55C1231.55 101.55 1255.84 125.06 1256.88 164.08C1256.88 166.92 1256.62 170.02 1256.36 173.12H1154.04V174.93C1154.82 199.99 1170.58 217.56 1195.64 217.56C1214.25 217.56 1228.71 207.74 1233.11 190.69H1254.56C1249.39 217.05 1227.69 236.42 1197.2 236.42C1157.67 236.42 1131.83 209.29 1131.83 168.99ZM1234.15 155.55C1232.08 132.81 1216.58 120.15 1194.62 120.15C1175.24 120.15 1157.41 134.1 1155.35 155.55H1234.16H1234.15Z"
-                                        fill="white" />
-                                    <path
-                                        d="M1344.03 103.1V123.77H1333.43C1305.78 123.77 1298.29 146.77 1298.29 167.69V234.87H1277.1V103.1H1295.44L1298.29 123C1304.49 112.92 1314.57 103.1 1338.08 103.1H1344.03Z"
-                                        fill="white" />
-                                    <path d="M60.78 235.01L0 180.8V126.88L60.78 181.12V235.01Z" fill="#8EE8DF" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_8230_71">
-                                        <rect width="1344.03" height="236.42" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg></div>
-                    @endif
+                                        @if ($setting->uploaded_logo)
+                                            <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo"
+                                                class="navbar_logo" style="height: 40px; width: auto;" />
+                                        @elseif($setting->site_logo)
+                                            <img src="{{ asset($setting->site_logo) }}" alt="Site Logo"
+                                                class="navbar_logo" style="height: 40px; width: auto;" />
+                                        @else
+                                            <div class="navbar_logo w-embed"><svg width="auto" height="auto"
+                                                    viewBox="0 0 1345 237" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <g clip-path="url(#clip0_8230_71)">
+                                                        <path
+                                                            d="M869.37 158.33V235.07H848.21V159.61C848.21 133.81 836.86 120.39 816.99 120.39C795.06 120.39 781.64 136.9 781.64 163.73V235.06H760.48V159.6C760.48 133.8 748.87 120.38 728.75 120.38C707.08 120.38 693.92 138.44 693.92 164.76V235.06H672.76V102.6H691.08L693.92 120.66C700.88 111.12 711.98 101.05 732.36 101.05C750.68 101.05 766.42 109.31 773.9 126.08C781.9 111.89 796.09 101.05 819.57 101.05C846.92 101.05 869.36 116.79 869.36 158.33H869.37Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M182.43 54.41L121.51 0V105.71L60.78 51.18V181.13L121.76 235.56V180.53L182.43 235.07V54.41Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M323.75 54.0098H344.94V234.87H326.59L323.75 213.68C314.96 225.82 300.75 236.42 278.53 236.42C242.1 236.42 215.23 211.87 215.23 168.99C215.23 128.68 242.1 101.55 278.53 101.55C300.75 101.55 315.74 110.6 323.75 123.26V54.0098ZM324 169.5C324 140.56 306.43 120.41 280.6 120.41C254.77 120.41 236.93 140.31 236.93 168.99C236.93 197.67 254.5 217.56 280.6 217.56C306.7 217.56 324 197.66 324 169.5Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M357.99 168.99C357.99 128.94 383.31 101.55 420.51 101.55C457.71 101.55 482 125.06 483.04 164.08C483.04 166.92 482.78 170.02 482.52 173.12H380.2V174.93C380.98 199.99 396.74 217.56 421.8 217.56C440.41 217.56 454.87 207.74 459.27 190.69H480.72C475.55 217.05 453.85 236.42 423.36 236.42C383.83 236.42 357.99 209.29 357.99 168.99ZM460.3 155.55C458.23 132.81 442.73 120.15 420.77 120.15C401.39 120.15 383.56 134.1 381.5 155.55H460.31H460.3Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M998.02 149.09C998.02 118.34 978.64 101.55 945.06 101.55C913.28 101.55 892.35 116.8 889.25 142.63H910.44C913.02 129.19 925.43 120.41 944.03 120.41C964.7 120.41 976.84 130.75 976.84 147.8V156.84H938.09C903.47 156.84 885.12 171.57 885.12 197.92C885.12 221.95 904.76 236.42 933.69 236.42C955.89 236.42 968.97 226.81 977.27 215.29L980.01 234.57L998.1 234.67L998.03 149.09H998.02ZM976.84 181.13C976.84 203.09 961.6 218.34 935.24 218.34C917.67 218.34 906.56 209.55 906.56 196.64C906.56 181.65 917.15 174.67 936.01 174.67H976.83V181.13H976.84Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M607.67 149.09C607.67 118.34 588.29 101.55 554.71 101.55C522.93 101.55 502 116.8 498.9 142.63H520.09C522.67 129.19 535.08 120.41 553.68 120.41C574.35 120.41 586.49 130.75 586.49 147.8V156.84H547.74C513.12 156.84 494.77 171.57 494.77 197.92C494.77 221.95 514.41 236.42 543.34 236.42C565.54 236.42 578.62 226.81 586.92 215.29L589.66 234.57L607.75 234.67L607.68 149.09H607.67ZM586.48 181.13C586.48 203.09 571.24 218.34 544.88 218.34C527.31 218.34 516.2 209.55 516.2 196.64C516.2 181.65 526.79 174.67 545.65 174.67H586.47V181.13H586.48Z"
+                                                            fill="white" />
+                                                        <path d="M650.83 54.0098H629.64V234.87H650.83V54.0098Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M1019.85 54.0098H1041.04V173.12L1107.18 103.1H1133.28L1081.86 157.62L1136.89 234.88H1111.31L1067.65 172.87L1041.04 200.26V234.88H1019.85V54.0098Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M1131.83 168.99C1131.83 128.94 1157.15 101.55 1194.35 101.55C1231.55 101.55 1255.84 125.06 1256.88 164.08C1256.88 166.92 1256.62 170.02 1256.36 173.12H1154.04V174.93C1154.82 199.99 1170.58 217.56 1195.64 217.56C1214.25 217.56 1228.71 207.74 1233.11 190.69H1254.56C1249.39 217.05 1227.69 236.42 1197.2 236.42C1157.67 236.42 1131.83 209.29 1131.83 168.99ZM1234.15 155.55C1232.08 132.81 1216.58 120.15 1194.62 120.15C1175.24 120.15 1157.41 134.1 1155.35 155.55H1234.16H1234.15Z"
+                                                            fill="white" />
+                                                        <path
+                                                            d="M1344.03 103.1V123.77H1333.43C1305.78 123.77 1298.29 146.77 1298.29 167.69V234.87H1277.1V103.1H1295.44L1298.29 123C1304.49 112.92 1314.57 103.1 1338.08 103.1H1344.03Z"
+                                                            fill="white" />
+                                                        <path d="M60.78 235.01L0 180.8V126.88L60.78 181.12V235.01Z"
+                                                            fill="#8EE8DF" />
+                                                    </g>
+                                                    <defs>
+                                                        <clipPath id="clip0_8230_71">
+                                                            <rect width="1344.03" height="236.42"
+                                                                fill="white" />
+                                                        </clipPath>
+                                                    </defs>
+                                                </svg></div>
+                                        @endif
                                         <div class="spacer-medium"></div>
                                     </a>
                                     <div class="spacer-small">
-                                        <div class="text-size-small">{{ $config->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $config->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}
+                                        <div class="text-size-small">
+                                            {{ $config->footer_company_description ?? 'DealMaker provides comprehensive capital raising technology that transforms how companies raise funds, engage investors, and build community.' }}<br /><br />{{ $config->footer_company_address ?? '30 East 23rd St. Fl. 2 New York, NY 10010' }}
                                         </div>
                                         <div class="spacer-medium"></div>
                                         <div class="w-layout-grid footer3_social-list">
-                                            @if($setting->show_linkedin && $setting->linkedin_url)
+                                            @if ($setting->show_linkedin && $setting->linkedin_url)
                                                 <a aria-label="LinkedIn (opens in a new tab)"
                                                     href="{{ $setting->linkedin_url }}" target="_blank"
                                                     class="footer3_social-link w-inline-block">
@@ -1800,8 +1855,8 @@ a,
                                                     </div>
                                                 </a>
                                             @endif
-                                            
-                                            @if($setting->show_twitter && $setting->twitter_url)
+
+                                            @if ($setting->show_twitter && $setting->twitter_url)
                                                 <a aria-label="Twitter/X (opens in a new tab)"
                                                     href="{{ $setting->twitter_url }}" target="_blank"
                                                     class="footer3_social-link w-inline-block">
@@ -1815,8 +1870,8 @@ a,
                                                     </div>
                                                 </a>
                                             @endif
-                                            
-                                            @if($setting->show_facebook && $setting->facebook_url)
+
+                                            @if ($setting->show_facebook && $setting->facebook_url)
                                                 <a aria-label="Facebook (opens in a new tab)"
                                                     href="{{ $setting->facebook_url }}" target="_blank"
                                                     class="footer3_social-link w-inline-block">
@@ -1834,8 +1889,8 @@ a,
                                                     </div>
                                                 </a>
                                             @endif
-                                            
-                                            @if($setting->show_instagram && $setting->instagram_url)
+
+                                            @if ($setting->show_instagram && $setting->instagram_url)
                                                 <a aria-label="Instagram (opens in a new tab)"
                                                     href="{{ $setting->instagram_url }}" target="_blank"
                                                     class="footer3_social-link w-inline-block">
@@ -1887,7 +1942,8 @@ a,
                                             {{-- Fallback to existing static footer menu columns when none configured --}}
                                             @if ($setting->footer_menu_raise_capital && count($setting->footer_menu_raise_capital) > 0)
                                                 <div class="footer3_link-list">
-                                                    <div class="text-size-medium capitalize text-color-gray">RAISE CAPITAL
+                                                    <div class="text-size-medium capitalize text-color-gray">RAISE
+                                                        CAPITAL
                                                     </div>
                                                     <div class="line-sepearation is-small"></div>
                                                     <div class="spacer-small"></div>
@@ -1900,7 +1956,8 @@ a,
 
                                             @if ($setting->footer_menu_solutions && count($setting->footer_menu_solutions) > 0)
                                                 <div class="footer3_link-list">
-                                                    <div class="text-size-medium capitalize text-color-gray">OUR SOLUTIONS
+                                                    <div class="text-size-medium capitalize text-color-gray">OUR
+                                                        SOLUTIONS
                                                     </div>
                                                     <div class="line-sepearation is-small"></div>
                                                     <div class="spacer-small"></div>
@@ -1913,7 +1970,8 @@ a,
 
                                             @if ($setting->footer_menu_company && count($setting->footer_menu_company) > 0)
                                                 <div class="footer3_link-list">
-                                                    <div class="text-size-medium capitalize text-color-gray">COMPANY</div>
+                                                    <div class="text-size-medium capitalize text-color-gray">COMPANY
+                                                    </div>
                                                     <div class="line-sepearation is-small"></div>
                                                     <div class="spacer-small"></div>
                                                     @foreach ($setting->footer_menu_company as $link)
@@ -2057,23 +2115,29 @@ a,
                     </div>
                 </div>
             </footer>
-            <div class="footer-lower">
+            {{-- <div class="footer-lower">
                 <div class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-xsmall">
                             <div class="footer-lower_grid">
-                                <div class="w-layout-hflex flex-block-18"><a href="{{ $config->footer_terms_url ?? '/terms' }}"
-                                        class="footer-lower_link">Terms of Service</a><a href="{{ $config->footer_privacy_url ?? '/privacy' }}"
-                                        class="footer-lower_link">Privacy Policy</a><a href="{{ $config->footer_cookies_url ?? '/cookies' }}"
-                                        class="footer-lower_link">Cookies</a><a href="{{ $config->footer_security_url ?? '/security' }}"
-                                        class="footer-lower_link">Security</a><a href="{{ $config->footer_accessibility_url ?? '/accessibility' }}"
+                                <div class="w-layout-hflex flex-block-18"><a
+                                        href="{{ $config->footer_terms_url ?? '/terms' }}"
+                                        class="footer-lower_link">Terms of Service</a><a
+                                        href="{{ $config->footer_privacy_url ?? '/privacy' }}"
+                                        class="footer-lower_link">Privacy Policy</a><a
+                                        href="{{ $config->footer_cookies_url ?? '/cookies' }}"
+                                        class="footer-lower_link">Cookies</a><a
+                                        href="{{ $config->footer_security_url ?? '/security' }}"
+                                        class="footer-lower_link">Security</a><a
+                                        href="{{ $config->footer_accessibility_url ?? '/accessibility' }}"
                                         class="footer-lower_link">Accessibility</a></div>
-                                <div>{{ $config->footer_copyright_text ?? '© 2025 DealMaker. All rights reserved.' }}</div>
+                                <div>{{ $config->footer_copyright_text ?? '© 2025 DealMaker. All rights reserved.' }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         </div>
     @endif

@@ -170,6 +170,13 @@
                                                         <small class="form-text text-muted">Comma-separated list of investment amounts to display as quick options.</small>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
+                                                        <textarea name="investment_disclaimer" class="form-control" id="investment_disclaimer" rows="3" placeholder="Enter investment disclaimer text">{{ $data->investment_disclaimer ?? '' }}</textarea>
+                                                        <small class="form-text text-muted">Legal disclaimer text that will be displayed on the investment page.</small>
+                                                    </div>
+                                                </div>
                                             </div>
                                             {{-- <div class="row">
                                                 <div class="col-md-12">

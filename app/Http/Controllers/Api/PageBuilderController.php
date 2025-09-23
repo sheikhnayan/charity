@@ -18,9 +18,11 @@ class PageBuilderController extends Controller
         $page = Page::find($pageId);
         $state = $request->input('state');
 
+        
         if ($page->is_main_site) {
             // Main site page - update directly
             $page->update(['state' => $state]);
+            // dd($page);
         } else {
             // Regular website page (existing logic)
             $websiteId = $page->website_id;
@@ -83,6 +85,9 @@ class PageBuilderController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+        
+         // Validate input
         if ($request->has('is_main_site') && $request->is_main_site) {
             // Creating a main site page
             $nextPosition = Page::mainSite()->max('position') + 1;

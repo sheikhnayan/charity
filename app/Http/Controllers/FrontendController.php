@@ -505,57 +505,57 @@ class FrontendController extends Controller
         $setting = DealmakerConfig::getInstance();
         
         // Add client logos and slider images (these can be added to the model later if needed)
-        $setting->client_logos = [
-            [
-                'name' => 'EnergyX',
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png',
-                'url' => '#'
-            ],
-            [
-                'name' => 'Pacaso',
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png',
-                'url' => '#'
-            ],
-            [
-                'name' => 'Monument',
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png',
-                'url' => '#'
-            ],
-            [
-                'name' => 'Company',
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo.png',
-                'url' => '#'
-            ],
-            [
-                'name' => 'Death & Co',
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d6f9e20e71e81f421_death%20and%20co%20(1).png',
-                'url' => '#'
-            ]
-        ];
+        // $setting->client_logos = [
+        //     [
+        //         'name' => 'EnergyX',
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d1d298659f84ec99d_EnergyX_NewLogo_HighRez-BLACKBG-04-3.png',
+        //         'url' => '#'
+        //     ],
+        //     [
+        //         'name' => 'Pacaso',
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d9e91f4cd7b6d2ace_pacaso.png',
+        //         'url' => '#'
+        //     ],
+        //     [
+        //         'name' => 'Monument',
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710e2dd8d0cba5f41de2_mon.png',
+        //         'url' => '#'
+        //     ],
+        //     [
+        //         'name' => 'Company',
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685dc0fe725aac507ac3c76f_5f8ef32e6dd1b4ac67afa1e9_Footer-logo.png',
+        //         'url' => '#'
+        //     ],
+        //     [
+        //         'name' => 'Death & Co',
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d899d6f9e20e71e81f421_death%20and%20co%20(1).png',
+        //         'url' => '#'
+        //     ]
+        // ];
 
-        $setting->slider_images = [
-            [
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561045749461ab86204c2_homepage_phone-02.webp',
-                'title' => 'Funding Ambition. Powering Growth.',
-                'description' => 'DealMaker is the future of capital raising. We provide an end-to-end platform to raise capital directly from individual investors.',
-                'cta_text' => 'Start Now',
-                'cta_url' => '/connect'
-            ],
-            [
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610466fede381344c563_homepage_phone-03.webp',
-                'title' => 'Raise Boldly. Own Your Future.',
-                'description' => 'Unlock the power of retail capital. Raise the capital you need to drive growth while building your brand and community.',
-                'cta_text' => 'Start Now',
-                'cta_url' => '/connect'
-            ],
-            [
-                'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610465b5ca9a46afe153_homepage_phone-04.webp',
-                'title' => 'Real Capital. Retail Experience.',
-                'description' => 'Raise up to $75M annually with Reg A offerings. The capital you need - no road shows, no trips to Sand Hill Road.',
-                'cta_text' => 'Start Now',
-                'cta_url' => '/connect'
-            ]
-        ];
+        // $setting->slider_images = [
+        //     [
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561045749461ab86204c2_homepage_phone-02.webp',
+        //         'title' => 'Funding Ambition. Powering Growth.',
+        //         'description' => 'DealMaker is the future of capital raising. We provide an end-to-end platform to raise capital directly from individual investors.',
+        //         'cta_text' => 'Start Now',
+        //         'cta_url' => '/connect'
+        //     ],
+        //     [
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610466fede381344c563_homepage_phone-03.webp',
+        //         'title' => 'Raise Boldly. Own Your Future.',
+        //         'description' => 'Unlock the power of retail capital. Raise the capital you need to drive growth while building your brand and community.',
+        //         'cta_text' => 'Start Now',
+        //         'cta_url' => '/connect'
+        //     ],
+        //     [
+        //         'image' => 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855610465b5ca9a46afe153_homepage_phone-04.webp',
+        //         'title' => 'Real Capital. Retail Experience.',
+        //         'description' => 'Raise up to $75M annually with Reg A offerings. The capital you need - no road shows, no trips to Sand Hill Road.',
+        //         'cta_text' => 'Start Now',
+        //         'cta_url' => '/connect'
+        //     ]
+        // ];
         
         return view('dealmaker-demo', compact('setting'))->with('config', $setting);
     }
