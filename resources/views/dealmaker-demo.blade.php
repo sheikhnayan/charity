@@ -2115,12 +2115,12 @@ a,
                     </div>
                 </div>
             </footer>
-            {{-- <div class="footer-lower">
+            <div class="footer-lower">
                 <div class="padding-global">
                     <div class="container-large">
                         <div class="padding-section-xsmall">
                             <div class="footer-lower_grid">
-                                <div class="w-layout-hflex flex-block-18"><a
+                                {{-- <div class="w-layout-hflex flex-block-18"><a
                                         href="{{ $config->footer_terms_url ?? '/terms' }}"
                                         class="footer-lower_link">Terms of Service</a><a
                                         href="{{ $config->footer_privacy_url ?? '/privacy' }}"
@@ -2130,14 +2130,14 @@ a,
                                         href="{{ $config->footer_security_url ?? '/security' }}"
                                         class="footer-lower_link">Security</a><a
                                         href="{{ $config->footer_accessibility_url ?? '/accessibility' }}"
-                                        class="footer-lower_link">Accessibility</a></div>
+                                        class="footer-lower_link">Accessibility</a></div> --}}
                                 <div>{{ $config->footer_copyright_text ?? '© 2025 DealMaker. All rights reserved.' }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
         </div>
         </div>
     @endif
