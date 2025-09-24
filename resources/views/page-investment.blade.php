@@ -1023,7 +1023,7 @@ if (isset($state['components'])) {
         padding: 0px 0px;
         text-align: center;
         position: fixed;
-        top: 6rem; /* Position it below contact bar + navbar */
+        top: 6.5rem; /* Position it below contact bar + navbar */
         left: 0;
         right: 0;
         width: 100%;
