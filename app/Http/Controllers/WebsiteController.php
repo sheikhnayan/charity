@@ -199,6 +199,10 @@ class WebsiteController extends Controller
             $validation['share_price'] = 'required|numeric|min:0.01';
             $validation['min_investment'] = 'required|numeric|min:1';
             $validation['investment_tiers'] = 'nullable|string';
+            $validation['sticky_footer_button_bg'] = 'nullable|string|max:7';
+            $validation['sticky_footer_button_text'] = 'nullable|string|max:7';
+            $validation['sticky_footer_text_color'] = 'nullable|string|max:7';
+            $validation['sticky_footer_bg_color'] = 'nullable|string|max:7';
         }
         // Only validate password if present
         if ($request->filled('password')) {
@@ -216,6 +220,10 @@ class WebsiteController extends Controller
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;
             $update->investment_tiers = $request->investment_tiers;
+            $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
+            $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
+            $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;
+            $update->sticky_footer_bg_color = $request->sticky_footer_bg_color ?? null;
         }
         $update->update();
 

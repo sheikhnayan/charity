@@ -148,6 +148,58 @@
                                         </option>
                                     </select>
                                 </div>
+
+                                <!-- Investment Website Specific Fields -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="mb-3">Investment Website Content</h5>
+                                    <small class="text-muted">These fields are specifically for investment type websites</small>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="disclaimer_text" class="form-label">
+                                        Disclaimer Text
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-title="Disclaimer Text" 
+                                        data-description="Rich text content for the disclaimer section of investment website footers."></i>
+                                    <textarea name="disclaimer_text" id="disclaimer_text" class="form-control" rows="4">{{ $data->disclaimer_text ?? '' }}</textarea>
+                                </div>
+
+                                <div class="col-12 mt-3">
+                                    <label for="description_text" class="form-label">
+                                        Description Text
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-title="Description Text" 
+                                        data-description="Rich text content for the description section of investment website footers."></i>
+                                    <textarea name="description_text" id="description_text" class="form-control" rows="4">{{ $data->description_text ?? '' }}</textarea>
+                                </div>
+
+                                <div class="col-md-6 mt-3">
+                                    <label for="background_image_desktop" class="form-label">
+                                        Background Image (Desktop)
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-title="Desktop Background" 
+                                        data-description="Background image for footer on desktop devices."></i>
+                                    <input type="file" name="background_image_desktop" class="form-control" accept="image/*">
+                                    @if($data->background_image_desktop)
+                                        <small class="text-muted mt-1">Current: {{ $data->background_image_desktop }}</small>
+                                    @endif
+                                </div>
+
+                                <div class="col-md-6 mt-3">
+                                    <label for="background_image_mobile" class="form-label">
+                                        Background Image (Mobile)
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-title="Mobile Background" 
+                                        data-description="Background image for footer on mobile devices."></i>
+                                    <input type="file" name="background_image_mobile" class="form-control" accept="image/*">
+                                    @if($data->background_image_mobile)
+                                        <small class="text-muted mt-1">Current: {{ $data->background_image_mobile }}</small>
+                                    @endif
+                                </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Facebook
@@ -218,4 +270,59 @@
                     </div>
                 </div>
             </div>
+
+            <!-- CKEditor Initialization -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Initialize CKEditor for disclaimer text
+                    ClassicEditor
+                        .create(document.querySelector('#disclaimer_text'), {
+                            toolbar: [
+                                'heading', '|',
+                                'bold', 'italic', 'link', '|',
+                                'bulletedList', 'numberedList', '|',
+                                'outdent', 'indent', '|',
+                                'blockQuote', 'insertTable', '|',
+                                'undo', 'redo', '|',
+                                'sourceEditing'
+                            ],
+                            heading: {
+                                options: [
+                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                                ]
+                            }
+                        })
+                        .catch(error => {
+                            console.error('CKEditor disclaimer_text error:', error);
+                        });
+
+                    // Initialize CKEditor for description text
+                    ClassicEditor
+                        .create(document.querySelector('#description_text'), {
+                            toolbar: [
+                                'heading', '|',
+                                'bold', 'italic', 'link', '|',
+                                'bulletedList', 'numberedList', '|',
+                                'outdent', 'indent', '|',
+                                'blockQuote', 'insertTable', '|',
+                                'undo', 'redo', '|',
+                                'sourceEditing'
+                            ],
+                            heading: {
+                                options: [
+                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                                ]
+                            }
+                        })
+                        .catch(error => {
+                            console.error('CKEditor description_text error:', error);
+                        });
+                });
+            </script>
         @endsection

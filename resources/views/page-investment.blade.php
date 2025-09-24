@@ -1949,15 +1949,18 @@ if (isset($state['components'])) {
     </script>
 
     <!-- Sticky Bottom Investment CTA - Mobile Only (Investment Websites Only) -->
+    {{-- @php
+        dd($check);
+    @endphp --}}
     @if($check && $check->isInvestment())
-    <div id="sticky-investment-cta" class="d-block d-md-none">
+    <div id="sticky-investment-cta" class="d-block d-md-none" style="background-color: {{ $check->sticky_footer_bg_color }} !important;">
         <div class="sticky-cta-content">
             <div class="share-price-section">
-                <div class="price-value">${{ $check->share_price ?? '0.00' }}</div>
-                <div class="price-label">Share Price</div>
+                <div class="price-value" style="color: {{ $check->sticky_footer_text_color }}">${{ $check->share_price ?? '0.00' }}</div>
+                <div class="price-label" style="color: {{ $check->sticky_footer_text_color }}">Share Price</div>
             </div>
             <div class="invest-button-section">
-                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'">
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important;">
                     INVEST NOW
                 </button>
             </div>
