@@ -879,9 +879,138 @@ a,
     </div>
     
     <div id="w-node-d76ce5db-1098-4f05-302a-51e614ef19a7-4eda2ff4" class="dmr-investment-details"><div class="w-layout-grid grid-35"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d5-a22a22d5" class="div-block-155"><div class="dmr-common-stock dmr-larger-t text-color-white"><strong style="color: #fff !important">Investment Details</strong></div><div class="div-block-132"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5" class="w-layout-layout quick-stack-5 wf-layout-layout"><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22da-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small" style="color: #fff !important">SHARE PRICE</div><div class="dmr-common-stock-2 fixed-height"><strong style="color: #fff !important">${{ $website && $website->share_price ? number_format($website->share_price, 2) : ($setting && $setting->share_price ? number_format($setting->share_price, 2) : '1.00') }} USD</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small" style="color: #fff !important">MIN INVESTMENT</div><div class="dmr-common-stock-2 fixed-height"><strong style="color: #fff !important">${{ $website && $website->min_investment ? number_format($website->min_investment, 2) : ($setting && $setting->min_investment ? number_format($setting->min_investment, 2) : '1000.00') }} USD</strong></div></div><div class="div-block-46 _3"><a href="#" class="close-2 w-inline-block"><div>X</div></a><div>{{ $website && $website->investment_note ? $website->investment_note : ($setting && $setting->investment_note ? $setting->investment_note : 'Minimum investment amount plus applicable transaction fees') }}</div></div></div></div><div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22ee-a22a22d5" class="w-layout-cell"><div class="div-block-67"><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small" style="color: #fff !important">OFFERING TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong style="color: #fff !important">{{ $website && $website->offering_type ? $website->offering_type : ($setting && $setting->offering_type ? $setting->offering_type : 'Equity') }}</strong></div></div><div class="dmr-details-padding no-l"><div class="dmr-common-stock-2 small" style="color: #fff !important">ASSET TYPE</div><div class="dmr-common-stock-2 fixed-height"><strong style="color: #fff !important">{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong></div></div></div></div></div></div><div class="div-block-130">@if(($website && $website->investment_documents) || ($setting && $setting->investment_documents))<div class="investor_info_wrap text-size-xsmall link-light">@php $docs = $website && $website->investment_documents ? json_decode($website->investment_documents, true) : json_decode($setting->investment_documents, true); @endphp @if(is_array($docs)) @foreach($docs as $doc) <a aria-label="{{ $doc['name'] ?? 'Investment Document' }}" href="{{ $doc['url'] ?? '#' }}" target="_blank" class="investor_info_link text-link-inherit">{{ $doc['name'] ?? 'Document' }}</a> @endforeach @endif</div>@endif @if(($website && $website->investment_deadline) || ($setting && $setting->investment_deadline))<div class="countdown_checkout_wrapper"><div countdown-wrapper="1" class="countdown_wrapper is_checkout"><div class="countdown_title is_checkout"><strong>{{ $website && $website->deadline_text ? $website->deadline_text : ($setting && $setting->deadline_text ? $setting->deadline_text : 'Investment Deadline') }}</strong></div><div id="js-clock" class="timer_wrap"><div id="w-node-_20a0a116-730f-65a2-befe-802bf563b40a-a22a22d5" class="timer_cell"><div id="days" class="timer_number smaller">0</div><div class="timer_label _3">Days</div></div><div class="timer_cell"><div id="hours" class="timer_number smaller">0</div><div class="timer_label _3">Hours</div></div><div class="timer_cell last-m"><div id="minutes" class="timer_number smaller">0</div><div class="timer_label _3">Minutes</div></div><div class="timer_cell mobil-hide"><div id="seconds" class="timer_number smaller">0</div><div class="timer_label _3">Seconds</div></div></div></div></div>@endif</div></div><div class="dmr-details-padding last-list"><div class="dmr-common-stock text-color-white"><strong style="color: #fff !important">Additional Information</strong></div><ul role="list" class="list-3"></ul><div class="disclaimer-dmr" style="color: #fff !important">{{ $website && $website->investment_disclaimer ? $website->investment_disclaimer : ($setting && $setting->investment_disclaimer ? $setting->investment_disclaimer : 'Investment details and disclosures are available in the offering documents.') }}</div></div></div></div></div></div></div></div></header></main>
-    @if($footer)
-        {!! $footer->content !!}
-    @endif
+    @if ($footer)
+@if ($footer->status == 1)
+<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
+background-color: {{ $footer->background }} !important;
+margin-bottom: 100px;
+">
+<div class="container">
+
+                <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
+            {{ $footer->message }}
+        </p>
+                @if ($footer->menu == 1)
+                    <div class="nav justify-content-center">
+                        @foreach ($check->pages->sortBy('position') as $item)
+
+                        @if($item->status == 1)
+
+                        <div class="nav-item">
+                            <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $footer->color }} !important" aria-current="page">
+                            {{ $item->name }}
+                            </a>
+                        </div>
+                        @endif
+
+                        @endforeach
+                                                </div>
+                @endif
+
+                @if ($footer->social == 1)
+                    <ul class="nav justify-content-center footer-socials mt-4 mb-4">
+                        @if ($footer->facebook)
+                            <li class="nav-item">
+                                <a href="{{ $footer->facebook }}" target="_blank">
+                                    <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">facebook</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->instagram)
+                            <li class="nav-item">
+                                <a href="{{ $footer->instagram }}" target="_blank">
+                                    <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">instagram</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->linkedin)
+                            <li class="nav-item">
+                                <a href="{{ $footer->linkedin }}" target="_blank">
+                                    <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">linkedin</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->pinterest)
+                            <li class="nav-item">
+                                <a href="{{ $footer->pinterest }}" target="_blank">
+                                    <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">pinterest</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->x)
+                            <li class="nav-item">
+                                <a href="{{ $footer->x }}" target="_blank">
+                                    <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">x</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->youtube)
+                            <li class="nav-item">
+                                <a href="{{ $footer->youtube }}" target="_blank">
+                                    <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">youtube</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->blue_sky)
+                            <li class="nav-item">
+                                <a href="{{ $footer->blue_sky }}" target="_blank">
+                                    <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">blue sky</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if ($footer->tiktok)
+                            <li class="nav-item">
+                                <a href="{{ $footer->tiktok }}" target="_blank">
+                                    <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
+                                    <span class="visually-hidden">tiktok</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                @endif
+
+            @if ($footer->copy_right != null)
+                <p class="text-center" style="margin-bottom: 0px;">
+                    <small style="color: {{ $footer->color }}">
+                        {{ $footer->copy_right }}
+                    </small>
+                </p>
+            @endif
+</div>
+@if ($footer->privacy == 1)
+    <div class="row mt-4">
+        <div class="col-md-12 text-center">
+            <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
+                    <li style="margin-right: 1rem;">
+                        <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
+                    </li>
+                    <li style="margin-right: 1rem;">
+                        <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
+                    </li>
+                    <li style="margin-right: 1rem;">
+                        <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
+                    </li>
+                </ul>
+        </div>
+    </div>
+@endif
+</footer>
+@endif 
+@endif
 
 
 
@@ -1248,9 +1377,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </main>
 
-    @if($footer && $footer->status == 1)
+    {{-- @if($footer && $footer->status == 1)
         {!! $footer->content !!}
-    @endif
+    @endif --}}
 
     <!-- CSRF Test Button (for debugging) -->
     {{-- <div style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;">
