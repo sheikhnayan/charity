@@ -101,8 +101,8 @@
                                                 @foreach ($data as $key => $item)
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
-                                                        <td>{{ $item->setting->website->name }}</td>
-                                                        <td>{{ $item->setting->website->domain }}</td>
+                                                        <td>{{ $item->setting->website->name ?? 'Main Website'}}</td>
+                                                        <td>{{ $item->setting->website->domain ?? 'Main Website'}}</td>
                                                         <td>
                                                             <a href="/admins/footer/{{ $item->id }}" class="btn btn-primary">Edit</a>
                                                         </td>

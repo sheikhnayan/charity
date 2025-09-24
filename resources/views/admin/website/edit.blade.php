@@ -177,6 +177,39 @@
                                                         <small class="form-text text-muted">Legal disclaimer text that will be displayed on the investment page.</small>
                                                     </div>
                                                 </div>
+                                                
+                                                <!-- Sticky Footer Color Settings -->
+                                                <div class="col-md-12">
+                                                    <h5 class="mt-4 mb-3">Sticky Footer Button Colors</h5>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="sticky_footer_button_bg" class="form-label">Button Background Color</label>
+                                                        <input type="color" name="sticky_footer_button_bg" class="form-control" id="sticky_footer_button_bg" value="{{ $data->sticky_footer_button_bg ?? '#007bff' }}">
+                                                        <small class="form-text text-muted">Background color for the sticky Invest Now button.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="sticky_footer_button_text" class="form-label">Button Text Color</label>
+                                                        <input type="color" name="sticky_footer_button_text" class="form-control" id="sticky_footer_button_text" value="{{ $data->sticky_footer_button_text ?? '#ffffff' }}">
+                                                        <small class="form-text text-muted">Text color for the sticky Invest Now button.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="sticky_footer_text_color" class="form-label">Footer Text Color</label>
+                                                        <input type="color" name="sticky_footer_text_color" class="form-control" id="sticky_footer_text_color" value="{{ $data->sticky_footer_text_color ?? '#333333' }}">
+                                                        <small class="form-text text-muted">Color for text outside the button in the sticky footer.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="sticky_footer_bg_color" class="form-label">Footer Background Color</label>
+                                                        <input type="color" name="sticky_footer_bg_color" class="form-control" id="sticky_footer_bg_color" value="{{ $data->sticky_footer_bg_color ?? '#f8f9fa' }}">
+                                                        <small class="form-text text-muted">Background color for the entire sticky footer section.</small>
+                                                    </div>
+                                                </div>
                                             </div>
                                             {{-- <div class="row">
                                                 <div class="col-md-12">

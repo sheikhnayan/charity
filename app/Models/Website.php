@@ -15,7 +15,11 @@ class Website extends Model
         'share_price',
         'min_investment',
         'investment_tiers',
-        'investment_disclaimer'
+        'investment_disclaimer',
+        'sticky_footer_button_bg',
+        'sticky_footer_button_text',
+        'sticky_footer_text_color',
+        'sticky_footer_bg_color'
     ];
 
     /**

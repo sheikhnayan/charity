@@ -324,9 +324,33 @@ class AdminController extends Controller
         $data->pinterest = $request->pinterest;
         $data->tiktok = $request->tiktok;
         $data->blue_sky = $request->blue_sky;
+        
+        // Handle investment-specific fields
+        if ($request->has('disclaimer_text')) {
+            $data->disclaimer_text = $request->disclaimer_text;
+        }
+        if ($request->has('description_text')) {
+            $data->description_text = $request->description_text;
+        }
+        
+        // Handle image uploads
+        if ($request->hasFile('background_image_desktop')) {
+            $file = $request->file('background_image_desktop');
+            $filename = time() . '_desktop_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $filename);
+            $data->background_image_desktop = $filename;
+        }
+        
+        if ($request->hasFile('background_image_mobile')) {
+            $file = $request->file('background_image_mobile');
+            $filename = time() . '_mobile_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $filename);
+            $data->background_image_mobile = $filename;
+        }
+        
         $data->update();
 
-        return redirect()->back()->with('success', 'Menu Updated successfully');
+        return redirect()->back()->with('success', 'Footer Updated successfully');
     }
 
     public function store(Request $request){
@@ -491,10 +515,11 @@ class AdminController extends Controller
     public function footer($id)
     {
         $data = Footer::where('user_id',$id)->first();
+        $website = Website::where('user_id', $id)->first();
 
         // dd($id);
 
-        return view('admin.footer.footer', compact('data'));
+        return view('admin.footer.footer', compact('data', 'website'));
     }
 
     public function footer_index()
