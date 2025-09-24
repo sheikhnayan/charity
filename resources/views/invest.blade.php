@@ -625,13 +625,13 @@ a,
                     
                     @foreach($tiers as $tier)
                         <div class="tier-option" data-amount="{{ $tier }}">
-                            <div class="tier-amount">${{ number_format($tier) }}</div>
+                            <div class="tier-amount">${{ $tier }}</div>
                             <div class="tier-shares">{{ number_format($tier / $sharePrice) }} shares</div>
                         </div>
                     @endforeach
                     
                     <div class="custom-amount-wrapper">
-                        <label for="custom-amount">Custom Amount (Min: ${{ number_format($minInvestment) }})</label>
+                        <label for="custom-amount">Custom Amount (Min: ${{ $minInvestment }})</label>
                         <input type="number" id="custom-amount" min="{{ $minInvestment }}" step="1" placeholder="Enter amount">
                         <div class="custom-shares-display"></div>
                     </div>
