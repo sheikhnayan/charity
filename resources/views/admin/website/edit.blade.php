@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="{{ asset('user/extra.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+<!-- Quill Editor CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<!-- Quill Editor JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
 <style>
     .forms-wizard li.done em::before, .lnr-checkmark-circle::before {
@@ -173,8 +177,9 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
-                                                        <textarea name="investment_disclaimer" class="form-control" id="investment_disclaimer" rows="3" placeholder="Enter investment disclaimer text">{{ $data->investment_disclaimer ?? '' }}</textarea>
-                                                        <small class="form-text text-muted">Legal disclaimer text that will be displayed on the investment page.</small>
+                                                        <div id="investment_disclaimer_editor" style="height: 200px;"></div>
+                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{!! htmlentities($data->investment_disclaimer ?? '') !!}">
+                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed on the investment page.</small>
                                                     </div>
                                                 </div>
                                                 
@@ -257,4 +262,109 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Custom Quill CSS Styles -->
+            <style>
+            /* Custom Quill styles for better font size support */
+            .ql-snow .ql-picker.ql-size .ql-picker-label::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item::before {
+              content: '14px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+              content: '10px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+              content: '12px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+              content: '14px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+              content: '16px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+              content: '18px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+              content: '20px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+              content: '24px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
+              content: '28px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+              content: '32px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
+              content: '36px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+              content: '48px';
+            }
+            </style>
+
+            <!-- Quill Editor Initialization for Investment Disclaimer -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Function to decode HTML entities
+                    function decodeHtml(html) {
+                        var txt = document.createElement("textarea");
+                        txt.innerHTML = html;
+                        return txt.value;
+                    }
+
+                // Register custom font sizes using class attributor like page-builder
+                var SizeClass = Quill.import('attributors/class/size');
+                SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+                Quill.register(SizeClass, true);
+
+                // Initialize Quill editor
+                var quill = new Quill('#investment_disclaimer_editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'align': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            ['blockquote', 'code-block'],
+                            ['link'],
+                            ['clean']
+                        ]
+                    }
+                });                    // Set initial content for investment disclaimer
+                    var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
+                    if (investmentDisclaimerContent) {
+                        investmentDisclaimerQuill.root.innerHTML = decodeHtml(investmentDisclaimerContent);
+                    }
+
+                    // Update hidden input when content changes
+                    investmentDisclaimerQuill.on('text-change', function() {
+                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
+                    });
+
+                    // Ensure content is saved before form submission
+                    document.querySelector('form').addEventListener('submit', function() {
+                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
+                    });
+
+
+                });
+            </script>
 @endsection

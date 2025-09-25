@@ -1,7 +1,10 @@
 @extends('admin.main')
 
 @section('content')
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Quill Editor JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
     <!-- Content wrapper -->
     <div class="content-wrapper">
@@ -162,7 +165,8 @@
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
                                         data-title="Disclaimer Text" 
                                         data-description="Rich text content for the disclaimer section of investment website footers."></i>
-                                    <textarea name="disclaimer_text" id="disclaimer_text" class="form-control" rows="4">{{ $data->disclaimer_text ?? '' }}</textarea>
+                                    <div id="disclaimer_editor" style="height: 200px;"></div>
+                                    <input type="hidden" name="disclaimer_text" id="disclaimer_text" value="{!! htmlentities($data->disclaimer_text ?? '') !!}">
                                 </div>
 
                                 <div class="col-12 mt-3">
@@ -172,7 +176,8 @@
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
                                         data-title="Description Text" 
                                         data-description="Rich text content for the description section of investment website footers."></i>
-                                    <textarea name="description_text" id="description_text" class="form-control" rows="4">{{ $data->description_text ?? '' }}</textarea>
+                                    <div id="description_editor" style="height: 200px;"></div>
+                                    <input type="hidden" name="description_text" id="description_text" value="{!! htmlentities($data->description_text ?? '') !!}">
                                 </div>
 
                                 <div class="col-md-6 mt-3">
@@ -271,58 +276,141 @@
                 </div>
             </div>
 
-            <!-- CKEditor Initialization -->
+            <!-- Custom Quill CSS Styles -->
+            <style>
+            /* Custom Quill styles for better font size support */
+            .ql-snow .ql-picker.ql-size .ql-picker-label::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item::before {
+              content: '14px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+              content: '10px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+              content: '12px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+              content: '14px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+              content: '16px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+              content: '18px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+              content: '20px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+              content: '24px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
+              content: '28px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+              content: '32px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
+              content: '36px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+              content: '48px';
+            }
+            </style>
+
+            <!-- Quill Editor Initialization -->
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Initialize CKEditor for disclaimer text
-                    ClassicEditor
-                        .create(document.querySelector('#disclaimer_text'), {
-                            toolbar: [
-                                'heading', '|',
-                                'bold', 'italic', 'link', '|',
-                                'bulletedList', 'numberedList', '|',
-                                'outdent', 'indent', '|',
-                                'blockQuote', 'insertTable', '|',
-                                'undo', 'redo', '|',
-                                'sourceEditing'
-                            ],
-                            heading: {
-                                options: [
-                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-                                ]
-                            }
-                        })
-                        .catch(error => {
-                            console.error('CKEditor disclaimer_text error:', error);
-                        });
+                    // Function to decode HTML entities
+                    function decodeHtml(html) {
+                        var txt = document.createElement("textarea");
+                        txt.innerHTML = html;
+                        return txt.value;
+                    }
 
-                    // Initialize CKEditor for description text
-                    ClassicEditor
-                        .create(document.querySelector('#description_text'), {
+                    // Register custom font sizes using class attributor like page-builder
+                    var SizeClass = Quill.import('attributors/class/size');
+                    SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+                    Quill.register(SizeClass, true);
+
+                    // Initialize Quill for disclaimer text
+                    var disclaimerQuill = new Quill('#disclaimer_editor', {
+                        theme: 'snow',
+                        modules: {
                             toolbar: [
-                                'heading', '|',
-                                'bold', 'italic', 'link', '|',
-                                'bulletedList', 'numberedList', '|',
-                                'outdent', 'indent', '|',
-                                'blockQuote', 'insertTable', '|',
-                                'undo', 'redo', '|',
-                                'sourceEditing'
-                            ],
-                            heading: {
-                                options: [
-                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-                                ]
-                            }
-                        })
-                        .catch(error => {
-                            console.error('CKEditor description_text error:', error);
-                        });
+                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                [{ 'size': SizeClass.whitelist }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'align': [] }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                ['blockquote', 'code-block'],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                    });
+
+                    // Set initial content for disclaimer
+                    var disclaimerContent = document.getElementById('disclaimer_text').value;
+                    if (disclaimerContent) {
+                        disclaimerQuill.root.innerHTML = decodeHtml(disclaimerContent);
+                    }
+
+                    // Update hidden input when content changes
+                    disclaimerQuill.on('text-change', function() {
+                        document.getElementById('disclaimer_text').value = disclaimerQuill.root.innerHTML;
+                    });
+
+                    // Initialize Quill for description text
+                    var descriptionQuill = new Quill('#description_editor', {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                [{ 'size': SizeClass.whitelist }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'align': [] }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                ['blockquote', 'code-block'],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                    });
+
+                    // Set initial content for description
+                    var descriptionContent = document.getElementById('description_text').value;
+                    if (descriptionContent) {
+                        descriptionQuill.root.innerHTML = decodeHtml(descriptionContent);
+                    }
+
+                    // Update hidden input when content changes
+                    descriptionQuill.on('text-change', function() {
+                        document.getElementById('description_text').value = descriptionQuill.root.innerHTML;
+                    });
+
+                    // Ensure content is saved before form submission
+                    document.querySelector('form').addEventListener('submit', function() {
+                        document.getElementById('disclaimer_text').value = disclaimerQuill.root.innerHTML;
+                        document.getElementById('description_text').value = descriptionQuill.root.innerHTML;
+                    });
+
+
                 });
             </script>
         @endsection

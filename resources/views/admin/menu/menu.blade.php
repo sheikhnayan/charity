@@ -121,11 +121,23 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="display_menu" class="form-label text-capitalize">
-                                        Logo Size
+                                    <label for="logo_size" class="form-label text-capitalize">
+                                        Logo Width (px)
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
-                                    <input type="number" name="logo_size" value="{{ $data->logo_size }}" class="form-control">
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Logo Width"
+                                        data-description="Set the width of your logo in pixels. This controls how wide the logo appears in the navigation bar."></i>
+                                    <input type="number" name="logo_size" id="logo_size" value="{{ $data->logo_size ?? 100 }}" class="form-control" min="20" max="400" placeholder="100">
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="logo_height" class="form-label text-capitalize">
+                                        Logo Height (px)
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Logo Height"
+                                        data-description="Set the height of your logo in pixels. This controls how tall the logo appears and affects the navbar height."></i>
+                                    <input type="number" name="logo_height" id="logo_height" value="{{ $data->logo_height ?? 60 }}" class="form-control" min="20" max="200" placeholder="60">
                                 </div>
                                 
                                 @if($website && $website->type === 'investment')

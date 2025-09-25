@@ -329,6 +329,10 @@ if (isset($state['components'])) {
         footer{
                 margin-bottom: 100px !important;
             }
+
+        .close-on-mobile{
+            display: none;
+        }
     }
     
     /* Base Component Styles */
@@ -812,7 +816,7 @@ if (isset($state['components'])) {
             font-size: 0.65rem;
         }
     }
-    }
+    
 
     .ticket-mask {
         --mask: conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 16.00px repeat-y,conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) 100% calc(50% + 8px)/51% 16.00px repeat-y;
@@ -831,6 +835,10 @@ if (isset($state['components'])) {
         background: transparent;
         border: none;
         box-sizing: border-box;
+    }
+
+    nav{
+        box-shadow: unset;
     }
 
     .page-inner-section .inner-column {
@@ -1018,24 +1026,18 @@ if (isset($state['components'])) {
         echo generateResponsiveStyles($state);
     @endphp
     
-    /* Investor Exclusives Bar Styles */
+    /* Investor Exclusives Bar Styles - Dynamic Positioning */
     .investor-exclusives-bar {
         padding: 0px 0px;
         text-align: center;
         position: fixed;
-        top: 6.5rem; /* Position it below contact bar + navbar */
+        top: calc(var(--navbar-total-height, 6rem) - 0.23rem); /* Dynamic position minus gap adjustment */
         left: 0;
         right: 0;
         width: 100%;
         z-index: 999; /* Just below navbar but above content */
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* When contact top bar is not present */
-    .contact-topbar ~ * .investor-exclusives-bar,
-    body:not(:has(.contact-topbar)) .investor-exclusives-bar {
-        top: 6.5rem; /* Original position when no contact bar */
     }
     
     .investor-exclusives-content {
@@ -1087,12 +1089,7 @@ if (isset($state['components'])) {
     @media (max-width: 768px) {
         .investor-exclusives-bar {
             position: fixed;
-            top: 9.5rem; /* Adjust for mobile with contact bar */
-        }
-        
-        /* When contact top bar is not present on mobile */
-        body:not(:has(.contact-topbar)) .investor-exclusives-bar {
-            top: 6rem; /* Original mobile position when no contact bar */
+            top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem); /* Dynamic mobile position minus gap adjustment */
         }
         
         .investor-exclusives-content {
@@ -1114,7 +1111,7 @@ if (isset($state['components'])) {
     @media (max-width: 480px) {
         .investor-exclusives-bar {
             padding: 10px 0;
-            top: 1.7rem; /* Further adjust for smaller mobile screens */
+            top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem); /* Dynamic small mobile position minus gap adjustment */
             margin-top: 4rem;
         }
         
@@ -1151,6 +1148,8 @@ if (isset($state['components'])) {
     
     .contact-topbar .contact-item a {
         transition: all 0.3s ease;
+        font-family: Outfit,sans-serif;
+        text-decoration: underline !important;
     }
     
     .contact-topbar .contact-item a:hover {
@@ -1304,12 +1303,12 @@ if (isset($state['components'])) {
             <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
                 <div class="container">
                     <div class="row align-items-center justify-content-center">
-                        <div class="col-md-4 col-12">
+                        <div class="col-md-5 col-12">
                             <div class="contact-info d-flex flex-wrap align-items-center">
                                 @if($header->contact_phone)
                                     <div class="contact-item me-4 mb-1">
                                         <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration: none;">
+                                        <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
                                             {{ $header->contact_phone }}
                                         </a>
                                     </div>
@@ -1317,7 +1316,7 @@ if (isset($state['components'])) {
                                 @if($header->contact_email)
                                     <div class="contact-item me-4 mb-1">
                                         <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration: none;">
+                                        <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
                                             {{ $header->contact_email }}
                                         </a>
                                     </div>
@@ -1325,7 +1324,7 @@ if (isset($state['components'])) {
                                 @if($header->contact_address)
                                     <div class="contact-item mb-1">
                                         <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                        <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
                                             {{ $header->contact_address }}
                                         </span>
                                     </div>
@@ -1375,16 +1374,76 @@ if (isset($state['components'])) {
                     </a> --}}
                 </div>
             </div>
+
+            {{-- Dynamic Navbar Height Calculator Script --}}
+            <script>
+                function updateNavbarHeights() {
+                    const navbar = document.querySelector('.navbar');
+                    const contactTopbar = document.querySelector('.contact-topbar');
+                    const investorBar = document.querySelector('.investor-exclusives-bar');
+                    
+                    if (navbar) {
+                        const navbarHeight = navbar.offsetHeight;
+                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                        const totalNavHeight = navbarHeight + contactTopbarHeight;
+                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
+                        
+                        // Convert to rem (assuming 16px base font size)
+                        const totalHeightRem = totalNavHeight / 16;
+                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
+                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                        
+                        // Main content margin should account for investor bar if present
+                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
+                        
+                        // Set CSS custom properties
+                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
+                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                        
+                        console.log('Dynamic Heights Updated:', {
+                            navbar: navbarHeight,
+                            contactTopbar: contactTopbarHeight,
+                            investorBar: investorBarHeight,
+                            totalNavHeight: totalNavHeight,
+                            totalWithInvestor: totalWithInvestorBar,
+                            mainMargin: mainContentMargin
+                        });
+                    }
+                }
+                
+                // Run on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Wait a bit for all elements to render
+                    setTimeout(updateNavbarHeights, 50);
+                });
+                
+                // Run on resize
+                window.addEventListener('resize', updateNavbarHeights);
+                
+                // Run after fonts load (as this can affect navbar height)
+                if (document.fonts) {
+                    document.fonts.ready.then(updateNavbarHeights);
+                }
+                
+                // Fallback: run after delays to catch any dynamic changes
+                setTimeout(updateNavbarHeights, 100);
+                setTimeout(updateNavbarHeights, 300);
+                setTimeout(updateNavbarHeights, 500);
+                setTimeout(updateNavbarHeights, 1000);
+            </script>
         @endif
     @endif
     
-    <main style="margin-top: {{ 
+    <main style="margin-top: var(--main-content-margin-top, {{ 
         ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? '14.2rem' : 
         (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '10.5rem' : 
         (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
-    }};" 
+    }});" 
           class="{{ 
-            ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
+            ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
             (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? 'with-contact-bar' : 
             (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
         }}">

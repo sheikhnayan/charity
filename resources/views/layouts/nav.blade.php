@@ -2,19 +2,23 @@
     <nav class="navbar navbar-expand-xl {{ $header->floating == 1 ? 'fixed-top' : 'non-float'}} bg-primary" style="background-color: {{ $header->background }} !important;">
         <div class="container">
             <a class="navbar-brand" href="https://{{ $check->domain }}">
-                <img src="{{ asset('uploads/'.$setting->logo) }}" alt="Logo" width="{{ $header->logo_size }}" height="{{ $header->logo_size }}" class="d-inline-block align-text-top" style="width: {{ $header->logo_size }}px !important; height: {{ $header->logo_size }}px !important;">
+                <img src="{{ asset('uploads/'.$setting->logo) }}" alt="Logo" 
+                     width="{{ $header->logo_size ?? 100 }}" 
+                     height="{{ $header->logo_height ?? 60 }}" 
+                     class="d-inline-block align-text-top" 
+                     style="width: {{ $header->logo_size ?? 100 }}px !important; height: {{ $header->logo_height ?? 60 }}px !important; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color:{{ $header->color }} !important; border-color: {{ $header->color }} !important;">
                 <i class="fa fa-bars" style="color: {{ $header->color }}; font-size: 1.5rem;"></i>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
                     @if ($check->type == 'investment')
                         {{-- Investment website: Use sections from page builder --}}
                         @if(isset($menuSections) && is_array($menuSections))
                             @foreach ($menuSections as $section)
                                 <li class="nav-item">
-                                    <a class="nav-link active scroll-to-section" aria-current="page" href="#{{ $section['sectionId'] }}" style="color:{{ $header->color }} !important; font-family: Outfit,sans-serif;text-transform: uppercase;" data-section="{{ $section['sectionId'] }}">{{ $section['title'] }}</a>
+                                    <a class="nav-link active scroll-to-section" aria-current="page" href="#{{ $section['sectionId'] }}" style="color:{{ $header->color }} !important; font-family: Outfit,sans-serif;text-transform: uppercase; text-decoration: none;" data-section="{{ $section['sectionId'] }}">{{ $section['title'] }}</a>
                                 </li>
                             @endforeach
                         @endif
@@ -33,6 +37,14 @@
                     </li> --}}
                 </ul>
             </div>
+            <a class="navbar-brand close-on-mobile" href="/invest">
+                <div class="invest-button-section">
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                    INVEST NOW
+                </button>
+            </div>
+            </a>
+
         </div>
     </nav>
 
