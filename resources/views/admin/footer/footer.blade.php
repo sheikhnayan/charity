@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- Quill Editor CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    {{-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> --}}
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
