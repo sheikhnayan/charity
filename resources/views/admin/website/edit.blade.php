@@ -177,7 +177,7 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
-                                                        <div id="investment_disclaimer_editor" style="height: 200px;"></div>
+                                                        <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
                                                         <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
                                                         <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed on the investment page.</small>
                                                     </div>
@@ -360,14 +360,22 @@
                 // Set initial content for investment disclaimer
                 var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
                 console.log('Initial investment disclaimer content:', investmentDisclaimerContent);
+                console.log('Raw data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
                 
                 if (investmentDisclaimerContent && investmentDisclaimerContent.trim() !== '') {
                     try {
-                        var decodedContent = decodeHtml(investmentDisclaimerContent);
-                        investmentDisclaimerQuill.root.innerHTML = decodedContent;
+                        // First try direct assignment, then decoded if needed
+                        if (investmentDisclaimerContent.includes('&')) {
+                            var decodedContent = decodeHtml(investmentDisclaimerContent);
+                            investmentDisclaimerQuill.root.innerHTML = decodedContent;
+                        } else {
+                            investmentDisclaimerQuill.root.innerHTML = investmentDisclaimerContent;
+                        }
                         console.log('Loaded content into Quill editor');
                     } catch (error) {
                         console.error('Error loading content into Quill editor:', error);
+                        // Fallback: try setting as plain text
+                        investmentDisclaimerQuill.setText(investmentDisclaimerContent);
                     }
                 }
 

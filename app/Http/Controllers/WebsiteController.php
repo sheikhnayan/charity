@@ -216,6 +216,8 @@ class WebsiteController extends Controller
         $update->type = $request->type;
         $update->status = $request->status;
         if ($request->type === 'investment') {
+            // Debug: Log the investment disclaimer content
+            \Log::info('Investment disclaimer content being saved:', ['content' => $request->investment_disclaimer]);
             $update->investment_disclaimer = $request->investment_disclaimer ?? null;
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;

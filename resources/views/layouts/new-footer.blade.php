@@ -2,7 +2,7 @@
 
 {{-- <style> --}}
 
-@endif
+{{-- @endif --}}
 
 @php
     $url = request()->getHost();
