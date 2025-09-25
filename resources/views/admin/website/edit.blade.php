@@ -178,7 +178,7 @@
                                                     <div class="mb-3">
                                                         <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
                                                         <div id="investment_disclaimer_editor" style="height: 200px;"></div>
-                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{!! htmlentities($data->investment_disclaimer ?? '') !!}">
+                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
                                                         <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed on the investment page.</small>
                                                     </div>
                                                 </div>
@@ -331,8 +331,8 @@
                 SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
                 Quill.register(SizeClass, true);
 
-                // Initialize Quill editor
-                var quill = new Quill('#investment_disclaimer_editor', {
+                // Initialize Quill editor for investment disclaimer
+                var investmentDisclaimerQuill = new Quill('#investment_disclaimer_editor', {
                     theme: 'snow',
                     modules: {
                         toolbar: [
@@ -348,21 +348,43 @@
                             ['clean']
                         ]
                     }
-                });                    // Set initial content for investment disclaimer
-                    var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
-                    if (investmentDisclaimerContent) {
-                        investmentDisclaimerQuill.root.innerHTML = decodeHtml(investmentDisclaimerContent);
+                });
+
+                // Function to decode HTML entities
+                function decodeHtml(html) {
+                    var txt = document.createElement("textarea");
+                    txt.innerHTML = html;
+                    return txt.value;
+                }
+
+                // Set initial content for investment disclaimer
+                var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
+                console.log('Initial investment disclaimer content:', investmentDisclaimerContent);
+                
+                if (investmentDisclaimerContent && investmentDisclaimerContent.trim() !== '') {
+                    try {
+                        var decodedContent = decodeHtml(investmentDisclaimerContent);
+                        investmentDisclaimerQuill.root.innerHTML = decodedContent;
+                        console.log('Loaded content into Quill editor');
+                    } catch (error) {
+                        console.error('Error loading content into Quill editor:', error);
                     }
+                }
 
-                    // Update hidden input when content changes
-                    investmentDisclaimerQuill.on('text-change', function() {
-                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
-                    });
+                // Update hidden input when content changes
+                investmentDisclaimerQuill.on('text-change', function() {
+                    var content = investmentDisclaimerQuill.root.innerHTML;
+                    document.getElementById('investment_disclaimer').value = content;
+                    console.log('Content updated:', content);
+                });
 
-                    // Ensure content is saved before form submission
-                    document.querySelector('form').addEventListener('submit', function() {
-                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
-                    });
+                // Ensure content is saved before form submission
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    var content = investmentDisclaimerQuill.root.innerHTML;
+                    document.getElementById('investment_disclaimer').value = content;
+                    console.log('Form submission - saving content:', content);
+                    console.log('Hidden input value:', document.getElementById('investment_disclaimer').value);
+                });
 
 
                 });
