@@ -1,6 +1,142 @@
 {{-- <link rel="stylesheet" href="{{ asset('css/new-footer.css') }}"> --}}
 
 <style>
+/* Font Face Definitions */
+@font-face {
+    font-family: Acumin Rpro;
+    src: url(https://cdn.prod.website-files.com/615c7704bf83fe0f0bb27c0b/68423da0651204d978723e70_Acumin-RPro.woff2) format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Acumin Pro Condensed 2";
+    src: url(https://cdn.prod.website-files.com/615c7704bf83fe0f0bb27c0b/68423da09c81e7f0cf58c689_Acumin-Pro-Condensed-Bold-2.woff2) format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: Acumin Bdpro;
+    src: url(https://cdn.prod.website-files.com/615c7704bf83fe0f0bb27c0b/68423da08f7ad33947af4c5d_Acumin-BdPro.woff2) format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* CSS Variables - Essential for Footer */
+:root {
+    --reach-template-2024---base-color-neutrals--white: white;
+    --reach-template-2024---max-width--main: 80rem;
+    --reach-template-2024---padding-vertical--main: var(--reach-template-2024---size--5rem);
+    --reach-template-2024---padding-horizontal--main: var(--reach-template-2024---size--2rem);
+    --reach-template-2024---padding-vertical--small: var(--reach-template-2024---size--3rem);
+    --reach-template-2024---padding-vertical--xsmall: var(--reach-template-2024---size--2rem);
+    --reach-template-2024---padding-horizontal--small: var(--reach-template-2024---size--1-5rem);
+    --reach-template-2024---grid-gap--main: var(--reach-template-2024---size--1-5rem);
+    --reach-template-2024---brand-color--white: var(--reach-template-2024---base-color-neutrals--neutral-200);
+    --reach-template-2024---brand-color--black: var(--reach-template-2024---base-color-neutrals--neutral-900);
+    --reach-template-2024---base-color-neutrals--neutral-300: #ccc;
+    --reach-template-2024---border-radius--small: var(--reach-template-2024---size--0-5rem);
+    --reach-template-2024---brand-color--brand: #8ee8df;
+    --reach-template-2024---base-color-neutrals--neutral-600: #444;
+    
+    --_theme---background: var(--brand-color--white);
+    --_theme---text: var(--brand-color--black);
+    --_theme---action: var(--brand-color--action-color);
+    --_theme---border: var(--base-color-neutrals--neutral-400);
+    --_theme---background-2: var(--base-color-neutrals--neutral-800);
+    --_theme---action-dark: var(--brand-color--action-color-dark);
+    --_theme---text-2: var(--base-color-neutrals--neutral-600);
+    --_theme---border-size: 2px;
+    --_theme---glow-color: #00d4fe;
+    
+    --max-width--main: 80rem;
+    --padding-vertical--large: var(--size--8rem);
+    --padding-horizontal--main: var(--size--2rem);
+    --padding-vertical--small: var(--size--3rem);
+    --padding-vertical--xsmall: var(--size--2rem);
+    --padding-horizontal--small: var(--size--1-5rem);
+    --border-radius--xsmall: var(--size--0-25rem);
+    --brand-color--teal: #479ea4;
+    --brand-color--green: #00e09d;
+    --brand-color--action-color: var(--brand-color--teal);
+    --brand-color--action-color-dark: #008189;
+    --brand-color--black: var(--base-color-neutrals--black);
+    --brand-color--white: var(--base-color-neutrals--white);
+    
+    --base-color-neutrals--transparent: #fff0;
+    --base-color-neutrals--white: white;
+    --base-color-neutrals--neutral-200: #eee;
+    --base-color-neutrals--neutral-300: #ccc;
+    --base-color-neutrals--neutral-400: #aaa;
+    --base-color-neutrals--neutral-500: #989898;
+    --base-color-neutrals--neutral-600: #424242;
+    --base-color-neutrals--neutral-700: #323232;
+    --base-color-neutrals--neutral-800: #212121;
+    --base-color-neutrals--neutral-900: #121212;
+    --base-color-neutrals--black: black;
+    
+    --reach-template-2024---base-color-neutrals--black: black;
+    --reach-template-2024---base-color-neutrals--neutral-200: #eee;
+    --reach-template-2024---base-color-neutrals--neutral-400: #aaa;
+    --reach-template-2024---base-color-neutrals--neutral-500: #666;
+    --reach-template-2024---base-color-neutrals--neutral-700: #222;
+    --reach-template-2024---base-color-neutrals--neutral-800: #111;
+    --reach-template-2024---base-color-neutrals--neutral-900: #0a0a0a;
+    
+    --reach-template-2024---size--0rem: 0rem;
+    --reach-template-2024---size--0-125rem: .125rem;
+    --reach-template-2024---size--0-25rem: .25rem;
+    --reach-template-2024---size--0-5rem: .5rem;
+    --reach-template-2024---size--0-75rem: .75rem;
+    --reach-template-2024---size--1rem: 1rem;
+    --reach-template-2024---size--1-25rem: 1.25rem;
+    --reach-template-2024---size--1-5rem: 1.5rem;
+    --reach-template-2024---size--2rem: 2rem;
+    --reach-template-2024---size--2-5rem: 2.5rem;
+    --reach-template-2024---size--3rem: 3rem;
+    --reach-template-2024---size--3-5rem: 3.5rem;
+    --reach-template-2024---size--4rem: 4rem;
+    --reach-template-2024---size--4-5rem: 4.5rem;
+    --reach-template-2024---size--5rem: 5rem;
+    --reach-template-2024---size--5-5rem: 5.5rem;
+    --reach-template-2024---size--6rem: 6rem;
+    --reach-template-2024---size--6-5rem: 6.5rem;
+    --reach-template-2024---size--7rem: 7rem;
+    --reach-template-2024---size--7-5rem: 7.5rem;
+    --reach-template-2024---size--8rem: 8rem;
+    --reach-template-2024---size--8-5rem: 8.5rem;
+    --reach-template-2024---size--9rem: 9rem;
+    --reach-template-2024---size--9-5rem: 9.5rem;
+    --reach-template-2024---size--10rem: 10rem;
+    
+    --size--0rem: 0rem;
+    --size--0-125rem: .125rem;
+    --size--0-25rem: .25rem;
+    --size--0-5rem: .5rem;
+    --size--0-75rem: .75rem;
+    --size--1rem: 1rem;
+    --size--1-25rem: 1.25rem;
+    --size--1-5rem: 1.5rem;
+    --size--2rem: 2rem;
+    --size--2-5rem: 2.5rem;
+    --size--3rem: 3rem;
+    --size--3-5rem: 3.5rem;
+    --size--4rem: 4rem;
+    --size--4-5rem: 4.5rem;
+    --size--5rem: 5rem;
+    --size--5-5rem: 5.5rem;
+    --size--6rem: 6rem;
+    --size--6-5rem: 6.5rem;
+    --size--7rem: 7rem;
+    --size--8rem: 8rem;
+    --size--9rem: 9rem;
+    --size--10rem: 10rem;
+}
+
 /* Footer Component Styles */
 .footer_component {
     margin-top: var(--_theme---border-size);
@@ -93,7 +229,7 @@
 }
 
 .footer_line_divider {
-    background-color: var(--reach-template-2024---brand-color--white);
+    background-color: var(--reach-template-2024---brand-color--white, #eee);
     opacity: .16;
     width: 100%;
     height: 1px;
@@ -102,8 +238,8 @@
 }
 
 .footer_bottom_wrapper {
-    grid-column-gap: var(--reach-template-2024---grid-gap--main);
-    grid-row-gap: var(--reach-template-2024---grid-gap--main);
+    grid-column-gap: var(--reach-template-2024---grid-gap--main, 1.5rem);
+    grid-row-gap: var(--reach-template-2024---grid-gap--main, 1.5rem);
     white-space: normal;
     grid-template-rows: auto;
     grid-template-columns: max-content;
@@ -308,8 +444,8 @@
 }
 
 .u-container {
-    max-width: var(--max-width--main);
-    padding: var(--padding-vertical--large) var(--padding-horizontal--main);
+    max-width: var(--max-width--main, 80rem);
+    padding: var(--padding-vertical--large, 8rem) var(--padding-horizontal--main, 2rem);
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -346,6 +482,27 @@
 .w-richtext ol,
 .w-richtext ul {
     margin-bottom: 0;
+}
+
+/* Basic Element Styles */
+img {
+    vertical-align: middle;
+    max-width: 100%;
+    display: inline-block;
+}
+
+/* Text Utility Classes */
+.text-size-tiny {
+    font-size: .75rem;
+}
+
+.text-color-secondary {
+    color: var(--_theme---text-2);
+}
+
+.rich_content {
+    text-align: left;
+    font-size: 1.125rem;
 }
 
 /* Mobile Responsive Styles */
