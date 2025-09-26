@@ -5451,6 +5451,142 @@ break;
                 // Initialize tooltips when component is first created
                 content.initTooltips();
                 
+                // Add renderDonationForm method to update the form when data changes
+                content.renderDonationForm = function() {
+                    // Ensure _donationFormData exists
+                    if (!content._donationFormData) content._donationFormData = {};
+                    
+                    // Get current data or defaults
+                    function getDonationFormValue(field, defaultValue) {
+                        return (content._donationFormData && content._donationFormData[field]) ? content._donationFormData[field] : defaultValue;
+                    }
+                    
+                    // Re-render the entire donation form with current data
+                    content.innerHTML = `
+                    <section class="text- bg- section-border- " id="b2dd141f-e084-45c7-ba93-d8b6158d65af" data-section=""
+                            style="background-image: url(); --overlay-color: ; --overlay-opacity: %; --section-name: '';">
+                            <div class="block-container container " id="block-086fc842-f2e9-4d56-af2e-be42317d11e7"
+                                data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
+                                style="margin-top: 3rem;">
+
+                                <form method="POST" action="/donation-general" class="donation-form-block">
+                                    @csrf
+                                    <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
+                                        <div class="card shadow" style="border-width: 3px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
+                                            <div class="card-header rounded-0 text-center fs-2"
+                                                style="border-width: 3px !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; background-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; color: ${getDonationFormValue('headerTextColor', '#ffffff')} !important;">
+                                                ${getDonationFormValue('formTitle', 'Make a general donation')}
+                                            </div>
+                                            <div class="card-body" style="background-color: ${getDonationFormValue('backgroundColor', '#ffffff')} !important;">
+                                                <input type="hidden" name="profile_uuid" value="">
+                                                <input type="hidden" name="team_uuid" value="">
+
+                                                <div class="row gy-3">
+                                                    <div class="col-12">
+                                                        <div class="input-group input-group-lg">
+                                                            <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                                                style="border-width: 2px; border-right-width: 0; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">$</span>
+                                                            <input type="number" placeholder="0"
+                                                                class="form-control fs-2 fs-lg-4 text-center border-primary"
+                                                                style="border-width: 2px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;" name="donation_amount" value="">
+                                                            <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                                                style="border-width: 2px; border-left-width: 0; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">.00</span>
+                                                        </div>
+                                                        <input type="hidden" name="amount" value="">
+                                                        <div class="text-center">
+                                                            <small class="form-text text-muted">
+                                                                * The minimum donation amount is 8.
+                                                            </small>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 d-flex justify-content-center align-items-center">
+                                                        <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                                    id="pay_fees" name="pay_fees" checked="">
+                                                                <label class="form-check-label fw-semibold" for="pay_fees">
+                                                                    ${getDonationFormValue('feeText', 'I elect to pay the fees')}
+                                                                </label>
+                                                                <i role="button"
+                                                                    class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                                    data-bs-toggle="tooltip"
+                                                                    data-bs-placement="top"
+                                                                    data-title="I elect to pay the fees"
+                                                                    title="${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}"
+                                                                    data-description="${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <label for="first_name" class="form-label fw-semibold required">
+                                                            First name
+                                                        </label>
+                                                        <input type="text" class="form-control" id="first_name"
+                                                            name="first_name" value="">
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <label for="last_name" class="form-label fw-semibold required">
+                                                            Last name
+                                                        </label>
+                                                        <input type="text" class="form-control" id="last_name"
+                                                            name="last_name" value="">
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <label for="email" class="form-label fw-semibold required">
+                                                            Email address
+                                                        </label>
+                                                        <input type="text" class="form-control" id="email" name="email"
+                                                            value="">
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                                id="anonymous_donation" name="anonymous_donation">
+                                                            <label class="form-check-label fw-semibold" for="anonymous_donation">
+                                                                ${getDonationFormValue('anonymousText', 'Anonymous')}
+                                                            </label>
+                                                            <i role="button"
+                                                                class="fa-solid fa-circle-info text-info btn-modal-info"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
+                                                                data-title="Anonymous"
+                                                                title="${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}"
+                                                                data-description="${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}"></i>
+                                                            <small class="anonymous-description text-muted d-block mt-1">${getDonationFormValue('anonymousDescription', 'Choose to make your donation anonymous')}</small>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <label for="leave_comment" class="form-label fw-semibold text-capitalize">
+                                                            comment
+                                                        </label>
+                                                        <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer rounded-0 p-0"
+                                                style="border-width: 3px !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; background-color: ${getDonationFormValue('headerColor', '#2e4053')} !important;">
+                                                <button type="submit"
+                                                    class="btn btn-lg w-100 h-100 rounded-0 shadow-none" 
+                                                    style="background: ${getDonationFormValue('headerColor', '#2e4053')} !important; border-color: ${getDonationFormValue('headerColor', '#2e4053')} !important; color: ${getDonationFormValue('headerTextColor', '#ffffff')} !important;">
+                                                    ${getDonationFormValue('buttonText', 'Donate')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>`;
+                    
+                    // Re-initialize tooltips after re-render
+                    content.initTooltips();
+                };
+                
         break;
         case 'donor-list':
             content = document.createElement('div');
@@ -9551,10 +9687,9 @@ function updateDonationFormTitle(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.formTitle = value;
     
-    // Update the form title in the preview
-    const formHeader = content.querySelector('.card-header');
-    if (formHeader) {
-        formHeader.textContent = value;
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9564,10 +9699,9 @@ function updateDonationFormSecondaryTitle(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.secondaryTitle = value;
     
-    // Update secondary title in the preview
-    const secondaryLabel = content.querySelector('.form-label[style*="color: #000; font-weight: bold;"]');
-    if (secondaryLabel) {
-        secondaryLabel.innerHTML = value + ' {{ $data->website->name ?? "Main Site"}}';
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9577,10 +9711,9 @@ function updateDonationFormButtonText(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.buttonText = value;
     
-    // Update button text in the preview
-    const submitButton = content.querySelector('button[type="submit"]');
-    if (submitButton) {
-        submitButton.textContent = value;
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9590,10 +9723,9 @@ function updateDonationFormFeeText(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.feeText = value;
     
-    // Update fee checkbox label in the preview
-    const feeLabel = content.querySelector('label[for="pay_fees"]');
-    if (feeLabel) {
-        feeLabel.textContent = value;
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9603,20 +9735,9 @@ function updateDonationFormFeeTooltip(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.feeTooltip = value;
     
-    // Update fee tooltip in the preview
-    const feeIcon = content.querySelector('.btn-modal-info[data-title="I elect to pay the fees"]');
-    if (feeIcon) {
-        feeIcon.setAttribute('data-description', value);
-        feeIcon.setAttribute('title', value);
-        
-        // Dispose existing tooltip and create new one
-        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-            const existingTooltip = bootstrap.Tooltip.getInstance(feeIcon);
-            if (existingTooltip) {
-                existingTooltip.dispose();
-            }
-            new bootstrap.Tooltip(feeIcon);
-        }
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9626,10 +9747,9 @@ function updateDonationFormAnonymousText(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.anonymousText = value;
     
-    // Update anonymous checkbox label in the preview
-    const anonymousLabel = content.querySelector('label[for="anonymous_donation"]');
-    if (anonymousLabel) {
-        anonymousLabel.textContent = value;
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9639,16 +9759,9 @@ function updateDonationFormAnonymousDescription(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.anonymousDescription = value;
     
-    // Update anonymous description (this will be added as a small text element)
-    const anonymousDiv = content.querySelector('.form-check:has(#anonymous_donation)');
-    if (anonymousDiv) {
-        let descriptionElement = anonymousDiv.querySelector('.anonymous-description');
-        if (!descriptionElement) {
-            descriptionElement = document.createElement('small');
-            descriptionElement.className = 'anonymous-description text-muted d-block mt-1';
-            anonymousDiv.appendChild(descriptionElement);
-        }
-        descriptionElement.textContent = value;
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9658,20 +9771,9 @@ function updateDonationFormAnonymousTooltip(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.anonymousTooltip = value;
     
-    // Update anonymous tooltip in the preview
-    const anonymousIcon = content.querySelector('.btn-modal-info[data-title="Anonymous"]');
-    if (anonymousIcon) {
-        anonymousIcon.setAttribute('data-description', value);
-        anonymousIcon.setAttribute('title', value);
-        
-        // Dispose existing tooltip and create new one
-        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-            const existingTooltip = bootstrap.Tooltip.getInstance(anonymousIcon);
-            if (existingTooltip) {
-                existingTooltip.dispose();
-            }
-            new bootstrap.Tooltip(anonymousIcon);
-        }
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9681,10 +9783,9 @@ function updateDonationFormBackgroundColor(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.backgroundColor = value;
     
-    // Update background color in the preview
-    const cardBody = content.querySelector('.card-body');
-    if (cardBody) {
-        cardBody.style.setProperty('background-color', value, 'important');
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9694,28 +9795,10 @@ function updateDonationFormHeaderColor(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.headerColor = value;
     
-    // Update header and button color in the preview
-    const cardHeader = content.querySelector('.card-header');
-    const cardFooter = content.querySelector('.card-footer');
-    const submitButton = content.querySelector('.btn');
-    const borderElements = content.querySelectorAll('.border-primary');
-    
-    if (cardHeader) {
-        cardHeader.style.setProperty('background-color', value, 'important');
-        cardHeader.style.setProperty('border-color', value, 'important');
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
-    if (cardFooter) {
-        cardFooter.style.setProperty('background-color', value, 'important');
-        cardFooter.style.setProperty('border-color', value, 'important');
-    }
-    if (submitButton) {
-        submitButton.style.setProperty('background-color', value, 'important');
-        submitButton.style.setProperty('border-color', value, 'important');
-    }
-    // Update all border elements
-    borderElements.forEach(element => {
-        element.style.setProperty('border-color', value, 'important');
-    });
 }
 
 function updateDonationFormHeaderTextColor(value) {
@@ -9724,15 +9807,9 @@ function updateDonationFormHeaderTextColor(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.headerTextColor = value;
     
-    // Update header and button text color in the preview
-    const cardHeader = content.querySelector('.card-header');
-    const submitButton = content.querySelector('.btn');
-    
-    if (cardHeader) {
-        cardHeader.style.setProperty('color', value, 'important');
-    }
-    if (submitButton) {
-        submitButton.style.setProperty('color', value, 'important');
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
 }
 
@@ -9742,17 +9819,10 @@ function updateDonationFormBorderColor(value) {
     if (!content._donationFormData) content._donationFormData = {};
     content._donationFormData.borderColor = value;
     
-    // Update border color in the preview
-    const cardElement = content.querySelector('.card');
-    const borderElements = content.querySelectorAll('.border-primary');
-    
-    if (cardElement) {
-        cardElement.style.setProperty('border-color', value, 'important');
+    // Re-render the entire donation form to ensure all changes are applied
+    if (typeof content.renderDonationForm === 'function') {
+        content.renderDonationForm();
     }
-    // Update all border elements
-    borderElements.forEach(element => {
-        element.style.setProperty('border-color', value, 'important');
-    });
 }
 
 // Auth Form Functions
@@ -13136,6 +13206,12 @@ function applyResponsiveStyles() {
           case 'contact-form':
             data.contactFormData = content.contactFormData;
             break;
+          case 'donation-form':
+            console.log('Serializing donation-form component');
+            console.log('Content _donationFormData:', content._donationFormData);
+            data.donationFormData = content._donationFormData;
+            console.log('Serialized donationFormData:', data.donationFormData);
+            break;
           // ...add other types as needed...
           default:
             data.html = content.innerHTML;
@@ -13709,6 +13785,25 @@ function applyResponsiveStyles() {
                 
                 // Render the contact form with the data
                 actualContent.renderContactForm();
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'donation-form':
+                console.log('Deserializing donation-form component');
+                console.log('Donation form data:', data.donationFormData);
+                
+                // If we have donationFormData, use it directly
+                if (data.donationFormData) {
+                    actualContent._donationFormData = data.donationFormData;
+                } else {
+                    // Create default donation form data if not found
+                    actualContent._donationFormData = {};
+                }
+                
+                // Render the donation form with the data
+                actualContent.renderDonationForm();
                 if (data.style) Object.assign(actualContent.style, data.style);
                 if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;

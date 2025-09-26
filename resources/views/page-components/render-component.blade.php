@@ -4758,6 +4758,19 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             </style>
         @break
 
+        @case('donation-form')
+            <div style="{{ $styleStr }}">
+                @if(isset($component['html']))
+                    {!! $component['html'] !!}
+                @else
+                    {{-- Fallback if no HTML is set --}}
+                    <div style="padding: 20px; border: 2px dashed #ccc; text-align: center; color: #666;">
+                        Donation Form Component (No HTML Available)
+                    </div>
+                @endif
+            </div>
+        @break
+
         @default
             {{-- Fallback for any unhandled component types --}}
             <div style="{{ $styleStr }}">

@@ -761,15 +761,17 @@
             z-index: 1010; /* Below contact bar and navbar but above content */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            top: 70px !important; /* Default: Just navbar height when no contact bar */
         }
         
-        /* Position investor bar based on what's above it */
+        /* Dynamic positioning based on header configuration */
+        .contact-topbar ~ nav.navbar + .investor-exclusives-bar {
+            top: 104px !important; /* Contact bar (34px) + navbar (70px) */
+        }
+        
+        /* Alternative selector for when investor bar follows contact topbar */
         .contact-topbar ~ .investor-exclusives-bar {
-            top: 104px !important; /* Contact bar (34px) + navbar (70px) - seamless */
-        }
-        
-        .investor-exclusives-bar {
-            top: 70px !important; /* Just navbar height when no contact bar */
+            top: 104px !important; /* Contact bar (34px) + navbar (70px) */
         }
         
         .investor-exclusives-content {
@@ -823,8 +825,13 @@
                 top: 27px !important;
             }
             
+            .investor-exclusives-bar {
+                top: 70px !important; /* Default mobile: just navbar */
+            }
+            
+            .contact-topbar ~ nav.navbar + .investor-exclusives-bar,
             .contact-topbar ~ .investor-exclusives-bar {
-                top: 100px !important; /* Mobile: contact bar (27px) + navbar (70px) - seamless */
+                top: 97px !important; /* Mobile: contact bar (27px) + navbar (70px) */
             }
             
             .investor-exclusives-content {
@@ -846,10 +853,12 @@
         @media (max-width: 480px) {
             .investor-exclusives-bar {
                 padding: 6px 0;
+                top: 70px !important; /* Default small mobile: just navbar */
             }
             
+            .contact-topbar ~ nav.navbar + .investor-exclusives-bar,
             .contact-topbar ~ .investor-exclusives-bar {
-                top: 100px !important; /* Smaller mobile: contact (27px) + navbar (65px) */
+                top: 97px !important; /* Small mobile: contact (27px) + navbar (70px) */
             }
 
             .close-on-mobile{
@@ -864,29 +873,29 @@
         /* Responsive main content margins */
         @media (max-width: 768px) {
             main.with-contact-and-investor-bars {
-                margin-top: 133px !important; /* 27px + 70px + 36px (investor bar) */
+                margin-top: 130px !important; /* Contact (27px) + navbar (70px) + investor bar (33px) */
             }
             
             main.with-contact-bar {
-                margin-top: 97px !important; /* 27px + 70px */
+                margin-top: 97px !important; /* Contact (27px) + navbar (70px) */
             }
             
             main.with-investor-bar {
-                margin-top: 106px !important; /* 70px + 36px */
+                margin-top: 103px !important; /* Navbar (70px) + investor bar (33px) */
             }
         }
         
         @media (max-width: 480px) {
             main.with-contact-and-investor-bars {
-                margin-top: 128px !important; /* 27px + 65px + 36px */
+                margin-top: 130px !important; /* Contact (27px) + navbar (70px) + investor bar (33px) */
             }
             
             main.with-contact-bar {
-                margin-top: 92px !important; /* 27px + 65px */
+                margin-top: 97px !important; /* Contact (27px) + navbar (70px) */
             }
             
             main.with-investor-bar {
-                margin-top: 101px !important; /* 65px + 36px */
+                margin-top: 103px !important; /* Navbar (70px) + investor bar (33px) */
             }
         }
 
