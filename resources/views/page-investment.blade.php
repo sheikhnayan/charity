@@ -1130,6 +1130,8 @@ if (isset($state['components'])) {
 
         .navbar-brand{
             margin-left: 1rem !important;
+            margin-top: 0.3rem !important;
+            margin-bottom: 0.3rem !important;
         }
     }
     
