@@ -2587,7 +2587,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
     </script>
 
     <!-- Sticky Footer for Investment Websites -->
-    @if($website && $website->type === 'investment')
+    {{-- @if($website && $website->type === 'investment')
     <div class="sticky-footer-invest">
         <div class="sticky-footer-content">
             <div class="sticky-footer-text">
@@ -2612,7 +2612,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
             }
         }
     </script>
-    @endif
+    @endif --}}
 
 </body>
 

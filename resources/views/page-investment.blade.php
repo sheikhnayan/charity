@@ -1090,6 +1090,7 @@ if (isset($state['components'])) {
         .investor-exclusives-bar {
             position: fixed;
             top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem); /* Dynamic mobile position minus gap adjustment */
+            padding-bottom: 0px;
         }
         
         .investor-exclusives-content {
@@ -1113,6 +1114,8 @@ if (isset($state['components'])) {
             padding: 10px 0;
             top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem); /* Dynamic small mobile position minus gap adjustment */
             /* margin-top: 4rem; */
+            padding-bottom: 0px;
+
         }
         
         .investor-exclusives-text {
@@ -1123,6 +1126,10 @@ if (isset($state['components'])) {
         .investor-exclusives-link {
             font-size: 12px;
             padding: 5px 14px;
+        }
+
+        .navbar-brand{
+            margin-left: 1rem !important;
         }
     }
     

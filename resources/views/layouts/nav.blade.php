@@ -8,7 +8,7 @@
                      class="d-inline-block align-text-top" 
                      style="width: {{ $header->logo_size ?? 100 }}px !important; height: {{ $header->logo_height ?? 60 }}px !important; object-fit: contain;">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color:{{ $header->color }} !important; border-color: {{ $header->color }} !important;">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color:{{ $header->color }} !important; border-color: transparent !important;">
                 <i class="fa fa-bars" style="color: {{ $header->color }}; font-size: 1.5rem;"></i>
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">

@@ -180,6 +180,7 @@
                                                         <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
                                                         <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
                                                         <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed on the investment page.</small>
+                                                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugInvestmentDisclaimer()">Debug Content</button>
                                                     </div>
                                                 </div>
                                                 
@@ -394,6 +395,15 @@
                     console.log('Hidden input value:', document.getElementById('investment_disclaimer').value);
                 });
 
+                // Debug function
+                window.debugInvestmentDisclaimer = function() {
+                    console.log('=== INVESTMENT DISCLAIMER DEBUG ===');
+                    console.log('Hidden input value:', document.getElementById('investment_disclaimer').value);
+                    console.log('Quill content HTML:', investmentDisclaimerQuill.root.innerHTML);
+                    console.log('Quill content text:', investmentDisclaimerQuill.getText());
+                    console.log('Data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
+                    alert('Check browser console for debug information');
+                };
 
                 });
             </script>
