@@ -268,6 +268,11 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::delete('/newsletter/subscription/{id}',[AdminController::class, 'newsletter_delete_subscription'])->name('admin.newsletter.delete');
     Route::post('/newsletter/export/{website_id}',[AdminController::class, 'newsletter_export'])->name('admin.newsletter.export');
 
+    // Comment management routes
+    Route::get('/comments',[AdminController::class, 'comments_index'])->name('admin.comments');
+    Route::post('/comments/{id}/reply',[AdminController::class, 'comments_reply'])->name('admin.comments.reply');
+    Route::delete('/comments/{id}',[AdminController::class, 'comments_delete'])->name('admin.comments.delete');
+
     Route::get('/donation', [
         AdminController::class, 'donation'
     ])->name('admin.donation');

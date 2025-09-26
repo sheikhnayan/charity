@@ -92,13 +92,6 @@ class FrontendController extends Controller
     public function saveInvestmentInfo(Request $request)
     {
         try {
-            $request->validate([
-                'investor_name' => 'required|string|max:255',
-                'investor_email' => 'required|email|max:255',
-                'investor_phone' => 'nullable|string|max:20',
-                'investment_amount' => 'required|numeric|min:1',
-                'investor_type' => 'required|string|in:individual,joint,corporation,trust,ira',
-            ]);
 
             $url = url()->previous();
             $domain = parse_url($url, PHP_URL_HOST);
@@ -125,11 +118,38 @@ class FrontendController extends Controller
                 'share_quantity' => $shareQuantity,
                 'deal_id' => $setting && $setting->deal_id ? $setting->deal_id : null,
                 'status' => 'pending', // Set to pending for payment processing
-                'investor_data' => array_merge(
-                    $request->only(['address', 'city', 'state', 'zip', 'country', 'accredited_investor']),
-                    $allFormData // Include all collected form data
-                )
+                'investor_data' => array_merge([
+                    'address' => $request->input('address'),
+                    'city' => $request->input('city'),
+                    'state' => $request->input('state'),
+                    'zip' => $request->input('postalCode') ?: $request->input('zip'), // Handle both field names
+                    'country' => $request->input('country'),
+                    'accredited_investor' => $request->input('accredited_investor'),
+                    'incorporation_state' => $request->input('incorporation_state'),
+                    'ein' => $request->input('ein'),
+                    'trust_type' => $request->input('trust_type'),
+                    'custodian' => $request->input('custodian'),
+                    'ira_type' => $request->input('ira_type'),
+                    'phone' => $request->input('phone'),
+                    // Investor type specific data
+                    'individual_name' => $request->input('individual_name'),
+                    'date_of_birth' => $request->input('date_of_birth'),
+                    'ssn' => $request->input('ssn'),
+                    'primary_name' => $request->input('primary_name'),
+                    'secondary_name' => $request->input('secondary_name'),
+                    'corporation_name' => $request->input('corporation_name'),
+                    'trust_name' => $request->input('trust_name'),
+                    'ira_holder_name' => $request->input('ira_holder_name'),
+                ], $allFormData ?: [])
             ]);
+
+            // Debug: Log what was actually saved
+            \Log::info('=== INVESTMENT CREATED ===');
+            \Log::info('Investment ID:', [$investment->id]);
+            \Log::info('Investor Type Saved:', [$investment->investor_type]);
+            \Log::info('Investor Data Saved:', $investment->investor_data);
+            \Log::info('Full Investment Record:', $investment->toArray());
+            \Log::info('=== END INVESTMENT DEBUG ===');
 
             // Redirect to payment page like donation and auction
             return redirect('/authorize/payment/investment/'.$investment->id)->with('success', 'Investment Pending Payment');

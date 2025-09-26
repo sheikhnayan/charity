@@ -108,7 +108,8 @@ class CommentController extends Controller
             ->approved()
             ->topLevel()
             ->with(['replies' => function($query) use ($request) {
-                $query->where('website_id', $request->website_id);
+                $query->where('website_id', $request->website_id)
+                      ->where('is_approved', true);
             }])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -128,7 +129,8 @@ class CommentController extends Controller
                             'author_name' => $reply->author_display_name,
                             'comment' => $reply->comment,
                             'time_ago' => $reply->time_ago,
-                            'created_at' => $reply->created_at
+                            'created_at' => $reply->created_at,
+                            'is_admin_reply' => $reply->is_admin_reply ?? false
                         ];
                     })
                 ];

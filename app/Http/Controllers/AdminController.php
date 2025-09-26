@@ -17,6 +17,7 @@ use App\Models\Tax;
 use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
+use App\Models\PageComment;
 
 class AdminController extends Controller
 {
@@ -886,6 +887,55 @@ class AdminController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    // Comment Management Methods
+    public function comments_index()
+    {
+        $comments = PageComment::with(['website', 'replies'])
+            ->whereNull('parent_id')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('admin.comments.index', compact('comments'));
+    }
+
+    public function comments_reply(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:5000',
+        ]);
+
+        $parentComment = PageComment::findOrFail($id);
+        
+        // Create admin reply
+        PageComment::create([
+            'page_identifier' => $parentComment->page_identifier,
+            'component_id' => $parentComment->component_id,
+            'website_id' => $parentComment->website_id,
+            'author_name' => 'Site Administrator',
+            'author_email' => Auth::user()->email,
+            'comment' => $request->comment,
+            'is_approved' => true,
+            'is_anonymous' => false,
+            'is_admin_reply' => true,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'parent_id' => $id
+        ]);
+
+        return redirect()->back()->with('success', 'Reply posted successfully!');
+    }
+
+    public function comments_delete($id)
+    {
+        $comment = PageComment::findOrFail($id);
+        
+        // Delete the comment and all its replies
+        $comment->replies()->delete();
+        $comment->delete();
+        
+        return redirect()->back()->with('success', 'Comment deleted successfully!');
     }
 
 }

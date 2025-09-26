@@ -219,6 +219,13 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('admins/comments') ? 'active' : '' }}">
+    <a href="/admins/comments" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-comment-detail"></i>
+      <div class="text-truncate">Comments</div>
+    </a>
+  </li>
+
   <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Reports</span>
   </li>

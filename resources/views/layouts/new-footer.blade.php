@@ -838,7 +838,7 @@ img {
                 @endif
             </ul>
             <div id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365fe-e0e365c4" class="footer_credit_text" style="color: {{ $footer->color ?? '#ffffff' }} !important;">
-                <div style="color: inherit !important;">
+                <div style="color: inherit !important; font-family: Outfit,sans-serif !important;">
                     {!! $website->investment_disclaimer !!}
                 </div>
             </div>

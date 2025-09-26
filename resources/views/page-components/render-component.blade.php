@@ -832,9 +832,35 @@ h5, .ql-header-5 {
                 $images = $sliderData['images'] ?? [];
                 $slidesToShow = $sliderData['slidesToShow'] ?? 1;
                 $slideSpeed = $sliderData['slideSpeed'] ?? 2000;
+                $isMarquee = $sliderData['isMarquee'] ?? false;
                 $sliderId = 'slider-' . ($componentId ?? uniqid());
             @endphp
-            <div class="owl-carousel owl-theme" id="{{ $sliderId }}" style="{{ $styleStr }}">
+
+            <!-- Load Owl Carousel CSS and JS if not already loaded -->
+            <script>
+                if (!window.owlCarouselLoaded) {
+                    // Load CSS
+                    var owlCSS = document.createElement('link');
+                    owlCSS.rel = 'stylesheet';
+                    owlCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css';
+                    document.head.appendChild(owlCSS);
+                    
+                    var owlThemeCSS = document.createElement('link');
+                    owlThemeCSS.rel = 'stylesheet';
+                    owlThemeCSS.href = 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css';
+                    document.head.appendChild(owlThemeCSS);
+                    
+                    // Load JS
+                    var owlJS = document.createElement('script');
+                    owlJS.src = 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js';
+                    document.head.appendChild(owlJS);
+                    
+                    window.owlCarouselLoaded = true;
+                }
+            </script>
+
+            <div class="slider-container" style="position: relative; {{ $styleStr }}">
+                <div class="owl-carousel owl-theme" id="{{ $sliderId }}">
                 @foreach($images as $image)
                     @php
                         // Handle both string URLs and object format
@@ -847,22 +873,334 @@ h5, .ql-header-5 {
                              style="width:100%;height:400px;object-fit:cover;border-radius:8px;">
                     </div>
                 @endforeach
+                </div>
             </div>
             <script>
-                $(document).ready(function(){
-                    $("#{{ $sliderId }}").owlCarousel({
-                        items: {{ $slidesToShow }},
+                function initSlider{{ str_replace('-', '_', $sliderId) }}() {
+                    const isMarquee = {{ $isMarquee ? 'true' : 'false' }};
+                    
+                    if (isMarquee) {
+                        // Marquee Mode - Continuous CSS Animation
+                        initMarqueeSlider{{ str_replace('-', '_', $sliderId) }}();
+                    } else {
+                        // Regular Owl Carousel Mode
+                        if (typeof $.fn.owlCarousel !== 'undefined') {
+                            $("#{{ $sliderId }}").owlCarousel({
+                                items: {{ $slidesToShow }},
                         loop: true,
                         margin: 10,
                         autoplay: true,
                         autoplayTimeout: {{ $slideSpeed }},
+                        autoplayHoverPause: true,
+                        smartSpeed: 800,
+                        animateOut: 'fadeOut',
+                        animateIn: 'fadeIn',
+                        nav: true,
+                        dots: true,
+                        navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
                         responsive: {
-                            0: { items: 1 },
-                            600: { items: {{ min(2, $slidesToShow) }} },
-                            1000: { items: {{ $slidesToShow }} }
+                            0: { 
+                                items: 1,
+                                nav: true,
+                                dots: true,
+                                smartSpeed: 600,
+                                autoplayTimeout: {{ $slideSpeed + 500 }},
+                                margin: 5
+                            },
+                            480: { 
+                                items: {{ min(2, $slidesToShow) }},
+                                nav: true,
+                                dots: true,
+                                smartSpeed: 700,
+                                margin: 8
+                            },
+                            768: { 
+                                items: {{ min(3, $slidesToShow) }},
+                                nav: true,
+                                dots: true,
+                                smartSpeed: 750,
+                                margin: 10
+                            },
+                            1000: { 
+                                items: {{ $slidesToShow }},
+                                nav: true,
+                                dots: true,
+                                smartSpeed: 800,
+                                margin: 10
+                            }
+                        },
+                        onInitialized: function(event) {
+                            // Add smooth CSS transitions
+                            $(event.target).find('.owl-item').css({
+                                'transition': 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                                'transform-style': 'preserve-3d'
+                            });
                         }
                     });
+
+                    // Add custom CSS for smoother animations
+                    $('<style>').prop('type', 'text/css').html(`
+                        #{{ $sliderId }} .owl-stage {
+                            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+                        }
+                        #{{ $sliderId }} .owl-item img {
+                            transition: all 0.3s ease-in-out;
+                        }
+                        #{{ $sliderId }} .owl-item:hover img {
+                            transform: scale(1.02);
+                        }
+                        .slider-container {
+                            position: relative !important;
+                        }
+                        #{{ $sliderId }} .owl-nav {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            pointer-events: none;
+                        }
+                        #{{ $sliderId }} .owl-nav button {
+                            position: absolute;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            background: rgba(0,0,0,0.7) !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 50% !important;
+                            width: 40px !important;
+                            height: 40px !important;
+                            font-size: 16px !important;
+                            transition: all 0.3s ease !important;
+                            z-index: 10;
+                            pointer-events: all;
+                        }
+                        #{{ $sliderId }} .owl-nav .owl-prev {
+                            left: 10px;
+                        }
+                        #{{ $sliderId }} .owl-nav .owl-next {
+                            right: 10px;
+                        }
+                        #{{ $sliderId }} .owl-nav button:hover {
+                            background: rgba(0,0,0,0.9) !important;
+                            transform: translateY(-50%) scale(1.1) !important;
+                        }
+                        #{{ $sliderId }} .owl-dots {
+                            text-align: center;
+                            margin-top: 15px;
+                        }
+                        #{{ $sliderId }} .owl-dot {
+                            display: inline-block;
+                            width: 10px;
+                            height: 10px;
+                            margin: 0 5px;
+                            background: rgba(0,0,0,0.3);
+                            border-radius: 50%;
+                            transition: all 0.3s ease;
+                        }
+                        #{{ $sliderId }} .owl-dot.active {
+                            background: #007bff;
+                            transform: scale(1.2);
+                        }
+                    `).appendTo('head');
+                        } else {
+                            // Retry after a short delay if Owl Carousel is not loaded yet
+                            setTimeout(initSlider{{ str_replace('-', '_', $sliderId) }}, 100);
+                        }
+                    }
+                }
+
+                function initMarqueeSlider{{ str_replace('-', '_', $sliderId) }}() {
+                    const slider = $("#{{ $sliderId }}");
+                    const container = slider.parent();
+                    
+                    // Safety check - ensure slider exists
+                    if (slider.length === 0) {
+                        console.log('Slider element not found:', '{{ $sliderId }}');
+                        return;
+                    }
+                    
+                    // Remove owl-carousel classes for marquee mode
+                    slider.removeClass('owl-carousel owl-theme');
+                    
+                    // Get original items
+                    const items = slider.find('.item');
+                    
+                    // Safety check - ensure items exist
+                    if (items.length === 0) {
+                        console.log('No slider items found in:', '{{ $sliderId }}');
+                        return;
+                    }
+                    
+                    console.log('Initializing marquee for {{ $sliderId }} with', items.length, 'items');
+                    
+                    // Calculate item width based on slidesToShow
+                    const itemWidth = 100 / {{ $slidesToShow }};
+                    const animationDuration = {{ $slideSpeed / 50 }};
+                    const animationName = 'marqueeScroll_' + Math.random().toString(36).substr(2, 9);
+                    
+                    // Create individual item elements with proper sizing for 70px height
+                    let itemsHtml = '';
+                    items.each(function(index) {
+                        const img = $(this).find('img');
+                        const src = img.attr('src');
+                        const alt = img.attr('alt');
+                        itemsHtml += `
+                            <div class="marquee-item" style="
+                                flex: 0 0 auto;
+                                padding: 0 10px;
+                                box-sizing: border-box;
+                                display: flex;
+                                align-items: center;
+                                height: 70px;
+                            ">
+                                <img src="${src}" alt="${alt}" style="
+                                    width: auto;
+                                    max-height: 70px;
+                                    height: auto;
+                                    object-fit: contain;
+                                    border-radius: 8px;
+                                    display: block;
+                                ">
+                            </div>
+                        `;
+                    });
+                    
+                    // Create seamless marquee with enough duplicates
+                    const totalSets = 4; // Duplicate content 4 times for smooth infinite scroll
+                    let allItemsHtml = '';
+                    for(let i = 0; i < totalSets; i++) {
+                        allItemsHtml += itemsHtml;
+                    }
+                    
+                    const marqueeHTML = `
+                        <div class="marquee-wrapper">
+                            <div class="marquee-track" id="track_{{ $sliderId }}" style="
+                                display: flex;
+                                animation: ${animationName} ${animationDuration}s linear infinite;
+                                width: ${totalSets * 100}%;
+                            ">
+                                ${allItemsHtml}
+                            </div>
+                        </div>
+                    `;
+                    
+                    slider.html(marqueeHTML);
+                    console.log('Infinite marquee initialized for {{ $sliderId }}');
+                    
+                    // Start animation immediately
+                    setTimeout(() => {
+                        const track = slider.find('.marquee-track');
+                        if (track.length) {
+                            track.css('animation-play-state', 'running');
+                            console.log('Marquee animation started for {{ $sliderId }}');
+                        }
+                    }, 100);
+
+                    // Add enhanced marquee CSS animation with unique keyframe name
+                    $('<style>').prop('type', 'text/css').html(`
+                        @keyframes ${animationName} {
+                            0% { transform: translateX(0%); }
+                            100% { transform: translateX(-25%); }
+                        }
+                        
+                        #{{ $sliderId }} {
+                            overflow: hidden;
+                            position: relative;
+                            width: 100%;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-wrapper {
+                            width: 100%;
+                            overflow: hidden;
+                            position: relative;
+                            height: 70px;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-track {
+                            display: flex;
+                            animation-timing-function: linear;
+                            animation-iteration-count: infinite;
+                            animation-play-state: running;
+                            transform: translateZ(0);
+                            backface-visibility: hidden;
+                            will-change: transform;
+                            height: 70px;
+                            align-items: center;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-track:hover {
+                            animation-play-state: paused;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-item {
+                            flex-shrink: 0;
+                            display: flex;
+                            align-items: center;
+                            height: 70px;
+                            padding: 0 10px;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-item img {
+                            width: auto;
+                            max-height: 70px;
+                            height: auto;
+                            object-fit: contain;
+                            border-radius: 8px;
+                            transition: transform 0.3s ease;
+                            display: block;
+                        }
+                        
+                        #{{ $sliderId }} .marquee-item img:hover {
+                            transform: scale(1.05);
+                        }
+                        
+                        /* Responsive adjustments - maintain 70px max height on all devices */
+                        @media (max-width: 768px) {
+                            #{{ $sliderId }} .marquee-wrapper {
+                                height: 70px;
+                            }
+                            #{{ $sliderId }} .marquee-track {
+                                height: 70px;
+                            }
+                            #{{ $sliderId }} .marquee-item {
+                                height: 70px;
+                                padding: 0 8px;
+                            }
+                            #{{ $sliderId }} .marquee-item img {
+                                max-height: 70px;
+                            }
+                        }
+                        
+                        @media (max-width: 480px) {
+                            #{{ $sliderId }} .marquee-wrapper {
+                                height: 70px;
+                            }
+                            #{{ $sliderId }} .marquee-track {
+                                height: 70px;
+                            }
+                            #{{ $sliderId }} .marquee-item {
+                                height: 70px;
+                                padding: 0 6px;
+                            }
+                            #{{ $sliderId }} .marquee-item img {
+                                max-height: 70px;
+                            }
+                        }
+                    `).appendTo('head');
+                }
+
+                // Initialize when document is ready and try multiple times if needed
+                $(document).ready(function(){
+                    initSlider{{ str_replace('-', '_', $sliderId) }}();
                 });
+
+                // Also try initialization after a delay to ensure all scripts are loaded
+                setTimeout(function() {
+                    if (!$("#{{ $sliderId }}").hasClass('owl-loaded')) {
+                        initSlider{{ str_replace('-', '_', $sliderId) }}();
+                    }
+                }, 500);
             </script>
         @break
 
@@ -1346,7 +1684,6 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                             ->whereNull('parent_id')
                             ->with(['replies' => function($query) use ($websiteId) {
                                 $query->where('is_approved', true)
-                                      ->where('website_id', $websiteId)
                                       ->orderBy('created_at', 'asc');
                             }])
                             ->orderBy('created_at', $simpleCommentsData['sortOrder'] === 'newest' ? 'desc' : 'asc')
@@ -1459,9 +1796,21 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                                                     border: 1px solid {{ $simpleCommentsData['borderColor'] }};
                                                 ">
                                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                                        <strong style="color: {{ $simpleCommentsData['textColor'] }}; font-size: 14px;">
-                                                            {{ $reply->is_anonymous ? 'Anonymous' : $reply->author_name }}
-                                                        </strong>
+                                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                                            <strong style="color: {{ $simpleCommentsData['textColor'] }}; font-size: 14px;">
+                                                                {{ $reply->is_anonymous ? 'Anonymous' : $reply->author_name }}
+                                                            </strong>
+                                                            @if($reply->is_admin_reply ?? false)
+                                                                <span style="
+                                                                    background: #007bff;
+                                                                    color: white;
+                                                                    font-size: 10px;
+                                                                    padding: 2px 6px;
+                                                                    border-radius: 12px;
+                                                                    font-weight: bold;
+                                                                ">ADMIN</span>
+                                                            @endif
+                                                        </div>
                                                         <small style="color: #666; font-size: 12px;">{{ $reply->created_at->diffForHumans() }}</small>
                                                     </div>
                                                     <p style="margin: 0; color: {{ $simpleCommentsData['textColor'] }}; font-size: 14px; line-height: 1.4;">
@@ -2422,6 +2771,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $arrowBackgroundColor = $pressCardData['arrowBackgroundColor'] ?? '#333333';
                 $arrowColor = $pressCardData['arrowColor'] ?? '#ffffff';
                 
+                // Logo overlay filter
+                $logoOverlay = $pressCardData['logoOverlay'] ?? 'brightness(0) invert(1)';
+                
                 // If no cards exist, create default one for backward compatibility
                 if (empty($cards)) {
                     $cards = [[
@@ -2532,7 +2884,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     @if(!empty($card['logoSrc']))
                                         <img src="{{ $card['logoSrc'] }}" 
                                              alt="{{ $card['logoAlt'] ?? 'Press Logo' }}" 
-                                             style="max-width: 180px; max-height: 80px; filter: brightness(0) invert(1);">
+                                             style="max-width: 180px; max-height: 80px; filter: {{ $logoOverlay }};">
                                     @else
                                         <div style="
                                             width: 180px; 

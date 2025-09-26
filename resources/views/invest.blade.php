@@ -851,6 +851,10 @@
             .invest-mobile{
                 padding: 0px !important;
             }
+
+            .section_header3{
+                padding: 0px !important;
+            }
         }
 
 
@@ -859,6 +863,30 @@
             padding-top: 0px !important;
             padding-bottom: 0px !important;
         }
+
+        .text-style-eyebrow{
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .link_wrap div{
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .footer_content_wrap div h1 strong {
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .footer_content_wrap div p {
+        font-family: Outfit,sans-serif !important;
+    }
+    
+    .investor-exclusives-link:hover {
+        background: rgba(255, 255, 255, 0.25);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
 
         @media (min-width: 1400px) {
         .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
@@ -987,11 +1015,12 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
                         
                         // Convert to rem (assuming 16px base font size)
                         const totalHeightRem = totalNavHeight / 16;
-                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
-                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                        // For mobile, use the same base calculation but account for responsive changes
+                        const totalHeightRemMobile = totalNavHeight / 16;
+                        const totalHeightRemSmall = totalNavHeight / 16;
                         
                         // Main content margin should account for investor bar if present
-                        const mainContentMargin = totalWithInvestorBar / 16 - 0.25; // Extra space for clean separation
+                        const mainContentMargin = totalWithInvestorBar / 16 - 0.3; // Extra space for clean separation
                         
                         // Set CSS custom properties
                         document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
@@ -1005,7 +1034,11 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
                             investorBar: investorBarHeight,
                             totalNavHeight: totalNavHeight,
                             totalWithInvestor: totalWithInvestorBar,
-                            mainMargin: mainContentMargin
+                            mainMargin: mainContentMargin,
+                            totalHeightRem: totalHeightRem,
+                            totalHeightRemMobile: totalHeightRemMobile,
+                            totalHeightRemSmall: totalHeightRemSmall,
+                            windowWidth: window.innerWidth
                         });
                     }
                 }
@@ -1546,7 +1579,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                             <label for="investor_name">Full Name
                                                                                 *</label>
                                                                             <input type="text" id="investor_name"
-                                                                                name="investor_name">
+                                                                                name="individual_name">
                                                                         </div>
 
                                                                         <div class="form-group">
@@ -2622,8 +2655,16 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                 }
 
                 function submitInvestment() {
+                    // Make sure investor name field is properly populated before submission
+                    const selectedType = investorTypeSelect.value;
+                    if (selectedType) {
+                        updateInvestorNameField(selectedType);
+                    }
+                    
                     const formData = new FormData(investorForm);
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+
 
                     // Add CSRF token
                     formData.append('_token', csrfToken);

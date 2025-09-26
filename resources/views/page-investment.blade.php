@@ -1049,6 +1049,11 @@ if (isset($state['components'])) {
         justify-content: center;
         gap: 20px;
     }
+
+    .marquee-content .item img{
+        height: 64px !important;
+        /* width: 64px !important; */
+    }
     
     .investor-exclusives-text {
         font-size: 16px;
@@ -1070,6 +1075,22 @@ if (isset($state['components'])) {
         backdrop-filter: blur(10px);
         letter-spacing: 0.5px;
         text-transform: uppercase;
+    }
+
+    .text-style-eyebrow{
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .link_wrap div{
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .footer_content_wrap div h1 strong {
+        font-family: Outfit,sans-serif !important;
+    }
+
+    .footer_content_wrap div p {
+        font-family: Outfit,sans-serif !important;
     }
     
     .investor-exclusives-link:hover {

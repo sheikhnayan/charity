@@ -107,7 +107,7 @@
     {{-- Additional CSS for active section styling --}}
     <style>
         .scroll-to-section.active-section {
-            font-weight: bold;
+            /* font-weight: bold; */
             text-decoration: underline;
         }
     </style>

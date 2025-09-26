@@ -448,6 +448,154 @@ window.addEventListener('load', function() {
       background: #4b5563;
     }
 
+    /* Professional Notification System */
+    .notification-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999999;
+      pointer-events: none;
+    }
+
+    .notification {
+      background: white;
+      border-left: 4px solid #10b981;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .notification.success {
+      border-left-color: #10b981;
+    }
+
+    .notification.error {
+      border-left-color: #ef4444;
+    }
+
+    .notification.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .notification.info {
+      border-left-color: #3b82f6;
+    }
+
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .notification.success .notification-icon {
+      background: #10b981;
+    }
+
+    .notification.error .notification-icon {
+      background: #ef4444;
+    }
+
+    .notification.warning .notification-icon {
+      background: #f59e0b;
+    }
+
+    .notification.info .notification-icon {
+      background: #3b82f6;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2937;
+      margin: 0 0 2px 0;
+    }
+
+    .notification-message {
+      font-size: 13px;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .notification-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .notification-close:hover {
+      color: #4b5563;
+      background: #f3f4f6;
+    }
+
+    .notification-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(16, 185, 129, 0.3);
+      transition: width linear;
+    }
+
+    .notification.success .notification-progress {
+      background: rgba(16, 185, 129, 0.3);
+    }
+
+    .notification.error .notification-progress {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .notification.warning .notification-progress {
+      background: rgba(245, 158, 11, 0.3);
+    }
+
+    .notification.info .notification-progress {
+      background: rgba(59, 130, 246, 0.3);
+    }
+
+    /* Loading spinner animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .back-btn a {
       color: white;
       text-decoration: none;
@@ -2147,6 +2295,9 @@ button a:hover {
   </style>
 </head>
 <body>
+    <!-- Professional Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
     @php
         if ($data->is_main_site == 1) {
             # code...
@@ -4893,7 +5044,8 @@ break;
                 dateColor: '#b0b0b0',
                 logoBackgroundColor: '#2a2a2a',
                 arrowBackgroundColor: '#333333',
-                arrowColor: '#ffffff'
+                arrowColor: '#ffffff',
+                logoOverlay: 'brightness(0) invert(1)'
             };
             
             content.renderPressCard = function() {
@@ -4925,7 +5077,7 @@ break;
                                     justify-content: center;
                                 ">
                                     ${card.logoSrc ? 
-                                        `<img src="${card.logoSrc}" alt="${card.logoAlt}" style="max-width: 180px; max-height: 80px; filter: brightness(0) invert(1);">` :
+                                        `<img src="${card.logoSrc}" alt="${card.logoAlt}" style="max-width: 180px; max-height: 80px; filter: ${d.logoOverlay};">` :
                                         `<div style="width: 180px; height: 60px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.3); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgba(255,255,255,0.5);">Logo</div>`
                                     }
                                 </div>
@@ -7378,7 +7530,7 @@ break;
                 `;
             break;
             case 'slider':
-                const sliderData = content._sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                const sliderData = content._sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000, isMarquee: false };
                 specificControls = `
                     <div class="form-group">
                         <label>Upload Images</label>
@@ -7389,11 +7541,27 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Slides to Show</label>
-                        <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" oninput="updateSliderSlidesToShow(this.value)">
+                        <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" 
+                               oninput="debouncedUpdateSliderSlidesToShow(this.value)"
+                               onchange="updateSliderSlidesToShow(this.value)"
+                               onblur="updateSliderSlidesToShow(this.value)"
+                               onkeypress="if(event.key==='Enter') { this.blur(); }">
                     </div>
                     <div class="form-group">
                         <label>Slide Speed (ms)</label>
-                        <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" oninput="updateSliderSlideSpeed(this.value)">
+                        <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" 
+                               oninput="debouncedUpdateSliderSlideSpeed(this.value)"
+                               onchange="updateSliderSlideSpeed(this.value)"
+                               onblur="updateSliderSlideSpeed(this.value)"
+                               onkeypress="if(event.key==='Enter') { this.blur(); }">
+                    </div>
+                    <div class="form-group">
+                        <label>Display Mode</label>
+                        <select onchange="updateSliderMarqueeMode(this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="false" ${(sliderData.isMarquee === false || !sliderData.isMarquee) ? 'selected' : ''}>Regular Slider</option>
+                            <option value="true" ${sliderData.isMarquee === true ? 'selected' : ''}>Continuous Marquee</option>
+                        </select>
+                        <small class="text-muted">Choose between standard slider or continuous scrolling marquee</small>
                     </div>
                     <div class="form-group">
                         <label>Background Color</label>
@@ -8061,6 +8229,17 @@ break;
                     <div class="form-group">
                         <label>Logo Background</label>
                         <input type="color" value="${pressData.logoBackgroundColor}" oninput="updatePressCardField('logoBackgroundColor', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Logo Overlay Filter</label>
+                        <select oninput="updatePressCardField('logoOverlay', this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="none" ${pressData.logoOverlay === 'none' ? 'selected' : ''}>None (Original Colors)</option>
+                            <option value="brightness(0) invert(1)" ${pressData.logoOverlay === 'brightness(0) invert(1)' ? 'selected' : ''}>White (Inverted)</option>
+                            <option value="brightness(0)" ${pressData.logoOverlay === 'brightness(0)' ? 'selected' : ''}>Black</option>
+                            <option value="sepia(1) hue-rotate(200deg)" ${pressData.logoOverlay === 'sepia(1) hue-rotate(200deg)' ? 'selected' : ''}>Blue Tint</option>
+                            <option value="grayscale(1)" ${pressData.logoOverlay === 'grayscale(1)' ? 'selected' : ''}>Grayscale</option>
+                            <option value="opacity(0.7)" ${pressData.logoOverlay === 'opacity(0.7)' ? 'selected' : ''}>Semi-transparent</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Border Radius</label>
@@ -9942,7 +10121,8 @@ function updateSliderSlidesToShow(val) {
     content._sliderStartIdx = 0; // Reset to first slide
     // Re-render the slider with the new slidesToShow value
     content.renderSlider();
-    updatePropertyPanel();
+    // Don't update property panel immediately to avoid disrupting user input
+    // updatePropertyPanel();
 }
 
 function updateSliderSlideSpeed(val) {
@@ -9951,7 +10131,66 @@ function updateSliderSlideSpeed(val) {
     if (!content._sliderData) return;
     content._sliderData.slideSpeed = Math.max(500, Math.min(10000, parseInt(val, 10) || 2000));
     content.renderSlider();
+    // Don't update property panel immediately to avoid disrupting user input
+    // updatePropertyPanel();
+}
+
+function updateSliderMarqueeMode(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    content._sliderData.isMarquee = val === 'true';
+    content.renderSlider();
     updatePropertyPanel();
+}
+
+// Debounced versions for real-time input without disrupting typing
+let sliderSlidesToShowTimeout;
+let sliderSlideSpeedTimeout;
+
+function debouncedUpdateSliderSlidesToShow(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    
+    // Update the value immediately for responsiveness
+    content._sliderData.slidesToShow = Math.max(1, Math.min(10, parseInt(val, 10) || 1));
+    content._sliderStartIdx = 0;
+    content.renderSlider();
+    
+    // Clear existing timeout
+    clearTimeout(sliderSlidesToShowTimeout);
+    
+    // Set new timeout to avoid frequent panel updates
+    sliderSlidesToShowTimeout = setTimeout(() => {
+        // Only update panel if input is not actively focused
+        const activeElement = document.activeElement;
+        if (!activeElement || activeElement.tagName !== 'INPUT') {
+            updatePropertyPanel();
+        }
+    }, 1000);
+}
+
+function debouncedUpdateSliderSlideSpeed(val) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._sliderData) return;
+    
+    // Update the value immediately for responsiveness
+    content._sliderData.slideSpeed = Math.max(500, Math.min(10000, parseInt(val, 10) || 2000));
+    content.renderSlider();
+    
+    // Clear existing timeout
+    clearTimeout(sliderSlideSpeedTimeout);
+    
+    // Set new timeout to avoid frequent panel updates
+    sliderSlideSpeedTimeout = setTimeout(() => {
+        // Only update panel if input is not actively focused
+        const activeElement = document.activeElement;
+        if (!activeElement || activeElement.tagName !== 'INPUT') {
+            updatePropertyPanel();
+        }
+    }, 1000);
 }
 
 function openSliderModalFromPanel(idx) {
@@ -10293,7 +10532,11 @@ function addTimelineItem() {
     
     content._timelineData.items.push(newItem);
     content.renderTimeline();
-    updatePropertyPanel();
+    
+    // Refresh just the timeline settings without losing selection
+    if (selectedComponent && selectedComponent.classList.contains('selected')) {
+        refreshTimelineSettings();
+    }
 }
 
 function removeTimelineItem(index) {
@@ -10303,7 +10546,11 @@ function removeTimelineItem(index) {
     
     content._timelineData.items.splice(index, 1);
     content.renderTimeline();
-    updatePropertyPanel();
+    
+    // Refresh just the timeline settings without losing selection
+    if (selectedComponent && selectedComponent.classList.contains('selected')) {
+        refreshTimelineSettings();
+    }
 }
 
 function updateInvestCtaField(value, field) {
@@ -10770,8 +11017,10 @@ function addPressCard() {
     
     content._pressCardData.cards.push(newCard);
     
-    // Refresh the settings panel to show the new card
-    updatePropertyPanel();
+    // Refresh just the press card settings without losing selection
+    if (selectedComponent && selectedComponent.classList.contains('selected')) {
+        refreshPressCardSettings();
+    }
     
     if (typeof content.renderPressCard === 'function') {
         content.renderPressCard();
@@ -10787,8 +11036,8 @@ function removePressCard(index) {
     if (content._pressCardData.cards.length > 1) {
         content._pressCardData.cards.splice(index, 1);
         
-        // Refresh the settings panel to remove the card
-        updatePropertyPanel();
+        // Refresh just the press card settings without losing selection
+        refreshPressCardSettings();
         
         if (typeof content.renderPressCard === 'function') {
             content.renderPressCard();
@@ -10806,8 +11055,8 @@ function uploadPressCardImage(input, cardIndex) {
     const reader = new FileReader();
     reader.onload = function(e) {
         updatePressCardField(`cards.${cardIndex}.logoSrc`, e.target.result);
-        // Update the property panel to show the new image
-        updatePropertyPanel();
+        // Update the property panel to show the new image without losing selection
+        refreshPressCardSettings();
     };
     reader.readAsDataURL(file);
 }
@@ -10858,6 +11107,44 @@ window.testPressCardSave = function() {
     console.log('=== END TEST ===');
     return state;
 };
+
+function refreshPressCardSettings() {
+    if (!selectedComponent) return;
+    
+    const content = getContentElement(selectedComponent);
+    if (!content._pressCardData) return;
+    
+    // Instead of regenerating the entire property panel, just trigger the press card section update
+    // by calling updatePropertyPanel but maintaining the selection
+    const wasSelected = selectedComponent.classList.contains('selected');
+    updatePropertyPanel();
+    
+    // Restore selection if it was selected before
+    if (wasSelected && selectedComponent) {
+        setTimeout(() => {
+            selectedComponent.classList.add('selected');
+        }, 10);
+    }
+}
+
+function refreshTimelineSettings() {
+    if (!selectedComponent) return;
+    
+    const content = getContentElement(selectedComponent);
+    if (!content._timelineData) return;
+    
+    // Instead of regenerating the entire property panel, just trigger the timeline section update
+    // by calling updatePropertyPanel but maintaining the selection
+    const wasSelected = selectedComponent.classList.contains('selected');
+    updatePropertyPanel();
+    
+    // Restore selection if it was selected before
+    if (wasSelected && selectedComponent) {
+        setTimeout(() => {
+            selectedComponent.classList.add('selected');
+        }, 10);
+    }
+}
 
 function uploadFWTIImage(event) {
     if (!selectedComponent) return;
@@ -13300,7 +13587,7 @@ function applyResponsiveStyles() {
                 break;
 
             case 'slider':
-                actualContent._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                actualContent._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000, isMarquee: false };
                 actualContent.renderSlider();
                 if (data.style) Object.assign(actualContent.style, data.style);
                 if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
@@ -13951,7 +14238,7 @@ function applyResponsiveStyles() {
                 break;
 
             case 'slider':
-                content._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000 };
+                content._sliderData = data.sliderData || { images: [], slidesToShow: 1, slideSpeed: 2000, isMarquee: false };
                 content.renderSlider();
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
@@ -14684,6 +14971,13 @@ function applyResponsiveStyles() {
       id = document.getElementById('page_id').value;
       console.log('Page ID:', id);
 
+      // Show loading state
+      const saveButton = document.querySelector('.save-btn');
+      const originalText = saveButton.innerHTML;
+      saveButton.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation: spin 1s linear infinite;"></i> Saving...';
+      saveButton.disabled = true;
+      saveButton.style.opacity = '0.7';
+
       const state = serializeBuilder();
       console.log('Serialized state:', state);
       console.log('State components count:', state.components ? state.components.length : 'no components');
@@ -14708,11 +15002,21 @@ function applyResponsiveStyles() {
       })
       .then(data => { 
         console.log('Save response data:', data);
-        console.log('Page saved successfully!'); 
+        if (data.success !== false) {
+          showSuccessNotification('Page Saved Successfully!', 'All your changes have been saved and are now live.');
+        } else {
+          showErrorNotification('Save Failed', data.message || 'An error occurred while saving the page.');
+        }
       })
       .catch(error => {
         console.error('Save failed:', error);
-        alert('Save failed: ' + error.message);
+        showErrorNotification('Save Failed', 'Unable to save the page. Please check your connection and try again.');
+      })
+      .finally(() => {
+        // Restore button state
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        saveButton.style.opacity = '1';
       });
       
       console.log('=== END SAVE BUILDER STATE ===');
@@ -14747,7 +15051,7 @@ function applyResponsiveStyles() {
       const isPublic = document.getElementById('templateIsPublic').checked;
 
       if (!templateName) {
-        alert('Please enter a template name');
+        showWarningNotification('Template Name Required', 'Please enter a name for your template before saving.');
         return;
       }
 
@@ -14772,21 +15076,23 @@ function applyResponsiveStyles() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          alert('✅ ' + data.message);
+          showSuccessNotification('Template Saved!', data.message || 'Your page has been successfully saved as a template.');
           closeSaveAsTemplateModal();
           
           // Ask if user wants to view templates
-          const viewTemplates = confirm('Template saved successfully! Would you like to view the templates page?');
-          if (viewTemplates) {
-            window.open('/admins/templates', '_blank');
-          }
+          setTimeout(() => {
+            const viewTemplates = confirm('Would you like to view the templates page?');
+            if (viewTemplates) {
+              window.open('/admins/templates', '_blank');
+            }
+          }, 1000);
         } else {
-          alert('❌ Error saving template: ' + (data.message || 'Unknown error'));
+          showErrorNotification('Template Save Failed', data.message || 'An error occurred while saving the template.');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('❌ Error saving template: ' + error.message);
+        showErrorNotification('Template Save Failed', 'Unable to save template. Please check your connection and try again.');
       });
     }
 
@@ -15075,6 +15381,13 @@ function applyResponsiveStyles() {
         event.target.classList.add('active');
     }
 
+    // Initialize pageData global variable if it doesn't exist
+    if (!window.pageData) {
+        window.pageData = {
+            background_color: '{{ $data->background_color ?? "#ffffff" }}'
+        };
+    }
+
     // Page Background Color Update Function
     function updatePageBackground(color) {
         const page = document.getElementById('page');
@@ -15094,9 +15407,12 @@ function applyResponsiveStyles() {
         // Update CSS variable for consistent theming
         root.style.setProperty('--bg-color', color);
         
-        // Save to page data if available
-        if (window.pageData) {
-            window.pageData.background_color = color;
+        // Save to page data
+        window.pageData.background_color = color;
+        
+        // Trigger auto-save
+        if (typeof autoSavePage === 'function') {
+            setTimeout(autoSavePage, 100);
         }
     }
 
@@ -16089,6 +16405,100 @@ function autoSavePage() {
     } catch (error) {
         console.error('Error auto-saving page:', error);
     }
+}
+
+// Professional Notification System
+function showNotification(type = 'success', title = '', message = '', duration = 4000) {
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        console.error('Notification container not found');
+        return;
+    }
+
+    const notificationId = 'notification-' + Date.now() + Math.random().toString(36).substr(2, 9);
+    
+    // Icon mapping
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '!',
+        info: 'i'
+    };
+
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.id = notificationId;
+    
+    notification.innerHTML = `
+        <div class="notification-icon">${icons[type] || '✓'}</div>
+        <div class="notification-content">
+            <div class="notification-title">${title}</div>
+            ${message ? `<div class="notification-message">${message}</div>` : ''}
+        </div>
+        <button class="notification-close" onclick="hideNotification('${notificationId}')">&times;</button>
+        <div class="notification-progress" style="width: 100%;"></div>
+    `;
+
+    container.appendChild(notification);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        notification.classList.add('show');
+    });
+
+    // Progress bar animation
+    const progressBar = notification.querySelector('.notification-progress');
+    if (progressBar && duration > 0) {
+        setTimeout(() => {
+            progressBar.style.width = '0%';
+            progressBar.style.transitionDuration = duration + 'ms';
+        }, 100);
+    }
+
+    // Auto-hide after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            hideNotification(notificationId);
+        }, duration);
+    }
+
+    return notificationId;
+}
+
+function hideNotification(notificationId) {
+    const notification = document.getElementById(notificationId);
+    if (notification) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 400); // Match transition duration
+    }
+}
+
+function hideAllNotifications() {
+    const notifications = document.querySelectorAll('.notification');
+    notifications.forEach(notification => {
+        hideNotification(notification.id);
+    });
+}
+
+// Convenience functions for different notification types
+function showSuccessNotification(title, message = '', duration = 4000) {
+    return showNotification('success', title, message, duration);
+}
+
+function showErrorNotification(title, message = '', duration = 6000) {
+    return showNotification('error', title, message, duration);
+}
+
+function showWarningNotification(title, message = '', duration = 5000) {
+    return showNotification('warning', title, message, duration);
+}
+
+function showInfoNotification(title, message = '', duration = 4000) {
+    return showNotification('info', title, message, duration);
 }
 
 // Call initialization when the page is ready

@@ -18,6 +18,7 @@ class PageComment extends Model
         'comment',
         'is_approved',
         'is_anonymous',
+        'is_admin_reply',
         'ip_address',
         'user_agent',
         'parent_id'
@@ -26,6 +27,7 @@ class PageComment extends Model
     protected $casts = [
         'is_approved' => 'boolean',
         'is_anonymous' => 'boolean',
+        'is_admin_reply' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -41,7 +43,6 @@ class PageComment extends Model
     {
         return $this->hasMany(PageComment::class, 'parent_id')
             ->where('is_approved', true)
-            ->where('website_id', $this->website_id)
             ->orderBy('created_at', 'asc');
     }
 
@@ -79,5 +80,24 @@ class PageComment extends Model
     public function getTimeAgoAttribute()
     {
         return $this->created_at->diffForHumans();
+    }
+
+    // Scope for admin replies only
+    public function scopeAdminReplies($query)
+    {
+        return $query->where('is_admin_reply', true);
+    }
+
+    // Scope for user comments only (not admin replies)
+    public function scopeUserComments($query)
+    {
+        return $query->where('is_admin_reply', false);
+    }
+
+    // Get formatted author name with admin badge
+    public function getAuthorWithBadgeAttribute()
+    {
+        $name = $this->is_anonymous ? 'Anonymous' : $this->author_name;
+        return $this->is_admin_reply ? $name . ' (Admin)' : $name;
     }
 }
