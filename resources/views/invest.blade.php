@@ -189,7 +189,7 @@
         }
 
         .tier-amount {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 8px;
         }
