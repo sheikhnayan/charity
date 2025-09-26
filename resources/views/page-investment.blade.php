@@ -1184,32 +1184,6 @@ if (isset($state['components'])) {
             font-size: 12px !important;
         }
         
-        .contact-topbar .row {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .contact-topbar .col-md-8,
-        .contact-topbar .col-8 {
-            width: 100% !important;
-            margin-bottom: 6px;
-        }
-        
-        .contact-topbar .col-md-4,
-        .contact-topbar .col-4 {
-            width: 100% !important;
-            text-align: center !important;
-        }
-        
-        .contact-topbar .contact-info {
-            justify-content: center;
-            text-align: center;
-            flex-direction: row !important;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
         .contact-topbar .contact-item {
             font-size: 11px;
             margin-right: 8px !important;
@@ -1234,14 +1208,6 @@ if (isset($state['components'])) {
     @media (max-width: 576px) {
         .contact-topbar {
             padding: 6px 0 !important;
-        }
-        
-        .contact-topbar .contact-info {
-            flex-direction: row !important;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 6px;
         }
         
         .contact-topbar .contact-item {
@@ -1312,49 +1278,36 @@ if (isset($state['components'])) {
             <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
                 <div class="container">
                     <div class="row align-items-center justify-content-center">
-                        <div class="col-md-5 col-12">
-                            <div class="contact-info d-flex flex-wrap align-items-center">
-                                @if($header->contact_phone)
-                                    <div class="contact-item me-4 mb-1">
-                                        <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
-                                            {{ $header->contact_phone }}
-                                        </a>
-                                    </div>
-                                @endif
-                                @if($header->contact_email)
-                                    <div class="contact-item me-4 mb-1">
-                                        <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
-                                            {{ $header->contact_email }}
-                                        </a>
-                                    </div>
-                                @endif
-                                @if($header->contact_address)
-                                    <div class="contact-item mb-1">
-                                        <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                        <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
-                                            {{ $header->contact_address }}
-                                        </span>
-                                    </div>
-                                @endif
+                        @if($header->contact_phone)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_phone }}
+                                </a>
                             </div>
                         </div>
-                        {{-- <div class="col-md-4 col-4 text-end">
-                            @if($header->contact_cta_text && $header->contact_cta_url)
-                                <a href="{{ $header->contact_cta_url }}" class="btn btn-sm" style="
-                                    background-color: {{ $header->contact_cta_bg_color ?? '#007bff' }}; 
-                                    color: {{ $header->contact_cta_text_color ?? '#ffffff' }}; 
-                                    border: none; 
-                                    border-radius: 4px;
-                                    padding: 6px 16px;
-                                    text-decoration: none;
-                                    font-weight: 500;
-                                ">
-                                    {{ $header->contact_cta_text }}
+                        @endif
+                        @if($header->contact_email)
+                        <div class="col-6 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_email }}
                                 </a>
-                            @endif
-                        </div> --}}
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_address)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item mb-1">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                    {{ $header->contact_address }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

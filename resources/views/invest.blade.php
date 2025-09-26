@@ -160,20 +160,24 @@
         /* Amount Tiers */
         .amount-tiers {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(114.6px, 114.6px));
             gap: 15px;
             margin-bottom: 25px;
+            justify-content: center;
         }
 
         .tier-option {
             border: 2px solid #e5e5e5;
             border-radius: 8px;
-            padding: 20px 15px;
+            padding: clamp(8px, 2vw, 20px) clamp(5px, 1.5vw, 15px);
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             background: #f9f9f9;
             color: #ffffff !important;
+            max-width: 114.5px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .tier-option:hover {
@@ -189,14 +193,49 @@
         }
 
         .tier-amount {
-            font-size: 1.5rem;
+            font-size: clamp(0.8rem, 2.5vw, 1.5rem);
             font-weight: 700;
             margin-bottom: 8px;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .tier-shares {
-            font-size: 14px;
+            font-size: clamp(10px, 1.5vw, 14px);
             opacity: 0.8;
+        }
+
+        /* Additional responsive rules for tier amounts */
+        @media (max-width: 768px) {
+            .tier-option {
+                max-width: 114.6px;
+                min-width: 114.6px;
+                padding: clamp(6px, 1.8vw, 16px) clamp(4px, 1.2vw, 12px);
+            }
+            
+            .tier-amount {
+                font-size: clamp(0.7rem, 3vw, 1.2rem);
+                line-height: 1.1;
+            }
+            
+            .amount-tiers {
+                grid-template-columns: repeat(auto-fit, 114.6px);
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tier-option {
+                padding: clamp(4px, 1.5vw, 12px) clamp(3px, 1vw, 8px);
+            }
+            
+            .tier-amount {
+                font-size: clamp(0.6rem, 3.5vw, 1rem);
+            }
+            
+            .tier-shares {
+                font-size: clamp(8px, 2vw, 12px);
+            }
         }
 
         .custom-amount-wrapper {
@@ -321,6 +360,10 @@
             background: #6c757d;
             color: white;
             margin-right: 15px;
+        }
+
+        nav{
+            box-shadow: unset !important;
         }
 
         .btn-back:hover {
@@ -594,6 +637,274 @@
                 font-size: 13px;
             }
         }
+
+        /* Contact Top Bar Styles */
+        .contact-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1030; /* Above navbar but below modals */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-topbar .contact-info {
+            gap: 0;
+        }
+        
+        .contact-topbar .contact-item {
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        .contact-topbar .contact-item a {
+            transition: all 0.3s ease;
+            font-family: Outfit,sans-serif;
+            text-decoration: underline !important;
+        }
+        
+        .contact-topbar .contact-item a:hover {
+            opacity: 0.8;
+            text-decoration: none !important;
+        }
+        
+        .contact-topbar .contact-item i {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .contact-topbar .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive design for contact top bar */
+        @media (max-width: 768px) {
+            .contact-topbar {
+                padding: 8px 0 !important;
+                font-size: 12px !important;
+            }
+            
+            .contact-topbar .contact-item {
+                font-size: 11px;
+                margin-right: 8px !important;
+                margin-bottom: 0 !important;
+                text-align: center;
+                display: inline-flex;
+                align-items: center;
+                white-space: nowrap;
+            }
+            
+            .contact-topbar .contact-item:last-child {
+                margin-right: 0 !important;
+            }
+            
+            .contact-topbar .btn {
+                font-size: 11px;
+                padding: 4px 12px !important;
+                margin-top: 2px;
+            }
+
+            .contact-topbar{
+                height: 28px !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .contact-topbar {
+                padding: 6px 0 !important;
+            }
+            
+            .contact-topbar .contact-item {
+                margin-right: 6px !important;
+                margin-bottom: 0 !important;
+                text-align: center;
+                display: inline-flex;
+                align-items: center;
+                font-size: 10px;
+                white-space: nowrap;
+            }
+            
+            .contact-topbar .contact-item:last-child {
+                margin-right: 0 !important;
+            }
+            
+            .contact-topbar .btn {
+                font-size: 10px;
+                padding: 3px 10px !important;
+                margin-top: 2px;
+            }
+        }
+        
+        /* Adjust navbar when contact top bar is present */
+        .contact-topbar + nav.navbar.fixed-top {
+            top: 34px !important; /* Position navbar directly below contact bar - no gap */
+            z-index: 1020;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-topbar + nav.navbar.fixed-top {
+                top: 27px !important; /* Adjust for mobile - no gap */
+            }
+        }
+
+        /* Investor Exclusives Bar Styles - Dynamic Positioning */
+        .investor-exclusives-bar {
+            padding: 8px 0px;
+            text-align: center;
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1010; /* Below contact bar and navbar but above content */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Position investor bar based on what's above it */
+        .contact-topbar ~ .investor-exclusives-bar {
+            top: 104px !important; /* Contact bar (34px) + navbar (70px) - seamless */
+        }
+        
+        .investor-exclusives-bar {
+            top: 70px !important; /* Just navbar height when no contact bar */
+        }
+        
+        .investor-exclusives-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .investor-exclusives-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .investor-exclusives-link {
+            background: rgba(255, 255, 255, 0.15);
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .investor-exclusives-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Icon styling */
+        .investor-exclusives-link i {
+            margin-left: 8px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .contact-topbar + nav.navbar.fixed-top {
+                top: 27px !important;
+            }
+            
+            .contact-topbar ~ .investor-exclusives-bar {
+                top: 100px !important; /* Mobile: contact bar (27px) + navbar (70px) - seamless */
+            }
+            
+            .investor-exclusives-content {
+                flex-direction: row;
+                gap: 12px;
+            }
+            
+            .investor-exclusives-text {
+                font-size: 14px;
+                text-align: center;
+            }
+            
+            .investor-exclusives-link {
+                font-size: 13px;
+                padding: 6px 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .investor-exclusives-bar {
+                padding: 6px 0;
+            }
+            
+            .contact-topbar ~ .investor-exclusives-bar {
+                top: 100px !important; /* Smaller mobile: contact (27px) + navbar (65px) */
+            }
+
+            .close-on-mobile{
+                display: none;
+            }
+
+            .invest-mobile{
+                padding: 0px !important;
+            }
+        }
+
+        /* Responsive main content margins */
+        @media (max-width: 768px) {
+            main.with-contact-and-investor-bars {
+                margin-top: 133px !important; /* 27px + 70px + 36px (investor bar) */
+            }
+            
+            main.with-contact-bar {
+                margin-top: 97px !important; /* 27px + 70px */
+            }
+            
+            main.with-investor-bar {
+                margin-top: 106px !important; /* 70px + 36px */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            main.with-contact-and-investor-bars {
+                margin-top: 128px !important; /* 27px + 65px + 36px */
+            }
+            
+            main.with-contact-bar {
+                margin-top: 92px !important; /* 27px + 65px */
+            }
+            
+            main.with-investor-bar {
+                margin-top: 101px !important; /* 65px + 36px */
+            }
+        }
+
+        .navbar {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+
+        @media (min-width: 1400px) {
+        .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+            max-width: 1320px !important;
+        }
+        }
+
+        .investor-exclusives-bar{
+            padding: 0px !important;
+        }
+        
     </style>
 
     <!-- Google Search Console -->
@@ -641,10 +952,122 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
     @endphp
 
     @if ($header && $header->status == 1)
+        {{-- Contact Information Top Bar - Only for Investment Websites --}}
+        @if($check && $check->isInvestment() && $header && $header->show_contact_topbar)
+            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        @if($header->contact_phone)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_phone }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_email)
+                        <div class="col-6 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_address)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item mb-1">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                    {{ $header->contact_address }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @include('layouts.nav')
+        
+        {{-- Investor Exclusives Top Bar - Only for Investment Websites --}}
+        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+                <div class="investor-exclusives-content">
+                    <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
+                        {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                    </p>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Dynamic Navbar Height Calculator Script --}}
+            <script>
+                function updateNavbarHeights() {
+                    const navbar = document.querySelector('.navbar');
+                    const contactTopbar = document.querySelector('.contact-topbar');
+                    const investorBar = document.querySelector('.investor-exclusives-bar');
+                    
+                    if (navbar) {
+                        const navbarHeight = navbar.offsetHeight;
+                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                        const totalNavHeight = navbarHeight + contactTopbarHeight;
+                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
+                        
+                        // Convert to rem (assuming 16px base font size)
+                        const totalHeightRem = totalNavHeight / 16;
+                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
+                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                        
+                        // Main content margin should account for investor bar if present
+                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
+                        
+                        // Set CSS custom properties
+                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
+                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                    }
+                }
+                
+                // Run on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(updateNavbarHeights, 50);
+                });
+                
+                // Run on resize
+                window.addEventListener('resize', updateNavbarHeights);
+                
+                // Run after fonts load (as this can affect navbar height)
+                if (document.fonts) {
+                    document.fonts.ready.then(updateNavbarHeights);
+                }
+                
+                // Fallback: run after delays to catch any dynamic changes
+                setTimeout(updateNavbarHeights, 100);
+                setTimeout(updateNavbarHeights, 300);
+                setTimeout(updateNavbarHeights, 500);
+                setTimeout(updateNavbarHeights, 1000);
+            </script>
+        @endif
     @endif
 
-    <main style="margin-top: 6.9rem; background-color: {{ $pageBackgroundColor }};">
+    <main style="margin-top: {{ 
+        ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? '134px' : 
+        (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '104px' : 
+        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '106px' : '70px'))
+    }}; background-color: {{ $pageBackgroundColor }};" 
+          class="{{ 
+            ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
+            (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? 'with-contact-bar' : 
+            (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
+        }}">
         <div class="container-fluid" style="background-color: {{ $pageBackgroundColor }};">
             <div class="row justify-content-center">
                 <div class="col-12" style="padding-left: 0px !important; padding-right: 0px !important;">
@@ -794,9 +1217,6 @@ a,
                                 }
                             </style>
                         </div>
-                        @if ($header && $header->status == 1)
-                            @include('layouts.nav')
-                        @endif
                         <main class="main-wrapper" style="background-color: {{ $pageBackgroundColor }}">
                             <header id="home" class="section_header3 checkout-hero">
                                 <div class="padding-global z-index-2">
@@ -1683,7 +2103,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                 <ul role="list" class="list-3"></ul>
                                                                 <div class="disclaimer-dmr"
                                                                     style="color: #fff !important">
-                                                                    {{ $website && $website->investment_disclaimer ? $website->investment_disclaimer : ($setting && $setting->investment_disclaimer ? $setting->investment_disclaimer : 'Investment details and disclosures are available in the offering documents.') }}
+                                                                    {!! $website && $website->investment_disclaimer ? $website->investment_disclaimer : ($setting && $setting->investment_disclaimer ? $setting->investment_disclaimer : 'Investment details and disclosures are available in the offering documents.') !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2586,33 +3006,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
         });
     </script>
 
-    <!-- Sticky Footer for Investment Websites -->
-    {{-- @if($website && $website->type === 'investment')
-    <div class="sticky-footer-invest">
-        <div class="sticky-footer-content">
-            <div class="sticky-footer-text">
-                <span class="investment-call">Ready to invest?</span>
-                <span class="investment-subtext">Start building your portfolio today</span>
-            </div>
-            <button class="sticky-footer-button" onclick="scrollToInvestmentForm()">
-                Invest Now
-            </button>
-        </div>
-    </div>
 
-    <script>
-        function scrollToInvestmentForm() {
-            // Scroll to the investment form section
-            const investmentSection = document.querySelector('.investment-container') || document.querySelector('#amount-step');
-            if (investmentSection) {
-                investmentSection.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start' 
-                });
-            }
-        }
-    </script>
-    @endif --}}
 
 </body>
 

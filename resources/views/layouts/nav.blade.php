@@ -1,6 +1,6 @@
 <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-xl {{ $header->floating == 1 ? 'fixed-top' : 'non-float'}} bg-primary" style="background-color: {{ $header->background }} !important;">
-        <div class="container">
+        <div class="container invest-mobile">
             <a class="navbar-brand" href="https://{{ $check->domain }}">
                 <img src="{{ asset('uploads/'.$setting->logo) }}" alt="Logo" 
                      width="{{ $header->logo_size ?? 100 }}" 
