@@ -870,34 +870,7 @@
             }
         }
 
-        /* Responsive main content margins */
-        @media (max-width: 768px) {
-            main.with-contact-and-investor-bars {
-                margin-top: 130px !important; /* Contact (27px) + navbar (70px) + investor bar (33px) */
-            }
-            
-            main.with-contact-bar {
-                margin-top: 97px !important; /* Contact (27px) + navbar (70px) */
-            }
-            
-            main.with-investor-bar {
-                margin-top: 103px !important; /* Navbar (70px) + investor bar (33px) */
-            }
-        }
-        
-        @media (max-width: 480px) {
-            main.with-contact-and-investor-bars {
-                margin-top: 130px !important; /* Contact (27px) + navbar (70px) + investor bar (33px) */
-            }
-            
-            main.with-contact-bar {
-                margin-top: 97px !important; /* Contact (27px) + navbar (70px) */
-            }
-            
-            main.with-investor-bar {
-                margin-top: 103px !important; /* Navbar (70px) + investor bar (33px) */
-            }
-        }
+
 
         .navbar {
             padding-top: 0px !important;
@@ -1015,63 +988,15 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
                 </div>
             </div>
 
-            {{-- Dynamic Navbar Height Calculator Script --}}
-            <script>
-                function updateNavbarHeights() {
-                    const navbar = document.querySelector('.navbar');
-                    const contactTopbar = document.querySelector('.contact-topbar');
-                    const investorBar = document.querySelector('.investor-exclusives-bar');
-                    
-                    if (navbar) {
-                        const navbarHeight = navbar.offsetHeight;
-                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
-                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
-                        const totalNavHeight = navbarHeight + contactTopbarHeight;
-                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
-                        
-                        // Convert to rem (assuming 16px base font size)
-                        const totalHeightRem = totalNavHeight / 16;
-                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
-                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
-                        
-                        // Main content margin should account for investor bar if present
-                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
-                        
-                        // Set CSS custom properties
-                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
-                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
-                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
-                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
-                    }
-                }
-                
-                // Run on load
-                document.addEventListener('DOMContentLoaded', function() {
-                    setTimeout(updateNavbarHeights, 50);
-                });
-                
-                // Run on resize
-                window.addEventListener('resize', updateNavbarHeights);
-                
-                // Run after fonts load (as this can affect navbar height)
-                if (document.fonts) {
-                    document.fonts.ready.then(updateNavbarHeights);
-                }
-                
-                // Fallback: run after delays to catch any dynamic changes
-                setTimeout(updateNavbarHeights, 100);
-                setTimeout(updateNavbarHeights, 300);
-                setTimeout(updateNavbarHeights, 500);
-                setTimeout(updateNavbarHeights, 1000);
-            </script>
+
         @endif
     @endif
 
-    <main style="margin-top: {{ 
-        ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header->show_investor_exclusives) ? '134px' : 
-        (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '104px' : 
-        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '106px' : '70px'))
-    }}; background-color: {{ $pageBackgroundColor }};" 
+    <main style="margin-top: var(--main-content-margin-top, {{ 
+        ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? '8.4rem' : 
+        (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '10.5rem' : 
+        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
+    }}); background-color: {{ $pageBackgroundColor }};" 
           class="{{ 
             ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
             (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? 'with-contact-bar' : 
