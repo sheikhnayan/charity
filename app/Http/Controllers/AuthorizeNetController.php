@@ -165,6 +165,9 @@ class AuthorizeNetController extends Controller
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();
 
+                        // Send invoice email and handle post-transaction operations
+                        $this->afterTransactionSaved($tran, $website);
+
                         return view('thank-you', compact('type'));
                     }elseif ($donation->type == 'general') {
                         # code...
@@ -189,6 +192,9 @@ class AuthorizeNetController extends Controller
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();
+
+                        // Send invoice email and handle post-transaction operations
+                        $this->afterTransactionSaved($tran, $website);
 
                         return view('thank-you', compact('type'));
                     } else {
@@ -225,6 +231,9 @@ class AuthorizeNetController extends Controller
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                     $tran->save();
+
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
 
                     foreach ($donation->details as $key => $value) {
                         # code...
@@ -267,6 +276,9 @@ class AuthorizeNetController extends Controller
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                     $tran->save();
 
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
+
                     return view('thank-you', compact('type'));
 
                 }elseif($request->type == 'investment'){
@@ -296,6 +308,9 @@ class AuthorizeNetController extends Controller
                     $tran->status = 1; // Completed status
                     $tran->reference_id = $investment->id;
                     $tran->save();
+
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
 
                     return view('thank-you', compact('type'));
 
@@ -381,6 +396,9 @@ class AuthorizeNetController extends Controller
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();
 
+                        // Send invoice email and handle post-transaction operations
+                        $this->afterTransactionSaved($tran, $website);
+
                         return view('thank-you', compact('type'));
                         return view('stripe',compact('data','type'));
                     }elseif ($donation->type == 'general') {
@@ -406,6 +424,9 @@ class AuthorizeNetController extends Controller
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();
+
+                        // Send invoice email and handle post-transaction operations
+                        $this->afterTransactionSaved($tran, $website);
 
                         return view('thank-you', compact('type'));
                     } else {
@@ -442,6 +463,9 @@ class AuthorizeNetController extends Controller
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                     $tran->save();
+
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
 
                     foreach ($donation->details as $key => $value) {
                         # code...
@@ -484,6 +508,9 @@ class AuthorizeNetController extends Controller
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                     $tran->save();
 
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
+
                     return view('thank-you', compact('type'));
 
                 }elseif($request->type == 'investment'){
@@ -513,6 +540,9 @@ class AuthorizeNetController extends Controller
                     $tran->status = 1; // Completed status
                     $tran->reference_id = $investment->id;
                     $tran->save();
+
+                    // Send invoice email and handle post-transaction operations
+                    $this->afterTransactionSaved($tran, $website);
 
                     return view('thank-you', compact('type'));
 
@@ -567,6 +597,23 @@ class AuthorizeNetController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Handle post-transaction operations (email, logging, etc.)
+     */
+    private function afterTransactionSaved($transaction, $website)
+    {
+        // Send invoice email
+        $this->sendInvoiceEmail($transaction, $website);
+        
+        // Log successful transaction
+        \Log::info('Transaction completed and email sent', [
+            'transaction_id' => $transaction->transaction_id,
+            'email' => $transaction->email,
+            'amount' => $transaction->amount,
+            'type' => $transaction->type ?? 'unknown'
+        ]);
     }
 
     /**

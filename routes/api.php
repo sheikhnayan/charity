@@ -5,12 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\BidController;
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Log;
 
 Route::middleware('auth')->group(function () {
     Route::post('/page-builder/save', [PageBuilderController::class, 'save']);
     Route::get('/page-builder/load', [PageBuilderController::class, 'load']);
 });
+
+Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
 
 // Public comment routes (no auth required for posting comments)
 Route::post('/comments', [CommentController::class, 'store']);

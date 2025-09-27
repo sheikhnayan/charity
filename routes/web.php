@@ -145,7 +145,7 @@ Route::post('/tickets', [FrontendController::class, 'tickets'])->name('tickets')
 
 Route::post('/custom-form', [FrontendController::class, 'custom_form'])->name('custom-form');
 
-Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
+// Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
 
 Route::get('/profile/{slug}', [FrontendController::class, 'student'])->name('donate');
 
@@ -302,6 +302,15 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::get('/debug/fees-ssn', [
         \App\Http\Controllers\DebugController::class, 'debugFeesAndSSN'
     ])->name('admin.debug.fees-ssn');
+    
+    // Email testing routes
+    Route::get('/debug/test-email', [
+        \App\Http\Controllers\EmailTestController::class, 'testEmail'
+    ])->name('admin.debug.test-email');
+    
+    Route::get('/debug/test-invoice-email', [
+        \App\Http\Controllers\EmailTestController::class, 'testInvoiceEmail'
+    ])->name('admin.debug.test-invoice-email');
 
     Route::get('/student',[
         AdminController::class, 'student'

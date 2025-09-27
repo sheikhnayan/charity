@@ -5507,7 +5507,7 @@ break;
                         data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
                         style="margin-top: 3rem;">
 
-                        <form method="POST" action="/donation-general" class="donation-form-block">
+                        <form method="POST" action="/api/donation-general" class="donation-form-block">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
                                 <div class="card shadow" style="border-width: 3px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
@@ -5655,7 +5655,7 @@ break;
                                 data-block="" data-template="7e729e7e3c534cbf918a45b5540afa84"
                                 style="margin-top: 3rem;">
 
-                                <form method="POST" action="/donation-general" class="donation-form-block">
+                                <form method="POST" action="/api/donation-general" class="donation-form-block">
                                     @csrf
                                     <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
                                         <div class="card shadow" style="border-width: 3px; border-color: ${getDonationFormValue('borderColor', '#2e4053')} !important;">
