@@ -1169,7 +1169,7 @@ if (isset($state['components'])) {
         }
 
         .ticket-mask .row .col-md-2 img{
-            width: auto !important;
+            width: 100% !important;
         }
     }
     
