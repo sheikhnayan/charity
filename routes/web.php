@@ -311,6 +311,10 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::get('/debug/test-invoice-email', [
         \App\Http\Controllers\EmailTestController::class, 'testInvoiceEmail'
     ])->name('admin.debug.test-invoice-email');
+    
+    Route::get('/debug/test-investment-email', [
+        \App\Http\Controllers\EmailTestController::class, 'testInvestmentEmail'
+    ])->name('admin.debug.test-investment-email');
 
     Route::get('/student',[
         AdminController::class, 'student'

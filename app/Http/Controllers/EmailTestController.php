@@ -73,4 +73,46 @@ class EmailTestController extends Controller
             ], 500);
         }
     }
+    
+    public function testInvestmentEmail(Request $request)
+    {
+        $testEmail = $request->get('email', 'nman0171@gmail.com');
+        
+        // Get a sample investment transaction for testing
+        $transaction = \App\Models\Transaction::where('type', 'investment')->with(['website'])->first();
+        
+        if (!$transaction) {
+            return response()->json(['error' => 'No investment transactions found for testing'], 404);
+        }
+        
+        \Log::info('Testing investment email', [
+            'transaction_id' => $transaction->transaction_id,
+            'transaction_email' => $transaction->email,
+            'transaction_type' => $transaction->type,
+            'website_id' => $transaction->website_id,
+            'website_loaded' => $transaction->website ? 'YES' : 'NO',
+            'website_domain' => $transaction->website->domain ?? 'NULL'
+        ]);
+        
+        try {
+            Mail::to($testEmail)->send(new \App\Mail\TransactionInvoice($transaction, $transaction->website));
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Investment invoice email sent successfully to {$testEmail}",
+                'transaction_id' => $transaction->transaction_id,
+                'original_email' => $transaction->email,
+                'website_id' => $transaction->website_id
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'transaction_id' => $transaction->transaction_id ?? 'unknown',
+                'transaction_data' => $transaction->toArray(),
+                'website_data' => $transaction->website ? $transaction->website->toArray() : 'NULL'
+            ], 500);
+        }
+    }
 }

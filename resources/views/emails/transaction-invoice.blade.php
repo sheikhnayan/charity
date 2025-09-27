@@ -26,8 +26,8 @@
     <div class="invoice-container">
         <div class="header">
             <div class="logo">{{ $website->name }}</div>
-            <h2>Transaction Invoice</h2>
-            <p>Invoice for Transaction #{{ $transaction->transaction_id }}</p>
+            <h2>{{ $transaction_type_label ?? 'Transaction' }} {{ in_array($transaction->type, ['student', 'general']) ? 'Receipt' : 'Confirmation' }}</h2>
+            <p>{{ in_array($transaction->type, ['student', 'general']) ? 'Receipt' : 'Confirmation' }} for Transaction #{{ $transaction->transaction_id }}</p>
         </div>
 
         <div class="invoice-details">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Type:</span>
-                        <span class="detail-value">{{ ucfirst($transaction->type) }}</span>
+                        <span class="detail-value">{{ $transaction_type_label ?? ucfirst($transaction->type) }}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Status:</span>
@@ -77,25 +77,150 @@
                 </div>
             </div>
 
-            @if($transaction->type === 'investment' && $transaction->investment)
+            {{-- Student Donation Details --}}
+            @if($transaction->type === 'student' && isset($donation))
             <div class="detail-section">
-                <h3>Investment Details</h3>
+                <h3>Student Donation Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Supporting Organization:</span>
+                    <span class="detail-value">{{ $website->name }}</span>
+                </div>
+                @if($donation->student_name)
+                <div class="detail-row">
+                    <span class="detail-label">Student Name:</span>
+                    <span class="detail-value">{{ $donation->student_name }}</span>
+                </div>
+                @endif
+                @if($donation->student_id)
+                <div class="detail-row">
+                    <span class="detail-label">Student ID:</span>
+                    <span class="detail-value">{{ $donation->student_id }}</span>
+                </div>
+                @endif
+                @if($donation->purpose)
+                <div class="detail-row">
+                    <span class="detail-label">Purpose:</span>
+                    <span class="detail-value">{{ $donation->purpose }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- General Donation Details --}}
+            @if($transaction->type === 'general' && isset($donation))
+            <div class="detail-section">
+                <h3>Donation Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Organization:</span>
+                    <span class="detail-value">{{ $website->name }}</span>
+                </div>
+                @if($donation->purpose)
+                <div class="detail-row">
+                    <span class="detail-label">Donation Purpose:</span>
+                    <span class="detail-value">{{ $donation->purpose }}</span>
+                </div>
+                @endif
+                <div class="detail-row">
+                    <span class="detail-label">Tax Deductible:</span>
+                    <span class="detail-value">Please consult your tax advisor</span>
+                </div>
+            </div>
+            @endif
+
+            {{-- Ticket Purchase Details --}}
+            @if($transaction->type === 'ticket' && isset($ticket_sale))
+            <div class="detail-section">
+                <h3>Ticket Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Event Organizer:</span>
+                    <span class="detail-value">{{ $website->name }}</span>
+                </div>
+                @if($ticket_sale->details && $ticket_sale->details->count() > 0)
+                    @foreach($ticket_sale->details as $detail)
+                    <div class="detail-row">
+                        <span class="detail-label">{{ $detail->ticket->name ?? 'Ticket' }}:</span>
+                        <span class="detail-value">Quantity: {{ $detail->quantity }} @ ${{ number_format($detail->ticket->price ?? 0, 2) }} each</span>
+                    </div>
+                    @endforeach
+                @endif
+                @if($ticket_sale->event_date)
+                <div class="detail-row">
+                    <span class="detail-label">Event Date:</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($ticket_sale->event_date)->format('M d, Y') }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Auction Bid Details --}}
+            @if($transaction->type === 'auction' && isset($auction))
+            <div class="detail-section">
+                <h3>Auction Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Auction House:</span>
+                    <span class="detail-value">{{ $website->name }}</span>
+                </div>
+                @if($auction->name)
+                <div class="detail-row">
+                    <span class="detail-label">Item Name:</span>
+                    <span class="detail-value">{{ $auction->name }}</span>
+                </div>
+                @endif
+                @if($auction->description)
+                <div class="detail-row">
+                    <span class="detail-label">Item Description:</span>
+                    <span class="detail-value">{{ Str::limit($auction->description, 100) }}</span>
+                </div>
+                @endif
+                <div class="detail-row">
+                    <span class="detail-label">Bid Amount:</span>
+                    <span class="detail-value">${{ number_format($transaction->amount, 2) }}</span>
+                </div>
+                @if($auction->end_date)
+                <div class="detail-row">
+                    <span class="detail-label">Auction End Date:</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($auction->end_date)->format('M d, Y') }}</span>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Investment Details --}}
+            @if($transaction->type === 'investment' && isset($investment))
+            <div class="detail-section">
+                <h3>Investment Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Investment Company:</span>
+                    <span class="detail-value">{{ $website->name }}</span>
+                </div>
+                @if($investment->investor_name)
                 <div class="detail-row">
                     <span class="detail-label">Investor Name:</span>
-                    <span class="detail-value">{{ $transaction->investment->investor_name }}</span>
+                    <span class="detail-value">{{ $investment->investor_name }}</span>
                 </div>
+                @endif
+                @if($investment->investor_type)
                 <div class="detail-row">
-                    <span class="detail-label">Investment Type:</span>
-                    <span class="detail-value">{{ $transaction->investment->investor_type }}</span>
+                    <span class="detail-label">Investor Type:</span>
+                    <span class="detail-value">{{ $investment->investor_type }}</span>
                 </div>
+                @endif
+                @if($investment->share_quantity)
                 <div class="detail-row">
                     <span class="detail-label">Share Quantity:</span>
-                    <span class="detail-value">{{ $transaction->investment->share_quantity }}</span>
+                    <span class="detail-value">{{ number_format($investment->share_quantity) }}</span>
                 </div>
+                @endif
                 <div class="detail-row">
                     <span class="detail-label">Investment Amount:</span>
-                    <span class="detail-value">${{ number_format($transaction->investment->investment_amount, 2) }}</span>
+                    <span class="detail-value">${{ number_format($investment->investment_amount ?? $transaction->amount, 2) }}</span>
                 </div>
+                @if($investment->security_name)
+                <div class="detail-row">
+                    <span class="detail-label">Security:</span>
+                    <span class="detail-value">{{ $investment->security_name }}</span>
+                </div>
+                @endif
             </div>
             @endif
 
@@ -119,10 +244,25 @@
         </div>
 
         <div class="footer">
-            <p>Thank you for your {{ $transaction->type === 'investment' ? 'investment' : 'donation' }}!</p>
-            <p><strong>📎 A detailed PDF invoice is attached to this email for your records.</strong></p>
+            @if(in_array($transaction->type, ['student', 'general']))
+                <p>🙏 Thank you for your generous donation to {{ $website->name }}!</p>
+                <p>Your contribution makes a meaningful difference.</p>
+            @elseif($transaction->type === 'ticket')
+                <p>🎟️ Thank you for your ticket purchase!</p>
+                <p>We look forward to seeing you at the event.</p>
+            @elseif($transaction->type === 'auction')
+                <p>🔨 Thank you for participating in our auction!</p>
+                <p>We'll notify you if you win this item.</p>
+            @elseif($transaction->type === 'investment')
+                <p>💼 Thank you for your investment in {{ $website->name }}!</p>
+                <p>We appreciate your confidence in our venture.</p>
+            @else
+                <p>Thank you for your transaction!</p>
+            @endif
+            
+            <p><strong>📎 A detailed PDF {{ in_array($transaction->type, ['student', 'general']) ? 'receipt' : 'confirmation' }} is attached to this email for your records.</strong></p>
             <p>{{ $website->name }} | {{ $website->domain }}</p>
-            <p><small>This is a computer-generated invoice. If you have any questions, please contact us at {{ config('mail.from.address', 'noreply@' . $website->domain) }}</small></p>
+            <p><small>This is a computer-generated {{ in_array($transaction->type, ['student', 'general']) ? 'receipt' : 'confirmation' }}. If you have any questions, please contact us at {{ config('mail.from.address', 'noreply@' . $website->domain) }}</small></p>
         </div>
     </div>
 </body>
