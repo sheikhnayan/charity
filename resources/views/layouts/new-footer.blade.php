@@ -527,6 +527,10 @@ img {
     font-size: 1.125rem;
 }
 
+.mobile-show{
+        display: none !important;
+    }
+
 /* Mobile Responsive Styles */
 @media screen and (max-width: 991px) {
     .footer_bg_image_mobile {
@@ -542,7 +546,15 @@ img {
     .footer_top_wrapper {
         grid-template-columns: 1fr;
         grid-row-gap: 2rem;
-        text-align: center;
+        text-align: start;
+    }
+
+    .mobile-hide{
+        display: none !important;
+    }
+
+    .mobile-show{
+        display: block !important;
     }
     
     .footer_content_wrap._1 {
@@ -558,12 +570,12 @@ img {
     .footer_link_list {
         grid-auto-flow: row;
         grid-template-columns: 1fr;
-        text-align: center;
+        text-align: start;
     }
     
     .footer_bottom_wrapper {
         flex-direction: column;
-        align-items: center;
+        align-items: start;
         grid-row-gap: 1rem;
     }
 }
@@ -771,8 +783,22 @@ img {
                         @endif
                     </ul>
                 @endif
+                <div class="footer_content_wrap _2 mobile-show">
+                <div class="footer_content_heading">
+                    <div class="text-style-eyebrow" style="color: {{ $footer->color ?? '#ffffff' }} !important;">Contact Us</div>
+                </div><a aria-label="Email {{ $website->name }}" href="mailto:{{$website->user->email}}"
+                    class="link_wrap not-allcaps w-inline-block">
+                    <div class="link_icon icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg"
+                            height="1em" viewBox="0 0 512 512">
+                            <path style="color: {{ $footer->color ?? '#ffffff' }} !important;"
+                                d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"
+                                fill="currentColor"></path>
+                        </svg></div>
+                    <div style="color: {{ $footer->color ?? '#ffffff' }} !important;">{{$website->user->email}}</div>
+                </a>
             </div>
-            <div class="footer_content_wrap _2">
+            </div>
+            <div class="footer_content_wrap _2 mobile-hide">
                 <div class="footer_content_heading">
                     <div class="text-style-eyebrow" style="color: {{ $footer->color ?? '#ffffff' }} !important;">Contact Us</div>
                 </div><a aria-label="Email {{ $website->name }}" href="mailto:{{$website->user->email}}"
@@ -788,33 +814,6 @@ img {
             </div>
         </div>
         <div class="footer_line_divider"></div>
-        {{-- <div class="sources_wrap">
-            <p class="sources_text"><span class="text-style-eyebrow">Sources:</span><br><br>*Estimates are based on the
-                Preliminary Feasibility Study (PFS) conducted for EnergyX's lithium project. <a
-                    href="https://energyx.docsend.com/view/qi436qnghtzwmae6"
-                    aria-label="Go to EnergyX 2025 presentation." target="_blank" class="text-style-link">View the full
-                    PFS summary here.</a></p>
-            <div class="spacer-xsmall"></div>
-            <div class="rich_content w-richtext">
-                <ol start="" role="list" class="sources_list">
-                    <li class="sources_list_item"><a
-                            href="https://www.morningstar.com/stocks/we-forecast-40-global-ev-adoption-rate-by-2030-up-10-2022"
-                            class="text-style-link">Morningstar EV Adoption Rate Forecast</a></li>
-                    <li class="sources_list_item"><a
-                            href="https://www.renewableenergyworld.com/storage/global-energy-storage-market-could-grow-to-546b-says-analyst/#gref"
-                            aria-label="Renewable Energy World" class="text-style-link">Renewable Energy World</a>
-                    </li>
-                    <li class="sources_list_item"><a
-                            href="https://www.iea.org/data-and-statistics/charts/total-lithium-demand-by-sector-and-scenario-2020-2040"
-                            aria-label="International Energy Agency" class="text-style-link">International Energy
-                            Agency</a></li>
-                    <li class="sources_list_item"><a
-                            href="https://dimensionmarketresearch.com/report/energy-storage-market/"
-                            class="text-style-link">Energy Storage Market</a></li>
-                </ol>
-            </div>
-        </div> --}}
-        {{-- <div class="footer_line_divider"></div> --}}
         <div class="disclaimer_wrap text-size-tiny text-color-secondary">
            {!! $footer->description_text !!}
         </div>

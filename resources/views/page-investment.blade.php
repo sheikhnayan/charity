@@ -1039,6 +1039,10 @@ if (isset($state['components'])) {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
+
+    .owl-dots{
+        display: none !important;
+    }
     
     .investor-exclusives-content {
         max-width: 1200px;
@@ -1079,6 +1083,11 @@ if (isset($state['components'])) {
 
     .text-style-eyebrow{
         font-family: Outfit,sans-serif !important;
+    }
+
+    .jqo-io-processed{
+        padding: 0.3rem !important;
+        padding-top: 0.5rem !important;
     }
 
     .link_wrap div{
@@ -1153,6 +1162,14 @@ if (isset($state['components'])) {
             margin-left: 1rem !important;
             margin-top: 0.3rem !important;
             margin-bottom: 0.3rem !important;
+        }
+
+        .ticket-mask .row .col-md-10{
+            text-align: center !important;
+        }
+
+        .ticket-mask .row .col-md-2 img{
+            width: auto !important;
         }
     }
     

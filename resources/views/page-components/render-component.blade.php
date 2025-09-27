@@ -161,6 +161,85 @@ h5, .ql-header-5 {
     margin: 0.4rem 0 0.2rem 0 !important;
 }
 
+/* Investment CTA Component - Base Styles */
+.invest-cta-wrapper {
+    background-color: #f8f9fa;
+    border-radius: 0px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 500px;
+    margin: 0px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.invest-cta-wrapper .invest-cta-button-wrap {
+    flex-shrink: 0;
+}
+
+.invest-cta-wrapper .invest-cta-button {
+    display: inline-block;
+    background-color: #2e7d3e;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.invest-cta-wrapper .invest-cta-button:hover {
+    background-color: #246630;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(46, 125, 62, 0.3);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.invest-cta-wrapper .investment-info-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.invest-cta-wrapper .investment-info-item {
+    text-align: center;
+    flex: 1;
+}
+
+.invest-cta-wrapper .investment-value {
+    color: #333333;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 5px;
+}
+
+.invest-cta-wrapper .investment-label {
+    color: #666666;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.invest-cta-wrapper .investment-divider {
+    width: 1px;
+    height: 40px;
+    background-color: #e0e0e0;
+    flex-shrink: 0;
+}
+
 /* Global Mobile Fixes */
 @media screen and (max-width: 767px) {
     /* Prevent horizontal overflow on mobile */
@@ -282,6 +361,8 @@ h5, .ql-header-5 {
         max-width: calc(100% - 10px) !important;
     }
     
+
+    
     /* Video components mobile behavior */
     .video-component {
         margin-left: 5px !important;
@@ -301,6 +382,38 @@ h5, .ql-header-5 {
         margin-right: 5px !important;
         max-width: calc(100% - 10px) !important;
     }
+    }
+
+    /* Extra Small Mobile Devices - Investment CTA Optimization */
+    @media screen and (max-width: 480px) {
+        .invest-cta-wrapper {
+            padding: 15px 10px !important;
+        }
+        
+        .invest-cta-wrapper .investment-info-wrapper {
+            gap: 10px !important;
+        }
+        
+        .invest-cta-wrapper .investment-divider {
+            height: 25px !important;
+        }
+        
+        .invest-cta-wrapper .investment-value {
+            font-size: 16px !important;
+        }
+        
+        .invest-cta-wrapper .investment-label {
+            font-size: 12px !important;
+        }
+        
+        .invest-cta-wrapper .invest-cta-button {
+            padding: 16px 15px !important;
+            font-size: 14px !important;
+        }
+
+        .ticket-mask .row .col-md-10{
+            text-align: center !important;
+        }
     }
     
     /* Fix investment CTA overflow */
@@ -3897,26 +4010,26 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $buttonRadius = $sellTicketsData['buttonRadius'] ?? '4px';
             @endphp
             
-            <section style="{{ $wrapperStyleStr }} {{ $styleStr }}" class="mt-2 mb-2">
+            <section class="mt-2 mb-2">
                 @if($tickets->count() > 0)
                     <div class="row justify-content-center">
                         <div class="col-md-12">
-                            @if($title && $title !== 'Buy Tickets' || !empty($sellTicketsData))
+                            {{-- @if($title && $title !== 'Buy Tickets' || !empty($sellTicketsData))
                                 <div class="text-center mb-4">
                                     <h3>{{ $title }}</h3>
                                 </div>
-                            @endif
+                            @endif --}}
                             <form action="/tickets" method="POST">
                                 @csrf
                                 @foreach ($tickets as $item)
-                                    <div class="card ticket-mask mt-2 mb-2">
+                                    <div class="card ticket-mask mt-2 mb-2" style="{{ $wrapperStyleStr }} {{ $styleStr }}">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="row">
-                                                    <div class="col-md-2 col-2">
+                                                    <div class="col-md-2">
                                                         <img src="{{ asset($item->image) }}" width="64px" height="64px;" alt="{{ $item->name }}">
                                                     </div>
-                                                    <div class="col-md-10 col-10" style="color: {{ $buttonColor }};">
+                                                    <div class="col-md-10" style="color: {{ $buttonColor }};">
                                                         <h4 style="margin-bottom: 2px;" style="color: {{ $buttonColor }};">{{ $item->name }} (${{ $item->price }})</h4>
                                                         <p style="margin-bottom: 2px;" style="color: {{ $buttonColor }};">{{ $item->description }}</p>
                                                         <span style="color: {{ $buttonColor }};">Only {{ $item->quantity }} left!</span>

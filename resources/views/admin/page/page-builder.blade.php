@@ -4177,6 +4177,40 @@ break;
             };
             content._investCtaData = investCtaData;
             content.innerHTML = `
+                <style>
+                @media (max-width: 767px) {
+                    .invest-cta-wrapper {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        text-align: center !important;
+                        gap: 15px !important;
+                        padding: 15px 10px !important;
+                    }
+                    .invest-cta-wrapper .investment-info-wrapper {
+                        order: 1 !important;
+                        justify-content: space-around !important;
+                    }
+                    .invest-cta-wrapper .invest-cta-button-wrap {
+                        order: 2 !important;
+                        width: 100% !important;
+                    }
+                    .invest-cta-wrapper .invest-cta-button {
+                        width: 100% !important;
+                        padding: 18px 20px !important;
+                        font-size: 16px !important;
+                        display: block !important;
+                    }
+                    .invest-cta-wrapper .investment-divider {
+                        height: 30px !important;
+                    }
+                    .invest-cta-wrapper .investment-value {
+                        font-size: 18px !important;
+                    }
+                    .invest-cta-wrapper .investment-label {
+                        font-size: 13px !important;
+                    }
+                }
+                </style>
                 <div class="invest-cta-wrapper" style="background-color: ${investCtaData.bgColor}; border-radius: 0px; padding: 20px; display: flex; align-items: center; gap: 20px; max-width: 500px; margin: 0px; box-sizing: border-box; width: 100%;">
                     <div class="invest-cta-button-wrap">
                         <a href="/invest" 
@@ -10594,6 +10628,45 @@ function updateInvestCtaField(value, field) {
     if (wrapper) {
         const d = content._investCtaData;
         wrapper.style.backgroundColor = d.bgColor;
+        // Add responsive CSS if not already present
+        if (!wrapper.previousElementSibling || wrapper.previousElementSibling.tagName !== 'STYLE') {
+            const style = document.createElement('style');
+            style.textContent = `
+                @media (max-width: 767px) {
+                    .invest-cta-wrapper {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        text-align: center !important;
+                        gap: 15px !important;
+                        padding: 15px 10px !important;
+                    }
+                    .invest-cta-wrapper .investment-info-wrapper {
+                        order: 1 !important;
+                        justify-content: space-around !important;
+                    }
+                    .invest-cta-wrapper .invest-cta-button-wrap {
+                        order: 2 !important;
+                        width: 100% !important;
+                    }
+                    .invest-cta-wrapper .invest-cta-button {
+                        width: 100% !important;
+                        padding: 18px 20px !important;
+                        font-size: 16px !important;
+                        display: block !important;
+                    }
+                    .invest-cta-wrapper .investment-divider {
+                        height: 30px !important;
+                    }
+                    .invest-cta-wrapper .investment-value {
+                        font-size: 18px !important;
+                    }
+                    .invest-cta-wrapper .investment-label {
+                        font-size: 13px !important;
+                    }
+                }
+            `;
+            wrapper.parentNode.insertBefore(style, wrapper);
+        }
         wrapper.innerHTML = `
             <div class="invest-cta-button-wrap">
                 <a href="${d.buttonUrl}" 
@@ -13659,6 +13732,45 @@ function applyResponsiveStyles() {
                 if (investWrapper) {
                     const d = actualContent._investCtaData;
                     investWrapper.style.backgroundColor = d.bgColor;
+                    // Add responsive CSS if not already present
+                    if (!investWrapper.previousElementSibling || investWrapper.previousElementSibling.tagName !== 'STYLE') {
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            @media (max-width: 767px) {
+                                .invest-cta-wrapper {
+                                    flex-direction: column !important;
+                                    align-items: stretch !important;
+                                    text-align: center !important;
+                                    gap: 15px !important;
+                                    padding: 15px 10px !important;
+                                }
+                                .invest-cta-wrapper .investment-info-wrapper {
+                                    order: 1 !important;
+                                    justify-content: space-around !important;
+                                }
+                                .invest-cta-wrapper .invest-cta-button-wrap {
+                                    order: 2 !important;
+                                    width: 100% !important;
+                                }
+                                .invest-cta-wrapper .invest-cta-button {
+                                    width: 100% !important;
+                                    padding: 18px 20px !important;
+                                    font-size: 16px !important;
+                                    display: block !important;
+                                }
+                                .invest-cta-wrapper .investment-divider {
+                                    height: 30px !important;
+                                }
+                                .invest-cta-wrapper .investment-value {
+                                    font-size: 18px !important;
+                                }
+                                .invest-cta-wrapper .investment-label {
+                                    font-size: 13px !important;
+                                }
+                            }
+                        `;
+                        investWrapper.parentNode.insertBefore(style, investWrapper);
+                    }
                     investWrapper.innerHTML = `
                         <div class="invest-cta-button-wrap">
                             <a href="${d.buttonUrl}" 
