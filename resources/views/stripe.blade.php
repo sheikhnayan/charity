@@ -1356,7 +1356,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
-        const stripe = Stripe("{{ $paymentConfig['stripe']['publishable_key'] ?? env('STRIPE_KEY') }}");
+        const stripe = Stripe("{{ $paymentConfig['stripe']['stripe_publishable_key'] ?? env('STRIPE_KEY') }}");
         const elements = stripe.elements();
 
         const style = {
