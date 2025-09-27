@@ -1355,7 +1355,7 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 @php
-    dd($paymentConfig);
+    dd($paymentConfig->config);
 @endphp
 
 <script>
