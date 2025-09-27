@@ -303,10 +303,13 @@ class AuthorizeNetController extends Controller
 
 
             } else {
-                return back()->with('error', "Payment failed: ". $response->getMessages()->getMessage()[0]->getText());
+                dd($response);
+                return back()->with('error', "Payment failed");
             }
         } else {
-            return back()->with('error', "Payment failed: " . $response->getMessages()->getMessage()[0]->getText());
+            // dd($response);
+                dd($response);
+            return back()->with('error', "Payment failed ");
         }
 
     }

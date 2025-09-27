@@ -1,3 +1,23 @@
+@php
+    // Get website data based on current domain
+    $url = url()->current();
+    $domain = parse_url($url, PHP_URL_HOST);
+    $check = \App\Models\Website::where('domain', $domain)->first();
+
+    if ($check) {
+        $user_id = $check->user_id;
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $website = $check;
+    } else {
+        $setting = null;
+        $header = null;
+        $footer = null;
+        $website = null;
+    }
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +25,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Checkout</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Checkout' : 'Checkout' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
@@ -1564,4 +1585,9 @@
     });
 </script>
 
+@if($footer && $website)
+    @include('layouts.new-footer')
+@endif
+
+</body>
 </html>

@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Thank You!</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Thank You!' : 'Thank You!' }}</title>
     <link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>
     <style>
         @import url(//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css);
@@ -38,16 +39,31 @@
     </style>
 </head>
 
-<body style="padding: 0px">
-    @php
-        $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = \App\Models\Website::where('domain', $doamin)->first();
+@php
+    // Get website data based on current domain
+    $url = url()->current();
+    $domain = parse_url($url, PHP_URL_HOST);
+    $check = \App\Models\Website::where('domain', $domain)->first();
+
+    if ($check) {
+        $user_id = $check->user_id;
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $website = $check;
         $groups = \App\Models\User::where('website_id', $check->id)->where('role', 'group_leader')->get();
-        $header = \App\Models\Header::where('website_id', $check->id)->first();
-        $footer = \App\Models\Footer::where('website_id', $check->id)->first();
-        $setting = \App\Models\Setting::where('user_id', $check->user_id)->first();
         $user = \App\Models\User::where('id', $check->user_id)->first();
+    } else {
+        $setting = null;
+        $header = null;
+        $footer = null;
+        $website = null;
+        $groups = collect();
+        $user = null;
+    }
+@endphp
+
+<body style="padding: 0px">
     @endphp
     @if ($header->status == 1)
         @include('layouts.nav')
@@ -210,6 +226,11 @@
                 @endif
             </footer>
     @endif
+
+@if($footer && $website)
+    @include('layouts.new-footer')
+@endif
+
 </body>
 
 </html>
