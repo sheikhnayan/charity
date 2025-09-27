@@ -1354,12 +1354,12 @@
 
 
 <script src="https://js.stripe.com/v3/"></script>
-@php
-    dd($paymentConfig->config);
-@endphp
+{{-- @php
+    // dd($paymentConfig->config);
+@endphp --}}
 
 <script>
-        const stripe = Stripe("{{ $paymentConfig['stripe']['stripe_publishable_key'] ?? env('STRIPE_KEY') }}");
+        const stripe = Stripe("{{ $paymentConfig['config']['publishable_key'] ?? env('STRIPE_KEY') }}");
         const elements = stripe.elements();
 
         const style = {
