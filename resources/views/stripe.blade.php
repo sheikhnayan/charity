@@ -1354,6 +1354,9 @@
 
 
 <script src="https://js.stripe.com/v3/"></script>
+@php
+    dd($paymentConfig['stripe']);
+@endphp
 
 <script>
         const stripe = Stripe("{{ $paymentConfig['stripe']['stripe_publishable_key'] ?? env('STRIPE_KEY') }}");
