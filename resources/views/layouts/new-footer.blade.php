@@ -555,6 +555,7 @@ img {
 
     .mobile-show{
         display: block !important;
+        margin-top: 2rem !important
     }
     
     .footer_content_wrap._1 {
@@ -571,6 +572,7 @@ img {
         grid-auto-flow: row;
         grid-template-columns: 1fr;
         text-align: start;
+        margin-left: 0px !important;
     }
     
     .footer_bottom_wrapper {
