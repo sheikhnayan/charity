@@ -17,6 +17,8 @@ use App\Models\Website;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Services\PaymentGatewayService;
+use App\Mail\TransactionInvoice;
+use Illuminate\Support\Facades\Mail;
 use Stripe;
 
 class AuthorizeNetController extends Controller
@@ -155,6 +157,7 @@ class AuthorizeNetController extends Controller
                         $tran->phone = $request->phone;
                         $tran->name_on_card = $request->name_on_card;
                         $tran->country = $request->country;
+                        $tran->ip_address = $request->ip();
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
 
@@ -325,13 +328,14 @@ class AuthorizeNetController extends Controller
         }
 
         // Get Stripe credentials for this website
-        $paymentConfig = $this->paymentGatewayService->getPaymentConfig($website);
+        $paymentGatewayService = new PaymentGatewayService();
+        $paymentData = $paymentGatewayService->getPaymentConfigForWebsite($website);
         
-        if (!$paymentConfig || !isset($paymentConfig['stripe']['secret_key'])) {
+        if (!$paymentData || !isset($paymentData['config']['secret_key'])) {
             return back()->with('error', 'Stripe is not configured for this website');
         }
 
-        Stripe\Stripe::setApiKey($paymentConfig['stripe']['secret_key']);
+        Stripe\Stripe::setApiKey($paymentData['config']['secret_key']);
 
         try {
             // 3️⃣ Create a one‑time token from the raw card data
@@ -547,5 +551,48 @@ class AuthorizeNetController extends Controller
         $update->update();
 
         return back();
+    }
+
+    /**
+     * Send invoice email after transaction
+     */
+    private function sendInvoiceEmail($transaction, $website)
+    {
+        try {
+            Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send transaction invoice', [
+                'transaction_id' => $transaction->transaction_id,
+                'email' => $transaction->email,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Set common transaction fields including IP address
+     */
+    private function setTransactionFields($transaction, $request, $transactionId, $donationOrAmount, $websiteId, $type)
+    {
+        $transaction->amount = is_object($donationOrAmount) ? $donationOrAmount->amount : $donationOrAmount;
+        $transaction->type = $type;
+        $transaction->website_id = $websiteId;
+        $transaction->transaction_id = $transactionId;
+        $transaction->name = $request->first_name;
+        $transaction->last_name = $request->last_name;
+        $transaction->email = $request->email;
+        $transaction->address = $request->address ?? null;
+        $transaction->apartment = $request->apartment ?? null;
+        $transaction->city = $request->city ?? null;
+        $transaction->state = $request->state ?? null;
+        $transaction->zip = $request->zipcode ?? null;
+        $transaction->phone = $request->phone ?? null;
+        $transaction->name_on_card = $request->name_on_card ?? null;
+        $transaction->country = $request->country ?? null;
+        $transaction->ip_address = $request->ip();
+        $transaction->fee = 0;
+        $transaction->fee_paid = 1;
+        
+        return $transaction;
     }
 }

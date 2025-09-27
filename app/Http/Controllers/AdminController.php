@@ -18,6 +18,7 @@ use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
 use App\Models\PageComment;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -462,6 +463,37 @@ class AdminController extends Controller
         $data->save();
 
         return redirect()->back()->with('success', 'Donation Approved successfully');
+    }
+
+    public function updateTransactionStatus(Request $request)
+    {
+        try {
+            $transaction = Transaction::where('transaction_id', $request->transaction_id)->first();
+            
+            if (!$transaction) {
+                return response()->json(['error' => 'Transaction not found'], 404);
+            }
+
+            // Map status values
+            $statusMap = [
+                'completed' => 1,
+                'cancelled' => 2,
+                'refunded' => 3,
+                'pending' => 0
+            ];
+
+            if (!array_key_exists($request->status, $statusMap)) {
+                return response()->json(['error' => 'Invalid status'], 400);
+            }
+
+            $transaction->status = $statusMap[$request->status];
+            $transaction->internal_status = strtoupper($request->status);
+            $transaction->save();
+
+            return response()->json(['success' => 'Status updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to update status: ' . $e->getMessage()], 500);
+        }
     }
 
     public function student_approve($id)
@@ -936,6 +968,53 @@ class AdminController extends Controller
         $comment->delete();
         
         return redirect()->back()->with('success', 'Comment deleted successfully!');
+    }
+
+    /**
+     * Download transaction invoice as PDF
+     */
+    public function downloadTransactionInvoice($transactionId)
+    {
+        $transaction = Transaction::where('transaction_id', $transactionId)->firstOrFail();
+        $website = $transaction->website;
+        
+        $total_with_fee = $transaction->amount + (($transaction->amount / 100) * ($website->paymentSettings->fee ?? 2.9));
+        
+        $pdf = Pdf::loadView('emails.invoice-pdf', [
+            'transaction' => $transaction,
+            'website' => $website,
+            'total_with_fee' => $total_with_fee
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isPhpEnabled' => true,
+            'defaultFont' => 'Arial'
+        ]);
+
+        return $pdf->download('invoice-' . $transaction->transaction_id . '.pdf');
+    }
+
+    /**
+     * Resend invoice email for a transaction
+     */
+    public function resendTransactionInvoice($transactionId)
+    {
+        $transaction = Transaction::where('transaction_id', $transactionId)->firstOrFail();
+        $website = $transaction->website;
+        
+        try {
+            \Mail::to($transaction->email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
+            return response()->json(['success' => true, 'message' => 'Invoice email sent successfully!']);
+        } catch (\Exception $e) {
+            \Log::error('Failed to resend transaction invoice', [
+                'transaction_id' => $transaction->transaction_id,
+                'email' => $transaction->email,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['success' => false, 'message' => 'Failed to send invoice email.']);
+        }
     }
 
 }

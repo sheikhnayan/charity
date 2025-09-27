@@ -92,6 +92,50 @@
             border-radius: 4px;
             margin-bottom: 15px;
         }
+
+         .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        .card-payment-icons-container div svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .card-payment-icons-container{
+            display: inherit;
+        }
     </style>
 
 
@@ -131,7 +175,7 @@
             <form action="{{ route('stripe.post') }}" id="payment-form" method="post">
                 @csrf
                 <div class="row justify-content-center">
-                    <div class="col-md-6">
+                    <div class="col-md-6"  @if($check->isInvestment()) style="margin-bottom: 5rem;" @endif>
                         <div class="card" style="margin-top: 8rem;">
                             <div class="container p-2 svelte-bty8ba" data-testid="investor-checkout-container">
                                 <div class="py-2 section-item svelte-awum1m" id="investment_amount"
@@ -1135,7 +1179,9 @@
                 <input type="hidden" name="donation_id" value="{{ $data->id }}">
             </form>
         </div>
-        @if ($footer->status == 1)
+        @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+        @include('layouts.new-footer')
+    @elseif ($footer && $footer->status == 1)
             <footer class="standard-client-footer text-white bg-primary" data-footer="" style="
                 background-color: {{ $footer->background }} !important;
                 max-width: 100%;
@@ -1585,9 +1631,9 @@
     });
 </script>
 
-@if($footer && $website)
+{{-- @if($footer && $website)
     @include('layouts.new-footer')
-@endif
+@endif --}}
 
 </body>
 </html>

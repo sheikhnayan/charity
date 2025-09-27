@@ -1,3 +1,27 @@
+@php
+    // Get website data based on current domain
+    $url = url()->current();
+    $domain = parse_url($url, PHP_URL_HOST);
+    $check = \App\Models\Website::where('domain', $domain)->first();
+
+    if ($check) {
+        $user_id = $check->user_id;
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $website = $check;
+        $groups = \App\Models\User::where('website_id', $check->id)->where('role', 'group_leader')->get();
+        $user = \App\Models\User::where('id', $check->user_id)->first();
+    } else {
+        $setting = null;
+        $header = null;
+        $footer = null;
+        $website = null;
+        $groups = collect();
+        $user = null;
+    }
+@endphp
+
 <html lang="en">
 
 <head>
@@ -36,39 +60,56 @@
             bottom: 0;
             margin-top: 2rem;
         }
+
+         .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
     </style>
 </head>
-
-@php
-    // Get website data based on current domain
-    $url = url()->current();
-    $domain = parse_url($url, PHP_URL_HOST);
-    $check = \App\Models\Website::where('domain', $domain)->first();
-
-    if ($check) {
-        $user_id = $check->user_id;
-        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
-        $header = \App\Models\Header::where('user_id', $user_id)->first();
-        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
-        $website = $check;
-        $groups = \App\Models\User::where('website_id', $check->id)->where('role', 'group_leader')->get();
-        $user = \App\Models\User::where('id', $check->user_id)->first();
-    } else {
-        $setting = null;
-        $header = null;
-        $footer = null;
-        $website = null;
-        $groups = collect();
-        $user = null;
-    }
-@endphp
 
 <body style="padding: 0px">
     @endphp
     @if ($header->status == 1)
         @include('layouts.nav')
     @endif
-    <header class="site-header" id="header" style="padding-top: 3rem">
+    <header class="site-header" id="header" style="padding-top: 
+    @if($check->isInvestment())
+    6rem
+    @else
+    3rem
+    @endif
+    ">
         <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">THANK YOU!</h1>
     </header>
 
@@ -81,7 +122,11 @@
             assistance, feel free to contact our support team.</p>
     </div>
 
-    @if ($footer->status == 1)
+
+
+    @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+        @include('layouts.new-footer')
+    @elseif ($footer && $footer->status == 1)
             <footer class="standard-client-footer text-white bg-primary" data-footer="" style="
         background-color: {{ $footer->background }} !important;
         ">
@@ -226,10 +271,6 @@
                 @endif
             </footer>
     @endif
-
-@if($footer && $website)
-    @include('layouts.new-footer')
-@endif
 
 </body>
 

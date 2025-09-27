@@ -277,6 +277,32 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         AdminController::class, 'donation'
     ])->name('admin.donation');
 
+    Route::post('/transactions/update-status', [
+        AdminController::class, 'updateTransactionStatus'
+    ])->name('admin.transactions.update-status');
+
+    Route::get('/transactions/{transactionId}/download-invoice', [
+        AdminController::class, 'downloadTransactionInvoice'
+    ])->name('admin.transactions.download-invoice');
+
+    Route::post('/transactions/{transactionId}/resend-invoice', [
+        AdminController::class, 'resendTransactionInvoice'
+    ])->name('admin.transactions.resend-invoice');
+
+    // Test routes for invoice functionality
+    Route::get('/test/invoice-pdf', [
+        \App\Http\Controllers\InvoiceTestController::class, 'testInvoice'
+    ])->name('admin.test.invoice-pdf');
+
+    Route::get('/test/invoice-email', [
+        \App\Http\Controllers\InvoiceTestController::class, 'testEmail'
+    ])->name('admin.test.invoice-email');
+
+    // Debug route for fees and SSN
+    Route::get('/debug/fees-ssn', [
+        \App\Http\Controllers\DebugController::class, 'debugFeesAndSSN'
+    ])->name('admin.debug.fees-ssn');
+
     Route::get('/student',[
         AdminController::class, 'student'
     ])->name('admin.student');

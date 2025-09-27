@@ -236,6 +236,11 @@
             .tier-shares {
                 font-size: clamp(8px, 2vw, 12px);
             }
+            .navbar-brand {
+                margin-left: 1rem !important;
+                margin-top: 0.3rem !important;
+                margin-bottom: 0.3rem !important;
+            }
         }
 
         .custom-amount-wrapper {
@@ -1528,10 +1533,11 @@ if ($tiersData && is_array($tiersData)) {
                                                                         <div class="tier-option"
                                                                             data-amount="{{ $tier }}">
                                                                             <div class="tier-amount">
-                                                                                ${{ $tier }}</div>
-                                                                            <div class="tier-shares">
                                                                                 {{ number_format($tier / $sharePrice) }}
                                                                                 shares</div>
+                                                                            <div class="tier-shares">
+                                                                            ${{ $tier }}
+                                                                                </div>
                                                                         </div>
                                                                     @endforeach
 

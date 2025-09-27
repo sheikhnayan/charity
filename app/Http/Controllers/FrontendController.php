@@ -134,7 +134,18 @@ class FrontendController extends Controller
                     // Investor type specific data
                     'individual_name' => $request->input('individual_name'),
                     'date_of_birth' => $request->input('date_of_birth'),
-                    'ssn' => $request->input('ssn'),
+                    // SSN and Tax ID fields
+                    'ssn' => $request->input('ssn') ?: $request->input('taxpayer_id'),
+                    'primary_ssn' => $request->input('primary_ssn') ?: $request->input('joint.joint_holder_taxpayer_id'),
+                    'secondary_ssn' => $request->input('secondary_ssn'),
+                    'taxpayer_id' => $request->input('taxpayer_id'),
+                    'joint_holder_taxpayer_id' => $request->input('joint.joint_holder_taxpayer_id'),
+                    
+                    // Date of Birth fields
+                    'primary_dob' => $request->input('primary_dob'),
+                    'secondary_dob' => $request->input('secondary_dob'),
+                    
+                    // Name fields
                     'primary_name' => $request->input('primary_name'),
                     'secondary_name' => $request->input('secondary_name'),
                     'corporation_name' => $request->input('corporation_name'),
@@ -147,6 +158,14 @@ class FrontendController extends Controller
             \Log::info('=== INVESTMENT CREATED ===');
             \Log::info('Investment ID:', [$investment->id]);
             \Log::info('Investor Type Saved:', [$investment->investor_type]);
+            \Log::info('SSN Fields Captured:', [
+                'ssn' => $request->input('ssn'),
+                'taxpayer_id' => $request->input('taxpayer_id'), 
+                'primary_ssn' => $request->input('primary_ssn'),
+                'secondary_ssn' => $request->input('secondary_ssn'),
+                'joint_holder_taxpayer_id' => $request->input('joint.joint_holder_taxpayer_id')
+            ]);
+            \Log::info('All Request Data:', $request->all());
             \Log::info('Investor Data Saved:', $investment->investor_data);
             \Log::info('Full Investment Record:', $investment->toArray());
             \Log::info('=== END INVESTMENT DEBUG ===');
