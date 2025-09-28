@@ -1151,16 +1151,16 @@
                                            placeholder="Raise up to">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">Investor Text</label>
-                                    <input type="text" class="form-control" name="reg_cf_investor_text" 
-                                           value="{{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}"
-                                           placeholder="Anyone can invest">
+                                    <label class="form-label">Background Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_cf_bg_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_cf', 'bg_color', '#1F2937') }}"
+                                           title="Choose background color">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">URL</label>
-                                    <input type="text" class="form-control" name="reg_cf_url" 
-                                           value="{{ $setting->reg_cf_url ?? '/na-typ' }}"
-                                           placeholder="/na-typ">
+                                    <label class="form-label">Bold Text Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_cf_bold_text_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_cf', 'bold_text_color', '#14B8A6') }}"
+                                           title="Choose bold text color">
                                 </div>
                             </div>
                             
@@ -1180,16 +1180,16 @@
                                            placeholder="Raise up to">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">Investor Text</label>
-                                    <input type="text" class="form-control" name="reg_a_investor_text" 
-                                           value="{{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}"
-                                           placeholder="Anyone can invest">
+                                    <label class="form-label">Background Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_a_bg_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_a', 'bg_color', '#1F2937') }}"
+                                           title="Choose background color">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">URL</label>
-                                    <input type="text" class="form-control" name="reg_a_url" 
-                                           value="{{ $setting->reg_a_url ?? '/na-typ' }}"
-                                           placeholder="/na-typ">
+                                    <label class="form-label">Bold Text Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_a_bold_text_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_a', 'bold_text_color', '#14B8A6') }}"
+                                           title="Choose bold text color">
                                 </div>
                             </div>
                             
@@ -1209,16 +1209,16 @@
                                            placeholder="Raise up to">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">Investor Text</label>
-                                    <input type="text" class="form-control" name="reg_d_investor_text" 
-                                           value="{{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}"
-                                           placeholder="Accredited investors only">
+                                    <label class="form-label">Background Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_d_bg_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_d', 'bg_color', '#1F2937') }}"
+                                           title="Choose background color">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">URL</label>
-                                    <input type="text" class="form-control" name="reg_d_url" 
-                                           value="{{ $setting->reg_d_url ?? '/na-typ' }}"
-                                           placeholder="/na-typ">
+                                    <label class="form-label">Bold Text Color</label>
+                                    <input type="color" class="form-control form-control-color" name="section_background_colors[reg_d_bold_text_color]" 
+                                           value="{{ $setting->getRegulationColor('reg_d', 'bold_text_color', '#14B8A6') }}"
+                                           title="Choose bold text color">
                                 </div>
                             </div>
                         </div>

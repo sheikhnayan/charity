@@ -348,6 +348,15 @@ class DealmakerConfig extends Model
     }
     
     /**
+     * Get regulation color with default fallback
+     */
+    public function getRegulationColor($regulation, $colorType, $default = '#ffffff')
+    {
+        $colors = $this->section_background_colors ?? [];
+        return $colors[$regulation . '_' . $colorType] ?? $default;
+    }
+    
+    /**
      * Get all section background colors with defaults
      */
     public function getAllSectionBackgroundColors()
@@ -381,6 +390,14 @@ class DealmakerConfig extends Model
             ];
         }
         
+        if ($this->menu_difference) {
+            $menuItems[] = [
+                'title' => 'Why Us',
+                'anchor' => '#why-us',
+                'section' => 'difference_section'
+            ];
+        }
+
         if ($this->menu_about) {
             $menuItems[] = [
                 'title' => 'About',
@@ -405,27 +422,19 @@ class DealmakerConfig extends Model
             ];
         }
         
-        if ($this->menu_cases) {
-            $menuItems[] = [
-                'title' => 'Case Studies',
-                'anchor' => '#case-studies',
-                'section' => 'case_studies'
-            ];
-        }
-        
-        if ($this->menu_difference) {
-            $menuItems[] = [
-                'title' => 'Why Us',
-                'anchor' => '#why-us',
-                'section' => 'difference_section'
-            ];
-        }
-        
         if ($this->menu_testimonials) {
             $menuItems[] = [
                 'title' => 'Testimonials',
                 'anchor' => '#testimonials',
                 'section' => 'testimonials'
+            ];
+        }
+
+        if ($this->menu_cases) {
+            $menuItems[] = [
+                'title' => 'Case Studies',
+                'anchor' => '#case-studies',
+                'section' => 'case_studies'
             ];
         }
         

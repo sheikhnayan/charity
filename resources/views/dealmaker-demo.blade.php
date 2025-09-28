@@ -42,10 +42,20 @@
             color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
         }
         
-        /* Hover and active states for buttons */
+        .trans{
+            background-color: transparent !important;
+            color: white !important;
+            border-color: white !important;
+        }
+
+
+        /* Hover and active states for ALL buttons including .is-alternate */
         .n_button:not(.is-ghost):hover,
         .n_button:not(.is-ghost):active,
         .n_button:not(.is-ghost):focus,
+        .n_button.is-alternate:hover,
+        .n_button.is-alternate:active,
+        .n_button.is-alternate:focus,
         .hero-cta-button:hover,
         .hero-cta-button:active,
         .hero-cta-button:focus,
@@ -55,12 +65,14 @@
             background-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
             border-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
             color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+            transition: all 0.3s ease !important;
         }
         
         /* Include all button variations except is-ghost */
         .n_button.is-small:not(.is-ghost),
-        .n_button.is-darker:not(.is-ghost),
-        .n_button.is-alternate:not(.is-ghost) {
+        .n_button.is-darker:not(.is-ghost){
             background-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
             border-color: {{ $setting->button_primary_color ?? '#f31cb6' }} !important;
             color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
@@ -71,13 +83,13 @@
         .n_button.is-small:not(.is-ghost):focus,
         .n_button.is-darker:not(.is-ghost):hover,
         .n_button.is-darker:not(.is-ghost):active,
-        .n_button.is-darker:not(.is-ghost):focus,
-        .n_button.is-alternate:not(.is-ghost):hover,
-        .n_button.is-alternate:not(.is-ghost):active,
-        .n_button.is-alternate:not(.is-ghost):focus {
+        .n_button.is-darker:not(.is-ghost):focus {
             background-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
             border-color: {{ $setting->button_hover_color ?? '#d1179a' }} !important;
             color: {{ $setting->button_text_color ?? '#ffffff' }} !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+            transition: all 0.3s ease !important;
         }
         
         /* Keep transparent buttons (is-ghost) unchanged */
@@ -91,6 +103,516 @@
         .n_button.is-ghost:focus {
             background-color: transparent !important;
             border-color: currentColor !important;
+        }
+
+        /* Modern Header Styles */
+        .modern-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Announcement Bar */
+        .announcement-bar {
+            @php
+                $announcementColor = $setting->getSectionBackgroundColor('announcement', '#2563eb');
+                // Remove # if present and convert to RGB
+                $hex = ltrim($announcementColor, '#');
+                if (strlen($hex) === 3) {
+                    $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+                }
+                
+                // Convert hex to RGB
+                $r = hexdec(substr($hex, 0, 2));
+                $g = hexdec(substr($hex, 2, 2));
+                $b = hexdec(substr($hex, 4, 2));
+                
+                // Generate second color by shifting hue and adjusting brightness
+                $hsl = rgbToHsl($r, $g, $b);
+                $hsl[0] = ($hsl[0] + 30) % 360; // Shift hue by 30 degrees
+                $hsl[2] = min(1, $hsl[2] * 1.2); // Brighten by 20%
+                $rgb2 = hslToRgb($hsl[0], $hsl[1], $hsl[2]);
+                
+                $secondColor = sprintf("#%02x%02x%02x", $rgb2[0], $rgb2[1], $rgb2[2]);
+                
+                function rgbToHsl($r, $g, $b) {
+                    $r /= 255; $g /= 255; $b /= 255;
+                    $max = max($r, $g, $b); $min = min($r, $g, $b);
+                    $h = $s = $l = ($max + $min) / 2;
+                    
+                    if ($max == $min) {
+                        $h = $s = 0;
+                    } else {
+                        $d = $max - $min;
+                        $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+                        switch ($max) {
+                            case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
+                            case $g: $h = ($b - $r) / $d + 2; break;
+                            case $b: $h = ($r - $g) / $d + 4; break;
+                        }
+                        $h /= 6;
+                    }
+                    return [$h * 360, $s, $l];
+                }
+                
+                function hslToRgb($h, $s, $l) {
+                    $h /= 360;
+                    if ($s == 0) {
+                        $r = $g = $b = $l;
+                    } else {
+                        $hue2rgb = function($p, $q, $t) {
+                            if ($t < 0) $t += 1;
+                            if ($t > 1) $t -= 1;
+                            if ($t < 1/6) return $p + ($q - $p) * 6 * $t;
+                            if ($t < 1/2) return $q;
+                            if ($t < 2/3) return $p + ($q - $p) * (2/3 - $t) * 6;
+                            return $p;
+                        };
+                        $q = $l < 0.5 ? $l * (1 + $s) : $l + $s - $l * $s;
+                        $p = 2 * $l - $q;
+                        $r = $hue2rgb($p, $q, $h + 1/3);
+                        $g = $hue2rgb($p, $q, $h);
+                        $b = $hue2rgb($p, $q, $h - 1/3);
+                    }
+                    return [round($r * 255), round($g * 255), round($b * 255)];
+                }
+            @endphp
+            background: linear-gradient(135deg, {{ $announcementColor }}e6 0%, {{ $secondColor }}e6 100%);
+            color: white;
+            padding: 12px 0;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .announcement-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .announcement-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .announcement-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .announcement-text {
+            flex: 1;
+        }
+
+        .announcement-link {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: opacity 0.2s ease;
+        }
+
+        .announcement-link:hover {
+            opacity: 0.9;
+        }
+
+        .announcement-arrow {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .announcement-link:hover .announcement-arrow {
+            transform: translate(2px, -2px);
+        }
+
+        .announcement-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .announcement-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Navbar - Dynamic Colors */
+        .navbar {
+            background: {{ $setting->getSectionBackgroundColor('navbar', 'rgba(255, 255, 255, 0.95)') }};
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: {{ $setting->getSectionBackgroundColor('navbar_scrolled', 'rgba(255, 255, 255, 0.98)') }};
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .logo-image {
+            height: 40px;
+            width: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .navbar-logo:hover .logo-image {
+            transform: scale(1.05);
+        }
+
+        .logo-svg {
+            height: 40px;
+            width: auto;
+            color: {{ $setting->primary_color ?? '#2563eb' }};
+        }
+
+        .logo-svg svg {
+            height: 100%;
+            width: auto;
+        }
+
+        /* Desktop Menu */
+        .desktop-menu {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-link {
+            color: {{ $setting->nav_text_color ?? '#374151' }};
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: {{ $setting->primary_color ?? '#2563eb' }};
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: {{ $setting->button_primary_color ?? $setting->primary_color ?? '#2563eb' }};
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+            background: {{ $setting->button_primary_color ?? $setting->primary_color ?? '#2563eb' }};
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-signin {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: {{ $setting->nav_text_color ?? '#6b7280' }};
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-signin:hover {
+            color: {{ $setting->button_primary_color ?? $setting->primary_color ?? '#2563eb' }};
+            background-color: {{ $setting->button_hover_bg_color ?? '#f3f4f6' }};
+        }
+
+        .signin-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-cta {
+            background: {{ $setting->button_primary_color ?? 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)' }};
+            color: {{ $setting->button_text_color ?? 'white' }};
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        .nav-cta:hover {
+            background: {{ $setting->button_hover_color ?? $setting->button_primary_color ?? '#2563eb' }};
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 32px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .hamburger-line {
+            width: 100%;
+            height: 3px;
+            background-color: {{ $setting->nav_text_color ?? '#374151' }};
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-content {
+            background: white;
+            height: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            padding: 32px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-menu-overlay.active .mobile-menu-content {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .mobile-logo img {
+            height: 32px;
+            width: auto;
+        }
+
+        .mobile-logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: {{ $setting->primary_color ?? '#2563eb' }};
+        }
+
+        .mobile-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: {{ $setting->nav_text_color ?? '#6b7280' }};
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .mobile-nav-link {
+            color: {{ $setting->nav_text_color ?? '#111827' }};
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+            transition: color 0.2s ease;
+        }
+
+        .mobile-nav-link:hover {
+            color: {{ $setting->button_primary_color ?? $setting->primary_color ?? '#2563eb' }};
+        }
+
+        .mobile-nav-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .mobile-signin {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: {{ $setting->nav_text_color ?? '#6b7280' }};
+            text-decoration: none;
+            font-weight: 500;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: {{ $setting->button_bg_color ?? '#f9fafb' }};
+            transition: all 0.2s ease;
+        }
+
+        .mobile-signin:hover {
+            color: {{ $setting->button_primary_color ?? $setting->primary_color ?? '#2563eb' }};
+            background-color: {{ $setting->button_hover_bg_color ?? '#f3f4f6' }};
+        }
+
+        .mobile-cta {
+            background: {{ $setting->button_primary_color ?? 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)' }};
+            color: {{ $setting->button_text_color ?? 'white' }};
+            text-decoration: none;
+            font-weight: 600;
+            padding: 16px 24px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-cta:hover {
+            background: {{ $setting->button_hover_color ?? $setting->button_primary_color ?? '#2563eb' }};
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .desktop-menu {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .navbar-container {
+                height: 70px;
+                padding: 0 20px;
+            }
+            
+            .announcement-container {
+                padding: 0 20px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navbar-container {
+                height: 60px;
+                padding: 0 16px;
+            }
+            
+            .announcement-container {
+                padding: 0 16px;
+            }
+            
+            .announcement-content {
+                gap: 12px;
+            }
+            
+            .announcement-badge {
+                display: none;
+            }
+            
+            .logo-image {
+                height: 32px;
+            }
+            
+            .logo-svg {
+                height: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-menu-content {
+                padding: 24px;
+                max-width: 100%;
+            }
+            
+            .announcement-text {
+                font-size: 13px;
+            }
         }
         
         /* Social Icon Styling */
@@ -132,6 +654,8 @@
         .navbar_link:hover {
             color: {{ $setting->button_primary_color ?? '#f31cb6' }};
         }
+
+        
     </style>
     
     <script src="{{ asset('js/webfont.js') }}" type="text/javascript"></script>
@@ -492,135 +1016,247 @@ a,
                 }
             </style>
         </div>
-        <div data-animation="default" class="n_navbar-25 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-nav"
-            data-easing2="ease" data-wf--main-nav--variant="announcement" data-easing="ease" data-collapse="medium"
-            data-w-id="111ce1d9-5d52-f117-6d9c-068c2f584c20" role="banner" data-no-scroll="1" data-duration="400">
+        <!-- Modern Header Section with Glassmorphism Design -->
+        <header class="modern-header" data-animation="default" role="banner">
             @if ($setting->show_announcement ?? true)
-                 <div class="div-block-20 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background-color: {{ $setting->getSectionBackgroundColor('announcement', '#f8f9fa') }};">
-                    <div class="div-block-21 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
-                        <div class="div-block-22 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
-                            <div class="breaking-news-wr w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" style="background: #e63cb8 !important">
-                                {{-- <img
-                                    src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6873ea75996d3b8bd33a2d13_Rectangle%2066.svg"
-                                    loading="lazy" alt=""
-                                    class="image-76 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" /> --}}
-                                <div class="breaking-text w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8">
-                                    {{ $setting->announcement_badge ?? 'GET READY' }}</div>
+                <div class="announcement-bar">
+                    <div class="announcement-container">
+                        <div class="announcement-content">
+                            <div class="announcement-badge">
+                                <span class="badge-text">{{ $setting->announcement_badge ?? 'NEW' }}</span>
                             </div>
-                            <div class="breaking-follow-tect w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><a
-                                    href="{{ $setting->announcement_url ?? '/assetclassconference' }}"
-                                    class="link-no-underline is-regular w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-inline-block">
-                                    <div>
-                                        {{ $setting->announcement_text ?? 'Announcing Sports As An Asset Class Summit, October 16th. Learn More' }}
-                                    </div><img
-                                        src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/68750a1f71b4822899d82d1b_Vectorarrw.png"
-                                        loading="lazy" alt=""
-                                        class="code-embed-11 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8" />
-                                </a></div>
-                        </div><a data-w-id="49705535-c337-0f16-396e-4ea55fe2c828" href="#"
-                            class="link-block-8 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-inline-block">
-                            <div class="code-embed-12 w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8 w-embed"><svg
-                                    width="auto" height="auto" viewBox="0 0 342 342" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M200.867 171L335.267 36.5997C343.8 28.0663 343.8 15.2663 335.267 6.73301C326.733 -1.80033 313.933 -1.80033 305.4 6.73301L171 141.133L36.5999 6.73301C28.0666 -1.80033 15.2666 -1.80033 6.73326 6.73301C-1.80008 15.2663 -1.80008 28.0663 6.73326 36.5997L141.133 171L6.73326 305.4C2.46659 309.666 0.333252 313.933 0.333252 320.333C0.333252 333.133 8.86659 341.666 21.6666 341.666C28.0666 341.666 32.3332 339.533 36.5999 335.266L171 200.866L305.4 335.266C309.667 339.533 313.933 341.666 320.333 341.666C326.733 341.666 331 339.533 335.267 335.266C343.8 326.733 343.8 313.933 335.267 305.4L200.867 171Z"
-                                        fill="currentColor" />
-                                </svg></div>
-                        </a>
-                    </div>
-            @endif
-            <div class="navbar_container n-new w-variant-a52fa8b8-c65e-a715-d103-8890e469ceb8"><a href="/"
-                    aria-current="page" class="navbar_logo-link w-nav-brand w--current">
-                    @if ($setting->uploaded_logo)
-                        <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" class="navbar_logo"
-                            style="height: 40px; width: auto;" />
-                    @elseif($setting->site_logo)
-                        <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" class="navbar_logo"
-                            style="height: 40px; width: auto;" />
-                    @else
-                        <div class="navbar_logo w-embed"><svg width="auto" height="auto" viewBox="0 0 1345 237"
-                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_8230_71)">
-                                    <path
-                                        d="M869.37 158.33V235.07H848.21V159.61C848.21 133.81 836.86 120.39 816.99 120.39C795.06 120.39 781.64 136.9 781.64 163.73V235.06H760.48V159.6C760.48 133.8 748.87 120.38 728.75 120.38C707.08 120.38 693.92 138.44 693.92 164.76V235.06H672.76V102.6H691.08L693.92 120.66C700.88 111.12 711.98 101.05 732.36 101.05C750.68 101.05 766.42 109.31 773.9 126.08C781.9 111.89 796.09 101.05 819.57 101.05C846.92 101.05 869.36 116.79 869.36 158.33H869.37Z"
-                                        fill="white" />
-                                    <path
-                                        d="M182.43 54.41L121.51 0V105.71L60.78 51.18V181.13L121.76 235.56V180.53L182.43 235.07V54.41Z"
-                                        fill="white" />
-                                    <path
-                                        d="M323.75 54.0098H344.94V234.87H326.59L323.75 213.68C314.96 225.82 300.75 236.42 278.53 236.42C242.1 236.42 215.23 211.87 215.23 168.99C215.23 128.68 242.1 101.55 278.53 101.55C300.75 101.55 315.74 110.6 323.75 123.26V54.0098ZM324 169.5C324 140.56 306.43 120.41 280.6 120.41C254.77 120.41 236.93 140.31 236.93 168.99C236.93 197.67 254.5 217.56 280.6 217.56C306.7 217.56 324 197.66 324 169.5Z"
-                                        fill="white" />
-                                    <path
-                                        d="M357.99 168.99C357.99 128.94 383.31 101.55 420.51 101.55C457.71 101.55 482 125.06 483.04 164.08C483.04 166.92 482.78 170.02 482.52 173.12H380.2V174.93C380.98 199.99 396.74 217.56 421.8 217.56C440.41 217.56 454.87 207.74 459.27 190.69H480.72C475.55 217.05 453.85 236.42 423.36 236.42C383.83 236.42 357.99 209.29 357.99 168.99ZM460.3 155.55C458.23 132.81 442.73 120.15 420.77 120.15C401.39 120.15 383.56 134.1 381.5 155.55H460.31H460.3Z"
-                                        fill="white" />
-                                    <path
-                                        d="M998.02 149.09C998.02 118.34 978.64 101.55 945.06 101.55C913.28 101.55 892.35 116.8 889.25 142.63H910.44C913.02 129.19 925.43 120.41 944.03 120.41C964.7 120.41 976.84 130.75 976.84 147.8V156.84H938.09C903.47 156.84 885.12 171.57 885.12 197.92C885.12 221.95 904.76 236.42 933.69 236.42C955.89 236.42 968.97 226.81 977.27 215.29L980.01 234.57L998.1 234.67L998.03 149.09H998.02ZM976.84 181.13C976.84 203.09 961.6 218.34 935.24 218.34C917.67 218.34 906.56 209.55 906.56 196.64C906.56 181.65 917.15 174.67 936.01 174.67H976.83V181.13H976.84Z"
-                                        fill="white" />
-                                    <path
-                                        d="M607.67 149.09C607.67 118.34 588.29 101.55 554.71 101.55C522.93 101.55 502 116.8 498.9 142.63H520.09C522.67 129.19 535.08 120.41 553.68 120.41C574.35 120.41 586.49 130.75 586.49 147.8V156.84H547.74C513.12 156.84 494.77 171.57 494.77 197.92C494.77 221.95 514.41 236.42 543.34 236.42C565.54 236.42 578.62 226.81 586.92 215.29L589.66 234.57L607.75 234.67L607.68 149.09H607.67ZM586.48 181.13C586.48 203.09 571.24 218.34 544.88 218.34C527.31 218.34 516.2 209.55 516.2 196.64C516.2 181.65 526.79 174.67 545.65 174.67H586.47V181.13H586.48Z"
-                                        fill="white" />
-                                    <path d="M650.83 54.0098H629.64V234.87H650.83V54.0098Z" fill="white" />
-                                    <path
-                                        d="M1019.85 54.0098H1041.04V173.12L1107.18 103.1H1133.28L1081.86 157.62L1136.89 234.88H1111.31L1067.65 172.87L1041.04 200.26V234.88H1019.85V54.0098Z"
-                                        fill="white" />
-                                    <path
-                                        d="M1131.83 168.99C1131.83 128.94 1157.15 101.55 1194.35 101.55C1231.55 101.55 1255.84 125.06 1256.88 164.08C1256.88 166.92 1256.62 170.02 1256.36 173.12H1154.04V174.93C1154.82 199.99 1170.58 217.56 1195.64 217.56C1214.25 217.56 1228.71 207.74 1233.11 190.69H1254.56C1249.39 217.05 1227.69 236.42 1197.2 236.42C1157.67 236.42 1131.83 209.29 1131.83 168.99ZM1234.15 155.55C1232.08 132.81 1216.58 120.15 1194.62 120.15C1175.24 120.15 1157.41 134.1 1155.35 155.55H1234.16H1234.15Z"
-                                        fill="white" />
-                                    <path
-                                        d="M1344.03 103.1V123.77H1333.43C1305.78 123.77 1298.29 146.77 1298.29 167.69V234.87H1277.1V103.1H1295.44L1298.29 123C1304.49 112.92 1314.57 103.1 1338.08 103.1H1344.03Z"
-                                        fill="white" />
-                                    <path d="M60.78 235.01L0 180.8V126.88L60.78 181.12V235.01Z" fill="#8EE8DF" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_8230_71">
-                                        <rect width="1344.03" height="236.42" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg></div>
-                    @endif
-                </a>
-                <article role="navigation" class="navbar_menu is-page-height-tablet w-nav-menu">
-                    <div data-wf--nav-links--variant="base" class="n_navbar-links">
-                        {{-- Dynamic Section Menu Items --}}
-                        @php
-                            $enabledMenuItems = $setting->getEnabledMenuItems();
-                        @endphp
-                        @if(count($enabledMenuItems) > 0)
-                            @foreach($enabledMenuItems as $menuItem)
-                                <a href="{{ $menuItem['anchor'] }}" class="navbar_link smooth-scroll">
-                                    {{ $menuItem['title'] }}
+                            <div class="announcement-text">
+                                <a href="{{ $setting->announcement_url ?? '/assetclassconference' }}" class="announcement-link">
+                                    {{ $setting->announcement_text ?? 'Announcing Sports As An Asset Class Summit, October 16th. Learn More' }}
+                                    <svg class="announcement-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
                                 </a>
-                            @endforeach
-                        @endif
-                    </div>
-                    <div class="navbar_menu-buttons"><a style="display: none;"
-                            href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}"
-                            class="n_button is-ghost w-inline-block">
-                            <div class="signin_icon w-embed"><svg width="auto" height="auto" viewBox="0 0 38 38"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M19 0C29.4934 0 38 8.50659 38 19C38 24.7669 35.4304 29.9334 31.374 33.418C31.3393 33.4526 31.3007 33.4832 31.2607 33.5127C27.9515 36.3113 23.6734 38 19 38C8.50659 38 0 29.4934 0 19C0 8.50659 8.50659 0 19 0ZM15 28C13.4949 27.9997 12.0291 28.4848 10.8213 29.3828C9.78697 30.1519 8.98792 31.1887 8.50781 32.376C11.3975 34.6458 15.0405 36 19 36C22.9588 36 26.6008 34.646 29.4902 32.377C29.0109 31.1914 28.2159 30.1546 27.1836 29.3857C25.9749 28.4857 24.5078 27.9997 23.001 28H15ZM19 2C9.61116 2 2 9.61116 2 19C2 23.6763 3.88886 27.9108 6.94434 30.9844C7.5717 29.726 8.48812 28.6249 9.62793 27.7773C11.1809 26.623 13.0649 25.9996 15 26H23C24.9373 25.9995 26.824 26.6242 28.3779 27.7812C29.5151 28.6281 30.4283 29.7282 31.0547 30.9844C34.1104 27.9108 36 23.6765 36 19C36 9.61116 28.3888 2 19 2ZM19 8C22.866 8 26 11.134 26 15C26 18.866 22.866 22 19 22C15.134 22 12 18.866 12 15C12 11.134 15.134 8 19 8ZM19 10C16.2386 10 14 12.2386 14 15C14 17.7614 16.2386 20 19 20C21.7614 20 24 17.7614 24 15C24 12.2386 21.7614 10 19 10Z"
-                                        fill="currentColor" />
-                                </svg></div>
-                            <div>{{ $setting->signin_text ?? 'Sign In' }}</div>
-                        </a><a href="{{ $setting->main_cta_url ?? '/connect' }}"
-                            class="n_button is-small w-inline-block">
-                            <div>{{ $setting->main_cta_text ?? 'Get Started' }}</div>
-                        </a></div>
-                </article>
-                <div class="navbar_menu-button w-nav-button">
-                    <div class="menu-icon1">
-                        <div class="menu-icon1_line-top"></div>
-                        <div class="menu-icon1_line-middle">
-                            <div class="menu-icon_line-middle-inner"></div>
+                            </div>
                         </div>
-                        <div class="menu-icon1_line-bottom"></div>
+                        <button class="announcement-close" onclick="this.parentElement.parentElement.style.display='none'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            @endif
+
+            <nav class="navbar" id="modernNavbar">
+                <div class="navbar-container">
+                    <!-- Logo Section -->
+                    <a href="/" class="navbar-logo" aria-current="page">
+                        @if ($setting->uploaded_logo)
+                            <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" class="logo-image" />
+                        @elseif($setting->site_logo)
+                            <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" class="logo-image" />
+                        @else
+                            <div class="logo-svg">
+                                <svg width="auto" height="auto" viewBox="0 0 1345 237" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_8230_71)">
+                                        <path d="M869.37 158.33V235.07H848.21V159.61C848.21 133.81 836.86 120.39 816.99 120.39C795.06 120.39 781.64 136.9 781.64 163.73V235.06H760.48V159.6C760.48 133.8 748.87 120.38 728.75 120.38C707.08 120.38 693.92 138.44 693.92 164.76V235.06H672.76V102.6H691.08L693.92 120.66C700.88 111.12 711.98 101.05 732.36 101.05C750.68 101.05 766.42 109.31 773.9 126.08C781.9 111.89 796.09 101.05 819.57 101.05C846.92 101.05 869.36 116.79 869.36 158.33H869.37Z" fill="currentColor" />
+                                        <path d="M182.43 54.41L121.51 0V105.71L60.78 51.18V181.13L121.76 235.56V180.53L182.43 235.07V54.41Z" fill="currentColor" />
+                                        <path d="M323.75 54.0098H344.94V234.87H326.59L323.75 213.68C314.96 225.82 300.75 236.42 278.53 236.42C242.1 236.42 215.23 211.87 215.23 168.99C215.23 128.68 242.1 101.55 278.53 101.55C300.75 101.55 315.74 110.6 323.75 123.26V54.0098ZM324 169.5C324 140.56 306.43 120.41 280.6 120.41C254.77 120.41 236.93 140.31 236.93 168.99C236.93 197.67 254.5 217.56 280.6 217.56C306.7 217.56 324 197.66 324 169.5Z" fill="currentColor" />
+                                        <path d="M357.99 168.99C357.99 128.94 383.31 101.55 420.51 101.55C457.71 101.55 482 125.06 483.04 164.08C483.04 166.92 482.78 170.02 482.52 173.12H380.2V174.93C380.98 199.99 396.74 217.56 421.8 217.56C440.41 217.56 454.87 207.74 459.27 190.69H480.72C475.55 217.05 453.85 236.42 423.36 236.42C383.83 236.42 357.99 209.29 357.99 168.99ZM460.3 155.55C458.23 132.81 442.73 120.15 420.77 120.15C401.39 120.15 383.56 134.1 381.5 155.55H460.31H460.3Z" fill="currentColor" />
+                                        <path d="M998.02 149.09C998.02 118.34 978.64 101.55 945.06 101.55C913.28 101.55 892.35 116.8 889.25 142.63H910.44C913.02 129.19 925.43 120.41 944.03 120.41C964.7 120.41 976.84 130.75 976.84 147.8V156.84H938.09C903.47 156.84 885.12 171.57 885.12 197.92C885.12 221.95 904.76 236.42 933.69 236.42C955.89 236.42 968.97 226.81 977.27 215.29L980.01 234.57L998.1 234.67L998.03 149.09H998.02ZM976.84 181.13C976.84 203.09 961.6 218.34 935.24 218.34C917.67 218.34 906.56 209.55 906.56 196.64C906.56 181.65 917.15 174.67 936.01 174.67H976.83V181.13H976.84Z" fill="currentColor" />
+                                        <path d="M607.67 149.09C607.67 118.34 588.29 101.55 554.71 101.55C522.93 101.55 502 116.8 498.9 142.63H520.09C522.67 129.19 535.08 120.41 553.68 120.41C574.35 120.41 586.49 130.75 586.49 147.8V156.84H547.74C513.12 156.84 494.77 171.57 494.77 197.92C494.77 221.95 514.41 236.42 543.34 236.42C565.54 236.42 578.62 226.81 586.92 215.29L589.66 234.57L607.75 234.67L607.68 149.09H607.67ZM586.48 181.13C586.48 203.09 571.24 218.34 544.88 218.34C527.31 218.34 516.2 209.55 516.2 196.64C516.2 181.65 526.79 174.67 545.65 174.67H586.47V181.13H586.48Z" fill="currentColor" />
+                                        <path d="M650.83 54.0098H629.64V234.87H650.83V54.0098Z" fill="currentColor" />
+                                        <path d="M1019.85 54.0098H1041.04V173.12L1107.18 103.1H1133.28L1081.86 157.62L1136.89 234.88H1111.31L1067.65 172.87L1041.04 200.26V234.88H1019.85V54.0098Z" fill="currentColor" />
+                                        <path d="M1131.83 168.99C1131.83 128.94 1157.15 101.55 1194.35 101.55C1231.55 101.55 1255.84 125.06 1256.88 164.08C1256.88 166.92 1256.62 170.02 1256.36 173.12H1154.04V174.93C1154.82 199.99 1170.58 217.56 1195.64 217.56C1214.25 217.56 1228.71 207.74 1233.11 190.69H1254.56C1249.39 217.05 1227.69 236.42 1197.2 236.42C1157.67 236.42 1131.83 209.29 1131.83 168.99ZM1234.15 155.55C1232.08 132.81 1216.58 120.15 1194.62 120.15C1175.24 120.15 1157.41 134.1 1155.35 155.55H1234.16H1234.15Z" fill="currentColor" />
+                                        <path d="M1344.03 103.1V123.77H1333.43C1305.78 123.77 1298.29 146.77 1298.29 167.69V234.87H1277.1V103.1H1295.44L1298.29 123C1304.49 112.92 1314.57 103.1 1338.08 103.1H1344.03Z" fill="currentColor" />
+                                        <path d="M60.78 235.01L0 180.8V126.88L60.78 181.12V235.01Z" fill="#8EE8DF" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_8230_71">
+                                            <rect width="1344.03" height="236.42" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                        @endif
+                    </a>
+
+                    <!-- Desktop Navigation -->
+                    <div class="navbar-menu desktop-menu">
+                        <nav class="nav-links">
+                            @php
+                                $enabledMenuItems = $setting->getEnabledMenuItems();
+                            @endphp
+                            @if(count($enabledMenuItems) > 0)
+                                @foreach($enabledMenuItems as $menuItem)
+                                    <a href="{{ $menuItem['anchor'] }}" class="nav-link smooth-scroll">
+                                        {{ $menuItem['title'] }}
+                                    </a>
+                                @endforeach
+                            @endif
+                        </nav>
+                        
+                        <div class="nav-actions">
+                            <a href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}" 
+                               class="nav-signin" style="display: none;">
+                                <svg class="signin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>{{ $setting->signin_text ?? 'Sign In' }}</span>
+                            </a>
+                            <a href="{{ $setting->main_cta_url ?? '/connect' }}" class="nav-cta">
+                                {{ $setting->main_cta_text ?? 'Get Started' }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle mobile menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+
+                <!-- Mobile Navigation Overlay -->
+                <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+                    <div class="mobile-menu-content">
+                        <div class="mobile-nav-header">
+                            <div class="mobile-logo">
+                                @if ($setting->uploaded_logo)
+                                    <img src="{{ asset($setting->uploaded_logo) }}" alt="Site Logo" />
+                                @elseif($setting->site_logo)
+                                    <img src="{{ asset($setting->site_logo) }}" alt="Site Logo" />
+                                @else
+                                    <div class="mobile-logo-text">{{ config('app.name', 'DealMaker') }}</div>
+                                @endif
+                            </div>
+                            <button class="mobile-close-btn" id="mobileCloseBtn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <nav class="mobile-nav-links">
+                            @if(count($enabledMenuItems) > 0)
+                                @foreach($enabledMenuItems as $menuItem)
+                                    <a href="{{ $menuItem['anchor'] }}" class="mobile-nav-link smooth-scroll">
+                                        {{ $menuItem['title'] }}
+                                    </a>
+                                @endforeach
+                            @endif
+                        </nav>
+                        
+                        <div class="mobile-nav-actions">
+                            <a href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}" 
+                               class="mobile-signin" style="display: none;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {{ $setting->signin_text ?? 'Sign In' }}
+                            </a>
+                            <a href="{{ $setting->main_cta_url ?? '/connect' }}" class="mobile-cta">
+                                {{ $setting->main_cta_text ?? 'Get Started' }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
         <div class="code-embed-6 w-embed w-script">
             <script>
+                // Modern Header JavaScript
+                document.addEventListener('DOMContentLoaded', function() {
+                    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+                    const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+                    const navbar = document.querySelector('.navbar');
+                    const header = document.querySelector('.modern-header');
+                    
+                    // Mobile menu toggle
+                    if (mobileMenuBtn && mobileMenuOverlay) {
+                        mobileMenuBtn.addEventListener('click', function() {
+                            mobileMenuBtn.classList.toggle('active');
+                            mobileMenuOverlay.classList.toggle('active');
+                            document.body.style.overflow = mobileMenuOverlay.classList.contains('active') ? 'hidden' : '';
+                        });
+                        
+                        if (mobileCloseBtn) {
+                            mobileCloseBtn.addEventListener('click', function() {
+                                mobileMenuBtn.classList.remove('active');
+                                mobileMenuOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            });
+                        }
+                        
+                        // Close on link click
+                        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+                        mobileLinks.forEach(link => {
+                            link.addEventListener('click', function() {
+                                mobileMenuBtn.classList.remove('active');
+                                mobileMenuOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            });
+                        });
+                        
+                        // Close on overlay click
+                        mobileMenuOverlay.addEventListener('click', function(e) {
+                            if (e.target === mobileMenuOverlay) {
+                                mobileMenuBtn.classList.remove('active');
+                                mobileMenuOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
+                        });
+                    }
+                    
+                    // Scroll effects
+                    let lastScrollTop = 0;
+                    window.addEventListener('scroll', function() {
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        
+                        if (navbar) {
+                            if (scrollTop > 100) {
+                                navbar.classList.add('scrolled');
+                            } else {
+                                navbar.classList.remove('scrolled');
+                            }
+                        }
+                        
+                        // Header hide/show on scroll (optional)
+                        if (header && scrollTop > 200) {
+                            if (scrollTop > lastScrollTop && scrollTop > 300) {
+                                // Scrolling down
+                                header.style.transform = 'translateY(-100%)';
+                            } else {
+                                // Scrolling up
+                                header.style.transform = 'translateY(0)';
+                            }
+                        }
+                        
+                        lastScrollTop = scrollTop;
+                    });
+                    
+                    // Smooth scroll for anchor links
+                    document.querySelectorAll('.smooth-scroll').forEach(anchor => {
+                        anchor.addEventListener('click', function (e) {
+                            const href = this.getAttribute('href');
+                            if (href && href.startsWith('#')) {
+                                e.preventDefault();
+                                const target = document.querySelector(href);
+                                if (target) {
+                                    const headerHeight = header ? header.offsetHeight : 80;
+                                    const targetPosition = target.offsetTop - headerHeight;
+                                    
+                                    window.scrollTo({
+                                        top: targetPosition,
+                                        behavior: 'smooth'
+                                    });
+                                }
+                            }
+                        });
+                    });
+                });
+                
+                // Legacy navbar fallback (keeping existing functionality)
                 (function() {
                     const navbar = document.querySelector('.n_navbar');
                     if (!navbar) return;
@@ -1154,167 +1790,7 @@ a,
         </section> --}}
 
         
-
-        @if ($setting->show_case_studies ?? true)
-            <div class="spacer-large menu-icon1_line-middle d-none" style="display: none;"></div>
-            <section id="case-studies" class="section_casestudies" style="background-color: {{ $setting->getSectionBackgroundColor('case_studies', '#f8f9fa') }};">
-                <div class="w-layout-grid grid-16">
-                    @if (is_array($setting->case_studies) && count($setting->case_studies) > 0)
-                        @foreach ($setting->case_studies as $index => $case_study)
-                            <div id="w-node-_6e3e58cf-7d87-bdef-4976-78bb8065337{{ sprintf('%x', $index + 1) }}-4a773f3e"
-                                class="casestudies_boxes {{ $index === 0 ? 'is-full' : 'is-smaller' }}">
-                                <div class="casestudies_text-wrapper bottom-aligned">
-                                    <div>
-                                        <div class="rl_header44_dmn-flex">
-                                            <a href="{{ $case_study['learn_more_url'] ?? '#' }}"
-                                                class="casestudies_logo for-rises w-inline-block">
-                                                <img src="{{ $case_study['logo'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710fa0a2d2ed60bd3663_energyx_logo_e7aea357.png' }}"
-                                                    loading="lazy" alt="{{ $case_study['name'] ?? 'Case Study' }}"
-                                                    class="casestudies_image-size" />
-                                            </a>
-                                            <div class="spacer-medium"></div>
-                                            <div class="text-size-small">
-                                                {{ $case_study['description'] ?? 'Company description.' }}</div>
-                                            <div class="spacer-medium"></div>
-                                            @if ($index === 0)
-                                                <div class="spacer-medium"></div>
-                                            @endif
-                                            <div class="rl_header44_number-wrapper">
-                                                <div class="rl_header44_dmn-flex space">
-                                                    <div class="dmn-line is-full"></div>
-                                                    <div class="n_text-size-tiny">
-                                                        {{ $setting->case_study_capital_raised_label ?? 'Capital Raised' }}
-                                                    </div>
-                                                    <div class="w-layout-hflex">
-                                                        <div class="n_large-numbers text-color-white">$</div>
-                                                        <div fs-numbercount-threshold="0"
-                                                            fs-numbercount-element="number" fs-numbercount-start="1"
-                                                            fs-numbercount-end="{{ $case_study['capital_raised'] ?? '0' }}"
-                                                            class="n_large-numbers text-color-white">
-                                                            {{ $case_study['capital_raised'] ?? '0' }}</div>
-                                                        <div class="n_large-numbers text-color-white">M+</div>
-                                                    </div>
-                                                </div>
-                                                <div class="rl_header44_dmn-flex space">
-                                                    <div class="dmn-line is-full"></div>
-                                                    <div class="n_text-size-tiny">
-                                                        {{ $setting->case_study_investors_label ?? 'Investors' }}</div>
-                                                    <div class="w-layout-hflex">
-                                                        <div fs-numbercount-threshold="0"
-                                                            fs-numbercount-element="number" fs-numbercount-start="1"
-                                                            fs-numbercount-end="{{ $case_study['investors'] ?? '0' }}"
-                                                            class="n_large-numbers text-color-white">
-                                                            {{ $case_study['investors'] ?? '0' }}</div>
-                                                        <div class="n_large-numbers text-color-white">K+</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @if ($index === 1)
-                                                <div class="spacer-medium"></div>
-                                            @endif
-                                            <div class="button-wrapper-new margin-top margin-small">
-                                                <a data-w-id="ecd82eb6-55e6-b64f-6fe7-4b8c58107d5{{ $index + 4 }}"
-                                                    href="{{ $case_study['learn_more_url'] ?? '#' }}"
-                                                    class="n_button is-small w-inline-block">
-                                                    <div>{{ $setting->case_study_learn_more_text ?? 'Learn More' }}
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="casestudies_image">
-                                    <img src="{{ $case_study['image'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561057298b4672c414ad9_section%203-01.webp' }}"
-                                        loading="lazy" sizes="(max-width: 852px) 100vw, 852px"
-                                        alt="{{ $case_study['name'] ?? 'Case Study' }}"
-                                        class="casestudies_image-inside" />
-                                    <div class="n_video_overlay no-radius">
-                                        <div class="n-play-icon-wrapper"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @else
-                        <!-- Fallback to default case studies if none configured -->
-                        <div id="w-node-_6e3e58cf-7d87-bdef-4976-78bb8065337f-4a773f3e"
-                            class="casestudies_boxes is-full">
-                            <div class="casestudies_text-wrapper bottom-aligned">
-                                <div>
-                                    <div class="rl_header44_dmn-flex">
-                                        <a href="#" class="casestudies_logo for-rises w-inline-block">
-                                            <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710fa0a2d2ed60bd3663_energyx_logo_e7aea357.png"
-                                                loading="lazy" alt="" class="casestudies_image-size" />
-                                        </a>
-                                        <div class="spacer-medium"></div>
-                                        <div class="text-size-small">The Lithium Industry Transformed.</div>
-                                        <div class="spacer-medium"></div>
-                                        <div class="spacer-medium"></div>
-                                        <div class="rl_header44_number-wrapper">
-                                            <div class="rl_header44_dmn-flex space">
-                                                <div class="dmn-line is-full"></div>
-                                                <div class="n_text-size-tiny">Capital Raised</div>
-                                                <div class="w-layout-hflex">
-                                                    <div class="n_large-numbers text-color-white">$</div>
-                                                    <div fs-numbercount-threshold="0" fs-numbercount-element="number"
-                                                        fs-numbercount-start="1" fs-numbercount-end="88"
-                                                        class="n_large-numbers text-color-white">31</div>
-                                                    <div class="n_large-numbers text-color-white">M+</div>
-                                                </div>
-                                            </div>
-                                            <div class="rl_header44_dmn-flex space">
-                                                <div class="dmn-line is-full"></div>
-                                                <div class="n_text-size-tiny">Investors</div>
-                                                <div class="w-layout-hflex">
-                                                    <div fs-numbercount-threshold="0" fs-numbercount-element="number"
-                                                        fs-numbercount-start="1" fs-numbercount-end="31"
-                                                        class="n_large-numbers text-color-white">13</div>
-                                                    <div class="n_large-numbers text-color-white">K+</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="button-wrapper-new margin-top margin-small">
-                                            <a data-w-id="ecd82eb6-55e6-b64f-6fe7-4b8c58107d54"
-                                                href="/content/energyx-case-study"
-                                                class="n_button is-small w-inline-block">
-                                                <div>Learn More</div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="casestudies_image">
-                                <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561057298b4672c414ad9_section%203-01.webp"
-                                    loading="lazy" sizes="(max-width: 852px) 100vw, 852px" alt=""
-                                    class="casestudies_image-inside" />
-                                <div class="n_video_overlay no-radius">
-                                    <div class="n-play-icon-wrapper"></div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </section>
-        @endif
-        @if ($setting->show_client_logos ?? true)
-            <!-- Client logos section moved to bottom of video section -->
-            <section id="partners" class="n_section_logos" style="background-color: {{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}; background-image: linear-gradient({{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}, #000)">
-                <div class="n_padding-global">
-                    <div class="container-large">
-                        <div class="w-layout-grid grid-17">
-                            @foreach ($setting->client_logos as $item)
-                                <img src="{{ $item['image'] }}"
-                                    loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
-                                    alt="{{ $item['name'] }}"
-                                    srcset="{{ $item['image'] }}"
-                                    sizes="105.5px" class="logo-news" />      
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        @if ($setting->show_difference_section ?? true)
+@if ($setting->show_difference_section ?? true)
             <div class="spacer-large" style="display:none;"></div>
             <header id="why-us" class="n_section_capital" style="background-color: {{ $setting->getSectionBackgroundColor('difference_section', '#ffffff') }};">
                 <div class="n_padding-global">
@@ -1584,6 +2060,29 @@ a,
                 </div>
             </header>
         @endif
+
+        @if ($setting->show_client_logos ?? true)
+            <!-- Client logos section moved to bottom of video section -->
+            <section id="partners" class="n_section_logos" style="background-color: {{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}; background-image: linear-gradient({{ $setting->getSectionBackgroundColor('client_logos', '#ffffff') }}, #000)">
+                <div class="n_padding-global">
+                    <div class="container-large">
+                        <div class="w-layout-grid grid-17">
+                            @foreach ($setting->client_logos as $item)
+                                <img src="{{ $item['image'] }}"
+                                    loading="lazy" width="105.5" id="w-node-_32bbbadd-6d60-ddee-c912-389243844261-4a773f3e"
+                                    alt="{{ $item['name'] }}"
+                                    srcset="{{ $item['image'] }}"
+                                    sizes="105.5px" class="logo-news" />      
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+        
+        
+
+        
         <header id="testimonials" class="n_section_testimonial" style="background-color: {{ $setting->getSectionBackgroundColor('testimonials', '#f8f9fa') }};">
             <div class="n_padding-global">
                 <div class="container-large">
@@ -1697,6 +2196,146 @@ a,
                 <div class="container-large"></div>
             </div>
         </div>
+        @if ($setting->show_case_studies ?? true)
+            <div class="spacer-large menu-icon1_line-middle d-none" style="display: none;"></div>
+            <section id="case-studies" class="section_casestudies" style="background-color: {{ $setting->getSectionBackgroundColor('case_studies', '#f8f9fa') }};">
+                <div class="w-layout-grid grid-16">
+                    @if (is_array($setting->case_studies) && count($setting->case_studies) > 0)
+                        @foreach ($setting->case_studies as $index => $case_study)
+                            <div id="w-node-_6e3e58cf-7d87-bdef-4976-78bb8065337{{ sprintf('%x', $index + 1) }}-4a773f3e"
+                                class="casestudies_boxes {{ $index === 0 ? 'is-full' : 'is-smaller' }}">
+                                <div class="casestudies_text-wrapper bottom-aligned">
+                                    <div>
+                                        <div class="rl_header44_dmn-flex">
+                                            <a href="{{ $case_study['learn_more_url'] ?? '#' }}"
+                                                class="casestudies_logo for-rises w-inline-block">
+                                                <img src="{{ $case_study['logo'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710fa0a2d2ed60bd3663_energyx_logo_e7aea357.png' }}"
+                                                    loading="lazy" alt="{{ $case_study['name'] ?? 'Case Study' }}"
+                                                    class="casestudies_image-size" />
+                                            </a>
+                                            <div class="spacer-medium"></div>
+                                            <div class="text-size-small">
+                                                {{ $case_study['description'] ?? 'Company description.' }}</div>
+                                            <div class="spacer-medium"></div>
+                                            @if ($index === 0)
+                                                <div class="spacer-medium"></div>
+                                            @endif
+                                            <div class="rl_header44_number-wrapper">
+                                                <div class="rl_header44_dmn-flex space">
+                                                    <div class="dmn-line is-full"></div>
+                                                    <div class="n_text-size-tiny">
+                                                        {{ $setting->case_study_capital_raised_label ?? 'Capital Raised' }}
+                                                    </div>
+                                                    <div class="w-layout-hflex">
+                                                        <div class="n_large-numbers text-color-white">$</div>
+                                                        <div fs-numbercount-threshold="0"
+                                                            fs-numbercount-element="number" fs-numbercount-start="1"
+                                                            fs-numbercount-end="{{ $case_study['capital_raised'] ?? '0' }}"
+                                                            class="n_large-numbers text-color-white">
+                                                            {{ $case_study['capital_raised'] ?? '0' }}</div>
+                                                        <div class="n_large-numbers text-color-white">M+</div>
+                                                    </div>
+                                                </div>
+                                                <div class="rl_header44_dmn-flex space">
+                                                    <div class="dmn-line is-full"></div>
+                                                    <div class="n_text-size-tiny">
+                                                        {{ $setting->case_study_investors_label ?? 'Investors' }}</div>
+                                                    <div class="w-layout-hflex">
+                                                        <div fs-numbercount-threshold="0"
+                                                            fs-numbercount-element="number" fs-numbercount-start="1"
+                                                            fs-numbercount-end="{{ $case_study['investors'] ?? '0' }}"
+                                                            class="n_large-numbers text-color-white">
+                                                            {{ $case_study['investors'] ?? '0' }}</div>
+                                                        <div class="n_large-numbers text-color-white">K+</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if ($index === 1)
+                                                <div class="spacer-medium"></div>
+                                            @endif
+                                            <div class="button-wrapper-new margin-top margin-small">
+                                                <a data-w-id="ecd82eb6-55e6-b64f-6fe7-4b8c58107d5{{ $index + 4 }}"
+                                                    href="{{ $case_study['learn_more_url'] ?? '#' }}"
+                                                    class="n_button is-small w-inline-block">
+                                                    <div>{{ $setting->case_study_learn_more_text ?? 'Learn More' }}
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="casestudies_image">
+                                    <img src="{{ $case_study['image'] ?? 'https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561057298b4672c414ad9_section%203-01.webp' }}"
+                                        loading="lazy" sizes="(max-width: 852px) 100vw, 852px"
+                                        alt="{{ $case_study['name'] ?? 'Case Study' }}"
+                                        class="casestudies_image-inside" />
+                                    <div class="n_video_overlay no-radius">
+                                        <div class="n-play-icon-wrapper"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <!-- Fallback to default case studies if none configured -->
+                        <div id="w-node-_6e3e58cf-7d87-bdef-4976-78bb8065337f-4a773f3e"
+                            class="casestudies_boxes is-full">
+                            <div class="casestudies_text-wrapper bottom-aligned">
+                                <div>
+                                    <div class="rl_header44_dmn-flex">
+                                        <a href="#" class="casestudies_logo for-rises w-inline-block">
+                                            <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/6855710fa0a2d2ed60bd3663_energyx_logo_e7aea357.png"
+                                                loading="lazy" alt="" class="casestudies_image-size" />
+                                        </a>
+                                        <div class="spacer-medium"></div>
+                                        <div class="text-size-small">The Lithium Industry Transformed.</div>
+                                        <div class="spacer-medium"></div>
+                                        <div class="spacer-medium"></div>
+                                        <div class="rl_header44_number-wrapper">
+                                            <div class="rl_header44_dmn-flex space">
+                                                <div class="dmn-line is-full"></div>
+                                                <div class="n_text-size-tiny">Capital Raised</div>
+                                                <div class="w-layout-hflex">
+                                                    <div class="n_large-numbers text-color-white">$</div>
+                                                    <div fs-numbercount-threshold="0" fs-numbercount-element="number"
+                                                        fs-numbercount-start="1" fs-numbercount-end="88"
+                                                        class="n_large-numbers text-color-white">31</div>
+                                                    <div class="n_large-numbers text-color-white">M+</div>
+                                                </div>
+                                            </div>
+                                            <div class="rl_header44_dmn-flex space">
+                                                <div class="dmn-line is-full"></div>
+                                                <div class="n_text-size-tiny">Investors</div>
+                                                <div class="w-layout-hflex">
+                                                    <div fs-numbercount-threshold="0" fs-numbercount-element="number"
+                                                        fs-numbercount-start="1" fs-numbercount-end="31"
+                                                        class="n_large-numbers text-color-white">13</div>
+                                                    <div class="n_large-numbers text-color-white">K+</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="button-wrapper-new margin-top margin-small">
+                                            <a data-w-id="ecd82eb6-55e6-b64f-6fe7-4b8c58107d54"
+                                                href="/content/energyx-case-study"
+                                                class="n_button is-small w-inline-block">
+                                                <div>Learn More</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="casestudies_image">
+                                <img src="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685561057298b4672c414ad9_section%203-01.webp"
+                                    loading="lazy" sizes="(max-width: 852px) 100vw, 852px" alt=""
+                                    class="casestudies_image-inside" />
+                                <div class="n_video_overlay no-radius">
+                                    <div class="n-play-icon-wrapper"></div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
         <header id="solutions" class="solutions-section" style="background-color: {{ $setting->getSectionBackgroundColor('capital_revolutionized', '#ffffff') }}; padding: 80px 0;">
             <div class="n_padding-global">
                 <div class="container-large">
@@ -1709,104 +2348,171 @@ a,
                         </p>
                     </div>
                     
-                    <!-- Statistics Cards Container -->
-                    <div class="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto;">
+                    <!-- Statistics Metric Cards Container -->
+                    <div class="stats-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1400px; margin: 0 auto;">
                         
-                        <!-- Reg CF Card -->
-                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%); border: 2px solid #e1f5f4; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #8ee8df 0%, #6fd9ce 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <div style="color: #ffffff; font-size: 28px; font-weight: bold;">$5M</div>
-                            </div>
-                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
-                                {{ $setting->reg_cf_title ?? 'Via Reg CF' }}
-                            </h3>
-                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
-                                {{ $setting->reg_cf_subtitle ?? 'Raise up to' }}
-                            </p>
-                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
-                                {{ $setting->reg_cf_investor_text ?? 'Anyone can invest' }}
-                            </p>
-                            <a href="{{ $setting->reg_cf_url ?? '/na-typ' }}" 
-                               style="display: inline-flex; align-items: center; background: #8ee8df; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
-                               onmouseover="this.style.background='#6fd9ce'; this.style.transform='translateY(-2px)'"
-                               onmouseout="this.style.background='#8ee8df'; this.style.transform='translateY(0)'">
-                                Learn More
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
-                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
-                                </svg>
-                            </a>
+                        <!-- Reg CF Metric Card -->
+                        <div class="statistics-metric-card" style="background: {{ $setting->getRegulationColor('reg_cf', 'bg_color', '#1F2937') }}; 
+                                            padding: 3rem 2rem; 
+                                            border-radius: 12px; 
+                                            text-align: center; 
+                                            max-width: 400px; 
+                                            margin: 0 auto;
+                                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                                            transition: all 0.3s ease;">
+                                    
+                                    <div class="metric-number" style="font-size: 4rem; 
+                                                font-weight: 900; 
+                                                color: {{ $setting->getRegulationColor('reg_cf', 'bold_text_color', '#14B8A6') }}; 
+                                                line-height: 1; 
+                                                margin-bottom: 1.5rem; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_cf_title ?? 'CF' }}
+                                    </div>
+                                    
+                                    <div class="metric-description" style="font-size: 1.25rem; 
+                                                color: {{ $setting->getRegulationColor('reg_cf', 'text_color', '#FFFFFF') }}; 
+                                                line-height: 1.5; 
+                                                font-weight: 400; 
+                                                margin: 0; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_cf_subtitle ?? 'Crowdfunding regulation for public investment' }}
+                                    </div>
                         </div>
 
-                        <!-- Reg A Card -->
-                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #faf8ff 100%); border: 2px solid #e8e1f5; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #d1179a 0%, #b8156e 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <div style="color: #ffffff; font-size: 24px; font-weight: bold;">$75M</div>
-                            </div>
-                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
-                                {{ $setting->reg_a_title ?? 'Via Reg A' }}
-                            </h3>
-                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
-                                {{ $setting->reg_a_subtitle ?? 'Raise up to' }}
-                            </p>
-                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
-                                {{ $setting->reg_a_investor_text ?? 'Anyone can invest' }}
-                            </p>
-                            <a href="{{ $setting->reg_a_url ?? '/na-typ' }}" 
-                               style="display: inline-flex; align-items: center; background: #d1179a; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
-                               onmouseover="this.style.background='#b8156e'; this.style.transform='translateY(-2px)'"
-                               onmouseout="this.style.background='#d1179a'; this.style.transform='translateY(0)'">
-                                Learn More
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
-                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
-                                </svg>
-                            </a>
+                        <!-- Reg A Metric Card -->
+                        <div class="statistics-metric-card" style="background: {{ $setting->getRegulationColor('reg_a', 'bg_color', '#1F2937') }}; 
+                                            padding: 3rem 2rem; 
+                                            border-radius: 12px; 
+                                            text-align: center; 
+                                            max-width: 400px; 
+                                            margin: 0 auto;
+                                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                                            transition: all 0.3s ease;">
+                                    
+                                    <div class="metric-number" style="font-size: 4rem; 
+                                                font-weight: 900; 
+                                                color: {{ $setting->getRegulationColor('reg_a', 'bold_text_color', '#14B8A6') }}; 
+                                                line-height: 1; 
+                                                margin-bottom: 1.5rem; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_a_title ?? 'A+' }}
+                                    </div>
+                                    
+                                    <div class="metric-description" style="font-size: 1.25rem; 
+                                                color: {{ $setting->getRegulationColor('reg_a', 'text_color', '#FFFFFF') }}; 
+                                                line-height: 1.5; 
+                                                font-weight: 400; 
+                                                margin: 0; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_a_subtitle ?? 'Mini-IPO regulation for larger offerings' }}
+                                    </div>
                         </div>
 
-                        <!-- Reg D Card -->
-                        <div class="stat-card" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 2px solid #e1e5e9; border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-                            <div class="stat-icon" style="width: 80px; height: 80px; margin: 0 auto 25px; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <div style="color: #ffffff; font-size: 20px; font-weight: bold;">∞</div>
-                            </div>
-                            <h3 style="color: #1a1a1a; font-size: 24px; font-weight: 600; margin-bottom: 8px;">
-                                {{ $setting->reg_d_title ?? 'Via Reg D' }}
-                            </h3>
-                            <p style="color: #666; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
-                                {{ $setting->reg_d_subtitle ?? 'Raise up to' }}
-                            </p>
-                            <p style="color: #333; font-size: 16px; margin-bottom: 25px; line-height: 1.5;">
-                                {{ $setting->reg_d_investor_text ?? 'Accredited investors only' }}
-                            </p>
-                            <a href="{{ $setting->reg_d_url ?? '/na-typ' }}" 
-                               style="display: inline-flex; align-items: center; background: #2c3e50; color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;"
-                               onmouseover="this.style.background='#1a252f'; this.style.transform='translateY(-2px)'"
-                               onmouseout="this.style.background='#2c3e50'; this.style.transform='translateY(0)'">
-                                Learn More
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 8px;">
-                                    <path d="M12.6893 7.25L6.96967 1.53033L8.03033 0.469666L15.5607 8L8.03033 15.5303L6.96967 14.4697L12.6893 8.75H0.5V7.25H12.6893Z" fill="currentColor"/>
-                                </svg>
-                            </a>
+                        <!-- Reg D Metric Card -->
+                        <div class="statistics-metric-card" style="background: {{ $setting->getRegulationColor('reg_d', 'bg_color', '#1F2937') }}; 
+                                            padding: 3rem 2rem; 
+                                            border-radius: 12px; 
+                                            text-align: center; 
+                                            max-width: 400px; 
+                                            margin: 0 auto;
+                                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                                            transition: all 0.3s ease;">
+                                    
+                                    <div class="metric-number" style="font-size: 4rem; 
+                                                font-weight: 900; 
+                                                color: {{ $setting->getRegulationColor('reg_d', 'bold_text_color', '#14B8A6') }}; 
+                                                line-height: 1; 
+                                                margin-bottom: 1.5rem; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_d_title ?? '506' }}
+                                    </div>
+                                    
+                                    <div class="metric-description" style="font-size: 1.25rem; 
+                                                color: {{ $setting->getRegulationColor('reg_d', 'text_color', '#FFFFFF') }}; 
+                                                line-height: 1.5; 
+                                                font-weight: 400; 
+                                                margin: 0; 
+                                                font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                        {{ $setting->reg_d_subtitle ?? 'Private placement for accredited investors' }}
+                                    </div>
                         </div>
                     </div>
 
-                    <!-- Add responsive styles -->
+                    <!-- Add responsive styles for statistics metric cards -->
                     <style>
+                        @media (max-width: 1200px) {
+                            .stats-container {
+                                grid-template-columns: repeat(2, 1fr) !important;
+                                gap: 30px !important;
+                            }
+                        }
                         @media (max-width: 768px) {
                             .stats-container {
                                 grid-template-columns: 1fr !important;
                                 gap: 30px !important;
                             }
-                            .stat-card {
-                                padding: 30px 20px !important;
+                            .statistics-metric-card {
+                                padding: 2rem 1.5rem !important;
                             }
-                            .stat-icon {
-                                width: 70px !important;
-                                height: 70px !important;
+                            .metric-number {
+                                font-size: 3rem !important;
+                            }
+                            .metric-description {
+                                font-size: 0.9rem !important;
                             }
                         }
                         
-                        .stat-card:hover {
+                        @media (max-width: 480px) {
+                            .statistics-metric-card {
+                                padding: 1.5rem 1rem !important;
+                            }
+                            .metric-number {
+                                font-size: 2.5rem !important;
+                            }
+                        }
+                        
+                        .statistics-metric-card:hover {
                             transform: translateY(-5px);
-                            box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+                        }
+                    </style>
+
+                    <!-- Statistics Metric Responsive Styles -->
+                    <style>
+                        .statistics-metric-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .statistics-metric-card {
+                                padding: 2rem 1.5rem !important;
+                                max-width: 350px !important;
+                            }
+                            
+                            .metric-number {
+                                font-size: 3rem !important;
+                            }
+                            
+                            .metric-description {
+                                font-size: 1.1rem !important;
+                            }
+                        }
+                        
+                        @media (max-width: 480px) {
+                            .statistics-metric-card {
+                                padding: 1.5rem 1rem !important;
+                                max-width: 300px !important;
+                            }
+                            
+                            .metric-number {
+                                font-size: 2.5rem !important;
+                            }
+                            
+                            .metric-description {
+                                font-size: 1rem !important;
+                            }
                         }
                     </style>
                 </div>
@@ -1841,7 +2547,7 @@ a,
                             <div>{{ $setting->final_cta_primary_button_text ?? 'Book a Call' }}</div>
                         </a><a dmr-track="Clicked-Demo-CTA" data-w-id="16f9ff2b-4fe9-b9b5-8b71-e8b50186f42f"
                             href="{{ $setting->final_cta_secondary_button_url ?? '/category/case-studies' }}"
-                            target="_blank" class="n_button is-alternate w-inline-block">
+                            target="_blank" class="n_button is-alternate trans w-inline-block">
                             <div>{{ $setting->final_cta_secondary_button_text ?? 'View Case Studies' }}</div>
                         </a></div>
                 </div>
