@@ -2,6 +2,58 @@
 
 @section('content')
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<!-- Quill Editor CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<!-- Quill Editor JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<style>
+    /* Custom font size labels for Quill editor */
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+      content: '10px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+      content: '12px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+      content: '14px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+      content: '16px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+      content: '18px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+      content: '20px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+      content: '24px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
+      content: '28px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+      content: '32px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
+      content: '36px';
+    }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+      content: '48px';
+    }
+</style>
 
     <!-- Content wrapper -->
     <div class="content-wrapper">
@@ -267,6 +319,43 @@
                     </select>
                 </div>
 
+                @php
+                    $website = \App\Models\Website::where('user_id', $data->user_id)->first();
+                @endphp
+
+                @if($website && $website->type === 'investment')
+                <!-- Investment-specific settings -->
+                <div class="col-12 mt-4">
+                    <h5 class="text-primary">Investment Settings</h5>
+                    <small class="text-muted">These settings apply to investment websites as fallback values.</small>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="asset_type" class="form-label">
+                        Asset Type (Default)
+                    </label>
+                    <input type="text" class="form-control" name="asset_type" placeholder="e.g., Common Stock, Preferred Stock, SAFE" value="{{ $data->asset_type ?? 'Common Stock' }}">
+                    <small class="form-text text-muted">Default asset type displayed when website-specific value is not set.</small>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="offering_type" class="form-label">
+                        Offering Type (Default)
+                    </label>
+                    <input type="text" class="form-control" name="offering_type" placeholder="e.g., Equity, Debt, Hybrid" value="{{ $data->offering_type ?? 'Equity' }}">
+                    <small class="form-text text-muted">Default offering type displayed when website-specific value is not set.</small>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="investment_title" class="form-label">
+                        Investment Title (Default)
+                    </label>
+                    <div id="investment_title_editor_settings" style="height: 150px;" data-content="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}"></div>
+                    <input type="hidden" name="investment_title" id="investment_title_settings" value="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}">
+                    <small class="form-text text-muted">Default investment title with rich formatting used when website-specific value is not set.</small>
+                </div>
+                @endif
+
                 <div class="col-12 mt-4">
                     <button type="submit" class="btn btn-success">Update</button>
                 </div>
@@ -281,6 +370,73 @@
           .catch(error => {
               console.error(error);
           });
+
+        // Initialize Quill editor for investment title in settings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only initialize if the investment title editor exists
+            if (document.getElementById('investment_title_editor_settings')) {
+                // Function to decode HTML entities
+                function decodeHtml(html) {
+                    var txt = document.createElement("textarea");
+                    txt.innerHTML = html;
+                    return txt.value;
+                }
+
+                // Register custom font sizes using class attributor
+                var SizeClass = Quill.import('attributors/class/size');
+                SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+                Quill.register(SizeClass, true);
+
+                // Initialize Quill editor for investment title
+                var investmentTitleSettingsQuill = new Quill('#investment_title_editor_settings', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'align': [] }],
+                            ['clean']
+                        ]
+                    }
+                });
+
+                // Set initial content for investment title
+                var investmentTitleContent = document.getElementById('investment_title_settings').value;
+                console.log('Initial investment title content (settings):', investmentTitleContent);
+                
+                if (investmentTitleContent && investmentTitleContent.trim() !== '') {
+                    try {
+                        // First try direct assignment, then decoded if needed
+                        if (investmentTitleContent.includes('&')) {
+                            var decodedTitleContent = decodeHtml(investmentTitleContent);
+                            investmentTitleSettingsQuill.root.innerHTML = decodedTitleContent;
+                        } else {
+                            investmentTitleSettingsQuill.root.innerHTML = investmentTitleContent;
+                        }
+                        console.log('Loaded investment title content into Quill editor (settings)');
+                    } catch (error) {
+                        console.error('Error loading investment title content into Quill editor (settings):', error);
+                        // Fallback: try setting as plain text
+                        investmentTitleSettingsQuill.setText(investmentTitleContent);
+                    }
+                }
+
+                // Update hidden input when investment title content changes
+                investmentTitleSettingsQuill.on('text-change', function() {
+                    var titleContent = investmentTitleSettingsQuill.root.innerHTML;
+                    document.getElementById('investment_title_settings').value = titleContent;
+                    console.log('Investment title content updated (settings):', titleContent);
+                });
+
+                // Ensure investment title content is saved before form submission
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    var titleContent = investmentTitleSettingsQuill.root.innerHTML;
+                    document.getElementById('investment_title_settings').value = titleContent;
+                    console.log('Form submission - saving investment title content (settings):', titleContent);
+                });
+            }
+        });
       </script>
 
 @endsection

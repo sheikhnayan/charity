@@ -388,6 +388,17 @@ class AdminController extends Controller
         $add->privacy = $request->privacy;
         $add->terms = $request->terms;
         $add->refund = $request->refund;
+        
+        // Investment-specific fields
+        if ($request->filled('investment_title')) {
+            $add->investment_title = $request->investment_title;
+        }
+        if ($request->filled('asset_type')) {
+            $add->asset_type = $request->asset_type;
+        }
+        if ($request->filled('offering_type')) {
+            $add->offering_type = $request->offering_type;
+        }
 
 
         if (isset($request->logo)) {

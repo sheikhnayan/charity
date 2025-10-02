@@ -167,11 +167,33 @@
                                                         <small class="form-text text-muted">Minimum amount required to invest.</small>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="asset_type" class="form-label">Asset Type</label>
+                                                        <input type="text" name="asset_type" class="form-control" id="asset_type" placeholder="e.g., Common Stock, Preferred Stock, SAFE" value="{{ $data->asset_type ?? 'Common Stock' }}">
+                                                        <small class="form-text text-muted">Type of security or asset being offered to investors.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="offering_type" class="form-label">Offering Type</label>
+                                                        <input type="text" name="offering_type" class="form-control" id="offering_type" placeholder="e.g., Equity, Debt, Hybrid" value="{{ $data->offering_type ?? 'Equity' }}">
+                                                        <small class="form-text text-muted">Category of investment offering structure.</small>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="investment_tiers" class="form-label">Investment Tiers</label>
                                                         <input type="text" name="investment_tiers" class="form-control" id="investment_tiers" placeholder="1000,2500,5000,10000" value="{{ $data->investment_tiers ?? '' }}">
                                                         <small class="form-text text-muted">Comma-separated list of investment amounts to display as quick options.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="investment_title" class="form-label">Investment Title</label>
+                                                        <div id="investment_title_editor" style="height: 150px;" data-content="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}"></div>
+                                                        <input type="hidden" name="investment_title" id="investment_title" value="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}">
+                                                        <small class="form-text text-muted">Custom title for the investment opportunity with rich text formatting (color, font size, etc.).</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -404,6 +426,55 @@
                     console.log('Data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
                     alert('Check browser console for debug information');
                 };
+
+                // Initialize Quill editor for investment title
+                var investmentTitleQuill = new Quill('#investment_title_editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'align': [] }],
+                            ['clean']
+                        ]
+                    }
+                });
+
+                // Set initial content for investment title
+                var investmentTitleContent = document.getElementById('investment_title').value;
+                console.log('Initial investment title content:', investmentTitleContent);
+                
+                if (investmentTitleContent && investmentTitleContent.trim() !== '') {
+                    try {
+                        // First try direct assignment, then decoded if needed
+                        if (investmentTitleContent.includes('&')) {
+                            var decodedTitleContent = decodeHtml(investmentTitleContent);
+                            investmentTitleQuill.root.innerHTML = decodedTitleContent;
+                        } else {
+                            investmentTitleQuill.root.innerHTML = investmentTitleContent;
+                        }
+                        console.log('Loaded investment title content into Quill editor');
+                    } catch (error) {
+                        console.error('Error loading investment title content into Quill editor:', error);
+                        // Fallback: try setting as plain text
+                        investmentTitleQuill.setText(investmentTitleContent);
+                    }
+                }
+
+                // Update hidden input when investment title content changes
+                investmentTitleQuill.on('text-change', function() {
+                    var titleContent = investmentTitleQuill.root.innerHTML;
+                    document.getElementById('investment_title').value = titleContent;
+                    console.log('Investment title content updated:', titleContent);
+                });
+
+                // Ensure investment title content is saved before form submission
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    var titleContent = investmentTitleQuill.root.innerHTML;
+                    document.getElementById('investment_title').value = titleContent;
+                    console.log('Form submission - saving investment title content:', titleContent);
+                });
 
                 });
             </script>

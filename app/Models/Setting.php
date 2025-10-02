@@ -12,7 +12,8 @@ class Setting extends Model
         'banner', 'title', 'title2', 'sub_title', 'date', 'location', 'time',
         'theme', 'font', 'payout_option', 'site_status', 'payment_method',
         'stripe_publishable_key', 'stripe_secret_key', 'authorize_login_id',
-        'authorize_transaction_key', 'refund', 'privacy', 'terms', 'investment_disclaimer'
+        'authorize_transaction_key', 'refund', 'privacy', 'terms', 'investment_disclaimer',
+        'investment_title', 'asset_type', 'offering_type'
     ];
 
     public function website()

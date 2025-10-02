@@ -56,6 +56,9 @@ class WebsiteController extends Controller
             $validation['share_price'] = 'required|numeric|min:0.01';
             $validation['min_investment'] = 'required|numeric|min:1';
             $validation['investment_tiers'] = 'nullable|string';
+            $validation['investment_title'] = 'nullable|string';
+            $validation['asset_type'] = 'nullable|string|max:255';
+            $validation['offering_type'] = 'nullable|string|max:255';
         }
 
         $request->validate($validation);
@@ -73,8 +76,11 @@ class WebsiteController extends Controller
             if ($request->type === 'investment') {
                 $add->share_price = $request->share_price;
                 $add->investment_disclaimer = $request->investment_disclaimer ?? null;
+                $add->investment_title = $request->investment_title ?? null;
                 $add->min_investment = $request->min_investment;
                 $add->investment_tiers = $request->investment_tiers;
+                $add->asset_type = $request->asset_type ?? 'Common Stock';
+                $add->offering_type = $request->offering_type ?? 'Equity';
             }
             
             $add->save();
@@ -199,6 +205,9 @@ class WebsiteController extends Controller
             $validation['share_price'] = 'required|numeric|min:0.01';
             $validation['min_investment'] = 'required|numeric|min:1';
             $validation['investment_tiers'] = 'nullable|string';
+            $validation['investment_title'] = 'nullable|string';
+            $validation['asset_type'] = 'nullable|string|max:255';
+            $validation['offering_type'] = 'nullable|string|max:255';
             $validation['sticky_footer_button_bg'] = 'nullable|string|max:7';
             $validation['sticky_footer_button_text'] = 'nullable|string|max:7';
             $validation['sticky_footer_text_color'] = 'nullable|string|max:7';
@@ -219,9 +228,12 @@ class WebsiteController extends Controller
             // Debug: Log the investment disclaimer content
             \Log::info('Investment disclaimer content being saved:', ['content' => $request->investment_disclaimer]);
             $update->investment_disclaimer = $request->investment_disclaimer ?? null;
+            $update->investment_title = $request->investment_title ?? null;
             $update->share_price = $request->share_price;
             $update->min_investment = $request->min_investment;
             $update->investment_tiers = $request->investment_tiers;
+            $update->asset_type = $request->asset_type ?? 'Common Stock';
+            $update->offering_type = $request->offering_type ?? 'Equity';
             $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
             $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
             $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;

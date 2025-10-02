@@ -1238,9 +1238,9 @@ a,
                                             <div>
                                                 <div class="hero-text-2 _2">
                                                     <h1 class="heading-style-h1 is-checkout"
-                                                        style="color: #fff !important"><strong
-                                                            style="color: #fff !important">{{ $setting && $setting->company_name ? $setting->company_name : 'Investment' }}</strong>
-                                                        Investment Opportunity<br /></h1>
+                                                        style="color: #fff !important">
+                                                        {!! $website && $website->investment_title ? $website->investment_title : ($setting && $setting->investment_title ? $setting->investment_title : '<strong style="color: #fff !important">' . ($setting && $setting->company_name ? $setting->company_name : 'Investment') . '</strong> Investment Opportunity') !!}<br />
+                                                    </h1>
                                                     <div class="spacer-small"></div>
                                                     <div class="dmr-details-mobile-show">
                                                         <div class="div-block-132">
