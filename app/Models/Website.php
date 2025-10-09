@@ -22,7 +22,9 @@ class Website extends Model
         'sticky_footer_text_color',
         'sticky_footer_bg_color',
         'asset_type',
-        'offering_type'
+        'offering_type',
+        'asset_type_label',
+        'offering_type_label'
     ];
 
     /**

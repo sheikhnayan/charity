@@ -59,6 +59,8 @@ class WebsiteController extends Controller
             $validation['investment_title'] = 'nullable|string';
             $validation['asset_type'] = 'nullable|string|max:255';
             $validation['offering_type'] = 'nullable|string|max:255';
+            $validation['asset_type_label'] = 'nullable|string|max:255';
+            $validation['offering_type_label'] = 'nullable|string|max:255';
         }
 
         $request->validate($validation);
@@ -81,6 +83,8 @@ class WebsiteController extends Controller
                 $add->investment_tiers = $request->investment_tiers;
                 $add->asset_type = $request->asset_type ?? 'Common Stock';
                 $add->offering_type = $request->offering_type ?? 'Equity';
+                $add->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
+                $add->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
             }
             
             $add->save();
@@ -208,6 +212,8 @@ class WebsiteController extends Controller
             $validation['investment_title'] = 'nullable|string';
             $validation['asset_type'] = 'nullable|string|max:255';
             $validation['offering_type'] = 'nullable|string|max:255';
+            $validation['asset_type_label'] = 'nullable|string|max:255';
+            $validation['offering_type_label'] = 'nullable|string|max:255';
             $validation['sticky_footer_button_bg'] = 'nullable|string|max:7';
             $validation['sticky_footer_button_text'] = 'nullable|string|max:7';
             $validation['sticky_footer_text_color'] = 'nullable|string|max:7';
@@ -234,6 +240,8 @@ class WebsiteController extends Controller
             $update->investment_tiers = $request->investment_tiers;
             $update->asset_type = $request->asset_type ?? 'Common Stock';
             $update->offering_type = $request->offering_type ?? 'Equity';
+            $update->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
+            $update->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
             $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
             $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
             $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;

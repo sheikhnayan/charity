@@ -181,6 +181,20 @@
                                                         <small class="form-text text-muted">Category of investment offering structure.</small>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="asset_type_label" class="form-label">Asset Type Label</label>
+                                                        <input type="text" name="asset_type_label" class="form-control" id="asset_type_label" placeholder="e.g., ASSET TYPE, SECURITY TYPE" value="{{ $data->asset_type_label ?? 'ASSET TYPE' }}">
+                                                        <small class="form-text text-muted">The label text displayed above the asset type value on the investment page.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="offering_type_label" class="form-label">Offering Type Label</label>
+                                                        <input type="text" name="offering_type_label" class="form-control" id="offering_type_label" placeholder="e.g., OFFERING TYPE, INVESTMENT TYPE" value="{{ $data->offering_type_label ?? 'OFFERING TYPE' }}">
+                                                        <small class="form-text text-muted">The label text displayed above the offering type value on the investment page.</small>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="investment_tiers" class="form-label">Investment Tiers</label>

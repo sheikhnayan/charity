@@ -1353,7 +1353,7 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            OFFERING TYPE</div>
+                                                                                            {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}</div>
                                                                                         <div
                                                                                             class="dmr-common-stock-2 fixed-height">
                                                                                             <strong
@@ -1364,7 +1364,7 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            ASSET TYPE</div>
+                                                                                            {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}</div>
                                                                                         <div class="dmr-common-stock-2 fixed-height"
                                                                                             style="color: #fff !important">
                                                                                             <strong style="color: #fff !important">{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong>

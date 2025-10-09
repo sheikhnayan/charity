@@ -347,6 +347,22 @@
                 </div>
 
                 <div class="col-12" style="order: -1;">
+                    <label for="asset_type_label" class="form-label">
+                        Asset Type Label (Default)
+                    </label>
+                    <input type="text" class="form-control" name="asset_type_label" placeholder="e.g., ASSET TYPE, SECURITY TYPE" value="{{ $data->asset_type_label ?? 'ASSET TYPE' }}">
+                    <small class="form-text text-muted">Default label text for asset type displayed when website-specific value is not set.</small>
+                </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="offering_type_label" class="form-label">
+                        Offering Type Label (Default)
+                    </label>
+                    <input type="text" class="form-control" name="offering_type_label" placeholder="e.g., OFFERING TYPE, INVESTMENT TYPE" value="{{ $data->offering_type_label ?? 'OFFERING TYPE' }}">
+                    <small class="form-text text-muted">Default label text for offering type displayed when website-specific value is not set.</small>
+                </div>
+
+                <div class="col-12" style="order: -1;">
                     <label for="investment_title" class="form-label">
                         Investment Title (Default)
                     </label>
