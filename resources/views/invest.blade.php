@@ -160,10 +160,13 @@
         /* Amount Tiers */
         .amount-tiers {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(114.6px, 114.6px));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 25px;
             justify-content: center;
+            max-width: 280px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .tier-option {
@@ -219,8 +222,9 @@
             }
             
             .amount-tiers {
-                grid-template-columns: repeat(auto-fit, 114.6px);
+                grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+                max-width: 250px;
             }
         }
 
