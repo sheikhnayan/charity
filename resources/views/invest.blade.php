@@ -1364,6 +1364,7 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
+                                                                                            
                                                                                             {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}</div>
                                                                                         <div class="dmr-common-stock-2 fixed-height"
                                                                                             style="color: #fff !important">
@@ -2080,7 +2081,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        OFFERING TYPE</div>
+                                                                                        {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}</div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
@@ -2090,7 +2091,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        ASSET TYPE</div>
+                                                                                        {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}</div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
