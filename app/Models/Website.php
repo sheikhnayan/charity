@@ -24,7 +24,8 @@ class Website extends Model
         'asset_type',
         'offering_type',
         'asset_type_label',
-        'offering_type_label'
+        'offering_type_label',
+        'additional_information'
     ];
 
     /**

@@ -2172,7 +2172,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                 <ul role="list" class="list-3"></ul>
                                                                 <div class="disclaimer-dmr"
                                                                     style="color: #fff !important">
-                                                                    {!! $website && $website->investment_disclaimer ? $website->investment_disclaimer : ($setting && $setting->investment_disclaimer ? $setting->investment_disclaimer : 'Investment details and disclosures are available in the offering documents.') !!}
+                                                                    {!! $website && $website->additional_information ? $website->additional_information : ($setting && $setting->additional_information ? $setting->additional_information : 'Investment details and disclosures are available in the offering documents.') !!}
                                                                 </div>
                                                             </div>
                                                         </div>

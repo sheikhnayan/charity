@@ -370,6 +370,15 @@
                     <input type="hidden" name="investment_title" id="investment_title_settings" value="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}">
                     <small class="form-text text-muted">Default investment title with rich formatting used when website-specific value is not set.</small>
                 </div>
+
+                <div class="col-12" style="order: -1;">
+                    <label for="additional_information" class="form-label">
+                        Additional Information (Default)
+                    </label>
+                    <div id="additional_information_editor_settings" style="height: 200px;" data-content="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
+                    <input type="hidden" name="additional_information" id="additional_information_settings" value="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}">
+                    <small class="form-text text-muted">Default additional information content with rich formatting displayed in the "Additional Information" section when website-specific value is not set.</small>
+                </div>
                 @endif
 
                 <div class="col-12 mt-4">
@@ -445,11 +454,62 @@
                     console.log('Investment title content updated (settings):', titleContent);
                 });
 
-                // Ensure investment title content is saved before form submission
+                // Initialize Quill editor for additional information
+                var additionalInformationSettingsQuill = new Quill('#additional_information_editor_settings', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'align': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            ['blockquote', 'code-block'],
+                            ['link'],
+                            ['clean']
+                        ]
+                    }
+                });
+
+                // Set initial content for additional information
+                var additionalInformationContent = document.getElementById('additional_information_settings').value;
+                console.log('Initial additional information content (settings):', additionalInformationContent);
+                
+                if (additionalInformationContent && additionalInformationContent.trim() !== '') {
+                    try {
+                        // First try direct assignment, then decoded if needed
+                        if (additionalInformationContent.includes('&')) {
+                            var decodedContent = decodeHtml(additionalInformationContent);
+                            additionalInformationSettingsQuill.root.innerHTML = decodedContent;
+                        } else {
+                            additionalInformationSettingsQuill.root.innerHTML = additionalInformationContent;
+                        }
+                        console.log('Loaded additional information content into Quill editor (settings)');
+                    } catch (error) {
+                        console.error('Error loading additional information content into Quill editor (settings):', error);
+                        // Fallback: try setting as plain text
+                        additionalInformationSettingsQuill.setText(additionalInformationContent);
+                    }
+                }
+
+                // Update hidden input when additional information content changes
+                additionalInformationSettingsQuill.on('text-change', function() {
+                    var additionalContent = additionalInformationSettingsQuill.root.innerHTML;
+                    document.getElementById('additional_information_settings').value = additionalContent;
+                    console.log('Additional information content updated (settings):', additionalContent);
+                });
+
+                // Ensure content is saved before form submission
                 document.querySelector('form').addEventListener('submit', function(e) {
                     var titleContent = investmentTitleSettingsQuill.root.innerHTML;
                     document.getElementById('investment_title_settings').value = titleContent;
                     console.log('Form submission - saving investment title content (settings):', titleContent);
+                    
+                    var additionalContent = additionalInformationSettingsQuill.root.innerHTML;
+                    document.getElementById('additional_information_settings').value = additionalContent;
+                    console.log('Form submission - saving additional information content (settings):', additionalContent);
                 });
             }
         });

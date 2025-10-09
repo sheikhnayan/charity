@@ -205,8 +205,8 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="investment_title" class="form-label">Investment Title</label>
-                                                        <div id="investment_title_editor" style="height: 150px;" data-content="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}"></div>
-                                                        <input type="hidden" name="investment_title" id="investment_title" value="{{ htmlspecialchars($data->investment_title ?? 'Investment Investment Opportunity', ENT_QUOTES, 'UTF-8') }}">
+                                                        <div id="investment_title_editor" style="height: 150px;" data-content="{{ htmlspecialchars($data->investment_title ?? 'Investment Opportunity', ENT_QUOTES, 'UTF-8') }}"></div>
+                                                        <input type="hidden" name="investment_title" id="investment_title" value="{{ htmlspecialchars($data->investment_title ?? 'Investment Opportunity', ENT_QUOTES, 'UTF-8') }}">
                                                         <small class="form-text text-muted">Custom title for the investment opportunity with rich text formatting (color, font size, etc.).</small>
                                                     </div>
                                                 </div>
@@ -215,8 +215,17 @@
                                                         <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
                                                         <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
                                                         <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
-                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed on the investment page.</small>
+                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed in the footer.</small>
                                                         <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugInvestmentDisclaimer()">Debug Content</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="additional_information" class="form-label">Additional Information</label>
+                                                        <div id="additional_information_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
+                                                        <input type="hidden" name="additional_information" id="additional_information" value="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}">
+                                                        <small class="form-text text-muted">Additional information about the investment that will be displayed in the "Additional Information" section on the invest page (separate from footer disclaimer).</small>
+                                                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugAdditionalInformation()">Debug Content</button>
                                                     </div>
                                                 </div>
                                                 
@@ -387,12 +396,6 @@
                     }
                 });
 
-                // Function to decode HTML entities
-                function decodeHtml(html) {
-                    var txt = document.createElement("textarea");
-                    txt.innerHTML = html;
-                    return txt.value;
-                }
 
                 // Set initial content for investment disclaimer
                 var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
@@ -423,12 +426,54 @@
                     console.log('Content updated:', content);
                 });
 
-                // Ensure content is saved before form submission
-                document.querySelector('form').addEventListener('submit', function(e) {
-                    var content = investmentDisclaimerQuill.root.innerHTML;
-                    document.getElementById('investment_disclaimer').value = content;
-                    console.log('Form submission - saving content:', content);
-                    console.log('Hidden input value:', document.getElementById('investment_disclaimer').value);
+                // Note: Form submission handler will be added after all Quill editors are initialized
+
+                // Initialize Quill editor for additional information
+                var additionalInformationQuill = new Quill('#additional_information_editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'size': SizeClass.whitelist }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'align': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            ['blockquote', 'code-block'],
+                            ['link'],
+                            ['clean']
+                        ]
+                    }
+                });
+
+                // Set initial content for additional information
+                var additionalInformationContent = document.getElementById('additional_information').value;
+                console.log('Initial additional information content:', additionalInformationContent);
+                console.log('Raw data attribute:', document.getElementById('additional_information_editor').dataset.content);
+                
+                if (additionalInformationContent && additionalInformationContent.trim() !== '') {
+                    try {
+                        // First try direct assignment, then decoded if needed
+                        if (additionalInformationContent.includes('&')) {
+                            var decodedContent = decodeHtml(additionalInformationContent);
+                            additionalInformationQuill.root.innerHTML = decodedContent;
+                        } else {
+                            additionalInformationQuill.root.innerHTML = additionalInformationContent;
+                        }
+                        console.log('Loaded additional information content into Quill editor');
+                    } catch (error) {
+                        console.error('Error loading additional information content into Quill editor:', error);
+                        // Fallback: try setting as plain text
+                        additionalInformationQuill.setText(additionalInformationContent);
+                    }
+                }
+
+                // Update hidden input when content changes
+                additionalInformationQuill.on('text-change', function() {
+                    var content = additionalInformationQuill.root.innerHTML;
+                    document.getElementById('additional_information').value = content;
+                    console.log('Additional information content updated:', content);
                 });
 
                 // Debug function
@@ -438,6 +483,16 @@
                     console.log('Quill content HTML:', investmentDisclaimerQuill.root.innerHTML);
                     console.log('Quill content text:', investmentDisclaimerQuill.getText());
                     console.log('Data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
+                    alert('Check browser console for debug information');
+                };
+
+                // Debug function for additional information
+                window.debugAdditionalInformation = function() {
+                    console.log('=== ADDITIONAL INFORMATION DEBUG ===');
+                    console.log('Hidden input value:', document.getElementById('additional_information').value);
+                    console.log('Quill content HTML:', additionalInformationQuill.root.innerHTML);
+                    console.log('Quill content text:', additionalInformationQuill.getText());
+                    console.log('Data attribute:', document.getElementById('additional_information_editor').dataset.content);
                     alert('Check browser console for debug information');
                 };
 
@@ -483,13 +538,24 @@
                     console.log('Investment title content updated:', titleContent);
                 });
 
-                // Ensure investment title content is saved before form submission
+                // Ensure all Quill content is saved before form submission
                 document.querySelector('form').addEventListener('submit', function(e) {
+                    // Save investment disclaimer content
+                    var disclaimerContent = investmentDisclaimerQuill.root.innerHTML;
+                    document.getElementById('investment_disclaimer').value = disclaimerContent;
+                    console.log('Form submission - saving disclaimer content:', disclaimerContent);
+                    
+                    // Save additional information content
+                    var additionalContent = additionalInformationQuill.root.innerHTML;
+                    document.getElementById('additional_information').value = additionalContent;
+                    console.log('Form submission - saving additional information content:', additionalContent);
+                    
+                    // Save investment title content
                     var titleContent = investmentTitleQuill.root.innerHTML;
                     document.getElementById('investment_title').value = titleContent;
                     console.log('Form submission - saving investment title content:', titleContent);
                 });
 
-                });
+            });
             </script>
 @endsection
