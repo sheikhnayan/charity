@@ -428,7 +428,7 @@
         }
 
         .investment-form-container *,
-        .investment-form-wrapper *,
+        .investment-form-wrapper,
         .page-wrapper * {
             color: #000 !important;
         }
@@ -891,6 +891,60 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Quill.js Class-based Font Styles for Frontend */
+    .ql-size-10px { font-size: 10px !important; }
+    .ql-size-12px { font-size: 12px !important; }
+    .ql-size-14px { font-size: 14px !important; }
+    .ql-size-16px { font-size: 16px !important; }
+    .ql-size-18px { font-size: 18px !important; }
+    .ql-size-20px { font-size: 20px !important; }
+    .ql-size-24px { font-size: 24px !important; }
+    .ql-size-28px { font-size: 28px !important; }
+    .ql-size-32px { font-size: 32px !important; }
+    .ql-size-36px { font-size: 36px !important; }
+    .ql-size-40px { font-size: 40px !important; }
+    .ql-size-48px { font-size: 48px !important; }
+
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: 'Helvetica Neue', Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', Times, serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* SEO-friendly semantic heading styles for frontend */
+    h1, .ql-header-1 {
+        font-size: 2.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.2 !important;
+        margin: 1rem 0 0.5rem 0 !important;
+    }
+    h2, .ql-header-2 {
+        font-size: 2rem !important;
+        font-weight: bold !important;
+        line-height: 1.3 !important;
+        margin: 0.8rem 0 0.4rem 0 !important;
+    }
+    h3, .ql-header-3 {
+        font-size: 1.75rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.6rem 0 0.3rem 0 !important;
+    }
+    h4, .ql-header-4 {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.5rem 0 0.25rem 0 !important;
+    }
+    h5, .ql-header-5 {
+        font-size: 1.25rem !important;
+        font-weight: bold !important;
+        line-height: 1.5 !important;
+        margin: 0.4rem 0 0.2rem 0 !important;
     }
 
         @media (min-width: 1400px) {
@@ -2128,160 +2182,161 @@ if ($tiersData && is_array($tiersData)) {
                                     </div>
                             </header>
                         </main>
-                        @if ($footer)
-                            @if ($footer->status == 1)
-                                {{-- <footer class="standard-client-footer text-white bg-primary" data-footer=""
-                                    style="background-color: {{ $footer->background }} !important; ">
-                                    <div class="container">
+                        {{-- For investment type websites, use the new dynamic footer --}}
+                        @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+                            @include('layouts.new-footer')
+                        @elseif ($footer && $footer->status == 1)
+                            {{-- Original footer for non-investment websites --}}
+                            <footer class="standard-client-footer text-white bg-primary" data-footer=""
+                                style="background-color: {{ $footer->background }} !important; ">
+                                <div class="container">
 
-                                        <p class="lead text-center pt-4"
-                                            style="color: {{ $footer->color }} !important">
-                                            {{ $footer->message }}
-                                        </p>
-                                        @if ($footer->menu == 1)
-                                            <div class="nav justify-content-center">
-                                                @foreach ($check->pages->sortBy('position') as $item)
-                                                    @if ($item->status == 1)
-                                                        <div class="nav-item">
-                                                            <a class="nav-link active"
-                                                                href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}"
-                                                                style="color:{{ $footer->color }} !important"
-                                                                aria-current="page">
-                                                                {{ $item->name }}
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        @endif
-
-                                        @if ($footer->social == 1)
-                                            <ul class="nav justify-content-center footer-socials mt-4 mb-4">
-                                                @if ($footer->facebook)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->facebook }}" target="_blank">
-                                                            <i class="fa-brands fa-facebook fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">facebook</span>
+                                    <p class="lead text-center pt-4"
+                                        style="color: {{ $footer->color }} !important">
+                                        {{ $footer->message }}
+                                    </p>
+                                    @if ($footer->menu == 1)
+                                        <div class="nav justify-content-center">
+                                            @foreach ($check->pages->sortBy('position') as $item)
+                                                @if ($item->status == 1)
+                                                    <div class="nav-item">
+                                                        <a class="nav-link active"
+                                                            href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}"
+                                                            style="color:{{ $footer->color }} !important"
+                                                            aria-current="page">
+                                                            {{ $item->name }}
                                                         </a>
-                                                    </li>
+                                                    </div>
                                                 @endif
-
-                                                @if ($footer->instagram)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->instagram }}" target="_blank">
-                                                            <i class="fa-brands fa-instagram fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">instagram</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->linkedin)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->linkedin }}" target="_blank">
-                                                            <i class="fa-brands fa-linkedin fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">linkedin</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->pinterest)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->pinterest }}" target="_blank">
-                                                            <i class="fa-brands fa-pinterest fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">pinterest</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->x)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->x }}" target="_blank">
-                                                            <i class="fa-brands fa-x-twitter fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">x</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->youtube)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->youtube }}" target="_blank">
-                                                            <i class="fa-brands fa-youtube fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">youtube</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->blue_sky)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->blue_sky }}" target="_blank">
-                                                            <i class="fa-solid fa-cloud fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">blue sky</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-
-                                                @if ($footer->tiktok)
-                                                    <li class="nav-item">
-                                                        <a href="{{ $footer->tiktok }}" target="_blank">
-                                                            <i class="fa-brands fa-tiktok fa-fw" role="img"
-                                                                aria-hidden="true"
-                                                                style="color: {{ $footer->color }} !important"></i>
-                                                            <span class="visually-hidden">tiktok</span>
-                                                        </a>
-                                                    </li>
-                                                @endif
-                                            </ul>
-                                        @endif
-
-                                        @if ($footer->copy_right != null)
-                                            <p class="text-center" style="margin-bottom: 0px;">
-                                                <small style="color: {{ $footer->color }}">
-                                                    {{ $footer->copy_right }}
-                                                </small>
-                                            </p>
-                                        @endif
-                                    </div>
-                                    @if ($footer->privacy == 1)
-                                        <div class="row mt-4">
-                                            <div class="col-md-12 text-center">
-                                                <ul
-                                                    style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
-                                                    <li style="margin-right: 1rem;">
-                                                        <a style="color: #1773b0; text-decoration: underline;"
-                                                            href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund
-                                                            Policy</a>
-                                                    </li>
-                                                    <li style="margin-right: 1rem;">
-                                                        <a style="color: #1773b0; text-decoration: underline;"
-                                                            href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy
-                                                            Policy</a>
-                                                    </li>
-                                                    <li style="margin-right: 1rem;">
-                                                        <a style="color: #1773b0; text-decoration: underline;"
-                                                            href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms
-                                                            of service</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     @endif
-                                </footer> --}}
-                                @include('layouts.new-footer')
-                            @endif
+
+                                    @if ($footer->social == 1)
+                                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
+                                            @if ($footer->facebook)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->facebook }}" target="_blank">
+                                                        <i class="fa-brands fa-facebook fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">facebook</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->instagram)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->instagram }}" target="_blank">
+                                                        <i class="fa-brands fa-instagram fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">instagram</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->linkedin)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->linkedin }}" target="_blank">
+                                                        <i class="fa-brands fa-linkedin fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">linkedin</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->pinterest)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->pinterest }}" target="_blank">
+                                                        <i class="fa-brands fa-pinterest fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">pinterest</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->x)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->x }}" target="_blank">
+                                                        <i class="fa-brands fa-x-twitter fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">x</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->youtube)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->youtube }}" target="_blank">
+                                                        <i class="fa-brands fa-youtube fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">youtube</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->blue_sky)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->blue_sky }}" target="_blank">
+                                                        <i class="fa-solid fa-cloud fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">blue sky</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($footer->tiktok)
+                                                <li class="nav-item">
+                                                    <a href="{{ $footer->tiktok }}" target="_blank">
+                                                        <i class="fa-brands fa-tiktok fa-fw" role="img"
+                                                            aria-hidden="true"
+                                                            style="color: {{ $footer->color }} !important"></i>
+                                                        <span class="visually-hidden">tiktok</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    @endif
+
+                                    @if ($footer->copy_right != null)
+                                        <p class="text-center" style="margin-bottom: 0px;">
+                                            <small style="color: {{ $footer->color }}">
+                                                {{ $footer->copy_right }}
+                                            </small>
+                                        </p>
+                                    @endif
+                                </div>
+                                @if ($footer->privacy == 1)
+                                    <div class="row mt-4">
+                                        <div class="col-md-12 text-center">
+                                            <ul
+                                                style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
+                                                <li style="margin-right: 1rem;">
+                                                    <a style="color: #1773b0; text-decoration: underline;"
+                                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund
+                                                        Policy</a>
+                                                </li>
+                                                <li style="margin-right: 1rem;">
+                                                    <a style="color: #1773b0; text-decoration: underline;"
+                                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy
+                                                        Policy</a>
+                                                </li>
+                                                <li style="margin-right: 1rem;">
+                                                    <a style="color: #1773b0; text-decoration: underline;"
+                                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms
+                                                        of service</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+                            </footer>
                         @endif
 
 
