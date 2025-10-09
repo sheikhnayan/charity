@@ -3024,7 +3024,7 @@ p {
 }
 
 a {
-    color: var(--link-color--link-primary);
+    /* color: var(--link-color--link-primary); */
     text-decoration: underline
 }
 
