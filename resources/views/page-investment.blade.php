@@ -2109,6 +2109,10 @@ if (isset($state['components'])) {
             box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
         }
 
+        strong {
+            font-weight: bold;
+        }
+
         /* Add bottom padding to body to prevent content overlap - Investment websites only */
         @if($check && $check->isInvestment())
         body {
