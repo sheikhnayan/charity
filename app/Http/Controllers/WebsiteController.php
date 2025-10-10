@@ -51,18 +51,16 @@ class WebsiteController extends Controller
             'type' => 'required|in:fundraiser,investment',
         ];
 
-        // Add investment-specific validation if type is investment
-        if ($request->type === 'investment') {
-            $validation['share_price'] = 'required|numeric|min:0.01';
-            $validation['min_investment'] = 'required|numeric|min:1';
-            $validation['investment_tiers'] = 'nullable|string';
-            $validation['investment_title'] = 'nullable|string';
-            $validation['asset_type'] = 'nullable|string|max:255';
-            $validation['offering_type'] = 'nullable|string|max:255';
-            $validation['asset_type_label'] = 'nullable|string|max:255';
-            $validation['offering_type_label'] = 'nullable|string|max:255';
-            $validation['additional_information'] = 'nullable|string';
-        }
+        // Add investment fields for all website types
+        $validation['share_price'] = 'nullable|numeric|min:0.01';
+        $validation['min_investment'] = 'nullable|numeric|min:1';
+        $validation['investment_tiers'] = 'nullable|string';
+        $validation['investment_title'] = 'nullable|string';
+        $validation['asset_type'] = 'nullable|string|max:255';
+        $validation['offering_type'] = 'nullable|string|max:255';
+        $validation['asset_type_label'] = 'nullable|string|max:255';
+        $validation['offering_type_label'] = 'nullable|string|max:255';
+        $validation['additional_information'] = 'nullable|string';
 
         $request->validate($validation);
 
@@ -75,19 +73,17 @@ class WebsiteController extends Controller
             $add->type = $request->type;
             $add->status = 1;
             
-            // Add investment-specific fields if type is investment
-            if ($request->type === 'investment') {
-                $add->share_price = $request->share_price;
-                $add->investment_disclaimer = $request->investment_disclaimer ?? null;
-                $add->investment_title = $request->investment_title ?? null;
-                $add->min_investment = $request->min_investment;
-                $add->investment_tiers = $request->investment_tiers;
-                $add->asset_type = $request->asset_type ?? 'Common Stock';
-                $add->offering_type = $request->offering_type ?? 'Equity';
-                $add->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
-                $add->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
-                $add->additional_information = $request->additional_information ?? null;
-            }
+            // Add investment fields for all website types
+            $add->share_price = $request->share_price ?? null;
+            $add->investment_disclaimer = $request->investment_disclaimer ?? null;
+            $add->investment_title = $request->investment_title ?? null;
+            $add->min_investment = $request->min_investment ?? null;
+            $add->investment_tiers = $request->investment_tiers ?? null;
+            $add->asset_type = $request->asset_type ?? 'Common Stock';
+            $add->offering_type = $request->offering_type ?? 'Equity';
+            $add->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
+            $add->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
+            $add->additional_information = $request->additional_information ?? null;
             
             $add->save();
 
@@ -207,21 +203,6 @@ class WebsiteController extends Controller
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
         ];
-        if ($request->type === 'investment') {
-            $validation['share_price'] = 'required|numeric|min:0.01';
-            $validation['min_investment'] = 'required|numeric|min:1';
-            $validation['investment_tiers'] = 'nullable|string';
-            $validation['investment_title'] = 'nullable|string';
-            $validation['asset_type'] = 'nullable|string|max:255';
-            $validation['offering_type'] = 'nullable|string|max:255';
-            $validation['asset_type_label'] = 'nullable|string|max:255';
-            $validation['offering_type_label'] = 'nullable|string|max:255';
-            $validation['additional_information'] = 'nullable|string';
-            $validation['sticky_footer_button_bg'] = 'nullable|string|max:7';
-            $validation['sticky_footer_button_text'] = 'nullable|string|max:7';
-            $validation['sticky_footer_text_color'] = 'nullable|string|max:7';
-            $validation['sticky_footer_bg_color'] = 'nullable|string|max:7';
-        }
         // Only validate password if present
         if ($request->filled('password')) {
             $validation['password'] = 'string|min:6';
@@ -233,24 +214,21 @@ class WebsiteController extends Controller
         $update->domain = $request->domain;
         $update->type = $request->type;
         $update->status = $request->status;
-        if ($request->type === 'investment') {
-            // Debug: Log the investment disclaimer content
-            \Log::info('Investment disclaimer content being saved:', ['content' => $request->investment_disclaimer]);
-            $update->investment_disclaimer = $request->investment_disclaimer ?? null;
-            $update->investment_title = $request->investment_title ?? null;
-            $update->share_price = $request->share_price;
-            $update->min_investment = $request->min_investment;
-            $update->investment_tiers = $request->investment_tiers;
-            $update->asset_type = $request->asset_type ?? 'Common Stock';
-            $update->offering_type = $request->offering_type ?? 'Equity';
-            $update->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
-            $update->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
-            $update->additional_information = $request->additional_information ?? null;
-            $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
-            $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
-            $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;
-            $update->sticky_footer_bg_color = $request->sticky_footer_bg_color ?? null;
-        }
+        // Add investment fields for all website types
+        $update->share_price = $request->share_price ?? null;
+        $update->investment_disclaimer = $request->investment_disclaimer ?? null;
+        $update->investment_title = $request->investment_title ?? null;
+        $update->min_investment = $request->min_investment ?? null;
+        $update->investment_tiers = $request->investment_tiers ?? null;
+        $update->asset_type = $request->asset_type ?? 'Common Stock';
+        $update->offering_type = $request->offering_type ?? 'Equity';
+        $update->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
+        $update->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
+        $update->additional_information = $request->additional_information ?? null;
+        $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
+        $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
+        $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;
+        $update->sticky_footer_bg_color = $request->sticky_footer_bg_color ?? null;
         $update->update();
 
         // Update related user info

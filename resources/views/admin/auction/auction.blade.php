@@ -79,6 +79,27 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-lg">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <form id="filterForm" class="d-flex align-items-center gap-3">
+                                            <label for="statusFilter" class="form-label mb-0">Filter by Status:</label>
+                                            <select id="statusFilter" class="form-select" style="width: auto;">
+                                                <option value="">All Auctions</option>
+                                                <option value="1">Enabled Only</option>
+                                                <option value="0">Disabled Only</option>
+                                                <option value="2">Archived Only</option>
+                                            </select>
+                                            <button type="button" onclick="clearFilter()" class="btn btn-outline-secondary btn-sm">
+                                                Clear Filter
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
@@ -91,18 +112,14 @@
                                                 <th>Domain</th>
                                                 <th>Deadline</th>
                                                 <th>Value</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
-                                                    <td colspan="1" class="text-center">No data found.</td>
+                                                    <td colspan="7" class="text-center">No data found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $key => $item)
@@ -112,9 +129,27 @@
                                                         <td>{{ $item->website->domain }}</td>
                                                         <td>{{ $item->dead_line }}</td>
                                                         <td>${{ $item->value }}</td>
-
                                                         <td>
-                                                            <a href="/admins/auction-edit/{{ $item->id }}" class="btn btn-primary">Edit</a>
+                                                            @if ($item->status == 1)
+                                                                <span class="badge bg-success">Enabled</span>
+                                                            @elseif ($item->status == 0)
+                                                                <span class="badge bg-secondary">Disabled</span>
+                                                            @elseif ($item->status == 2)
+                                                                <span class="badge bg-warning">Archived</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a href="/admins/auction-edit/{{ $item->id }}" class="btn btn-primary btn-sm">Edit</a>
+                                                            
+                                                            @if ($item->status != 2)
+                                                                <button onclick="archiveAuction({{ $item->id }})" class="btn btn-warning btn-sm">
+                                                                    <i class="fas fa-archive"></i> Archive
+                                                                </button>
+                                                            @else
+                                                                <button onclick="unarchiveAuction({{ $item->id }})" class="btn btn-info btn-sm">
+                                                                    <i class="fas fa-undo"></i> Unarchive
+                                                                </button>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -135,11 +170,69 @@
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
             <script>
+                let table;
+                
                 $(document).ready(function() {
-                    // Initialize DataTable with default search disabled
-                    let table = new DataTable('.table', {
+                    // Initialize DataTable
+                    table = new DataTable('.table', {
                         pageLength: 25
                     });
+
+                    // Add filter functionality
+                    $('#statusFilter').on('change', function() {
+                        let filterValue = this.value;
+                        if (filterValue === '') {
+                            table.column(5).search('').draw(); // Column 5 is the Status column
+                        } else {
+                            let searchTerm = '';
+                            switch(filterValue) {
+                                case '1': searchTerm = 'Enabled'; break;
+                                case '0': searchTerm = 'Disabled'; break;
+                                case '2': searchTerm = 'Archived'; break;
+                            }
+                            table.column(5).search(searchTerm).draw();
+                        }
+                    });
                 });
+
+                function archiveAuction(auctionId) {
+                    if (confirm('Are you sure you want to archive this auction?')) {
+                        updateAuctionStatus(auctionId, 2, 'Auction archived successfully!');
+                    }
+                }
+
+                function unarchiveAuction(auctionId) {
+                    if (confirm('Are you sure you want to unarchive this auction?')) {
+                        updateAuctionStatus(auctionId, 1, 'Auction unarchived successfully!');
+                    }
+                }
+
+                function updateAuctionStatus(auctionId, status, message) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        url: '/admins/auction/update-status/' + auctionId,
+                        method: 'POST',
+                        data: {
+                            status: status
+                        },
+                        success: function(response) {
+                            alert(message);
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            alert('Error updating auction status. Please try again.');
+                        }
+                    });
+                }
+
+                function clearFilter() {
+                    $('#statusFilter').val('');
+                    table.column(5).search('').draw();
+                }
             </script>
         @endsection

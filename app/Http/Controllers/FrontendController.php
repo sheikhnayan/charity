@@ -485,12 +485,14 @@ class FrontendController extends Controller
     {
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
+
+        // dd($domain);
         
         // Check if this is a main site URL
         $mainSiteUrls = [
             'ifundup.com',
             'www.ifundup.com',
-            '127.0.0.1'
+            // '127.0.0.1'
         ];
 
         

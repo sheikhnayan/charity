@@ -410,6 +410,7 @@
 
 .powered_by_dm_wrap {
     color: #ccc;
+    display: none;
     background-color: #1a1a1a;
     flex-flow: column;
     justify-content: center;
@@ -856,9 +857,5 @@ img {
             class="footer_bg_image_mobile">
         <div class="footer_bg_overlay"></div>
     </div>
-    <div data-wf--powered-by-dealmaker--variant="homepage" class="powered_by_dm_wrap"><a aria-label="Go to DealMaker"
-            href="https://{{ $website->domain }}" target="_blank" class="powered_by_dm_link w-inline-block"><img
-                width="160" height="51.5" alt="{{ $website->name }} logo"
-                src="{{ asset('/uploads/' . $setting->logo) }}"
-                loading="lazy" class="powered_by_dm_logo"></a></div>
+
 </footer>

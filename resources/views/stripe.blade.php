@@ -175,7 +175,7 @@
             <form action="{{ route('stripe.post') }}" id="payment-form" method="post">
                 @csrf
                 <div class="row justify-content-center">
-                    <div class="col-md-6"  @if($check->isInvestment()) style="margin-bottom: 5rem;" @endif>
+                    <div class="col-md-6" style="margin-bottom: 5rem;">
                         <div class="card" style="margin-top: 8rem;">
                             <div class="container p-2 svelte-bty8ba" data-testid="investor-checkout-container">
                                 <div class="py-2 section-item svelte-awum1m" id="investment_amount"
@@ -1179,7 +1179,7 @@
                 <input type="hidden" name="donation_id" value="{{ $data->id }}">
             </form>
         </div>
-        @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+        @if ($footer && $footer->status == 1)
         @include('layouts.new-footer')
     @elseif ($footer && $footer->status == 1)
             <footer class="standard-client-footer text-white bg-primary" data-footer="" style="

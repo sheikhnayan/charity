@@ -30,6 +30,9 @@
                                         <option value="0" {{ $data->status == 0 ? 'selected' : '' }}>
                                             Disabled
                                         </option>
+                                        <option value="2" {{ $data->status == 2 ? 'selected' : '' }}>
+                                            Archived
+                                        </option>
                                     </select>
                                 </div>
                                 <div class="col-md-12 col-lg-12">

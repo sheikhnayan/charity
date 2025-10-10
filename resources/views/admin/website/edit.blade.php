@@ -152,7 +152,7 @@
                                             </div>
 
                                             <!-- Investment-specific fields -->
-                                            <div class="row" id="investment-fields" style="display: {{ $data->type == 'investment' ? 'block' : 'none' }};">
+                                            <div class="row" id="investment-fields" style="display: block;">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="share_price" class="form-label">Share Price ($)</label>
@@ -280,25 +280,7 @@
                                             </div> --}}
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.website.index') }}" class="btn btn-danger">Cancel</a>
-                                            <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                                const websiteTypeSelect = document.getElementById('type');
-                                                const investmentFields = document.getElementById('investment-fields');
-                                                const sharePriceField = document.getElementById('share_price');
-                                                const minInvestmentField = document.getElementById('min_investment');
-                                                websiteTypeSelect.addEventListener('change', function() {
-                                                    if (this.value === 'investment') {
-                                                        investmentFields.style.display = 'block';
-                                                        sharePriceField.required = true;
-                                                        minInvestmentField.required = true;
-                                                    } else {
-                                                        investmentFields.style.display = 'none';
-                                                        sharePriceField.required = false;
-                                                        minInvestmentField.required = false;
-                                                    }
-                                                });
-                                            });
-                                            </script>
+
                                         </div>
 
                                     </form>

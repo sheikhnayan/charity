@@ -1009,7 +1009,7 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
 
     @if ($header && $header->status == 1)
         {{-- Contact Information Top Bar - Only for Investment Websites --}}
-        @if($check && $check->isInvestment() && $header && $header->show_contact_topbar)
+        @if($header && $header->show_contact_topbar)
             <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
                 <div class="container">
                     <div class="row align-items-center justify-content-center">
@@ -1130,13 +1130,13 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
     @endif
 
     <main style="margin-top: var(--main-content-margin-top, {{ 
-        ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? '14.2rem' : 
-        (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? '10.5rem' : 
+        ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header->show_investor_exclusives) ? '14.2rem' : 
+        (($header && $header->show_contact_topbar) ? '10.5rem' : 
         (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
     }}); background-color: {{ $pageBackgroundColor }};" 
           class="{{ 
-            ($check && $check->isInvestment() && $header && $header->show_contact_topbar && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
-            (($check && $check->isInvestment() && $header && $header->show_contact_topbar) ? 'with-contact-bar' : 
+            ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
+            (($header && $header->show_contact_topbar) ? 'with-contact-bar' : 
             (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
         }}">
         <div class="container-fluid" style="background-color: {{ $pageBackgroundColor }};">
@@ -2187,8 +2187,8 @@ if ($tiersData && is_array($tiersData)) {
                                     </div>
                             </header>
                         </main>
-                        {{-- For investment type websites, use the new dynamic footer --}}
-                        @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+                        {{-- Use the new dynamic footer for all website types --}}
+                        @if ($footer && $footer->status == 1)
                             @include('layouts.new-footer')
                         @elseif ($footer && $footer->status == 1)
                             {{-- Original footer for non-investment websites --}}

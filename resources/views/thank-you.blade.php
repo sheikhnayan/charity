@@ -103,13 +103,7 @@
     @if ($header->status == 1)
         @include('layouts.nav')
     @endif
-    <header class="site-header" id="header" style="padding-top: 
-    @if($check->isInvestment())
-    6rem
-    @else
-    3rem
-    @endif
-    ">
+    <header class="site-header" id="header" style="padding-top: 6rem;">
         <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">THANK YOU!</h1>
     </header>
 
@@ -124,7 +118,7 @@
 
 
 
-    @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+    @if ($footer && $footer->status == 1)
         @include('layouts.new-footer')
     @elseif ($footer && $footer->status == 1)
             <footer class="standard-client-footer text-white bg-primary" data-footer="" style="

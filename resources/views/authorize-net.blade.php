@@ -543,7 +543,7 @@
             </div>
         </div>
     </div>
-    @if ($check && $check->isInvestment() && $footer && $footer->status == 1)
+    @if ($footer && $footer->status == 1)
         @include('layouts.new-footer')
     @elseif ($footer && $footer->status == 1)
             <footer class="standard-client-footer text-white bg-primary" data-footer="" style="

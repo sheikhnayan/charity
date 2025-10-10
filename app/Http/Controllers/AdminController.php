@@ -681,6 +681,20 @@ class AdminController extends Controller
 
     }
 
+    public function update_auction_status($id, Request $request)
+    {
+        $auction = Auction::find($id);
+        
+        if (!$auction) {
+            return response()->json(['error' => 'Auction not found'], 404);
+        }
+        
+        $auction->status = $request->status;
+        $auction->save();
+        
+        return response()->json(['success' => 'Status updated successfully']);
+    }
+
     public function uploadImage(Request $request)
     {
         try {

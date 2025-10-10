@@ -41,6 +41,7 @@
                     </li> --}}
                 </ul>
             </div>
+            @if($check && $check->isInvestment())
             <a class="navbar-brand close-on-mobile" href="/invest">
                 <div class="invest-button-section">
                 <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
@@ -48,6 +49,7 @@
                 </button>
             </div>
             </a>
+            @endif
 
         </div>
     </nav>

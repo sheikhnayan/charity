@@ -243,6 +243,8 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
     Route::post('/auction/update/{id}',[AdminController::class, 'update_auction'])->name('admin.auction.update');
 
+    Route::post('/auction/update-status/{id}',[AdminController::class, 'update_auction_status'])->name('admin.auction.update-status');
+
     Route::get('/menu/{id}',[AdminController::class, 'menu'])->name('admin.menu');
 
     Route::post('/menu/store',[AdminController::class, 'store_menu'])->name('admin.menu.store');
