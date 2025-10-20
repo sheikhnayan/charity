@@ -120,7 +120,7 @@ class TicketController extends Controller
 
             $images = $request->file('image');
 
-            dd($images);
+            // dd($images);
 
             foreach ($images as $key => $value) {
                 # code...
