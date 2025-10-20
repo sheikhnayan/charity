@@ -108,6 +108,8 @@ class TicketController extends Controller
         $add->hide_until = $request->hide_until;
         $add->hide_after = $request->hide_after;
         $add->price = $request->price;
+        $add->type = $request->type;
+        $add->size = $request->size;
         $add->quantity = $request->quantity;
 
         $website = Website::find($request->website_id);
