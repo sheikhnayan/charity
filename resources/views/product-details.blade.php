@@ -521,7 +521,7 @@
         @endif
     @endif
 
-  <main class="container" style="margin-top: 9rem;">
+  <main class="container" style="margin-top: 14rem;">
     <div class="grid">
       <!-- LEFT: Gallery, similar, specifics, description -->
       <section>
