@@ -48,7 +48,7 @@ class TicketController extends Controller
 
             foreach ($images as $key => $value) {
                 # code...
-                if($key == 1){
+                if($key == 0){
                     $file = $value;
                     $filename = time() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/tickets'), $filename);
@@ -122,7 +122,7 @@ class TicketController extends Controller
 
             foreach ($images as $key => $value) {
                 # code...
-                if($key == 1){
+                if($key == 0){
                     $file = $value;
                     $filename = time() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/tickets'), $filename);
