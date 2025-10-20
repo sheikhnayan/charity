@@ -127,7 +127,7 @@ class TicketController extends Controller
                     $filename = time() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/tickets'), $filename);
                     $add->image = 'uploads/tickets/' . $filename;
-                    $add->update();
+                    
 
                     $new = new TicketImage;
                     $new->ticket_id = $add->id;
@@ -161,6 +161,8 @@ class TicketController extends Controller
                 $newFeature->save();
             }
         }
+
+        $add->update();
 
         return redirect()->route('admin.ticket.index')->with('success', 'Ticket updated successfully.');
     }
