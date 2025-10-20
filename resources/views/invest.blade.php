@@ -1321,7 +1321,7 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            SHARE PRICE</div>
+                                                                                            {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}</div>
                                                                                         <div
                                                                                             class="dmr-common-stock-2 fixed-height">
                                                                                             <strong
@@ -1454,8 +1454,7 @@ a,
                                                         class="investment-form-container w-node-d76ce5db-1098-4f05-302a-51e614ef19a6-4eda2ff4">
                                                         <div class="investment-form-wrapper">
                                                             <h2 class="investment-form-title"
-                                                                style="color: #000 !important;">Complete Your
-                                                                Investment</h2>
+                                                                style="color: #000 !important;">{{ $website && $website->invest_page_title ? $website->invest_page_title : ($setting && $setting->invest_page_title ? $setting->invest_page_title : 'Complete Your Investment') }}</h2>
 
                                                             <!-- SSN/EIN Explanation Modal -->
                                                             <div class="modal" id="ssnExplanationModal" tabindex="-1" aria-labelledby="ssnExplanationModalLabel" aria-hidden="true" data-bs-backdrop="false">
@@ -1495,7 +1494,7 @@ a,
 
                                                             <!-- Investment Amount Selection -->
                                                             <div class="investment-step" id="amount-step">
-                                                                <h3>Select Investment Amount</h3>
+                                                                <h3>{{ $website && $website->invest_amount_title ? $website->invest_amount_title : ($setting && $setting->invest_amount_title ? $setting->invest_amount_title : 'Select Investment Amount') }}</h3>
                                                                 <div class="amount-tiers">
                                                                     @php
                                                                         // Handle JSON format for investment tiers
@@ -2051,7 +2050,7 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        SHARE PRICE</div>
+                                                                                        {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}</div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong

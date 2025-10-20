@@ -14,4 +14,14 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(TicketImage::class);
+    }
+
+    public function features()
+    {
+        return $this->hasMany(TicketFeature::class);
+    }
 }

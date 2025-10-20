@@ -25,7 +25,11 @@ class Website extends Model
         'offering_type',
         'asset_type_label',
         'offering_type_label',
-        'additional_information'
+        'additional_information',
+        'invest_page_title',
+        'invest_amount_title',
+        'share_price_label',
+        'minimum_investment_label'
     ];
 
     /**

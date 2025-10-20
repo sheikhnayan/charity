@@ -223,9 +223,15 @@
                 const loginForm = component.querySelector('.login');
                 const titleElement = component.querySelector('.tit');
                 
-                if (registerForm) registerForm.style.display = 'none';
-                if (loginForm) loginForm.style.display = 'block';
-                if (titleElement) titleElement.textContent = 'Login';
+                if (registerForm) {
+                    registerForm.style.display = 'none';
+                }
+                if (loginForm) {
+                    loginForm.style.display = 'block';
+                }
+                if (titleElement) {
+                    titleElement.textContent = 'Login';
+                }
                 
                 console.log('Switched to login form for component:', componentId);
                 document.getElementById('auth-status').innerHTML = '<strong>✅ Test Passed:</strong> Successfully switched to login form using onclick function';
@@ -245,9 +251,15 @@
                 const loginForm = component.querySelector('.login');
                 const titleElement = component.querySelector('.tit');
                 
-                if (loginForm) loginForm.style.display = 'none';
-                if (registerForm) registerForm.style.display = 'block';
-                if (titleElement) titleElement.textContent = 'Register';
+                if (loginForm) {
+                    loginForm.style.display = 'none';
+                }
+                if (registerForm) {
+                    registerForm.style.display = 'block';
+                }
+                if (titleElement) {
+                    titleElement.textContent = 'Register';
+                }
                 
                 console.log('Switched to register form for component:', componentId);
                 document.getElementById('auth-status').innerHTML = '<strong>✅ Test Passed:</strong> Successfully switched to register form using onclick function';

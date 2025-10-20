@@ -1355,7 +1355,6 @@ if (isset($state['components'])) {
             @include('layouts.main_header')
         @else
             @include('layouts.nav')
-            
         @endif
         
         

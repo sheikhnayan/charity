@@ -142,6 +142,7 @@ Route::get('/invest/privacy', [FrontendController::class, 'investmentPrivacy'])-
 Route::post('/donations', [FrontendController::class, 'donation'])->name('donation');
 
 Route::post('/tickets', [FrontendController::class, 'tickets'])->name('tickets');
+Route::get('/product/{id}', [FrontendController::class, 'productDetails'])->name('product.details');
 
 Route::post('/custom-form', [FrontendController::class, 'custom_form'])->name('custom-form');
 

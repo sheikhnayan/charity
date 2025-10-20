@@ -152,7 +152,7 @@
                                             </div>
 
                                             <!-- Investment-specific fields -->
-                                            <div class="row" id="investment-fields" style="display: block;">
+                                            <div class="row" id="investment-fields" style="display: {{ $data->type == 'investment' ? 'block' : 'none' }};">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="share_price" class="form-label">Share Price ($)</label>
@@ -212,15 +212,6 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
-                                                        <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
-                                                        <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
-                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
-                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed in the footer.</small>
-                                                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugInvestmentDisclaimer()">Debug Content</button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
                                                         <label for="additional_information" class="form-label">Additional Information</label>
                                                         <div id="additional_information_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
                                                         <input type="hidden" name="additional_information" id="additional_information" value="{{ htmlspecialchars($data->additional_information ?? '', ENT_QUOTES, 'UTF-8') }}">
@@ -229,7 +220,55 @@
                                                     </div>
                                                 </div>
                                                 
-                                                <!-- Sticky Footer Color Settings -->
+                                                <!-- Investment Page Text Settings -->
+                                                <div class="col-md-12">
+                                                    <h5 class="mt-4 mb-3">Investment Page Text Labels</h5>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="invest_page_title" class="form-label">Investment Page Title</label>
+                                                        <input type="text" name="invest_page_title" class="form-control" id="invest_page_title" placeholder="Complete Your Investment" value="{{ $data->invest_page_title ?? 'Complete Your Investment' }}">
+                                                        <small class="form-text text-muted">The main title displayed on the investment form page.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="invest_amount_title" class="form-label">Investment Amount Section Title</label>
+                                                        <input type="text" name="invest_amount_title" class="form-control" id="invest_amount_title" placeholder="Select Investment Amount" value="{{ $data->invest_amount_title ?? 'Select Investment Amount' }}">
+                                                        <small class="form-text text-muted">The title for the investment amount selection section.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="share_price_label" class="form-label">Share Price Label</label>
+                                                        <input type="text" name="share_price_label" class="form-control" id="share_price_label" placeholder="SHARE PRICE" value="{{ $data->share_price_label ?? 'SHARE PRICE' }}">
+                                                        <small class="form-text text-muted">The label displayed above the share price value.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="minimum_investment_label" class="form-label">Minimum Investment Label</label>
+                                                        <input type="text" name="minimum_investment_label" class="form-control" id="minimum_investment_label" placeholder="MINIMUM INVESTMENT" value="{{ $data->minimum_investment_label ?? 'MINIMUM INVESTMENT' }}">
+                                                        <small class="form-text text-muted">The label displayed above the minimum investment value.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Footer Disclaimer - Available for all website types -->
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="investment_disclaimer" class="form-label">Footer Disclaimer</label>
+                                                        <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
+                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
+                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed in the footer for all website types.</small>
+                                                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugInvestmentDisclaimer()">Debug Content</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Sticky Footer Color Settings -->
+                                            <div class="row">
                                                 <div class="col-md-12">
                                                     <h5 class="mt-4 mb-3">Sticky Footer Button Colors</h5>
                                                 </div>
@@ -538,6 +577,26 @@
                     console.log('Form submission - saving investment title content:', titleContent);
                 });
 
+            });
+
+            // Handle website type change to show/hide investment fields
+            function toggleInvestmentFields() {
+                const websiteType = document.getElementById('type').value;
+                const investmentFields = document.getElementById('investment-fields');
+                
+                if (websiteType === 'investment') {
+                    investmentFields.style.display = 'block';
+                } else {
+                    investmentFields.style.display = 'none';
+                }
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                toggleInvestmentFields();
+                
+                // Add event listener to type dropdown
+                document.getElementById('type').addEventListener('change', toggleInvestmentFields);
             });
             </script>
 @endsection

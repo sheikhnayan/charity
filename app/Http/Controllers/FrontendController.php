@@ -19,6 +19,19 @@ use Mail;
 
 class FrontendController extends Controller
 {
+    public function productDetails($id)
+    {
+        $ticket = Ticket::with('website')->findOrFail($id);
+        
+        // Get website header/footer/settings
+        $website = $ticket->website;
+        $user_id = $website->user_id;
+        $setting = Setting::where('user_id', $user_id)->first();
+        $header = Header::where('user_id', $user_id)->first();
+        $footer = Footer::where('user_id', $user_id)->first();
+        
+        return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
+    }
 
     public function index()
     {

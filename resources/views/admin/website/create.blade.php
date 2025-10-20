@@ -133,7 +133,7 @@
                                             </div>
 
                                             <!-- Investment-specific fields -->
-                                            <div class="row" id="investment-fields" style="display: block;">
+                                            <div class="row" id="investment-fields" style="display: none;">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
                                                         <label for="share_price" class="form-label">Share Price ($)</label>
@@ -155,11 +155,48 @@
                                                         <small class="form-text text-muted">Comma-separated list of investment amounts to display as quick options.</small>
                                                     </div>
                                                 </div>
+                                                
+                                                <!-- Investment Page Text Settings -->
+                                                <div class="col-md-12">
+                                                    <h5 class="mt-4 mb-3">Investment Page Text Labels</h5>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="invest_page_title" class="form-label">Investment Page Title</label>
+                                                        <input type="text" name="invest_page_title" class="form-control" id="invest_page_title" placeholder="Complete Your Investment" value="Complete Your Investment">
+                                                        <small class="form-text text-muted">The main title displayed on the investment form page.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="invest_amount_title" class="form-label">Investment Amount Section Title</label>
+                                                        <input type="text" name="invest_amount_title" class="form-control" id="invest_amount_title" placeholder="Select Investment Amount" value="Select Investment Amount">
+                                                        <small class="form-text text-muted">The title for the investment amount selection section.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="share_price_label" class="form-label">Share Price Label</label>
+                                                        <input type="text" name="share_price_label" class="form-control" id="share_price_label" placeholder="SHARE PRICE" value="SHARE PRICE">
+                                                        <small class="form-text text-muted">The label displayed above the share price value.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="minimum_investment_label" class="form-label">Minimum Investment Label</label>
+                                                        <input type="text" name="minimum_investment_label" class="form-control" id="minimum_investment_label" placeholder="MINIMUM INVESTMENT" value="MINIMUM INVESTMENT">
+                                                        <small class="form-text text-muted">The label displayed above the minimum investment value.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Footer Disclaimer - Available for all website types -->
+                                            <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
-                                                        <label for="investment_disclaimer" class="form-label">Investment Disclaimer</label>
-                                                        <textarea name="investment_disclaimer" class="form-control" id="investment_disclaimer" rows="3" placeholder="Enter investment disclaimer text"></textarea>
-                                                        <small class="form-text text-muted">Legal disclaimer text that will be displayed on the investment page.</small>
+                                                        <label for="investment_disclaimer" class="form-label">Footer Disclaimer</label>
+                                                        <textarea name="investment_disclaimer" class="form-control" id="investment_disclaimer" rows="3" placeholder="Enter footer disclaimer text"></textarea>
+                                                        <small class="form-text text-muted">Legal disclaimer text that will be displayed in the footer for all website types.</small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -185,6 +222,26 @@
                 </div>
             </div>
 
+<script>
+// Handle website type change to show/hide investment fields
+function toggleInvestmentFields() {
+    const websiteType = document.getElementById('type').value;
+    const investmentFields = document.getElementById('investment-fields');
+    
+    if (websiteType === 'investment') {
+        investmentFields.style.display = 'block';
+    } else {
+        investmentFields.style.display = 'none';
+    }
+}
 
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleInvestmentFields();
+    
+    // Add event listener to type dropdown
+    document.getElementById('type').addEventListener('change', toggleInvestmentFields);
+});
+</script>
 
 @endsection

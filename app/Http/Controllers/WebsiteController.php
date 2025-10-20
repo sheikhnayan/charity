@@ -61,6 +61,10 @@ class WebsiteController extends Controller
         $validation['asset_type_label'] = 'nullable|string|max:255';
         $validation['offering_type_label'] = 'nullable|string|max:255';
         $validation['additional_information'] = 'nullable|string';
+        $validation['invest_page_title'] = 'nullable|string|max:255';
+        $validation['invest_amount_title'] = 'nullable|string|max:255';
+        $validation['share_price_label'] = 'nullable|string|max:255';
+        $validation['minimum_investment_label'] = 'nullable|string|max:255';
 
         $request->validate($validation);
 
@@ -84,6 +88,10 @@ class WebsiteController extends Controller
             $add->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
             $add->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
             $add->additional_information = $request->additional_information ?? null;
+            $add->invest_page_title = $request->invest_page_title ?? 'Complete Your Investment';
+            $add->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
+            $add->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
+            $add->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
             
             $add->save();
 
@@ -225,6 +233,10 @@ class WebsiteController extends Controller
         $update->asset_type_label = $request->asset_type_label ?? 'ASSET TYPE';
         $update->offering_type_label = $request->offering_type_label ?? 'OFFERING TYPE';
         $update->additional_information = $request->additional_information ?? null;
+        $update->invest_page_title = $request->invest_page_title ?? 'Complete Your Investment';
+        $update->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
+        $update->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
+        $update->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
         $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
         $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
         $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;

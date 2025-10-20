@@ -729,6 +729,32 @@ window.addEventListener('load', function() {
       cursor: grabbing;
     }
 
+    /* Ticket Carousel component styling in page builder */
+    .component[data-type="ticket-carousel"] {
+      position: relative;
+      margin: 20px 0;
+      min-height: 150px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px dashed transparent;
+      transition: all 0.3s ease;
+    }
+
+    .component[data-type="ticket-carousel"]:hover {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .component[data-type="ticket-carousel"] .ticket-carousel-placeholder {
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .component[data-type="ticket-carousel"]:hover .ticket-carousel-placeholder {
+      border-color: #3665f3;
+    }
+
     /* Video component specific styling in page builder */
     .component[data-type="video"] {
       cursor: pointer;
@@ -2405,6 +2431,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="full-width-text-image"><i class="fas fa-image me-2"></i>Full Width Text & Image</div>
                 <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
                 <div class="component-item" draggable="true" data-type="press-card"><i class="fas fa-newspaper me-2"></i>Press Card</div>
+                <div class="component-item" draggable="true" data-type="ticket-carousel"><i class="fas fa-ticket-alt me-2"></i>Ticket Carousel</div>
                 {{-- <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div> --}}
                 </div>
             </div>
@@ -3595,6 +3622,18 @@ button a:hover {
 
       let content;
       switch (type) {
+        
+        case 'ticket-carousel':
+            content = document.createElement('div');
+            content.className = 'ticket-carousel-preview';
+            content.innerHTML = `
+                <div class="ticket-carousel-placeholder" style="padding: 20px; border: 2px dashed #ccc; text-align: center; background: #f8f9fa; margin: 10px;">
+                    <i class="fas fa-ticket-alt" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
+                    <h4 style="margin: 10px 0; color: #333;">Ticket Carousel</h4>
+                    <p style="color: #666; margin: 0;">This carousel will display available tickets in a responsive grid layout.</p>
+                </div>
+            `;
+            break;
 
         case 'image':
     content = document.createElement('div');

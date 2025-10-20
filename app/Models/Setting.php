@@ -13,7 +13,8 @@ class Setting extends Model
         'theme', 'font', 'payout_option', 'site_status', 'payment_method',
         'stripe_publishable_key', 'stripe_secret_key', 'authorize_login_id',
         'authorize_transaction_key', 'refund', 'privacy', 'terms', 'investment_disclaimer',
-        'investment_title', 'asset_type', 'offering_type', 'asset_type_label', 'offering_type_label', 'additional_information'
+        'investment_title', 'asset_type', 'offering_type', 'asset_type_label', 'offering_type_label', 'additional_information',
+        'invest_page_title', 'invest_amount_title', 'share_price_label', 'minimum_investment_label'
     ];
 
     public function website()
