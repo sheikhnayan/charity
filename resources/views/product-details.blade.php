@@ -653,7 +653,7 @@
           <div class="title">{{$ticket->name}}</div>
           <div class="subtitle">Sold by <strong>{{$ticket->user->website->name}}</strong></div>
           <div class="price">US ${{ number_format($ticket->price, 2) }}</div>
-          <div class="condition">Condition: <strong>New without tags</strong></div>
+          {{-- <div class="condition">Condition: <strong>New without tags</strong></div> --}}
 
           <form action="/tickets" method="post">
           @csrf
