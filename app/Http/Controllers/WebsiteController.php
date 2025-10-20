@@ -312,11 +312,11 @@ class WebsiteController extends Controller
                 $tickets = \App\Models\Ticket::where('website_id', $id)->get();
                 foreach ($tickets as $ticket) {
                     // Delete ticket sell details first
-                    $ticketSells = \App\Models\TicektSell::where('ticket_id', $ticket->id)->get();
+                    $ticketSells = \App\Models\TicektSell::where('website_id', $id)->get();
                     foreach ($ticketSells as $sell) {
                         \App\Models\TicketSellDetail::where('ticket_sell_id', $sell->id)->delete();
                     }
-                    \App\Models\TicektSell::where('ticket_id', $ticket->id)->delete();
+                    \App\Models\TicektSell::where('website_id', $id)->delete();
                 }
                 \App\Models\Ticket::where('website_id', $id)->delete();
                 
