@@ -680,7 +680,7 @@ img {
                     href="https://{{ $website->domain }}"
                     dmr-utm-forward="1" aria-label="Go to EnergyX's homepage"
                     id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365c7-e0e365c4" target="_blank"
-                    class="footer_logo_link w-nav-brand"><img width="Auto" loading="lazy" alt="{{ $website->name }}"
+                    class="footer_logo_link w-nav-brand" style="height: auto;"><img width="Auto" loading="lazy" alt="{{ $website->name }}"
                         src="{{ asset('/uploads/' . $setting->logo) }}"
                         class="footer_logo"></a>
                 {{-- <div class="text-style-eyebrow text-color-teal" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin-top: 40px;">Powering the Future</div> --}}

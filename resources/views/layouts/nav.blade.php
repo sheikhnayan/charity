@@ -117,4 +117,12 @@
             text-decoration: underline;
         }
     </style>
+
+
+<script>
+    $('.nav-link').on('click', function(){
+        $('.navbar-toggler').addClass('collapsed');
+        $('#navbarNav').removeClass('show');
+    })
+</script>
     @endif

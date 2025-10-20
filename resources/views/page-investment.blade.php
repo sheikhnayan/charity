@@ -1327,7 +1327,7 @@ if (isset($state['components'])) {
                         </div>
                         @endif
                         @if($header->contact_email)
-                        <div class="col-6 col-md-auto">
+                        <div class="col-6 col-md-auto" style="text-align: center;">
                             <div class="contact-item me-4 mb-1">
                                 <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
                                 <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
