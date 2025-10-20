@@ -279,10 +279,10 @@ class WebsiteController extends Controller
                 
                 // Delete pages and their remaining comments (for any orphaned comments)
                 $pages = \App\Models\Page::where('website_id', $id)->get();
-                foreach ($pages as $page) {
-                    // Delete any remaining page comments by page_id (backup cleanup)
-                    \App\Models\PageComment::where('page_identifier', $page->id)->delete();
-                }
+                // foreach ($pages as $page) {
+                //     // Delete any remaining page comments by page_id (backup cleanup)
+                //     \App\Models\PageComment::where('page_identifier', $page->id)->delete();
+                // }
                 \App\Models\Page::where('website_id', $id)->delete();
                 
                 // Delete investments
