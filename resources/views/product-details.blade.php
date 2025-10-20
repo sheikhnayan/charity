@@ -531,7 +531,7 @@
               <!-- thumbnails (use same source multiple times in demo) -->
               @foreach ($ticket->images as $item)
                   <button aria-label="thumbnail {{ $loop->index + 1 }}">
-                      <img src="/{{ $item->image_path }}" data-full="{{ $item->full }}" {{ $loop->index == 0 ? 'class=active' : '' }} alt="thumb{{ $loop->index + 1 }}">
+                      <img src="/{{ $item->image_path }}" data-full="/{{ $item->image_path }}" {{ $loop->index == 0 ? 'class=active' : '' }} alt="thumb{{ $loop->index + 1 }}">
                   </button>
               @endforeach
             </div>

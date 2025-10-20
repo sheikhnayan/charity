@@ -120,11 +120,16 @@ class TicketController extends Controller
 
             $images = $request->file('image');
 
+            dd($images);
+
             foreach ($images as $key => $value) {
                 # code...
+
+                $rand = rand(1000,9999);
+
                 if($key == 0){
                     $file = $value;
-                    $filename = time() . '.' . $file->getClientOriginalExtension();
+                    $filename = $rand . time() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/tickets'), $filename);
                     $add->image = 'uploads/tickets/' . $filename;
                     
@@ -135,7 +140,7 @@ class TicketController extends Controller
                     $new->save();
                 }else{
                     $file = $value;
-                    $filename = time() . '.' . $file->getClientOriginalExtension();
+                    $filename = $rand . time() . '.' . $file->getClientOriginalExtension();
                     $file->move(public_path('uploads/tickets'), $filename);
                     // $add->image = 'uploads/tickets/' . $filename;
 
