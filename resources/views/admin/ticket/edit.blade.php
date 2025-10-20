@@ -64,10 +64,13 @@
                             <h4 class="mb-2">Product Features</h4>
 
                             @foreach ($data->features as $item)
+                            @php
+                                $rand = mt_rand(00123, 5462364923156);
+                            @endphp
                                 <div id="features-container">
                                     <div class="feature-row flex items-center gap-2 mb-2">
-                                    <input type="text" name="features[{{ $loop->index }}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.name', $item->name ?? '') }}">
-                                    <input type="text" name="features[{{ $loop->index }}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.value', $item->value ?? '') }}">
+                                    <input type="text" name="features[{{ $rand }}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.name', $item->name ?? '') }}">
+                                    <input type="text" name="features[{{ $rand }}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.value', $item->value ?? '') }}">
                                     <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
                                     </div>
                                 </div>
