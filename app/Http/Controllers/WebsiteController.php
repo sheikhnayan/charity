@@ -328,6 +328,9 @@ class WebsiteController extends Controller
                 
                 // Delete footers
                 \App\Models\Footer::where('website_id', $id)->delete();
+
+                // Delete setting
+                \App\Models\Setting::where('user_id', $website->user_id)->delete();
                 
                 // Finally, delete the website itself
                 $website->delete();
