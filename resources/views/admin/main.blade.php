@@ -227,6 +227,13 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('admins/change-password') ? 'active' : '' }}">
+    <a href="/admins/change-password" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-lock"></i>
+      <div class="text-truncate">Change Password</div>
+    </a>
+  </li>
+
   <li class="menu-header small text-uppercase">
     <span class="menu-header-text">Reports</span>
   </li>

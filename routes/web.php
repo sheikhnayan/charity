@@ -218,6 +218,15 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         AdminController::class, 'setting'
     ])->name('admin.setting');
 
+
+    Route::get('/change-password', [
+        AdminController::class, 'change_password'
+    ])->name('admin.change-password');
+
+    Route::post('/change-password', [
+        AdminController::class, 'update_password'
+    ])->name('admin.update-password');
+
     Route::get('/tax/show/{id}',[AdminController::class, 'tax_show'])->name('admin.tax.show');
 
     Route::get('/tax-list',[AdminController::class, 'tax_list'])->name('admin.tax.list');

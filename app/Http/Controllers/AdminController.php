@@ -17,6 +17,7 @@ use App\Models\Tax;
 use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
+use Hash;
 use App\Models\PageComment;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -34,6 +35,30 @@ class AdminController extends Controller
             return view('admin.setting.list', compact('data'));
         }
 
+    }
+
+    public function change_password()
+    {
+        return view('admin.change-password');
+    }
+
+    public function update_password(Request $request)
+    {
+
+        if ($request->new_password != $request->confirm_password) {
+            # code...
+            return redirect()->back()->with('error', 'New Password and Confirm Password do not match');
+        }
+
+        $user = Auth::user()->id;
+
+        $data = User::find($user);
+
+        $data->password = Hash::make(request()->new_password);
+
+        $data->save();
+
+        return redirect()->back()->with('success', 'Password updated successfully');
     }
 
     public function wire_transfer()
