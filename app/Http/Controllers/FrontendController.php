@@ -39,7 +39,7 @@ class FrontendController extends Controller
         $url = url()->current();
         if( $url == 'http://fundconnects.com' || $url == 'fundconnects.com' || $url == 'https://fundconnects.com' || $url == 'http://127.0.0.1:8000') {
             // return redirect()->route('admin.index', 1);
-            dealmakerDemo();
+           return $this->dealmakerDemo();
         }
         $doamin = parse_url($url, PHP_URL_HOST);
         // dd($doamin);
