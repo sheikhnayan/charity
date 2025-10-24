@@ -37,7 +37,7 @@ class FrontendController extends Controller
     {
 
         $url = url()->current();
-        if( $url == 'http://ifundup.com' || $url == 'ifundup.com' || $url == 'https://ifundup.com' || $url == 'http://127.0.0.1:8000') {
+        if( $url == 'http://fundconnects.com' || $url == 'fundconnects.com' || $url == 'https://fundconnects.com' || $url == 'http://127.0.0.1:8000') {
             return redirect()->route('admin.index', 1);
         }
         $doamin = parse_url($url, PHP_URL_HOST);
@@ -503,8 +503,8 @@ class FrontendController extends Controller
         
         // Check if this is a main site URL
         $mainSiteUrls = [
-            'ifundup.com',
-            'www.ifundup.com',
+            'fundconnects.com',
+            'www.fundconnects.com',
             // '127.0.0.1'
         ];
 
