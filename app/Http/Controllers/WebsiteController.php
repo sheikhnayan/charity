@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Process;
 use App\Models\Website;
 use App\Models\User;
 use App\Models\Setting;
@@ -171,6 +172,30 @@ class WebsiteController extends Controller
             $t->user_id = $user->id;
             $t->website_id = $add->id;
             $t->save();
+
+            $email = 'nman0171@gmail.com';
+            $domain = $request->domain;
+
+            $vhostPath = "/etc/apache2/sites-available/{$domain}.conf";
+            $docRoot = "/var/www/charity/public";
+
+                $vhostConfig = "
+            <VirtualHost *:80>
+                ServerName {$domain}
+                DocumentRoot {$docRoot}
+
+                <Directory {$docRoot}>
+                    AllowOverride All
+                    Require all granted
+                </Directory>
+
+                Alias /.well-known/acme-challenge/ /var/www/letsencrypt/
+            </VirtualHost>";
+
+                file_put_contents($vhostPath, $vhostConfig);
+                exec("sudo a2ensite {$domain}.conf && sudo systemctl reload apache2");
+
+            Process::run("sudo certbot --apache -d {$domain} --non-interactive --agree-tos -m {$email} --redirect");
 
             return redirect()->route('admin.website.index')->with('success', 'Website created successfully.');
         } catch (\Throwable $th) {
