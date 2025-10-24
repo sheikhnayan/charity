@@ -86,7 +86,7 @@
                                     <h5><i class="fas fa-info-circle"></i> How Pages Work</h5>
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <strong>🌐 Main Site Pages (ifundup.com):</strong>
+                                            <strong>🌐 Main Site Pages (fundconnects.com):</strong>
                                             <ul class="mb-0 mt-2">
                                                 <li>Accessible only on main domain</li>
                                                 <li>Independent of individual websites</li>
@@ -118,7 +118,7 @@
                         @if(!empty($mainSitePages) && $mainSitePages->count() > 0)
                         <div class="row mb-4">
                             <div class="col-lg">
-                                <h4><i class="fas fa-globe"></i> Main Site Pages (ifundup.com)</h4>
+                                <h4><i class="fas fa-globe"></i> Main Site Pages (fundconnects.com)</h4>
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-success" style="background: #fff !important;">
                                     <table class="table">
                                         <thead>
@@ -137,7 +137,7 @@
                                                     <td>{{ $key + 1 }}</td>
                                                     <td>{{ $item->name }}</td>
                                                     <td>
-                                                        <code>ifundup.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
+                                                        <code>fundconnects.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
                                                         <br><small class="text-muted">Only accessible on main domain</small>
                                                     </td>
                                                     <td>
