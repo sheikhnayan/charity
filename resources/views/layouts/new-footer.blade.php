@@ -581,6 +581,10 @@ img {
         align-items: start;
         grid-row-gap: 1rem;
     }
+
+    .footer_bg_image_wrap{
+        display: none !important;
+    }
 }
 </style>
 
