@@ -5496,6 +5496,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $slidesToShow = $properties['slides_to_show'] ?? 3;
                 $autoplay = ($properties['autoplay'] ?? 0) == 1;
                 $autoplaySpeed = $properties['autoplay_speed'] ?? 3000;
+                $enableLoop = ($properties['loop'] ?? 1) == 1;
                 $dots = true; // Default to true for now
                 $arrows = true; // Default to true for now
                 $sliderId = 'ticket-category-slider-' . ($componentId ?? uniqid());
@@ -5520,6 +5521,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 }
                 
                 $tickets = $query->latest()->get();
+                
+                // Determine if loop should be enabled (only if we have enough items)
+                $actualLoop = $enableLoop && count($tickets) >= $slidesToShow;
             @endphp
             
             <!-- Load Required CSS -->

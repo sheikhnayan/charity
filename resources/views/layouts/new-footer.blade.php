@@ -663,6 +663,10 @@ img {
     .disclaimer_wrap {
         color: {{ $footer->color ?? '#ffffff' }} !important;
     }
+
+    .jkkjjkkj p{
+        margin-bottom: 0px !important;
+    }
 </style>
 @endif
 
@@ -687,8 +691,7 @@ img {
                     class="footer_logo_link w-nav-brand" style="height: auto;"><img width="Auto" loading="lazy" alt="{{ $website->name }}"
                         src="{{ asset('/uploads/' . $setting->logo) }}"
                         class="footer_logo"></a>
-                {{-- <div class="text-style-eyebrow text-color-teal" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin-top: 40px;">Powering the Future</div> --}}
-                <div style="color: {{ $footer->color ?? '#ffffff' }} !important; margin-top: 40px !important;">
+                <div class="jkkjjkkj" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin-top: 40px !important;">
                     {!! $footer->disclaimer_text ?? '<p>Energy Exploration Technologies has a mission to become a worldwide leader in the global transition to sustainable energy.</p>' !!}
                 </div>
                 <div class="spacer-small"></div>

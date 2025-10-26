@@ -104,6 +104,15 @@
         <label>Autoplay Speed (ms)</label>
         <input type="number" class="form-control component-property" data-property="autoplay_speed" value="{{ $autoplaySpeed }}" min="1000" step="500">
     </div>
+    
+    <div class="form-group">
+        <label>Enable Loop</label>
+        <select class="form-control component-property" data-property="loop">
+            <option value="1" {{ ($component['properties']['loop'] ?? true) ? 'selected' : '' }}>Yes</option>
+            <option value="0" {{ !($component['properties']['loop'] ?? true) ? 'selected' : '' }}>No</option>
+        </select>
+        <small class="form-text text-muted">Enable infinite loop. Will be automatically disabled if you have fewer items than slides to show to prevent duplication.</small>
+    </div>
 </div>
 
 <style>
