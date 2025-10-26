@@ -102,7 +102,7 @@ $user = \App\Models\User::where('id', $check->user_id)->first();
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="#" method="post">
+                    <form method="post">
                         <h4>This content is protected. To view it please enter your password below:</h4>
 
                         <div class="mb-3">
