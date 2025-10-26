@@ -9,7 +9,30 @@
                 <h4>Edit Ticket</h4>
                 <form action="{{ route('admin.ticket.update', $data->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    {{-- ...inside your <form> --}}
+                    <div class="mb-3">
+                        <label for="website" class="form-label">Website</label>
+                        <select name="website_id" id="website" class="form-select" onchange="filterCategories()">
+                            <option value="">Select Website</option>
+                            @foreach ($websites as $website)
+                            <option value="{{ $website->id }}" {{ old('website_id', $data->website_id) == $website->id ? 'selected' : '' }}>
+                                {{ $website->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category_id" id="category" class="form-select">
+                            <option value="">Select Category</option>
+                            @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" 
+                                    data-website="{{ $category->website_id }}"
+                                    {{ old('category_id', $data->category_id) == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }} ({{ $category->website->name }})
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Ticket Name</label>
                         <input type="text" name="name" class="form-control" id="name" value="{{ old('name', $data->name ?? '') }}" required>
@@ -137,6 +160,31 @@
         } else {
             productDiv.hide();
         }
+    });
+
+    // Filter categories by selected website
+    function filterCategories() {
+        const websiteId = document.getElementById('website').value;
+        const categorySelect = document.getElementById('category');
+        const categoryOptions = categorySelect.querySelectorAll('option');
+        
+        categoryOptions.forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block'; // Show "Select Category" option
+            } else {
+                const optionWebsiteId = option.getAttribute('data-website');
+                if (websiteId === '' || optionWebsiteId === websiteId) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Initialize category filtering on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        filterCategories();
     });
 </script>
 @endsection

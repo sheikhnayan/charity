@@ -755,6 +755,25 @@ window.addEventListener('load', function() {
       border-color: #3665f3;
     }
 
+    /* Ticket Category Carousel component styling in page builder */
+    .component[data-type="ticket-category-carousel"] {
+        border: 2px solid #28a745;
+        background: #f8fff9;
+    }
+
+    .component[data-type="ticket-category-carousel"]:hover {
+        border-color: #20c997;
+        background: #e8f7ea;
+    }
+
+    .component[data-type="ticket-category-carousel"] .ticket-category-carousel-placeholder {
+        transition: all 0.3s ease;
+    }
+
+    .component[data-type="ticket-category-carousel"]:hover .ticket-category-carousel-placeholder {
+        background: #e9ecef;
+    }
+
     /* Video component specific styling in page builder */
     .component[data-type="video"] {
       cursor: pointer;
@@ -2432,6 +2451,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="alert-message"><i class="fas fa-exclamation-triangle me-2"></i>Alert Message</div>
                 <div class="component-item" draggable="true" data-type="press-card"><i class="fas fa-newspaper me-2"></i>Press Card</div>
                 <div class="component-item" draggable="true" data-type="ticket-carousel"><i class="fas fa-ticket-alt me-2"></i>Ticket Carousel</div>
+                <div class="component-item" draggable="true" data-type="ticket-category-carousel"><i class="fas fa-tags me-2"></i>Ticket Category Carousel</div>
                 {{-- <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div> --}}
                 </div>
             </div>
@@ -3433,6 +3453,9 @@ button a:hover {
             'image' => asset($s->image),
         ];
     }));
+
+    // Pass website ID to JavaScript for AJAX calls
+    window.currentWebsiteId = {{ $data->website_id ?? 1 }};
         
     let selectedComponent = null;
 
@@ -3631,6 +3654,18 @@ button a:hover {
                     <i class="fas fa-ticket-alt" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
                     <h4 style="margin: 10px 0; color: #333;">Ticket Carousel</h4>
                     <p style="color: #666; margin: 0;">This carousel will display available tickets in a responsive grid layout.</p>
+                </div>
+            `;
+            break;
+
+        case 'ticket-category-carousel':
+            content = document.createElement('div');
+            content.className = 'ticket-category-carousel-preview';
+            content.innerHTML = `
+                <div class="ticket-category-carousel-placeholder" style="padding: 20px; border: 2px dashed #28a745; text-align: center; background: #f8fff9; margin: 10px;">
+                    <i class="fas fa-tags" style="font-size: 24px; color: #28a745; margin-bottom: 10px;"></i>
+                    <h4 style="margin: 10px 0; color: #333;">Ticket Category Carousel</h4>
+                    <p style="color: #666; margin: 0;">This carousel will display tickets from a specific category in a responsive grid layout.</p>
                 </div>
             `;
             break;
@@ -9473,6 +9508,145 @@ break;
                     </div>
                 `;
             break;
+
+            case 'ticket-carousel':
+                // Load ticket carousel properties from the Blade template via AJAX
+                specificControls = `
+                    <div class="loading-properties" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                    </div>
+                `;
+                
+                // Fetch the actual properties template with existing component data
+                const carouselProperties = content._properties || {};
+                const carouselPropertiesParam = encodeURIComponent(JSON.stringify(carouselProperties));
+                fetch('/admins/page/component-properties/ticket-carousel?website_id=' + (window.currentWebsiteId || 1) + '&properties=' + carouselPropertiesParam)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const propertiesDiv = doc.querySelector('.component-properties');
+                        if (propertiesDiv) {
+                            // Find and replace the loading message more reliably
+                            const currentPropertiesPanel = document.getElementById('property-panel-content');
+                            const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                            if (loadingDiv) {
+                                // Replace the entire loading div with the properties content
+                                loadingDiv.outerHTML = propertiesDiv.innerHTML;
+                            } else {
+                                // Fallback: replace entire content
+                                currentPropertiesPanel.innerHTML = propertiesDiv.innerHTML;
+                            }
+                            
+                            // Attach event listeners to the newly loaded property fields
+                            attachPropertyEventListeners();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load ticket carousel properties:', error);
+                        const currentPropertiesPanel = document.getElementById('property-panel-content');
+                        const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<p style="color: red;">Failed to load properties. Please try again.</p>';
+                        }
+                    });
+            break;
+
+            case 'ticket-category-carousel':
+                // Load ticket category carousel properties from the Blade template via AJAX
+                specificControls = `
+                    <div class="loading-properties" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                    </div>
+                `;
+                
+                // Fetch the actual properties template with existing component data
+                const categoryCarouselProperties = content._properties || {};
+                console.log('AJAX: Loading properties template with existing data:', categoryCarouselProperties);
+                console.log('AJAX - Component ID:', selectedComponent.id, 'Content element:', content);
+                console.log('AJAX - Content element properties:', content._properties);
+                const categoryCarouselPropertiesParam = encodeURIComponent(JSON.stringify(categoryCarouselProperties));
+                fetch('/admins/page/component-properties/ticket-category-carousel?website_id=' + (window.currentWebsiteId || 1) + '&properties=' + categoryCarouselPropertiesParam)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const propertiesDiv = doc.querySelector('.component-properties');
+                        if (propertiesDiv) {
+                            // Find and replace the loading message more reliably
+                            const currentPropertiesPanel = document.getElementById('property-panel-content');
+                            const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                            if (loadingDiv) {
+                                // Replace the entire loading div with the properties content
+                                loadingDiv.outerHTML = propertiesDiv.innerHTML;
+                            } else {
+                                // Fallback: replace entire content
+                                currentPropertiesPanel.innerHTML = propertiesDiv.innerHTML;
+                            }
+                            
+                            // Attach event listeners to the newly loaded property fields
+                            attachPropertyEventListeners();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load ticket category carousel properties:', error);
+                        const currentPropertiesPanel = document.getElementById('property-panel-content');
+                        const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<p style="color: red;">Failed to load properties. Please try again.</p>';
+                        }
+                    });
+            break;
+        }
+
+        // Function to attach event listeners to dynamically loaded component properties
+        function attachPropertyEventListeners() {
+            const propertyFields = document.querySelectorAll('.component-property[data-property]');
+            
+            propertyFields.forEach(field => {
+                // Remove existing event listeners to avoid duplicates
+                field.removeEventListener('input', handlePropertyChange);
+                field.removeEventListener('change', handlePropertyChange);
+                
+                // Add event listeners based on field type
+                if (field.type === 'color' || field.type === 'text' || field.type === 'number') {
+                    field.addEventListener('input', handlePropertyChange);
+                } else {
+                    field.addEventListener('change', handlePropertyChange);
+                }
+            });
+        }
+
+        // Function to handle property changes and save them to the component
+        function handlePropertyChange(event) {
+            if (!selectedComponent) return;
+            
+            const field = event.target;
+            const property = field.dataset.property;
+            const value = field.type === 'checkbox' ? field.checked : field.value;
+            
+            // Get the content element of the selected component
+            const content = getContentElement(selectedComponent);
+            if (!content) return;
+            
+            // Initialize properties object if it doesn't exist
+            if (!content._properties) {
+                content._properties = {};
+            }
+            
+            // Save the property value
+            content._properties[property] = value;
+            
+            console.log('Property saved:', property, '=', value);
+            console.log('SAVE - Component ID:', selectedComponent.id, 'Content element:', content);
+            console.log('SAVE - All properties after save:', content._properties);
+            
+            // For ticket components, also trigger a re-render if needed
+            const componentType = selectedComponent.dataset.type;
+            if (componentType === 'ticket-carousel' || componentType === 'ticket-category-carousel') {
+                // You could add specific re-render logic here if needed
+                console.log('Ticket component property updated:', componentType, property, value);
+            }
         }
 
         // Common styling controls - skip for components that have their own rich editors
@@ -13587,6 +13761,12 @@ function applyResponsiveStyles() {
                         compData.videoData = compContent._videoData;
                       }
                       break;
+                    case 'ticket-category-carousel':
+                      if (compContent._properties) {
+                        compData.properties = compContent._properties;
+                        console.log('SERIALIZE NESTED: Saving ticket-category-carousel properties:', compContent._properties);
+                      }
+                      break;
                   }
                   
                   // Save responsive styles for nested components
@@ -13611,6 +13791,23 @@ function applyResponsiveStyles() {
             data.donationFormData = content._donationFormData;
             console.log('Serialized donationFormData:', data.donationFormData);
             break;
+
+            case 'ticket-carousel':
+                // Save ticket carousel properties
+                if (content._properties) {
+                    data.properties = content._properties;
+                    console.log('SERIALIZE: Saving ticket-carousel properties:', content._properties);
+                }
+                break;
+
+            case 'ticket-category-carousel':
+                // Save ticket category carousel properties  
+                if (content._properties) {
+                    data.properties = content._properties;
+                    console.log('SERIALIZE: Saving ticket-category-carousel properties:', content._properties);
+                }
+                break;
+
           // ...add other types as needed...
           default:
             data.html = content.innerHTML;
@@ -14335,6 +14532,28 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'ticket-carousel':
+                // Load ticket carousel properties
+                if (data.properties) {
+                    actualContent._properties = data.properties;
+                    console.log('DESERIALIZE: Loading ticket-carousel properties:', data.properties);
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'ticket-category-carousel':
+                // Load ticket category carousel properties
+                if (data.properties) {
+                    actualContent._properties = data.properties;
+                    console.log('DESERIALIZE: Loading ticket-category-carousel properties:', data.properties);
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             default:
                 actualContent.innerHTML = data.html;
                 if (data.style) {
@@ -15027,6 +15246,12 @@ function applyResponsiveStyles() {
                           }
                         }
                         console.log('=== END NESTED VIDEO DESERIALIZATION ===');
+                        break;
+                      case 'ticket-category-carousel':
+                        if (compData.properties) {
+                          nestedContent._properties = compData.properties;
+                          console.log('DESERIALIZE NESTED: Loading ticket-category-carousel properties:', compData.properties);
+                        }
                         break;
                       default:
                         // For basic components like text, heading, etc., just restore HTML

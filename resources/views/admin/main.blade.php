@@ -238,6 +238,13 @@
     <span class="menu-header-text">Reports</span>
   </li>
 
+  <li class="menu-item {{ request()->is('analytics') ? 'active' : '' }}">
+    <a href="/analytics" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-chart"></i>
+      <div class="text-truncate">Analytics</div>
+    </a>
+  </li>
+
   <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}">
     <a href="/admins/donation" class="menu-link">
       <i class="menu-icon tf-icons bx bx-transfer"></i>

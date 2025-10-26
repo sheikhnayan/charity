@@ -11,9 +11,19 @@
                     @csrf
                     <div class="mb-3">
                         <label for="website" class="form-label">Website</label>
-                        <select name="website_id" id="website" class="form-select">
+                        <select name="website_id" id="website" class="form-select" onchange="filterCategories()">
+                            <option value="">Select Website</option>
                             @foreach ($data as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category_id" id="category" class="form-select">
+                            <option value="">Select Category</option>
+                            @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" data-website="{{ $category->website_id }}">{{ $category->name }} ({{ $category->website->name }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -131,5 +141,28 @@
             productDiv.hide();
         }
     });
+
+    // Filter categories by selected website
+    function filterCategories() {
+        const websiteId = document.getElementById('website').value;
+        const categorySelect = document.getElementById('category');
+        const categoryOptions = categorySelect.querySelectorAll('option');
+        
+        // Reset category selection
+        categorySelect.value = '';
+        
+        categoryOptions.forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block'; // Show "Select Category" option
+            } else {
+                const optionWebsiteId = option.getAttribute('data-website');
+                if (websiteId === '' || optionWebsiteId === websiteId) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            }
+        });
+    }
 </script>
 @endsection

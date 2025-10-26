@@ -10,9 +10,15 @@ class Ticket extends Model
     {
         return $this->belongsTo(Website::class);
     }
+    
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(TicketCategory::class, 'category_id');
     }
 
     public function images()
@@ -23,5 +29,15 @@ class Ticket extends Model
     public function features()
     {
         return $this->hasMany(TicketFeature::class);
+    }
+
+    public function scopeInCategory($query, $categoryId)
+    {
+        return $query->where('category_id', $categoryId);
+    }
+
+    public function scopeForWebsite($query, $websiteId)
+    {
+        return $query->where('website_id', $websiteId);
     }
 }

@@ -173,4 +173,45 @@ class PageBuilderController extends Controller
         $data = Page::with(['website', 'website.header'])->find($id);
         return view('admin.page.page-builder', compact('data'));
     }
+
+    public function componentProperties(Request $request, $component)
+    {
+        // Map component names to their Blade template paths
+        $componentTemplates = [
+            'ticket-carousel' => 'admin.page.page-components.ticket-carousel',
+            'ticket-category-carousel' => 'admin.page.page-components.ticket-category-carousel',
+        ];
+
+        // Check if the component template exists
+        if (!isset($componentTemplates[$component])) {
+            return response()->json(['error' => 'Component not found'], 404);
+        }
+
+        $templatePath = $componentTemplates[$component];
+
+        // Check if the view exists
+        if (!view()->exists($templatePath)) {
+            return response()->json(['error' => 'Template not found'], 404);
+        }
+
+        // Get website context - try request parameter first, then session
+        $websiteId = $request->get('website_id') ?? session('current_website_id', 1);
+        
+        // Get existing component properties if provided
+        $componentProperties = [];
+        if ($request->has('properties')) {
+            $componentProperties = json_decode($request->get('properties'), true) ?: [];
+        }
+        
+        // Render the component template and return it
+        try {
+            $html = view($templatePath, [
+                'currentWebsiteId' => $websiteId,
+                'component' => ['properties' => $componentProperties]
+            ])->render();
+            return response($html, 200, ['Content-Type' => 'text/html']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to render template: ' . $e->getMessage()], 500);
+        }
+    }
 }

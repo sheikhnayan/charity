@@ -139,6 +139,17 @@
                                         data-description="Set the height of your logo in pixels. This controls how tall the logo appears and affects the navbar height."></i>
                                     <input type="number" name="logo_height" id="logo_height" value="{{ $data->logo_height ?? 60 }}" class="form-control" min="20" max="200" placeholder="60">
                                 </div>
+                                @if ($website && $website->type == 'investment')
+                                    <div class="col-md-6 col-lg-4">
+                                        <label for="invest_now_button_text" class="form-label text-capitalize">
+                                            Invest Now Button Text
+                                        </label>
+                                        <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                            data-title="Invest Now Button Text"
+                                            data-description="Set the text for the 'Invest Now' button that appears on the investment pages."></i>
+                                        <input type="text" name="invest_now_button_text" id="invest_now_button_text" value="{{ $data->invest_now_button_text ?? 'INVEST NOW' }}" class="form-control" placeholder="INVEST NOW">
+                                    </div>
+                                @endif
                                 
                                 @if($website && $website->type === 'investment')
                                     <!-- Investor Exclusives Section -->

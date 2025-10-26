@@ -9,10 +9,18 @@ use App\Http\Controllers\WebsitePaymentController;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\AuthorizeNetController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\Analytics\DashboardController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
+
+// Analytics Routes
+Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
+    Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
+    Route::get('/analytics/real-time', [DashboardController::class, 'realTime'])->name('analytics.realtime');
+});
 
 // Test route to populate demo data
 Route::get('/populate-demo', function() {
@@ -384,6 +392,15 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         Route::get('/delete/{id}', [TicketController::class, 'destroy'])->name('delete');
     });
 
+    Route::prefix('ticket-category')->name('admin.ticket-category.')->group(function () {
+        Route::get('/', [TicketCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [TicketCategoryController::class, 'create'])->name('create');
+        Route::post('/store', [TicketCategoryController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [TicketCategoryController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [TicketCategoryController::class, 'update'])->name('update');
+        Route::get('/delete/{id}', [TicketCategoryController::class, 'destroy'])->name('delete');
+    });
+
     Route::prefix('sponsor')->name('admin.sponsor.')->group(function () {
         Route::get('/', [SponsorController::class, 'index'])->name('index');
         Route::get('/create', [SponsorController::class, 'create'])->name('create');
@@ -428,6 +445,11 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
         Route::get('/load/{id}', [PageBuilderController::class, 'load'
         ])->name('admin.page.load');
+
+        // Component properties routes
+        Route::get('/component-properties/{component}', [
+            PageBuilderController::class, 'componentProperties'
+        ])->name('admin.page.component-properties');
     });
 
     // Template management routes

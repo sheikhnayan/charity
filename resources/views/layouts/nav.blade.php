@@ -45,7 +45,7 @@
             <a class="navbar-brand close-on-mobile" href="/invest">
                 <div class="invest-button-section">
                 <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
-                    INVEST NOW
+                    {{ $header->invest_now_button_text ?? 'INVEST NOW' }}
                 </button>
             </div>
             </a>

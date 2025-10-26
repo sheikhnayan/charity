@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('dealmaker_config', function (Blueprint $table) {
-            //
+        Schema::table('headers', function (Blueprint $table) {
+            $table->string('invest_now_button_text')->default('INVEST NOW');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('dealmaker_config', function (Blueprint $table) {
+        Schema::table('headers', function (Blueprint $table) {
             //
         });
     }

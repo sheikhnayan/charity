@@ -29,7 +29,8 @@ class Header extends Model
         'contact_topbar_bg_color',
         'contact_topbar_text_color',
         'contact_cta_bg_color',
-        'contact_cta_text_color'
+        'contact_cta_text_color',
+        'invest_now_button_text'
     ];
 
     public function setting()

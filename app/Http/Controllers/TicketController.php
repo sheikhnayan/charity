@@ -6,20 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\TicketImage;
 use App\Models\TicketFeature;
+use App\Models\TicketCategory;
 use App\Models\Website;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        $data = Ticket::all();
+        $data = Ticket::with(['website', 'category'])->get();
         return view('admin.ticket.index', compact('data'));
     }
 
     public function create()
     {
         $data = Website::all();
-        return view('admin.ticket.create', compact('data'));
+        $categories = TicketCategory::with('website')->active()->ordered()->get();
+        return view('admin.ticket.create', compact('data', 'categories'));
     }
 
     public function store(Request $request)
@@ -40,6 +42,7 @@ class TicketController extends Controller
         $add->type = $request->type;
         $add->size = $request->size;
         $add->website_id = $request->website_id;
+        $add->category_id = $request->category_id;
 
         $website = Website::find($request->website_id);
 
@@ -95,7 +98,9 @@ class TicketController extends Controller
     public function edit($id)
     {
         $data = Ticket::findOrFail($id);
-        return view('admin.ticket.edit', compact('data'));
+        $websites = Website::all();
+        $categories = TicketCategory::with('website')->active()->ordered()->get();
+        return view('admin.ticket.edit', compact('data', 'websites', 'categories'));
     }
 
     public function update(Request $request, $id)
@@ -111,6 +116,7 @@ class TicketController extends Controller
         $add->type = $request->type;
         $add->size = $request->size;
         $add->quantity = $request->quantity;
+        $add->category_id = $request->category_id;
 
         $website = Website::find($request->website_id);
 

