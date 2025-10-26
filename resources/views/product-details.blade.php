@@ -550,7 +550,7 @@
           <!-- Similar items (carousel) -->
           <div class="section">
             <h3>Products from {{ $ticket->user->website->name }}</h3>
-            <div class="cards" id="similarCards">
+            <div class="cards" id="similarCards" style="max-width: 710px;">
               <!-- example repeated cards to match screenshot -> in real page these would be separate images/text -->
               @php
                 $similar = \App\Models\Ticket::where('user_id',$ticket->user->id)->where('type','product')->get();
