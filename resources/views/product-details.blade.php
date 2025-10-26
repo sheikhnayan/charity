@@ -423,12 +423,12 @@
                             </div>
                         </div>
                         @endif
-                        @if($header->contact_address)
+                        @if($header->contact_cta_text)
                         <div class="col-3 col-md-auto">
                             <div class="contact-item mb-1">
                                 <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
                                 <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
-                                    {{ $header->contact_address }}
+                                    {{ $header->contact_cta_text }}
                                 </span>
                             </div>
                         </div>
