@@ -1884,10 +1884,16 @@ if (isset($state['components'])) {
     @if($check && $check->isInvestment())
     <div id="sticky-investment-cta" class="d-block d-md-none" style="background-color: {{ $check->sticky_footer_bg_color }} !important;">
         <div class="sticky-cta-content">
-            <div class="share-price-section">
-                <div class="price-value" style="color: {{ $check->sticky_footer_text_color }}">${{ $check->share_price ?? '0.00' }}</div>
-                <div class="price-label" style="color: {{ $check->sticky_footer_text_color }}">Share Price</div>
-            </div>
+            @if ($check->custom_sticky_button_text != null)
+                <div class="share-price-section">
+                    <div class="price-value" style="color: {{ $check->sticky_footer_text_color }}">{{ $check->custom_sticky_button_text}}</div>
+                </div>
+            @else
+                <div class="share-price-section">
+                    <div class="price-value" style="color: {{ $check->sticky_footer_text_color }}">${{ $check->share_price ?? '0.00' }}</div>
+                    <div class="price-label" style="color: {{ $check->sticky_footer_text_color }}">Share Price</div>
+                </div>
+            @endif
             <div class="invest-button-section">
                 <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important;">
                     {{ $header->invest_now_button_text ?? 'INVEST NOW' }}

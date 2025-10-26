@@ -29,7 +29,8 @@ class Website extends Model
         'invest_page_title',
         'invest_amount_title',
         'share_price_label',
-        'minimum_investment_label'
+        'minimum_investment_label',
+        'custom_sticky_button_text'
     ];
 
     /**

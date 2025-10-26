@@ -188,6 +188,14 @@
                                                         <small class="form-text text-muted">The label displayed above the minimum investment value.</small>
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="custom_sticky_button_text" class="form-label">Custom Sticky Button Verbiage</label>
+                                                        <input type="text" name="custom_sticky_button_text" class="form-control" id="custom_sticky_button_text" placeholder="Custom verbiage for sticky invest now button" value="Custom verbiage for sticky invest now button">
+                                                        <small class="form-text text-muted">Custom Verbiage for Sticky Invest Now Button.</small>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <!-- Footer Disclaimer - Available for all website types -->

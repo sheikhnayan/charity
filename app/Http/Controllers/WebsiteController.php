@@ -77,6 +77,7 @@ class WebsiteController extends Controller
             $add->domain = $request->domain;
             $add->type = $request->type;
             $add->status = 1;
+            $add->custom_sticky_button_text = $request->custom_sticky_button_text;
             
             // Add investment fields for all website types
             $add->share_price = $request->share_price ?? null;
@@ -247,6 +248,7 @@ class WebsiteController extends Controller
         $update->domain = $request->domain;
         $update->type = $request->type;
         $update->status = $request->status;
+        $update->custom_sticky_button_text = $request->custom_sticky_button_text;
         // Add investment fields for all website types
         $update->share_price = $request->share_price ?? null;
         $update->investment_disclaimer = $request->investment_disclaimer ?? null;

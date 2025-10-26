@@ -31,7 +31,27 @@
 
     /* ---- Main layout ---- */
     .container{max-width:var(--page-max);margin:0 auto;padding:0 18px}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:28px;margin-top:12px}
+    .grid{margin-top:12px}
+    .grid .row{align-items:flex-start} /* Ensure columns align to top */
+    
+    /* Bootstrap grid adjustments for exact visual match */
+    .grid .col-lg-8 {
+        padding-right: 14px; /* Half of 28px gap */
+    }
+    .grid .col-lg-4 {
+        padding-left: 14px; /* Half of 28px gap */
+    }
+    
+    @media (min-width: 992px) {
+        .grid .col-lg-4 {
+            flex: 0 0 360px; /* Fixed width on desktop */
+            max-width: 360px; /* Maintain exact right column width */
+        }
+        .grid .col-lg-8 {
+            flex: 1; /* Take remaining space */
+            max-width: calc(100% - 360px); /* Ensure proper left column width */
+        }
+    }
 
     /* ---- Left column - gallery + product details ---- */
     .gallery-wrap{background:var(--card);border-radius:12px;padding:18px;border:1px solid #e9e9ea}
@@ -68,7 +88,7 @@
     .stat{background:#fbfbfc;padding:8px;border-radius:8px;border:1px solid #f0f0f1;font-size:13px}
 
     /* ---- Similar / explore sections ---- */
-    .section{margin-top:20px}
+    .section{margin-top:20px; margin-bottom: 20px;}
     .section h3{font-size:16px;margin:0 0 12px}
     .cards{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
     .card{background:#fff;padding:10px;border-radius:10px;min-width:200px;border:1px solid #eee}
@@ -107,8 +127,26 @@
     .muted{color:var(--muted)}
     .small{font-size:13px;color:var(--muted)}
 
-    @media (max-width:1100px){.grid{grid-template-columns:1fr}.panel{position:static}}
     @media (max-width:520px){.thumbs{display:none}.main-media img{max-height:320px}}
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 991.98px) {
+        .panel{position:static} /* Make panel non-sticky on mobile */
+        .grid .col-lg-8,
+        .grid .col-lg-4 {
+            padding-left: 15px;
+            padding-right: 15px;
+            max-width: 100%;
+        }
+        .grid .col-lg-4 {
+            margin-top: 20px; /* Add space between columns on mobile */
+        }
+    }
+    
+    /* Ensure sticky behavior is maintained on desktop */
+    @media (min-width: 992px) {
+        .panel{position:sticky;top:20px} /* Ensure sticky on desktop */
+    }
 
 
 
@@ -523,8 +561,10 @@
 
   <main class="container" style="margin-top: 14rem;">
     <div class="grid">
-      <!-- LEFT: Gallery, similar, specifics, description -->
-      <section>
+      <div class="row">
+        <!-- LEFT: Gallery, similar, specifics, description -->
+        <div class="col-12 col-lg-8">
+          <section>
         <div class="gallery-wrap" id="galleryWrap">
           <div class="gallery-top">
             <div class="thumbs" id="thumbsCol">
@@ -586,7 +626,7 @@
 
           <!-- Item description (long) -->
           <div class="desc" id="desc">
-            <h4>Item description from the seller</h4>
+            <h4>Item description</h4>
             {!! $ticket->description !!}
           </div>
 
@@ -595,142 +635,93 @@
         <!-- More long sections to match full page length: seller feedback, similar from stores, etc. -->
         <div style="height:18px"></div>
 
-        {{-- <div class="section">
-          <h3>Seller feedback</h3>
-          <div class="seller-panel" style="margin-top:10px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
-              <div style="flex:1;min-width:220px">
-                <div style="display:flex;align-items:center;gap:12px">
-                  <div class="avatar">G</div>
-                  <div>
-                    <div style="font-weight:700">Gravity Standard</div>
-                    <div class="small muted">Seller since: 2018 • Feedback score: 237,200</div>
-                  </div>
+
+        <!-- RIGHT: Product purchase panel + seller quick box -->
+      </div>
+      <div class="col-12 col-lg-4">
+        <aside>
+          <div class="panel" role="region" aria-label="purchase panel">
+            <div class="title">{{$ticket->name}}</div>
+            <div class="subtitle">Sold by <strong>{{$ticket->user->website->name}}</strong></div>
+            <div class="price">US ${{ number_format($ticket->price, 2) }}</div>
+
+            <form action="/tickets" method="post">
+              @csrf
+              <div style="height:8px"></div>
+              <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
+              <div class="qty-row">
+                <label for="qty" class="small">Size</label>
+                <div style="display:flex;align-items:center;gap:8px">
+                  @php
+                    $sizes = explode(',',$ticket->size);
+                    // dd($sizes);
+                  @endphp
+                  <button class="btn" id="dec"> </button>
+
+                  <select name="ticket[{{ $ticket->id }}][size]" id="" class="form-control" style="margin-left: 2rem; width: 4.5rem; text-align: center;">
+                    @foreach($sizes as $size)
+                      <option value="{{ trim($size) }}">{{ trim($size) }}</option>
+                    @endforeach
+                  </select>
+                  {{-- <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]"> --}}
                 </div>
-                <div style="margin-top:12px" class="small muted">Top-rated seller • Ships from: China</div>
               </div>
-
-              <div style="min-width:260px">
-                <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">
-                  <div class="small muted">Detailed seller ratings</div>
-                </div>
-                <div class="rating-bars" style="margin-top:8px">
-                  <div class="rating-row"><div class="small muted">Communication</div><div class="bar"><div class="fill" style="width:85%"></div></div><span class="small muted">4.8</span></div>
-                  <div class="rating-row"><div class="small muted">Shipping time</div><div class="bar"><div class="fill" style="width:78%"></div></div><span class="small muted">4.6</span></div>
-                  <div class="rating-row"><div class="small muted">Item as described</div><div class="bar"><div class="fill" style="width:82%"></div></div><span class="small muted">4.7</span></div>
+              <div class="qty-row">
+                <label for="qty" class="small">Quantity</label>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <button class="btn" id="dec">-</button>
+                  <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]">
+                  <button class="btn" id="inc">+</button>
                 </div>
               </div>
+              
+              <div style="display:flex;gap:8px;margin-bottom:10px">
+                <button class="btn primary">Buy It Now</button>
+                {{-- <button class="btn ghost">Add to cart</button> --}}
+              </div>
+            </form>
+
+            {{-- <div class="small muted">People watch: 334 people are watching this.</div>
+            <div style="height:10px"></div>
+
+            <div class="small muted">Shipping: <strong>US $0.00</strong> • Estimated delivery: 7-18 Oct</div> --}}
+
+            <div style="height:10px"></div>
+
+            <div class="small muted">Return policy: 30-day returns. See details.</div>
+
+            <div style="height:12px"></div>
+
+            <div class="small muted">Payment methods</div>
+            <div class="payment-icons">
+              <span>VISA</span>
+              <span>Mastercard</span>
+              <span>PayPal</span>
+              <span>Apple Pay</span>
             </div>
-          </div>
-        </div>
 
-        <div class="section">
-          <h3>Similar items from eBay Stores</h3>
-          <div class="cards" style="margin-top:12px">
-            <div class="card" style="min-width:160px"><img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png"><div class="meta">Seller A Collection<br><strong>$9.99</strong></div></div>
-            <div class="card" style="min-width:160px"><img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png"><div class="meta">Sparkle Gems<br><strong>$11.20</strong></div></div>
-            <div class="card" style="min-width:160px"><img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png"><div class="meta">Ring Boutique<br><strong>$7.50</strong></div></div>
-          </div>
-        </div>
-
-        <div class="promo">
-          <div>
-            <div style="font-weight:700;font-size:18px">Extra 8% off</div>
-            <div class="small muted" style="margin-top:6px">Shop now for more ring styles</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png" alt="promo1"/>
-            <img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png" alt="promo2"/>
-            <img src="/mnt/data/46999463-cb2c-41ef-862e-36d2ea98234d.png" alt="promo3"/>
-          </div>
-        </div> --}}
-
-      </section>
-
-      <!-- RIGHT: Product purchase panel + seller quick box -->
-      <aside>
-        <div class="panel" role="region" aria-label="purchase panel">
-          <div class="title">{{$ticket->name}}</div>
-          <div class="subtitle">Sold by <strong>{{$ticket->user->website->name}}</strong></div>
-          <div class="price">US ${{ number_format($ticket->price, 2) }}</div>
-          {{-- <div class="condition">Condition: <strong>New without tags</strong></div> --}}
-
-          <form action="/tickets" method="post">
-          @csrf
-          <div style="height:8px"></div>
-          <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
-          <div class="qty-row">
-            <label for="qty" class="small">Size</label>
-            <div style="display:flex;align-items:center;gap:8px">
-              @php
-                $sizes = explode(',',$ticket->size);
-                // dd($sizes);
-              @endphp
-              <button class="btn" id="dec"> </button>
-
-              <select name="ticket[{{ $ticket->id }}][size]" id="" class="form-control" style="margin-left: 2rem; width: 4.5rem; text-align: center;">
-                @foreach($sizes as $size)
-                  <option value="{{ trim($size) }}">{{ trim($size) }}</option>
-                @endforeach
-              </select>
-              {{-- <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]"> --}}
-            </div>
-          </div>
-          <div class="qty-row">
-            <label for="qty" class="small">Quantity</label>
-            <div style="display:flex;align-items:center;gap:8px">
-              <button class="btn" id="dec">-</button>
-              <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]">
-              <button class="btn" id="inc">+</button>
-            </div>
-          </div>
-          
-          <div style="display:flex;gap:8px;margin-bottom:10px">
-            <button class="btn primary">Buy It Now</button>
-            {{-- <button class="btn ghost">Add to cart</button> --}}
-          </div>
-        </form>
-
-          {{-- <div class="small muted">People watch: 334 people are watching this.</div>
-          <div style="height:10px"></div>
-
-          <div class="small muted">Shipping: <strong>US $0.00</strong> • Estimated delivery: 7-18 Oct</div> --}}
-
-          <div style="height:10px"></div>
-
-          <div class="small muted">Return policy: 30-day returns. See details.</div>
-
-          <div style="height:12px"></div>
-
-          <div class="small muted">Payment methods</div>
-          <div class="payment-icons">
-            <span>VISA</span>
-            <span>Mastercard</span>
-            <span>PayPal</span>
-            <span>Apple Pay</span>
+            {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:12px;padding-top:12px">
+              <div class="small muted">Delivery</div>
+              <div class="small muted">Ships from: China • Import charges may apply</div>
+            </div> --}}
           </div>
 
-          {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:12px;padding-top:12px">
-            <div class="small muted">Delivery</div>
-            <div class="small muted">Ships from: China • Import charges may apply</div>
-          </div> --}}
-        </div>
-
-        <div class="section">
-          <div class="seller-panel" style="margin-top:16px">
-            <h3 style="margin:0 0 8px">About this seller</h3>
-            <div class="seller-box">
-              <div class="avatar"> <img src="/uploads/{{$ticket->user->website->setting->logo}}" alt="{{$ticket->user->website->name}}'s avatar"> </div>
-              <div class="seller-meta">
-                <div style="font-weight:700">{{$ticket->user->website->name}}</div>
-                {{-- <div class="small muted">Feedback: {{$ticket->user->feedback_count}}</div> --}}
-                {{-- <div style="margin-top:8px"><button class="btn ghost">Visit store</button></div> --}}
+          <div class="section">
+            <div class="seller-panel" style="margin-top:16px">
+              <h3 style="margin:0 0 8px">About this seller</h3>
+              <div class="seller-box">
+                <div class="avatar"> <img src="/uploads/{{$ticket->user->website->setting->logo}}" alt="{{$ticket->user->website->name}}'s avatar"> </div>
+                <div class="seller-meta">
+                  <div style="font-weight:700">{{$ticket->user->website->name}}</div>
+                  {{-- <div class="small muted">Feedback: {{$ticket->user->feedback_count}}</div> --}}
+                  {{-- <div style="margin-top:8px"><button class="btn ghost">Visit store</button></div> --}}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-      </aside>
+        </aside>
+      </div>
     </div>
 
   </main>

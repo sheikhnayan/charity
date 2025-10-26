@@ -5297,9 +5297,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             <a href="{{ route('product.details', $ticket->id) }}" class="ticket-link">
                                                 <div class="ticket-image">
                                                     <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
-                                                    @if($ticket->quantity && $ticket->quantity < 10)
+                                                    {{-- @if($ticket->quantity && $ticket->quantity < 10)
                                                         <div class="ticket-badge">Only {{ $ticket->quantity }} left!</div>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                                 <div class="ticket-info">
                                                     <h3 class="ticket-title">{{ $ticket->name }}</h3>
@@ -5568,9 +5568,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             <a href="{{ route('product.details', $ticket->id) }}" class="ticket-link">
                                                 <div class="ticket-image">
                                                     <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
-                                                    @if($ticket->quantity && $ticket->quantity < 10)
+                                                    {{-- @if($ticket->quantity && $ticket->quantity < 10)
                                                         <div class="ticket-badge">Only {{ $ticket->quantity }} left!</div>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                                 <div class="ticket-info">
                                                     <h3 class="ticket-title">{{ $ticket->name }}</h3>
@@ -5631,7 +5631,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    object-fit: cover;
+                    object-fit: unset;
                     height: 262px !important;
                     width: 262px !important;
                 }
