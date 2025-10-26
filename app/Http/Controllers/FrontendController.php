@@ -100,6 +100,8 @@ class FrontendController extends Controller
             $amount = floatval($amount);
         }
 
+        dd($url);
+
         if($url == 'ladyoriginaltee.com') {
             return view('dummy-login', compact('setting', 'header', 'footer', 'website', 'amount'));
         }
