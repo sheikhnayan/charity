@@ -674,7 +674,7 @@ img {
 @endphp
 
 <footer id="footer" class="footer_component no-border">
-    <div class="footer_container u-container z-index-1">
+    <div class="footer_container u-container z-index-1" style="padding-bottom: 0px;">
         <div class="footer_top_wrapper">
             <div class="footer_content_wrap _1"><a
                     href="https://{{ $website->domain }}"
@@ -839,7 +839,7 @@ img {
                     </li>
                 @endif
             </ul>
-            <div id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365fe-e0e365c4" class="footer_credit_text" style="color: {{ $footer->color ?? '#ffffff' }} !important;">
+            <div id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365fe-e0e365c4" class="footer_credit_text" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin: auto;">
                 <div style="color: inherit !important; font-family: Outfit,sans-serif !important;">
                     {!! $website->investment_disclaimer !!}
                 </div>

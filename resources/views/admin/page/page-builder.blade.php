@@ -4520,9 +4520,6 @@ break;
                             }
                         </style>
                     </section>
-                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,193,7,0.9); color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; z-index: 100; pointer-events: none;">
-                        Newsletter Preview Mode
-                    </div>
                 `;
             };
             
