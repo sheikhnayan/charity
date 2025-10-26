@@ -5465,7 +5465,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $(document).ready(function(){
                     $("#{{ $sliderId }}").owlCarousel({
                         items: {{ $slidesToShow }},
-                        loop: false,
+                        loop: true,
                         margin: 20,
                         autoplay: {{ $autoplay ? 'true' : 'false' }},
                         autoplayTimeout: {{ $autoplaySpeed }},
@@ -5719,7 +5719,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $(document).ready(function(){
                     $("#{{ $sliderId }}").owlCarousel({
                         items: {{ $slidesToShow }},
-                        loop: false,
+                        loop: true,
                         margin: 20,
                         autoplay: {{ $autoplay ? 'true' : 'false' }},
                         autoplayTimeout: {{ $autoplaySpeed }},
