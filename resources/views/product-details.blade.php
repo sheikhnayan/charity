@@ -649,6 +649,7 @@
               @csrf
               <div style="height:8px"></div>
               <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
+              @if($ticket->size != null)
               <div class="qty-row">
                 <label for="qty" class="small">Size</label>
                 <div style="display:flex;align-items:center;gap:8px">
@@ -666,6 +667,7 @@
                   {{-- <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]"> --}}
                 </div>
               </div>
+              @endif
               <div class="qty-row">
                 <label for="qty" class="small">Quantity</label>
                 <div style="display:flex;align-items:center;gap:8px">
