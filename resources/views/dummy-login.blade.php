@@ -103,12 +103,12 @@ $user = \App\Models\User::where('id', $check->user_id)->first();
             <div class="row">
                 <div class="col-md-12">
                     <form>
-                        <h4>This content is protected. To view it please enter your password below:</h4>
+                        <h4>Lady O Registry Member Sign In</h4>
 
                         <div class="mb-3">
                             <input type="password" name="password" class="form-control" placeholder="Password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Login</button>
 
                     </form>
                 </div>
