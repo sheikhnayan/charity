@@ -10,6 +10,7 @@
     $slidesToShow = $component['properties']['slides_to_show'] ?? 3;
     $autoplay = $component['properties']['autoplay'] ?? false;
     $autoplaySpeed = $component['properties']['autoplay_speed'] ?? 3000;
+    $loop = $component['properties']['loop'] ?? true;
     
     // Get categories for current website (for dropdown)
     $currentWebsiteId = $currentWebsiteId ?? session('current_website_id', 1); // Use passed variable or fallback
@@ -108,8 +109,8 @@
     <div class="form-group">
         <label>Enable Loop</label>
         <select class="form-control component-property" data-property="loop">
-            <option value="1" {{ ($component['properties']['loop'] ?? true) ? 'selected' : '' }}>Yes</option>
-            <option value="0" {{ !($component['properties']['loop'] ?? true) ? 'selected' : '' }}>No</option>
+            <option value="1" {{ $loop ? 'selected' : '' }}>Yes</option>
+            <option value="0" {{ !$loop ? 'selected' : '' }}>No</option>
         </select>
         <small class="form-text text-muted">Enable infinite loop. Will be automatically disabled if you have fewer items than slides to show to prevent duplication.</small>
     </div>

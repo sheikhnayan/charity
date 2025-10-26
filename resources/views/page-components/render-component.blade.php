@@ -5524,6 +5524,15 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 
                 // Determine if loop should be enabled (only if we have enough items)
                 $actualLoop = $enableLoop && count($tickets) >= $slidesToShow;
+                
+                // Debug information
+                $ticketCount = count($tickets);
+                $debugInfo = [
+                    'enableLoop' => $enableLoop,
+                    'ticketCount' => $ticketCount,
+                    'slidesToShow' => $slidesToShow,
+                    'actualLoop' => $actualLoop
+                ];
             @endphp
             
             <!-- Load Required CSS -->
@@ -5720,10 +5729,12 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
             <!-- Initialize Owl Carousel -->
             <script>
+                console.log('Ticket Category Carousel Debug:', {!! json_encode($debugInfo) !!});
+                
                 $(document).ready(function(){
                     $("#{{ $sliderId }}").owlCarousel({
                         items: {{ $slidesToShow }},
-                        loop: true,
+                        loop: {{ $actualLoop ? 'true' : 'false' }},
                         margin: 20,
                         autoplay: {{ $autoplay ? 'true' : 'false' }},
                         autoplayTimeout: {{ $autoplaySpeed }},
@@ -5732,13 +5743,16 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         nav: {{ $arrows ? 'true' : 'false' }},
                         responsive: {
                             0: {
-                                items: 1
+                                items: 1,
+                                loop: {{ count($tickets) >= 1 && $enableLoop ? 'true' : 'false' }}
                             },
                             768: {
-                                items: 2
+                                items: 2,
+                                loop: {{ count($tickets) >= 2 && $enableLoop ? 'true' : 'false' }}
                             },
                             992: {
-                                items: {{ min($slidesToShow, 3) }}
+                                items: {{ min($slidesToShow, 3) }},
+                                loop: {{ count($tickets) >= min($slidesToShow, 3) && $enableLoop ? 'true' : 'false' }}
                             }
                         }
                     });
