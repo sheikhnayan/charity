@@ -418,7 +418,7 @@
                             <div class="contact-item me-4 mb-1">
                                 <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
                                 <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
-                                    {{ $header->contact_email }}{{ $header->contact_cta_text  }}
+                                    {{ $header->contact_email }}
                                 </a>
                             </div>
                         </div>
