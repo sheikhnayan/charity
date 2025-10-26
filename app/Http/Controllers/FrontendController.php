@@ -102,7 +102,7 @@ class FrontendController extends Controller
 
         // dd($url);
 
-        if($url == 'http://ladyoriginaltee.com/invest') {
+        if($url == 'https://ladyoriginaltee.com/invest') {
             return view('dummy-login', compact('setting', 'header', 'footer', 'website', 'amount'));
         }
         
