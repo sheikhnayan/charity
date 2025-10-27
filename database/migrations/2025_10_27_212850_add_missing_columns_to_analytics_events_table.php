@@ -82,7 +82,6 @@ return new class extends Migration
                 $table->boolean('is_bounce')->default(false);
             }
             
-            // Add page tracking if missing
             if (!Schema::hasColumn('analytics_events', 'landing_page')) {
                 $table->string('landing_page')->nullable();
             }
@@ -98,6 +97,35 @@ return new class extends Migration
             if (!Schema::hasColumn('analytics_events', 'user_agent')) {
                 $table->string('user_agent')->nullable();
             }
+            
+            // Add referrer tracking if missing
+            if (!Schema::hasColumn('analytics_events', 'referrer')) {
+                $table->string('referrer')->nullable();
+            }
+            
+            if (!Schema::hasColumn('analytics_events', 'referrer_url')) {
+                $table->string('referrer_url')->nullable();
+            }
+            
+            // Add session tracking if missing
+            if (!Schema::hasColumn('analytics_events', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->nullable();
+            }
+            
+            // Add method tracking if missing (GET, POST, etc.)
+            if (!Schema::hasColumn('analytics_events', 'method')) {
+                $table->string('method')->nullable();
+            }
+            
+            // Add meta_data for additional tracking if missing
+            if (!Schema::hasColumn('analytics_events', 'meta_data')) {
+                $table->json('meta_data')->nullable();
+            }
+            
+            // Add platform tracking if missing
+            if (!Schema::hasColumn('analytics_events', 'platform')) {
+                $table->string('platform')->nullable();
+            }
         });
     }
 
@@ -107,40 +135,30 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('analytics_events', function (Blueprint $table) {
-            // Drop only the columns we actually added
-            $columns = [];
-            
-            // Check and collect all potentially added columns
-            $columnsToCheck = [
-                'conversion_data',
-                'event_data',
-                'utm_source',
-                'utm_medium',
+            // Remove columns in reverse order of creation
+            $columnsToRemove = [
                 'utm_campaign',
+                'utm_source', 
+                'utm_medium',
                 'utm_term',
                 'utm_content',
-                'conversion_value',
-                'device_type',
-                'browser',
-                'os',
-                'country',
-                'city',
-                'duration',
-                'is_bounce',
+                'url',
                 'landing_page',
-                'exit_page',
+                'exit_page', 
                 'page_url',
-                'user_agent'
+                'user_agent',
+                'referrer',
+                'referrer_url',
+                'user_id',
+                'method',
+                'meta_data',
+                'platform'
             ];
             
-            foreach ($columnsToCheck as $column) {
+            foreach ($columnsToRemove as $column) {
                 if (Schema::hasColumn('analytics_events', $column)) {
-                    $columns[] = $column;
+                    $table->dropColumn($column);
                 }
-            }
-            
-            if (!empty($columns)) {
-                $table->dropColumn($columns);
             }
         });
     }
