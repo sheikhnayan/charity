@@ -27,6 +27,7 @@ class DashboardController extends Controller
                                     : now()->endOfDay();
 
         $stats = $this->getAnalyticsStats($selectedWebsiteId, $startDate, $endDate);
+        dd($stats);
         return view('analytics.dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'startDate', 'endDate'));
     }
 
