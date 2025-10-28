@@ -85,14 +85,14 @@ class DashboardController extends Controller
         ];
     }
 
-    protected function getRealTimeStats()
+    protected function getRealTimeStats($websiteId = null)
     {
         $lastFiveMinutes = now()->subMinutes(5);
         
         return [
-            'activeUsers' => $this->getActiveUsers($lastFiveMinutes),
-            'recentPageViews' => $this->getRecentPageViews($lastFiveMinutes),
-            'recentConversions' => $this->getRecentConversions($lastFiveMinutes),
+            'activeUsers' => $this->getActiveUsers($lastFiveMinutes, $websiteId),
+            'recentPageViews' => $this->getRecentPageViews($lastFiveMinutes, $websiteId),
+            'recentConversions' => $this->getRecentConversions($lastFiveMinutes, $websiteId),
         ];
     }
 
@@ -157,14 +157,17 @@ class DashboardController extends Controller
     {
         return \App\Models\AnalyticsEvent::where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('device_type')
             ->groupBy('device_type')
             ->selectRaw('device_type, count(*) as count')
+            ->orderByDesc('count')
             ->get();
     }
 
     protected function getLocationData($websiteId, $startDate, $endDate)
     {
-        return \App\Models\AnalyticsEvent::whereNotNull('country')
+        // First try to get data with country info
+        $withCountry = \App\Models\AnalyticsEvent::whereNotNull('country')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('country')
@@ -172,30 +175,58 @@ class DashboardController extends Controller
             ->orderByDesc('count')
             ->limit(10)
             ->get();
+            
+        // If no country data, return IP-based data as fallback
+        if ($withCountry->isEmpty()) {
+            return \App\Models\AnalyticsEvent::whereNotNull('ip_address')
+                ->where('website_id', $websiteId)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->groupBy('ip_address')
+                ->selectRaw('ip_address as country, count(*) as count')
+                ->orderByDesc('count')
+                ->limit(10)
+                ->get();
+        }
+        
+        return $withCountry;
     }
 
-    protected function getActiveUsers($since)
+    protected function getActiveUsers($since, $websiteId = null)
     {
-        return \App\Models\UserSession::where('end_time', '>=', $since)
-            ->count();
+        // Count unique sessions that have been active in the time period
+        $query = \App\Models\UserSession::where('updated_at', '>=', $since);
+        
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->count();
     }
 
-    protected function getRecentPageViews($since)
+    protected function getRecentPageViews($since, $websiteId = null)
     {
-        return \App\Models\AnalyticsEvent::where('event_type', 'page_view')
-            ->where('created_at', '>=', $since)
-            ->with('user')
-            ->orderByDesc('created_at')
+        $query = \App\Models\AnalyticsEvent::where('event_type', 'page_view')
+            ->where('created_at', '>=', $since);
+            
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->orderByDesc('created_at')
             ->limit(10)
             ->get();
     }
 
-    protected function getRecentConversions($since)
+    protected function getRecentConversions($since, $websiteId = null)
     {
-        return \App\Models\AnalyticsEvent::where('event_type', 'conversion')
-            ->where('created_at', '>=', $since)
-            ->with('user')
-            ->orderByDesc('created_at')
+        $query = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+            ->where('created_at', '>=', $since);
+            
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->orderByDesc('created_at')
             ->limit(5)
             ->get();
     }

@@ -14,27 +14,44 @@ Route::get('/debug-analytics', function() {
         echo "<p>No analytics events found</p>";
     }
     
-    // Check if middleware is working by creating a test event
-    echo "<h2>Creating Test Event:</h2>";
-    try {
-        $event = new App\Models\AnalyticsEvent();
-        $event->event_type = 'test_debug';
-        $event->website_id = 1; // Use any valid website ID
-        $event->session_id = 'debug-session';
-        $event->url = request()->fullUrl();
-        $event->user_agent = request()->userAgent();
-        $event->ip_address = request()->ip();
-        $event->method = request()->method();
-        $event->utm_source = 'debug';
-        $event->device_type = 'debug';
-        $event->browser = 'debug';
-        $event->save();
-        
-        echo "<p>Test event created successfully with ID: " . $event->id . "</p>";
-        echo "<pre>";
-        print_r($event->toArray());
-        echo "</pre>";
-    } catch (Exception $e) {
-        echo "<p>Error creating test event: " . $e->getMessage() . "</p>";
-    }
+    // Test the specific queries that are failing
+    $websiteId = 12; // pickpockets.com
+    $startDate = now()->subDays(30);
+    $endDate = now();
+    
+    echo "<h2>Device Breakdown Query Test:</h2>";
+    $deviceBreakdown = App\Models\AnalyticsEvent::where('website_id', $websiteId)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->whereNotNull('device_type')
+        ->groupBy('device_type')
+        ->selectRaw('device_type, count(*) as count')
+        ->orderByDesc('count')
+        ->get();
+    echo "<pre>";
+    print_r($deviceBreakdown->toArray());
+    echo "</pre>";
+    
+    echo "<h2>Location Data Query Test:</h2>";
+    $locationData = App\Models\AnalyticsEvent::whereNotNull('ip_address')
+        ->where('website_id', $websiteId)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->groupBy('ip_address')
+        ->selectRaw('ip_address as country, count(*) as count')
+        ->orderByDesc('count')
+        ->limit(10)
+        ->get();
+    echo "<pre>";
+    print_r($locationData->toArray());
+    echo "</pre>";
+    
+    echo "<h2>Recent Page Views Test:</h2>";
+    $recentViews = App\Models\AnalyticsEvent::where('event_type', 'page_view')
+        ->where('website_id', $websiteId)
+        ->where('created_at', '>=', now()->subMinutes(60))
+        ->orderByDesc('created_at')
+        ->limit(5)
+        ->get();
+    echo "<pre>";
+    print_r($recentViews->toArray());
+    echo "</pre>";
 });
