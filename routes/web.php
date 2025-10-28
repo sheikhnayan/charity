@@ -46,30 +46,7 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
     });
 });
 
-// Test API endpoints without authentication
-Route::get('/test-api/funnel', function() {
-    $service = new \App\Services\AnalyticsChartService();
-    $data = $service->getConversionFunnelData(1, '2025-01-01', '2025-01-31');
-    return response()->json($data);
-});
 
-Route::get('/test-api/devices', function() {
-    $service = new \App\Services\AnalyticsChartService();
-    $data = $service->getDeviceBreakdown(1, '2025-01-01', '2025-01-31');
-    return response()->json($data);
-});
-
-Route::get('/test-api/locations', function() {
-    $service = new \App\Services\AnalyticsChartService();
-    $data = $service->getLocationBreakdown(1, '2025-01-01', '2025-01-31');
-    return response()->json($data);
-});
-
-Route::get('/test-api/geomap', function() {
-    $service = new \App\Services\AnalyticsChartService();
-    $data = $service->getGeoMapData(1, '2025-01-01', '2025-01-31');
-    return response()->json($data);
-});
 
 // Test route to populate demo data
 Route::get('/populate-demo', function() {

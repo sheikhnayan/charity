@@ -28,8 +28,11 @@ class DashboardController extends Controller
                                     : now()->endOfDay();
 
         $stats = $this->getAnalyticsStats($selectedWebsiteId, $startDate, $endDate);
+        
+        // Get selected website for type checking
+        $selectedWebsite = $websites->find($selectedWebsiteId);
 
-        return view('analytics.enhanced_dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'startDate', 'endDate'));
+        return view('analytics.enhanced_dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'selectedWebsite', 'startDate', 'endDate'));
     }
 
     public function realTime(Request $request)
@@ -87,11 +90,24 @@ class DashboardController extends Controller
     protected function getRealTimeStats($websiteId = null)
     {
         $lastFiveMinutes = now()->subMinutes(5);
+        $lastDay = now()->subDay(); // Extended time for testing - show last 24 hours of activity
+        
+        // Get recent payment activity
+        $paymentActivity = $this->getRecentPaymentActivity($lastDay, $websiteId);
+        
+        // Get recent auction activity (bids, new auctions)
+        $auctionActivity = $this->getRecentAuctionActivity($lastDay, $websiteId);
+        
+        // Merge and sort all activities by time
+        $allActivities = collect($paymentActivity)->merge($auctionActivity)
+            ->sortByDesc('created_at')
+            ->values()
+            ->take(10);
         
         return [
             'activeUsers' => $this->getActiveUsers($lastFiveMinutes, $websiteId),
-            'recentPageViews' => $this->getRecentPageViews($lastFiveMinutes, $websiteId),
-            'recentConversions' => $this->getRecentConversions($lastFiveMinutes, $websiteId),
+            'recentPageViews' => $allActivities,
+            'recentConversions' => $this->getRecentConversions($lastDay, $websiteId),
         ];
     }
 
@@ -105,8 +121,7 @@ class DashboardController extends Controller
 
     protected function getUniqueVisitors($websiteId, $startDate, $endDate)
     {
-        return \App\Models\AnalyticsEvent::where('event_type', 'page_view')
-            ->where('website_id', $websiteId)
+        return \App\Models\PaymentFunnelEvent::where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->distinct('session_id')
             ->count('session_id');
@@ -114,34 +129,20 @@ class DashboardController extends Controller
 
     protected function getConversions($websiteId, $startDate, $endDate)
     {
-        // Get conversions from both analytics_events and payment_funnel_events
-        $analyticsConversions = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+        // Get conversions from PaymentFunnelEvent
+        return \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
-            
-        $paymentFunnelConversions = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
-            ->where('website_id', $websiteId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->count();
-            
-        return $analyticsConversions + $paymentFunnelConversions;
     }
 
     protected function getRevenue($websiteId, $startDate, $endDate)
     {
-        // Get revenue from both analytics_events and payment_funnel_events
-        $analyticsRevenue = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+        // Get revenue from PaymentFunnelEvent
+        return \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->sum('conversion_data->amount');
-            
-        $paymentFunnelRevenue = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
-            ->where('website_id', $websiteId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->sum('amount');
-            
-        return ($analyticsRevenue ?? 0) + ($paymentFunnelRevenue ?? 0);
+            ->sum('amount') ?? 0;
     }
 
     protected function getTopPages($websiteId, $startDate, $endDate)
@@ -208,14 +209,14 @@ class DashboardController extends Controller
 
     protected function getActiveUsers($since, $websiteId = null)
     {
-        // Count unique sessions that have been active in the time period
-        $query = \App\Models\UserSession::where('updated_at', '>=', $since);
+        // Count unique sessions from PaymentFunnelEvent in the time period
+        $query = PaymentFunnelEvent::where('created_at', '>=', $since);
         
         if ($websiteId) {
             $query->where('website_id', $websiteId);
         }
         
-        return $query->count();
+        return $query->distinct('session_id')->count('session_id');
     }
 
     protected function getRecentPageViews($since, $websiteId = null)
@@ -234,7 +235,7 @@ class DashboardController extends Controller
 
     protected function getRecentConversions($since, $websiteId = null)
     {
-        $query = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+        $query = PaymentFunnelEvent::where('funnel_step', 'payment_completed')
             ->where('created_at', '>=', $since);
             
         if ($websiteId) {
@@ -244,6 +245,58 @@ class DashboardController extends Controller
         return $query->orderByDesc('created_at')
             ->limit(5)
             ->get();
+    }
+
+    protected function getRecentPaymentActivity($since, $websiteId = null)
+    {
+        $query = PaymentFunnelEvent::whereIn('funnel_step', ['form_view', 'amount_entered', 'payment_completed'])
+            ->where('created_at', '>=', $since);
+            
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->orderByDesc('created_at')
+            ->limit(10)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'created_at' => $event->created_at,
+                    'event_type' => $event->funnel_step,
+                    'form_type' => $event->form_type,
+                    'amount' => $event->amount,
+                    'session_id' => $event->session_id,
+                    'user_id' => $event->user_id,
+                    'url' => $event->form_type . ' form',
+                    'page_url' => ucfirst($event->form_type) . ' Page'
+                ];
+            });
+    }
+
+    protected function getRecentAuctionActivity($since, $websiteId = null)
+    {
+        $query = \App\Models\Auction::where('created_at', '>=', $since);
+            
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->orderByDesc('created_at')
+            ->limit(5)
+            ->get()
+            ->map(function ($auction) {
+                return [
+                    'created_at' => $auction->updated_at ?? $auction->created_at, // Use updated_at for bid activity
+                    'event_type' => 'auction_activity',
+                    'form_type' => 'auction',
+                    'amount' => $auction->current_bid ?? $auction->starting_bid ?? null,
+                    'session_id' => 'auction_' . $auction->id,
+                    'user_id' => null,
+                    'url' => 'auction',
+                    'page_url' => 'Auction: ' . ($auction->name ?? 'Item #' . $auction->id),
+                    'auction_name' => $auction->name ?? 'Auction Item'
+                ];
+            });
     }
 
     /**

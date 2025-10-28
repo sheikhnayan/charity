@@ -387,9 +387,23 @@
             <div class="col-md-8">
                 <h1 class="dashboard-title">
                     <i class="fas fa-chart-line"></i>
-                    Analytics Dashboard
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Investment Analytics Dashboard
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Fundraising Analytics Dashboard
+                    @else
+                        Analytics Dashboard
+                    @endif
                 </h1>
-                <p class="dashboard-subtitle">Real-time insights into your charity's performance</p>
+                <p class="dashboard-subtitle">
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Real-time insights into your investment platform's performance
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Real-time insights into your fundraising campaign's performance
+                    @else
+                        Real-time insights into your charity's performance
+                    @endif
+                </p>
             </div>
             <div class="col-md-4">
                 <div class="text-end">
@@ -445,11 +459,25 @@
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
                 <i class="metric-icon fas fa-chart-line"></i>
-                <h6>Total Conversions</h6>
+                <h6>
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Total Investments
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Total Donations
+                    @else
+                        Total Conversions
+                    @endif
+                </h6>
                 <div class="metric-value" id="total-conversions">{{ number_format($stats['today']['conversions'] ?? 0) }}</div>
                 <div class="metric-subtitle">
                     <i class="fas fa-dollar-sign me-1"></i>
-                    Revenue: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Invested: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Raised: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
+                    @else
+                        Revenue: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -478,12 +506,26 @@
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
-                <i class="metric-icon fas fa-coins"></i>
-                <h6>Avg. Order Value</h6>
-                <div class="metric-value" id="avg-order-value">$0</div>
+                <i class="metric-icon fas fa-dollar-sign"></i>
+                <h6>
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Total Capital Raised
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Total Funds Raised
+                    @else
+                        Total Revenue
+                    @endif
+                </h6>
+                <div class="metric-value" id="total-revenue-card">${{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</div>
                 <div class="metric-subtitle">
-                    <i class="fas fa-arrow-up me-1"></i>
-                    Per Conversion
+                    <i class="fas fa-coins me-1"></i>
+                    @if($selectedWebsite && $selectedWebsite->isInvestment())
+                        Avg Investment: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                        Avg Donation: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                    @else
+                        Avg: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -543,7 +585,13 @@
                 <div class="chart-header">
                     <h4 class="chart-title">
                         <i class="fas fa-chart-line"></i>
-                        Conversions Over Time
+                        @if($selectedWebsite && $selectedWebsite->isInvestment())
+                            Investments Over Time
+                        @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                            Donations Over Time
+                        @else
+                            Conversions Over Time
+                        @endif
                     </h4>
                     <div class="chart-controls">
                         <select id="conversions-timeframe" class="form-select">
@@ -585,7 +633,13 @@
         <div class="chart-header">
             <h4 class="chart-title">
                 <i class="fas fa-funnel-dollar"></i>
-                Conversion Funnel Analysis
+                @if($selectedWebsite && $selectedWebsite->isInvestment())
+                    Investment Funnel Analysis
+                @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
+                    Donation Funnel Analysis
+                @else
+                    Conversion Funnel Analysis
+                @endif
             </h4>
             <div class="chart-controls">
                 <span class="badge badge-custom">
@@ -1191,14 +1245,37 @@ function loadRealTimeData() {
                 data.recentPageViews.slice(0, 10).forEach(activity => {
                     const timeAgo = formatTimeAgo(new Date(activity.created_at));
                     const user = activity.user_id ? `User ${activity.user_id}` : `Visitor ${activity.session_id.substring(0, 8)}`;
-                    const action = activity.event_type === 'page_view' ? 'Page View' : 'Conversion';
+                    
+                    // Determine action type and badge color
+                    let action = '';
+                    let badgeColor = 'primary';
+                    
+                    if (activity.event_type === 'payment_completed') {
+                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Completed${amount}`;
+                        badgeColor = 'success';
+                    } else if (activity.event_type === 'amount_entered') {
+                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Amount Entered${amount}`;
+                        badgeColor = 'warning';
+                    } else if (activity.event_type === 'form_view') {
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Form Viewed`;
+                        badgeColor = 'info';
+                    } else if (activity.event_type === 'auction_activity') {
+                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
+                        action = `Auction Bid${amount}`;
+                        badgeColor = 'danger';
+                    } else {
+                        action = activity.event_type.replace('_', ' ');
+                        badgeColor = 'primary';
+                    }
                     
                     const row = `
                         <tr>
                             <td><small class="text-muted">${timeAgo}</small></td>
-                            <td><code>${activity.url || activity.page_url || 'Unknown'}</code></td>
+                            <td><code>${activity.page_url || activity.url || 'Unknown'}</code></td>
                             <td><span class="badge bg-secondary">${user}</span></td>
-                            <td><span class="badge bg-${action === 'Conversion' ? 'success' : 'primary'}">${action}</span></td>
+                            <td><span class="badge bg-${badgeColor}">${action}</span></td>
                         </tr>
                     `;
                     tbody.insertAdjacentHTML('beforeend', row);
