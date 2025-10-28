@@ -19,6 +19,10 @@ use App\Models\Setting;
 // Include debug routes
 include __DIR__ . '/debug.php';
 
+// Include funnel tracking test routes
+include __DIR__ . '/test-funnel.php';
+include __DIR__ . '/test-db.php';
+
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
