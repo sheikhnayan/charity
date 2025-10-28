@@ -16,7 +16,38 @@ class PaymentFunnelService
     public function __construct()
     {
         $this->agent = new Agent();
-        $this->website = Website::where('domain', request()->getHost())->first();
+        
+        // Try multiple methods to find the website
+        $host = request()->getHost();
+        
+        // First try exact domain match
+        $this->website = Website::where('domain', $host)->first();
+        
+        // If not found, try without www prefix
+        if (!$this->website && str_starts_with($host, 'www.')) {
+            $this->website = Website::where('domain', substr($host, 4))->first();
+        }
+        
+        // If still not found, try with www prefix
+        if (!$this->website && !str_starts_with($host, 'www.')) {
+            $this->website = Website::where('domain', 'www.' . $host)->first();
+        }
+        
+        // If still not found, try to get from session or use first available website
+        if (!$this->website) {
+            if (session('website_id')) {
+                $this->website = Website::find(session('website_id'));
+            } else {
+                $this->website = Website::first();
+            }
+        }
+        
+        // Log the website detection for debugging
+        \Log::info('PaymentFunnelService: Website detected', [
+            'host' => $host,
+            'website_id' => $this->website ? $this->website->id : null,
+            'website_domain' => $this->website ? $this->website->domain : null
+        ]);
     }
 
     /**

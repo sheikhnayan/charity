@@ -690,6 +690,14 @@ class AuthorizeNetController extends Controller
     protected function trackPaymentFunnel($event, $type, $amount, $transactionId = null, $errorMessage = null, $userId = null, $paymentMethod = null)
     {
         try {
+            \Log::info('Payment funnel tracking initiated', [
+                'event' => $event,
+                'type' => $type,
+                'amount' => $amount,
+                'transaction_id' => $transactionId,
+                'payment_method' => $paymentMethod
+            ]);
+            
             $funnelService = new PaymentFunnelService();
             
             // Determine form type based on type parameter
@@ -700,26 +708,39 @@ class AuthorizeNetController extends Controller
                 $paymentMethod = $this->detectPaymentMethod();
             }
             
+            \Log::info('Payment funnel tracking details', [
+                'form_type' => $formType,
+                'payment_method' => $paymentMethod,
+                'event' => $event
+            ]);
+            
             if ($event === 'completed') {
-                $funnelService->trackPaymentCompleted(
+                $result = $funnelService->trackPaymentCompleted(
                     $formType,
                     $amount,
                     $paymentMethod,
                     $transactionId,
                     $userId
                 );
+                \Log::info('Payment completion tracked successfully', ['result' => $result ? $result->id : 'false']);
             } elseif ($event === 'failed') {
-                $funnelService->trackPaymentFailed(
+                $result = $funnelService->trackPaymentFailed(
                     $formType,
                     $amount,
                     $paymentMethod,
                     $errorMessage,
                     $userId
                 );
+                \Log::info('Payment failure tracked successfully', ['result' => $result ? $result->id : 'false']);
             }
         } catch (\Exception $e) {
             // Log error but don't fail the payment process
-            \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+            \Log::error('Payment funnel tracking error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'event' => $event,
+                'type' => $type,
+                'amount' => $amount
+            ]);
         }
     }
 
