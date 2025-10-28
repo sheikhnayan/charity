@@ -273,32 +273,53 @@ class DashboardController extends Controller
 
     public function getConversionFunnel(Request $request)
     {
-        $websiteId = $request->website_id;
-        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
-        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
-        
-        $chartService = new \App\Services\AnalyticsChartService();
-        return response()->json($chartService->getConversionFunnelData($websiteId, $startDate, $endDate));
+        try {
+            $websiteId = $request->website_id;
+            $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+            $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+            
+            $chartService = new \App\Services\AnalyticsChartService();
+            $data = $chartService->getConversionFunnelData($websiteId, $startDate, $endDate);
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            \Log::error('Funnel data error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load funnel data', 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function getDeviceData(Request $request)
     {
-        $websiteId = $request->website_id;
-        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
-        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
-        
-        $chartService = new \App\Services\AnalyticsChartService();
-        return response()->json($chartService->getDeviceBreakdown($websiteId, $startDate, $endDate));
+        try {
+            $websiteId = $request->website_id;
+            $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+            $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+            
+            $chartService = new \App\Services\AnalyticsChartService();
+            $data = $chartService->getDeviceBreakdown($websiteId, $startDate, $endDate);
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            \Log::error('Device data error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load device data', 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function getLocationChartData(Request $request)
     {
-        $websiteId = $request->website_id;
-        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
-        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
-        
-        $chartService = new \App\Services\AnalyticsChartService();
-        return response()->json($chartService->getLocationBreakdown($websiteId, $startDate, $endDate));
+        try {
+            $websiteId = $request->website_id;
+            $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+            $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+            
+            $chartService = new \App\Services\AnalyticsChartService();
+            $data = $chartService->getLocationBreakdown($websiteId, $startDate, $endDate);
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            \Log::error('Location data error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load location data', 'message' => $e->getMessage()], 500);
+        }
     }
 
     public function getProductData(Request $request)
@@ -313,11 +334,18 @@ class DashboardController extends Controller
 
     public function getGeoMapData(Request $request)
     {
-        $websiteId = $request->website_id;
-        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
-        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
-        
-        $chartService = new \App\Services\AnalyticsChartService();
-        return response()->json($chartService->getGeoMapData($websiteId, $startDate, $endDate));
+        try {
+            $websiteId = $request->website_id;
+            $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+            $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+            
+            $chartService = new \App\Services\AnalyticsChartService();
+            $data = $chartService->getGeoMapData($websiteId, $startDate, $endDate);
+            
+            return response()->json($data);
+        } catch (\Exception $e) {
+            \Log::error('GeoMap data error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load geomap data', 'message' => $e->getMessage()], 500);
+        }
     }
 }
