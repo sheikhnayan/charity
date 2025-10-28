@@ -201,22 +201,37 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+console.log('Analytics dashboard JavaScript loaded');
+console.log('Selected website ID:', {{ $selectedWebsiteId }});
+console.log('Stats data:', @json($stats));
 // Traffic Overview Chart
 const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+const trafficLabels = @json($stats['week']['dates']);
+const pageViewsData = @json($stats['week']['pageViews']);
+const uniqueVisitorsData = @json($stats['week']['uniqueVisitors']);
+
+console.log('Traffic chart labels:', trafficLabels);
+console.log('Page views data:', pageViewsData);
+console.log('Unique visitors data:', uniqueVisitorsData);
+
 new Chart(trafficCtx, {
     type: 'line',
     data: {
-        labels: @json($stats['week']['dates']),
+        labels: trafficLabels,
         datasets: [{
             label: 'Page Views',
-            data: @json($stats['week']['pageViews']),
+            data: pageViewsData,
             borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.1,
+            fill: false
         }, {
             label: 'Unique Visitors',
-            data: @json($stats['week']['uniqueVisitors']),
+            data: uniqueVisitorsData,
             borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1
+            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+            tension: 0.1,
+            fill: false
         }]
     },
     options: {
@@ -225,9 +240,17 @@ new Chart(trafficCtx, {
             intersect: false,
             mode: 'index'
         },
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
             }
         }
     }
@@ -235,44 +258,101 @@ new Chart(trafficCtx, {
 
 // Device Breakdown Chart
 const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+const deviceLabels = {!! json_encode($stats['deviceBreakdown']->pluck('device_type')) !!};
+const deviceData = {!! json_encode($stats['deviceBreakdown']->pluck('count')) !!};
+
+console.log('Device chart labels:', deviceLabels);
+console.log('Device chart data:', deviceData);
+
 new Chart(deviceCtx, {
     type: 'doughnut',
     data: {
-        labels: {!! json_encode($stats['deviceBreakdown']->pluck('device_type')) !!},
+        labels: deviceLabels,
         datasets: [{
-            data: {!! json_encode($stats['deviceBreakdown']->pluck('count')) !!},
+            data: deviceData,
             backgroundColor: [
                 'rgb(255, 99, 132)',
                 'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'
+                'rgb(255, 205, 86)',
+                'rgb(255, 159, 64)',
+                'rgb(153, 102, 255)'
             ]
         }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
     }
 });
 
 // Real-time Updates
 function updateRealTimeStats() {
-    fetch('/analytics/real-time')
-        .then(response => response.json())
+    console.log('Updating real-time stats...');
+    
+    // Get the selected website ID
+    const websiteId = {{ $selectedWebsiteId }};
+    
+    fetch(`/analytics/real-time?website_id=${websiteId}`)
+        .then(response => {
+            console.log('Real-time response:', response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            document.getElementById('active-users').textContent = data.activeUsers + ' Active Users';
+            console.log('Real-time data:', data);
             
+            // Update active users badge
+            const activeUsersElement = document.getElementById('active-users');
+            if (activeUsersElement) {
+                activeUsersElement.textContent = (data.activeUsers || 0) + ' Active Users';
+            }
+            
+            // Update recent activity table
             const tbody = document.querySelector('#realtime-activity tbody');
-            tbody.innerHTML = '';
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                if (data.recentPageViews && data.recentPageViews.length > 0) {
+                    data.recentPageViews.forEach(view => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${new Date(view.created_at).toLocaleTimeString()}</td>
+                            <td>${view.url || view.page_url || 'Unknown'}</td>
+                            <td>${view.user ? view.user.name : 'Anonymous'}</td>
+                            <td>Page View</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    // Show "No recent activity" message
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td colspan="4" class="text-center text-muted">No recent activity</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching real-time stats:', error);
             
-            data.recentPageViews.forEach(view => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${new Date(view.created_at).toLocaleTimeString()}</td>
-                    <td>${view.url}</td>
-                    <td>${view.user ? view.user.name : 'Anonymous'}</td>
-                    <td>Page View</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            // Update UI to show error state
+            const activeUsersElement = document.getElementById('active-users');
+            if (activeUsersElement) {
+                activeUsersElement.textContent = 'Error';
+                activeUsersElement.className = 'badge bg-danger';
+            }
         });
 }
 
+// Start real-time updates
+console.log('Starting real-time analytics updates');
 setInterval(updateRealTimeStats, 5000);
 updateRealTimeStats();
 </script>
