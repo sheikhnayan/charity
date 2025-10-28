@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web([
             \App\Http\Middleware\AnalyticsTrackingMiddleware::class,
+            \App\Http\Middleware\TrackUniqueVisitor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
