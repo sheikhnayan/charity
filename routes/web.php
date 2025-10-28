@@ -30,7 +30,7 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
     Route::get('/analytics/real-time', [DashboardController::class, 'realTime'])->name('analytics.realtime');
     
     // Payment Method Analytics Routes
-    Route::prefix('admin/payment-methods')->name('admin.payment-methods.')->group(function () {
+    Route::prefix('admins/payment-methods')->name('admin.payment-methods.')->group(function () {
         Route::get('/analytics', [PaymentMethodAnalyticsController::class, 'index'])->name('analytics');
         Route::get('/analytics/api', [PaymentMethodAnalyticsController::class, 'api'])->name('analytics.api');
         Route::get('/analytics/export', [PaymentMethodAnalyticsController::class, 'export'])->name('analytics.export');
