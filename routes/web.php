@@ -29,6 +29,15 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
     Route::get('/analytics/real-time', [DashboardController::class, 'realTime'])->name('analytics.realtime');
     
+    // Chart Data API Routes
+    Route::get('/analytics/api/conversions', [DashboardController::class, 'getTimeBasedConversions'])->name('analytics.api.conversions');
+    Route::get('/analytics/api/sessions', [DashboardController::class, 'getTimeBasedSessions'])->name('analytics.api.sessions');
+    Route::get('/analytics/api/funnel', [DashboardController::class, 'getConversionFunnel'])->name('analytics.api.funnel');
+    Route::get('/analytics/api/devices', [DashboardController::class, 'getDeviceData'])->name('analytics.api.devices');
+    Route::get('/analytics/api/locations', [DashboardController::class, 'getLocationChartData'])->name('analytics.api.locations');
+    Route::get('/analytics/api/products', [DashboardController::class, 'getProductData'])->name('analytics.api.products');
+    Route::get('/analytics/api/geomap', [DashboardController::class, 'getGeoMapData'])->name('analytics.api.geomap');
+    
     // Payment Method Analytics Routes
     Route::prefix('admins/payment-methods')->name('admin.payment-methods.')->group(function () {
         Route::get('/analytics', [PaymentMethodAnalyticsController::class, 'index'])->name('analytics');

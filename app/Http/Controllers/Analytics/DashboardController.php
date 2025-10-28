@@ -29,7 +29,7 @@ class DashboardController extends Controller
 
         $stats = $this->getAnalyticsStats($selectedWebsiteId, $startDate, $endDate);
 
-        return view('analytics.dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'startDate', 'endDate'));
+        return view('analytics.enhanced_dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'startDate', 'endDate'));
     }
 
     public function realTime(Request $request)
@@ -244,5 +244,80 @@ class DashboardController extends Controller
         return $query->orderByDesc('created_at')
             ->limit(5)
             ->get();
+    }
+
+    /**
+     * Chart Data API Endpoints
+     */
+    public function getTimeBasedConversions(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        $groupBy = $request->group_by ?? 'day';
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getTimeBasedConversions($websiteId, $startDate, $endDate, $groupBy));
+    }
+
+    public function getTimeBasedSessions(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        $groupBy = $request->group_by ?? 'day';
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getTimeBasedSessions($websiteId, $startDate, $endDate, $groupBy));
+    }
+
+    public function getConversionFunnel(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getConversionFunnelData($websiteId, $startDate, $endDate));
+    }
+
+    public function getDeviceData(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getDeviceBreakdown($websiteId, $startDate, $endDate));
+    }
+
+    public function getLocationChartData(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getLocationBreakdown($websiteId, $startDate, $endDate));
+    }
+
+    public function getProductData(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getProductSellThroughRates($websiteId, $startDate, $endDate));
+    }
+
+    public function getGeoMapData(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->subDays(30);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now();
+        
+        $chartService = new \App\Services\AnalyticsChartService();
+        return response()->json($chartService->getGeoMapData($websiteId, $startDate, $endDate));
     }
 }

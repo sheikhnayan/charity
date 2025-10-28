@@ -153,13 +153,45 @@ class UniqueVisitorService
     }
     
     /**
-     * Get country from IP (placeholder - integrate with GeoIP service)
+     * Get country from IP using free GeoIP service
      */
     protected function getCountryFromIP($ip)
     {
-        // Integrate with service like MaxMind GeoIP, ip-api.com, etc.
-        // For now, return null or 'Unknown'
-        return null;
+        // Skip local/private IPs
+        if ($ip === '127.0.0.1' || $ip === '::1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
+            return 'US'; // Default for local development
+        }
+        
+        try {
+            // Use free ip-api.com service (100 requests per minute limit)
+            $response = file_get_contents("http://ip-api.com/json/{$ip}?fields=status,country,countryCode");
+            $data = json_decode($response, true);
+            
+            if ($data && $data['status'] === 'success') {
+                return $data['countryCode'];
+            }
+        } catch (\Exception $e) {
+            \Log::warning("GeoIP lookup failed for IP {$ip}: " . $e->getMessage());
+        }
+        
+        // Fallback: try to detect from Accept-Language header or other methods
+        return $this->getCountryFromFallback();
+    }
+    
+    /**
+     * Fallback method to detect country
+     */
+    protected function getCountryFromFallback()
+    {
+        // Try to get from Accept-Language header
+        $acceptLanguage = request()->header('Accept-Language', '');
+        
+        if (preg_match('/([a-z]{2})-([A-Z]{2})/', $acceptLanguage, $matches)) {
+            return strtoupper($matches[2]);
+        }
+        
+        // Default fallback
+        return 'US';
     }
     
     /**

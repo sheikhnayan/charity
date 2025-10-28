@@ -6,6 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
 {
+    protected $fillable = [
+        'name',
+        'quantity',
+        'price',
+        'status',
+        'user_id',
+        'hide_until',
+        'hide_after',
+        'image',
+        'description',
+        'website_id',
+        'category_id'
+    ];
     public function website()
     {
         return $this->belongsTo(Website::class);
