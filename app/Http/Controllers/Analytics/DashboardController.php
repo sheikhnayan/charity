@@ -28,7 +28,7 @@ class DashboardController extends Controller
 
         $stats = $this->getAnalyticsStats($selectedWebsiteId, $startDate, $endDate);
 
-        dd(\App\Models\AnalyticsEvent::where('website_id', $selectedWebsiteId)->whereBetween('created_at', [$startDate, $endDate])->latest()->limit(15)->get());
+        // dd(\App\Models\AnalyticsEvent::where('website_id', $selectedWebsiteId)->whereBetween('created_at', [$startDate, $endDate])->latest()->limit(15)->get());
 
         return view('analytics.dashboard', compact('stats', 'websites', 'selectedWebsiteId', 'startDate', 'endDate'));
     }

@@ -21,7 +21,7 @@ class AnalyticsTrackingMiddleware
             // Initial request logging
             file_put_contents(
                 storage_path('logs/analytics_debug.log'),
-                "\n" . date('Y-m-d H:i:s') . " --- New Request ---\n" .
+                "\n" . date('Y-m-d H:i:s') . " --- MIDDLEWARE IS RUNNING ---\n" .
                 "URL: " . $request->fullUrl() . "\n" .
                 "Method: " . $request->method() . "\n" .
                 "User Agent: " . $request->userAgent() . "\n",
@@ -112,18 +112,109 @@ class AnalyticsTrackingMiddleware
             $event->event_type = 'page_view';
             $event->website_id = $websiteId;
             $event->session_id = $sessionId;
+            
+            // Page and URL tracking
             $event->page_url = $request->path();
+            $event->url = $request->fullUrl(); // Add the url field that analytics queries need
+            
+            // User and session info
             $event->user_agent = $request->userAgent();
             $event->ip_address = $request->ip();
+            $event->user_id = auth()->check() ? auth()->id() : null;
+            $event->method = $request->method();
+            
+            // Referrer tracking
             $event->referrer = $request->header('referer');
+            $event->referrer_url = $request->header('referer'); // Both fields for compatibility
+            
+            // Debug basic fields immediately after setting
+            file_put_contents(
+                storage_path('logs/analytics_debug.log'),
+                date('Y-m-d H:i:s') . " - Basic fields set:\n" .
+                "page_url: " . ($event->page_url ?? 'NULL') . "\n" .
+                "url: " . ($event->url ?? 'NULL') . "\n" .
+                "user_agent: " . ($event->user_agent ?? 'NULL') . "\n" .
+                "ip_address: " . ($event->ip_address ?? 'NULL') . "\n" .
+                "method: " . ($event->method ?? 'NULL') . "\n" .
+                "referrer: " . ($event->referrer ?? 'NULL') . "\n",
+                FILE_APPEND
+            );
+            
+            // Device and browser detection with debugging
+            $deviceType = $this->getDeviceType($request);
+            $browser = $this->getBrowserInfo($request);
+            $platform = $this->getPlatformInfo($request);
+            
+            $event->device_type = $deviceType;
+            $event->browser = $browser;
+            $event->os = $platform;
+            $event->platform = $platform;
+            
+            // Debug device detection
+            file_put_contents(
+                storage_path('logs/analytics_debug.log'),
+                date('Y-m-d H:i:s') . " - Device Detection:\n" .
+                "device_type: " . $deviceType . "\n" .
+                "browser: " . $browser . "\n" .
+                "platform: " . $platform . "\n" .
+                "user_agent: " . $request->userAgent() . "\n",
+                FILE_APPEND
+            );
+            
+            // UTM parameters with debugging
+            $event->utm_source = $request->get('utm_source');
+            $event->utm_medium = $request->get('utm_medium');
+            $event->utm_campaign = $request->get('utm_campaign');
+            $event->utm_term = $request->get('utm_term');
+            $event->utm_content = $request->get('utm_content');
+            
+            // Debug UTM values
+            file_put_contents(
+                storage_path('logs/analytics_debug.log'),
+                date('Y-m-d H:i:s') . " - UTM Values:\n" .
+                "utm_source: " . $request->get('utm_source') . "\n" .
+                "utm_medium: " . $request->get('utm_medium') . "\n" .
+                "utm_campaign: " . $request->get('utm_campaign') . "\n",
+                FILE_APPEND
+            );
+            
+            // Session tracking
+            if (!$request->session()->has('landing_page')) {
+                $request->session()->put('landing_page', $request->fullUrl());
+                $event->landing_page = $request->fullUrl();
+            } else {
+                $event->landing_page = $request->session()->get('landing_page');
+            }
+            
+            // Store additional data in meta_data field (Laravel handles JSON automatically)
+            $event->meta_data = [
+                'query_params' => $request->query(),
+                'is_ajax' => $request->ajax(),
+                'is_secure' => $request->secure(),
+                'port' => $request->getPort()
+            ];
+            
+            // Log event data before saving with specific field checks
+            file_put_contents(
+                storage_path('logs/analytics_debug.log'),
+                date('Y-m-d H:i:s') . " - Event data before save:\n" .
+                "url: " . ($event->url ?? 'NULL') . "\n" .
+                "utm_source: " . ($event->utm_source ?? 'NULL') . "\n" .
+                "device_type: " . ($event->device_type ?? 'NULL') . "\n" .
+                "browser: " . ($event->browser ?? 'NULL') . "\n" .
+                "user_agent: " . ($event->user_agent ?? 'NULL') . "\n" .
+                "Full event array:\n" . json_encode($event->toArray(), JSON_PRETTY_PRINT) . "\n",
+                FILE_APPEND
+            );
             
             $event->save();
             
-            // Log successful event creation
+            // Log successful event creation with fresh data from database
+            $savedEvent = \App\Models\AnalyticsEvent::find($event->id);
             file_put_contents(
                 storage_path('logs/analytics_debug.log'),
-                date('Y-m-d H:i:s') . " - Successfully tracked page view:\n" .
-                json_encode($event->toArray(), JSON_PRETTY_PRINT) . "\n",
+                date('Y-m-d H:i:s') . " - Successfully tracked page view (saved data):\n" .
+                json_encode($savedEvent->toArray(), JSON_PRETTY_PRINT) . "\n",
                 FILE_APPEND
             );
             

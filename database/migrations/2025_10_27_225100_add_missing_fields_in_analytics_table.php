@@ -12,11 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('analytics_events', function (Blueprint $table) {
-            $table->string('user_id')->nullable();
-            $table->string('referrer_url')->nullable();
-            $table->json('meta_data')->nullable();
-            $table->string('method')->nullable();
-            $table->string('platform')->nullable();
+            // Add columns only if they don't exist
+            if (!Schema::hasColumn('analytics_events', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->nullable();
+            }
+            
+            if (!Schema::hasColumn('analytics_events', 'referrer_url')) {
+                $table->string('referrer_url')->nullable();
+            }
+            
+            if (!Schema::hasColumn('analytics_events', 'meta_data')) {
+                $table->json('meta_data')->nullable();
+            }
+            
+            if (!Schema::hasColumn('analytics_events', 'method')) {
+                $table->string('method')->nullable();
+            }
+            
+            if (!Schema::hasColumn('analytics_events', 'platform')) {
+                $table->string('platform')->nullable();
+            }
         });
     }
 
@@ -26,7 +41,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('analytics_events', function (Blueprint $table) {
-            //
+            // Remove columns if they exist
+            $columnsToRemove = ['user_id', 'referrer_url', 'meta_data', 'method', 'platform'];
+            
+            foreach ($columnsToRemove as $column) {
+                if (Schema::hasColumn('analytics_events', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
         });
     }
 };

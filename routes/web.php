@@ -16,6 +16,9 @@ use App\Http\Controllers\Analytics\DashboardController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
 
+// Include debug routes
+include __DIR__ . '/debug.php';
+
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
