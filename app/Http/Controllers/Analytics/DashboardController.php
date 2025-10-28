@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Analytics;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\PaymentFunnelEvent;
 
 class DashboardController extends Controller
 {
@@ -113,18 +114,34 @@ class DashboardController extends Controller
 
     protected function getConversions($websiteId, $startDate, $endDate)
     {
-        return \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+        // Get conversions from both analytics_events and payment_funnel_events
+        $analyticsConversions = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
+            
+        $paymentFunnelConversions = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+            
+        return $analyticsConversions + $paymentFunnelConversions;
     }
 
     protected function getRevenue($websiteId, $startDate, $endDate)
     {
-        return \App\Models\AnalyticsEvent::where('event_type', 'conversion')
+        // Get revenue from both analytics_events and payment_funnel_events
+        $analyticsRevenue = \App\Models\AnalyticsEvent::where('event_type', 'conversion')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('conversion_data->amount');
+            
+        $paymentFunnelRevenue = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('amount');
+            
+        return ($analyticsRevenue ?? 0) + ($paymentFunnelRevenue ?? 0);
     }
 
     protected function getTopPages($websiteId, $startDate, $endDate)

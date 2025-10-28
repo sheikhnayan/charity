@@ -29,10 +29,10 @@ class DebugAnalyticsController extends Command
         $this->info("Website: {$website->domain} (ID: {$website->id})");
         
         // Use date range that includes today
-        $dateFrom = Carbon::now()->subDays(7)->format('Y-m-d');
-        $dateTo = Carbon::now()->format('Y-m-d');
+        $dateFrom = Carbon::now()->subDays(7)->startOfDay();
+        $dateTo = Carbon::now()->endOfDay();
         
-        $this->info("Date range: {$dateFrom} to {$dateTo}");
+        $this->info("Date range: {$dateFrom->format('Y-m-d H:i:s')} to {$dateTo->format('Y-m-d H:i:s')}");
         
         // 1. Check raw payment funnel events
         $this->info('1. Raw Payment Funnel Events:');
