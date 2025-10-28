@@ -500,6 +500,42 @@
         </div>
     </div>
 
+    <!-- Real-time Activity Section -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h4 class="chart-title">
+                <i class="fas fa-broadcast-tower"></i>
+                Real-time Activity
+            </h4>
+            <div class="chart-controls">
+                <span class="badge badge-custom" id="active-users">
+                    <i class="fas fa-users me-1"></i>
+                    <span id="active-count">-</span> Active Users
+                </span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table" id="realtime-activity">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-clock me-1"></i>Time</th>
+                        <th><i class="fas fa-file-alt me-1"></i>Page</th>
+                        <th><i class="fas fa-user me-1"></i>User</th>
+                        <th><i class="fas fa-mouse-pointer me-1"></i>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>
+                            Loading real-time data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Time-Based Charts Row -->
     <div class="row mb-4">
         <div class="col-xl-6">
@@ -944,6 +980,10 @@ function loadAllData() {
     loadLocationData();
     loadProductData();
     loadGeoMapData();
+    loadRealTimeData();
+    
+    // Set up real-time updates every 30 seconds
+    setInterval(loadRealTimeData, 30000);
 }
 
 function loadConversionsData() {
@@ -1133,6 +1173,62 @@ function loadGeoMapData() {
             });
         })
         .catch(error => console.error('Error loading geomap data:', error));
+}
+
+// Real-time data loading function
+function loadRealTimeData() {
+    fetch(`/analytics/real-time?website_id=${currentWebsiteId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update active users count
+            document.getElementById('active-count').textContent = data.activeUsers || 0;
+            
+            // Update real-time activity table
+            const tbody = document.querySelector('#realtime-activity tbody');
+            if (data.recentPageViews && data.recentPageViews.length > 0) {
+                tbody.innerHTML = '';
+                
+                data.recentPageViews.slice(0, 10).forEach(activity => {
+                    const timeAgo = formatTimeAgo(new Date(activity.created_at));
+                    const user = activity.user_id ? `User ${activity.user_id}` : `Visitor ${activity.session_id.substring(0, 8)}`;
+                    const action = activity.event_type === 'page_view' ? 'Page View' : 'Conversion';
+                    
+                    const row = `
+                        <tr>
+                            <td><small class="text-muted">${timeAgo}</small></td>
+                            <td><code>${activity.url || activity.page_url || 'Unknown'}</code></td>
+                            <td><span class="badge bg-secondary">${user}</span></td>
+                            <td><span class="badge bg-${action === 'Conversion' ? 'success' : 'primary'}">${action}</span></td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No recent activity
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading real-time data:', error);
+            document.getElementById('active-count').textContent = '-';
+        });
+}
+
+// Helper function to format time ago
+function formatTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
 }
 </script>
 @endsection

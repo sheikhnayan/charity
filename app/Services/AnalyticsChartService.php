@@ -2,50 +2,67 @@
 
 namespace App\Services;
 
+use App\Models\AnalyticsEvent;
 use App\Models\PaymentFunnelEvent;
-use App\Models\UniqueVisitor;
-use App\Models\PageView;
 use App\Models\Ticket;
 use App\Models\Investment;
+use App\Models\Donation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticsChartService
 {
     /**
-     * Get time-based conversion data for charts
+     * Get time-based conversion data for charts using REAL data
      */
     public function getTimeBasedConversions($websiteId, $startDate, $endDate, $groupBy = 'day')
     {
-        $dateFormat = $this->getDateFormat($groupBy);
         $selectFormat = $this->getSelectFormat($groupBy);
         
-        return PaymentFunnelEvent::where('website_id', $websiteId)
-            ->where('funnel_step', 'payment_completed')
+        // Get conversions from both AnalyticsEvent and PaymentFunnelEvent
+        $analyticsConversions = AnalyticsEvent::where('event_type', 'conversion')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("$selectFormat as period, COUNT(*) as conversions, SUM(conversion_value) as revenue")
+            ->groupBy('period')
+            ->get();
+            
+        $paymentConversions = PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+            ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw("$selectFormat as period, COUNT(*) as conversions, SUM(amount) as revenue")
             ->groupBy('period')
-            ->orderBy('period')
-            ->get()
-            ->map(function ($item) use ($groupBy) {
-                return [
-                    'period' => $this->formatPeriodLabel($item->period, $groupBy),
-                    'conversions' => (int) $item->conversions,
-                    'revenue' => (float) $item->revenue / 100 // Convert cents to dollars
-                ];
-            });
+            ->get();
+            
+        // Merge the results
+        $combined = collect();
+        $allPeriods = $analyticsConversions->pluck('period')->merge($paymentConversions->pluck('period'))->unique();
+        
+        foreach ($allPeriods as $period) {
+            $analytics = $analyticsConversions->where('period', $period)->first();
+            $payment = $paymentConversions->where('period', $period)->first();
+            
+            $combined->push([
+                'period' => $this->formatPeriodLabel($period, $groupBy),
+                'conversions' => ($analytics->conversions ?? 0) + ($payment->conversions ?? 0),
+                'revenue' => (($analytics->revenue ?? 0) + (($payment->revenue ?? 0) / 100))
+            ]);
+        }
+        
+        return $combined->sortBy('period')->values();
     }
 
     /**
-     * Get time-based sessions data
+     * Get time-based sessions data using REAL analytics data
      */
     public function getTimeBasedSessions($websiteId, $startDate, $endDate, $groupBy = 'day')
     {
         $selectFormat = $this->getSelectFormat($groupBy);
         
-        return PageView::where('website_id', $websiteId)
-            ->whereBetween('viewed_at', [$startDate, $endDate])
-            ->selectRaw("$selectFormat as period, COUNT(DISTINCT session_id) as sessions, COUNT(*) as page_views, COUNT(DISTINCT visitor_id) as unique_visitors")
+        return AnalyticsEvent::where('event_type', 'page_view')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("$selectFormat as period, COUNT(DISTINCT session_id) as sessions, COUNT(*) as page_views, COUNT(DISTINCT session_id) as unique_visitors")
             ->groupBy('period')
             ->orderBy('period')
             ->get()
@@ -60,44 +77,62 @@ class AnalyticsChartService
     }
 
     /**
-     * Get conversion funnel breakdown
+     * Get conversion funnel breakdown using REAL data
      */
     public function getConversionFunnelData($websiteId, $startDate, $endDate)
     {
-        $totalSessions = PageView::where('website_id', $websiteId)
-            ->whereBetween('viewed_at', [$startDate, $endDate])
+        // Get total sessions from AnalyticsEvent
+        $totalSessions = AnalyticsEvent::where('event_type', 'page_view')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->distinct('session_id')
+            ->count();
+
+        // Get PaymentFunnelEvent steps
+        $formViews = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'form_view')
+            ->distinct('session_id')
+            ->count();
+            
+        $amountEntered = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'amount_entered')
+            ->distinct('session_id')
+            ->count();
+            
+        $personalInfoStarted = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'personal_info_started')
+            ->distinct('session_id')
+            ->count();
+            
+        $personalInfoCompleted = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'personal_info_completed')
+            ->distinct('session_id')
+            ->count();
+            
+        $paymentInitiated = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'payment_initiated')
+            ->distinct('session_id')
+            ->count();
+            
+        $paymentCompleted = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('funnel_step', 'payment_completed')
             ->distinct('session_id')
             ->count();
 
         $funnelSteps = [
             'Sessions' => $totalSessions,
-            'Form Views' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('funnel_step', 'form_view')
-                ->distinct('session_id')
-                ->count(),
-            'Amount Entered' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('funnel_step', 'amount_entered')
-                ->distinct('session_id')
-                ->count(),
-            'Personal Info Started' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('funnel_step', 'personal_info_started')
-                ->distinct('session_id')
-                ->count(),
-            'Personal Info Completed' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('funnel_step', 'personal_info_completed')
-                ->distinct('session_id')
-                ->count(),
-            'Payment Page' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('funnel_step', 'payment_initiated')
-                ->distinct('session_id')
-                ->count(),
-            'Completed Conversions' => PaymentFunnelEvent::where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
+            'Form Views' => $formViews,
+            'Amount Entered' => $amountEntered,
+            'Personal Info Started' => $personalInfoStarted,
+            'Personal Info Completed' => $personalInfoCompleted,
+            'Payment Page' => $paymentInitiated,
+            'Completed Conversions' => $paymentCompleted
                 ->where('funnel_step', 'payment_completed')
                 ->distinct('session_id')
                 ->count()
@@ -125,20 +160,24 @@ class AnalyticsChartService
     }
 
     /**
-     * Get device type breakdown
+     * Get device type breakdown using REAL data
      */
     public function getDeviceBreakdown($websiteId, $startDate, $endDate)
     {
-        $deviceData = UniqueVisitor::where('website_id', $websiteId)
-            ->whereBetween('visited_at', [$startDate, $endDate])
-            ->selectRaw('device_type, COUNT(*) as visitors')
+        // Get device data from AnalyticsEvent
+        $deviceData = AnalyticsEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('device_type')
+            ->selectRaw('device_type, COUNT(DISTINCT session_id) as visitors')
             ->groupBy('device_type')
             ->get();
 
-        $deviceConversions = PaymentFunnelEvent::where('website_id', $websiteId)
-            ->where('funnel_step', 'payment_completed')
+        // Get conversions by device
+        $deviceConversions = AnalyticsEvent::where('event_type', 'conversion')
+            ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('device_type, COUNT(*) as conversions, SUM(amount) as revenue')
+            ->whereNotNull('device_type')
+            ->selectRaw('device_type, COUNT(*) as conversions, SUM(conversion_value) as revenue')
             ->groupBy('device_type')
             ->get()
             ->keyBy('device_type');
@@ -151,32 +190,34 @@ class AnalyticsChartService
                 'device_type' => $item->device_type ?: 'Unknown',
                 'visitors' => (int) $item->visitors,
                 'conversions' => (int) ($conversions->conversions ?? 0),
-                'revenue' => (float) (($conversions->revenue ?? 0) / 100),
+                'revenue' => (float) ($conversions->revenue ?? 0),
                 'conversion_rate' => round($conversionRate, 2)
             ];
         });
     }
 
     /**
-     * Get location breakdown
+     * Get location breakdown using REAL data
      */
     public function getLocationBreakdown($websiteId, $startDate, $endDate)
     {
-        $locationData = UniqueVisitor::where('website_id', $websiteId)
-            ->whereBetween('visited_at', [$startDate, $endDate])
-            ->selectRaw('country, COUNT(*) as visitors')
+        // Get location data from AnalyticsEvent
+        $locationData = AnalyticsEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->whereNotNull('country')
+            ->selectRaw('country, COUNT(DISTINCT session_id) as visitors')
             ->groupBy('country')
             ->orderByDesc('visitors')
+            ->limit(10)
             ->get();
 
-        $locationConversions = PaymentFunnelEvent::join('unique_visitors', 'payment_funnel_events.visitor_id', '=', 'unique_visitors.visitor_id')
-            ->where('payment_funnel_events.website_id', $websiteId)
-            ->where('payment_funnel_events.funnel_step', 'payment_completed')
-            ->whereBetween('payment_funnel_events.created_at', [$startDate, $endDate])
-            ->selectRaw('unique_visitors.country, COUNT(*) as conversions, SUM(payment_funnel_events.amount) as revenue')
-            ->whereNotNull('unique_visitors.country')
-            ->groupBy('unique_visitors.country')
+        // Get conversions by country
+        $locationConversions = AnalyticsEvent::where('event_type', 'conversion')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('country')
+            ->selectRaw('country, COUNT(*) as conversions, SUM(conversion_value) as revenue')
+            ->groupBy('country')
             ->get()
             ->keyBy('country');
 
@@ -189,114 +230,144 @@ class AnalyticsChartService
                 'country_name' => $this->getCountryName($item->country),
                 'visitors' => (int) $item->visitors,
                 'conversions' => (int) ($conversions->conversions ?? 0),
-                'revenue' => (float) (($conversions->revenue ?? 0) / 100),
+                'revenue' => (float) ($conversions->revenue ?? 0),
                 'conversion_rate' => round($conversionRate, 2)
             ];
         });
     }
 
     /**
-     * Get product sell-through rates
+     * Get product sell-through rates using REAL data
      */
     public function getProductSellThroughRates($websiteId, $startDate, $endDate)
     {
-        // Get ticket sell-through rates
-        $ticketData = Ticket::where('website_id', $websiteId)
-            ->selectRaw('
-                id,
-                name as title,
-                price,
-                quantity,
-                (SELECT COUNT(*) FROM payment_funnel_events 
-                 WHERE form_type = "ticket" 
-                 AND funnel_step = "payment_completed" 
-                 AND JSON_EXTRACT(form_data, "$.ticket_id") = tickets.id 
-                 AND created_at BETWEEN ? AND ?) as sold,
-                (SELECT SUM(amount) FROM payment_funnel_events 
-                 WHERE form_type = "ticket" 
-                 AND funnel_step = "payment_completed" 
-                 AND JSON_EXTRACT(form_data, "$.ticket_id") = tickets.id 
-                 AND created_at BETWEEN ? AND ?) as revenue
-            ', [$startDate, $endDate, $startDate, $endDate])
-            ->get()
-            ->map(function ($ticket) {
-                $sellThroughRate = $ticket->quantity > 0 ? ($ticket->sold / $ticket->quantity) * 100 : 0;
-                return [
-                    'type' => 'ticket',
-                    'id' => $ticket->id,
-                    'name' => $ticket->title,
-                    'price' => (float) $ticket->price,
-                    'available' => (int) $ticket->quantity,
-                    'sold' => (int) $ticket->sold,
-                    'remaining' => (int) ($ticket->quantity - $ticket->sold),
-                    'sell_through_rate' => round($sellThroughRate, 2),
-                    'revenue' => (float) ($ticket->revenue ?? 0) / 100
-                ];
-            });
-
-        // Get investment completion rates
-        $investmentData = collect([]);
-        if (class_exists('App\Models\Investment')) {
-            $investmentData = Investment::where('website_id', $websiteId)
+        $results = collect();
+        
+        // Get REAL ticket data
+        $tickets = Ticket::where('website_id', $websiteId)->get();
+        foreach ($tickets as $ticket) {
+            // Count actual completed payments for this ticket
+            $sold = PaymentFunnelEvent::where('website_id', $websiteId)
+                ->where('form_type', 'ticket')
+                ->where('funnel_step', 'payment_completed')
+                ->where('form_data->ticket_id', $ticket->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->selectRaw('
-                    "investment" as type,
-                    0 as id,
-                    "Investment Opportunities" as name,
-                    AVG(investment_amount) as avg_amount,
-                    COUNT(*) as completed,
-                    SUM(investment_amount) as total_revenue
-                ')
-                ->first();
+                ->count();
+                
+            $revenue = PaymentFunnelEvent::where('website_id', $websiteId)
+                ->where('form_type', 'ticket')
+                ->where('funnel_step', 'payment_completed')
+                ->where('form_data->ticket_id', $ticket->id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum('amount');
+                
+            $sellThroughRate = $ticket->quantity > 0 ? ($sold / $ticket->quantity) * 100 : 0;
             
-            if ($investmentData) {
-                $investmentViews = PaymentFunnelEvent::where('website_id', $websiteId)
-                    ->where('form_type', 'investment')
-                    ->where('funnel_step', 'form_view')
-                    ->whereBetween('created_at', [$startDate, $endDate])
-                    ->count();
-                
-                $completionRate = $investmentViews > 0 ? ($investmentData->completed / $investmentViews) * 100 : 0;
-                
-                $investmentData = collect([[
-                    'type' => 'investment',
-                    'id' => 0,
-                    'name' => 'Investment Opportunities',
-                    'price' => (float) $investmentData->avg_amount / 100,
-                    'available' => $investmentViews,
-                    'sold' => (int) $investmentData->completed,
-                    'remaining' => $investmentViews - $investmentData->completed,
-                    'sell_through_rate' => round($completionRate, 2),
-                    'revenue' => (float) $investmentData->total_revenue / 100
-                ]]);
-            }
+            $results->push([
+                'type' => 'ticket',
+                'id' => $ticket->id,
+                'name' => $ticket->name,
+                'price' => (float) $ticket->price,
+                'available' => (int) $ticket->quantity,
+                'sold' => (int) $sold,
+                'remaining' => (int) ($ticket->quantity - $sold),
+                'sell_through_rate' => round($sellThroughRate, 2),
+                'revenue' => (float) ($revenue ?? 0) / 100
+            ]);
         }
 
-        return $ticketData->concat($investmentData);
+        // Get REAL donation data
+        $donationViews = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'donation')
+            ->where('funnel_step', 'form_view')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+            
+        $donationCompleted = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'donation')
+            ->where('funnel_step', 'payment_completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+            
+        $donationRevenue = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'donation')
+            ->where('funnel_step', 'payment_completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('amount');
+            
+        if ($donationViews > 0) {
+            $donationRate = ($donationCompleted / $donationViews) * 100;
+            $results->push([
+                'type' => 'donation',
+                'id' => 0,
+                'name' => 'Donations',
+                'price' => $donationCompleted > 0 ? (float) ($donationRevenue / $donationCompleted) / 100 : 0,
+                'available' => $donationViews,
+                'sold' => $donationCompleted,
+                'remaining' => $donationViews - $donationCompleted,
+                'sell_through_rate' => round($donationRate, 2),
+                'revenue' => (float) ($donationRevenue ?? 0) / 100
+            ]);
+        }
+        
+        // Get REAL investment data  
+        $investmentViews = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'investment')
+            ->where('funnel_step', 'form_view')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+            
+        $investmentCompleted = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'investment')
+            ->where('funnel_step', 'payment_completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+            
+        $investmentRevenue = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->where('form_type', 'investment')
+            ->where('funnel_step', 'payment_completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('amount');
+            
+        if ($investmentViews > 0) {
+            $investmentRate = ($investmentCompleted / $investmentViews) * 100;
+            $results->push([
+                'type' => 'investment',
+                'id' => 0,
+                'name' => 'Investments',
+                'price' => $investmentCompleted > 0 ? (float) ($investmentRevenue / $investmentCompleted) / 100 : 0,
+                'available' => $investmentViews,
+                'sold' => $investmentCompleted,
+                'remaining' => $investmentViews - $investmentCompleted,
+                'sell_through_rate' => round($investmentRate, 2),
+                'revenue' => (float) ($investmentRevenue ?? 0) / 100
+            ]);
+        }
+
+        return $results;
     }
 
     /**
-     * Get geographic data for mapping
+     * Get geographic data for mapping using REAL data
      */
     public function getGeoMapData($websiteId, $startDate, $endDate)
     {
-        // Get visitor counts by country
-        $visitorCounts = UniqueVisitor::where('website_id', $websiteId)
-            ->whereBetween('visited_at', [$startDate, $endDate])
+        // Get visitor counts by country from AnalyticsEvent
+        $visitorCounts = AnalyticsEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->whereNotNull('country')
             ->groupBy('country')
-            ->selectRaw('country, COUNT(*) as visitors, COUNT(DISTINCT session_id) as sessions')
+            ->selectRaw('country, COUNT(DISTINCT session_id) as visitors, COUNT(*) as page_views')
             ->get()
             ->keyBy('country');
         
-        // Get conversion counts by country
-        $conversionCounts = PaymentFunnelEvent::join('unique_visitors', 'payment_funnel_events.visitor_id', '=', 'unique_visitors.visitor_id')
-            ->where('payment_funnel_events.website_id', $websiteId)
-            ->where('payment_funnel_events.funnel_step', 'payment_completed')
-            ->whereBetween('payment_funnel_events.created_at', [$startDate, $endDate])
-            ->whereNotNull('unique_visitors.country')
-            ->groupBy('unique_visitors.country')
-            ->selectRaw('unique_visitors.country, COUNT(*) as conversions, SUM(payment_funnel_events.amount) as revenue')
+        // Get conversion counts by country from AnalyticsEvent
+        $conversionCounts = AnalyticsEvent::where('event_type', 'conversion')
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('country')
+            ->groupBy('country')
+            ->selectRaw('country, COUNT(*) as conversions, SUM(conversion_value) as revenue')
             ->get()
             ->keyBy('country');
         
