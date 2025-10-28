@@ -618,3 +618,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     @endforeach
 });
 </script>
+
+<!-- Payment Funnel Tracking -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script src="{{ asset('js/payment-funnel-tracking.js') }}"></script>

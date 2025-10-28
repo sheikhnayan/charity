@@ -191,6 +191,24 @@ class FrontendController extends Controller
             \Log::info('Full Investment Record:', $investment->toArray());
             \Log::info('=== END INVESTMENT DEBUG ===');
 
+            // Track payment initiation for investment
+            try {
+                $funnelService = new PaymentFunnelService();
+                $funnelService->trackPaymentInitiated(
+                    'investment',
+                    $request->investment_amount,
+                    'authorize_net',
+                    [
+                        'investor_type' => $investment->investor_type,
+                        'share_quantity' => $shareQuantity,
+                        'investor_data' => $investment->investor_data
+                    ],
+                    null // investments don't have user_id
+                );
+            } catch (\Exception $e) {
+                \Log::error('Payment funnel tracking error in investment: ' . $e->getMessage());
+            }
+
             // Redirect to payment page like donation and auction
             return redirect('/authorize/payment/investment/'.$investment->id)->with('success', 'Investment Pending Payment');
             
@@ -482,8 +500,24 @@ class FrontendController extends Controller
 
         }
 
-
-
+        // Track payment initiation for ticket purchase
+        try {
+            $funnelService = new PaymentFunnelService();
+            $funnelService->trackPaymentInitiated(
+                'ticket',
+                $amount,
+                'authorize_net',
+                [
+                    'quantity' => $quantity,
+                    'tickets' => array_filter($request->ticket, function($item) {
+                        return $item['quantity'] > 0;
+                    })
+                ],
+                null // tickets don't have user_id
+            );
+        } catch (\Exception $e) {
+            \Log::error('Payment funnel tracking error in ticket purchase: ' . $e->getMessage());
+        }
 
         return redirect('/authorize/payment/ticket/'.$add->id)->with('success', 'Donation Pending');
     }

@@ -239,6 +239,9 @@ class AuthorizeNetController extends Controller
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
 
+                    // Track successful Authorize.Net payment for ticket purchase
+                    $this->trackPaymentFunnel('completed', 'ticket', $request->amount, $tresponse->getTransId(), null, null);
+
                     foreach ($donation->details as $key => $value) {
                         # code...
                         $ticket = Ticket::find($value->ticket_id);
@@ -283,6 +286,9 @@ class AuthorizeNetController extends Controller
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
 
+                    // Track successful Authorize.Net payment for auction
+                    $this->trackPaymentFunnel('completed', 'auction', $request->amount, $tresponse->getTransId(), null, null);
+
                     return view('thank-you', compact('type'));
 
                 }elseif($request->type == 'investment'){
@@ -315,6 +321,9 @@ class AuthorizeNetController extends Controller
 
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
+
+                    // Track successful Authorize.Net payment for investment
+                    $this->trackPaymentFunnel('completed', 'investment', $investment->investment_amount, $tresponse->getTransId(), null, null);
 
                     return view('thank-you', compact('type'));
 
@@ -413,11 +422,10 @@ class AuthorizeNetController extends Controller
                         // Send invoice email and handle post-transaction operations
                         $this->afterTransactionSaved($tran, $website);
 
-                        // Track successful payment
-                        $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $tresponse->getTransId(), null, $request->input('student_id'));
+                        // Track successful Stripe payment
+                        $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $charge->id, null, $request->input('student_id'));
 
                         return view('thank-you', compact('type'));
-                        return view('stripe',compact('data','type'));
                     }elseif ($donation->type == 'general') {
                         # code...
                         $tran = new Transaction;
@@ -484,6 +492,9 @@ class AuthorizeNetController extends Controller
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
 
+                    // Track successful Stripe payment for ticket purchase
+                    $this->trackPaymentFunnel('completed', 'ticket', $request->amount, $charge->id, null, null);
+
                     foreach ($donation->details as $key => $value) {
                         # code...
                         $ticket = Ticket::find($value->ticket_id);
@@ -527,6 +538,9 @@ class AuthorizeNetController extends Controller
 
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
+
+                    // Track successful Stripe payment for auction
+                    $this->trackPaymentFunnel('completed', 'auction', $request->amount, $charge->id, null, null);
 
                     return view('thank-you', compact('type'));
 
@@ -673,7 +687,7 @@ class AuthorizeNetController extends Controller
     /**
      * Track payment funnel events
      */
-    protected function trackPaymentFunnel($event, $type, $amount, $transactionId = null, $errorMessage = null, $userId = null)
+    protected function trackPaymentFunnel($event, $type, $amount, $transactionId = null, $errorMessage = null, $userId = null, $paymentMethod = null)
     {
         try {
             $funnelService = new PaymentFunnelService();
@@ -681,11 +695,16 @@ class AuthorizeNetController extends Controller
             // Determine form type based on type parameter
             $formType = $this->mapTypeToFormType($type);
             
+            // Auto-detect payment method if not provided
+            if (!$paymentMethod) {
+                $paymentMethod = $this->detectPaymentMethod();
+            }
+            
             if ($event === 'completed') {
                 $funnelService->trackPaymentCompleted(
                     $formType,
                     $amount,
-                    'authorize_net',
+                    $paymentMethod,
                     $transactionId,
                     $userId
                 );
@@ -693,7 +712,7 @@ class AuthorizeNetController extends Controller
                 $funnelService->trackPaymentFailed(
                     $formType,
                     $amount,
-                    'authorize_net',
+                    $paymentMethod,
                     $errorMessage,
                     $userId
                 );
@@ -702,6 +721,27 @@ class AuthorizeNetController extends Controller
             // Log error but don't fail the payment process
             \Log::error('Payment funnel tracking error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Auto-detect payment method from request context
+     */
+    protected function detectPaymentMethod()
+    {
+        $request = request();
+        
+        // Check if it's a Stripe payment (has stripeToken)
+        if ($request->has('stripeToken')) {
+            return 'stripe';
+        }
+        
+        // Check if it's crypto payment (future implementation)
+        if ($request->has('cryptoWallet') || $request->has('blockchainTx')) {
+            return 'crypto';
+        }
+        
+        // Default to Authorize.Net
+        return 'authorize_net';
     }
 
     /**

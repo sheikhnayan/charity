@@ -2154,6 +2154,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-    
+<!-- Payment Funnel Tracking -->
+<script src="{{ asset('js/payment-funnel-tracking.js') }}"></script>
+
 </body>
 </html>

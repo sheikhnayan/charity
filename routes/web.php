@@ -13,6 +13,7 @@ use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\Analytics\DashboardController;
+use App\Http\Controllers\Admin\PaymentMethodAnalyticsController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
 
@@ -27,6 +28,13 @@ include __DIR__ . '/test-db.php';
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
     Route::get('/analytics/real-time', [DashboardController::class, 'realTime'])->name('analytics.realtime');
+    
+    // Payment Method Analytics Routes
+    Route::prefix('admin/payment-methods')->name('admin.payment-methods.')->group(function () {
+        Route::get('/analytics', [PaymentMethodAnalyticsController::class, 'index'])->name('analytics');
+        Route::get('/analytics/api', [PaymentMethodAnalyticsController::class, 'api'])->name('analytics.api');
+        Route::get('/analytics/export', [PaymentMethodAnalyticsController::class, 'export'])->name('analytics.export');
+    });
 });
 
 // Test route to populate demo data

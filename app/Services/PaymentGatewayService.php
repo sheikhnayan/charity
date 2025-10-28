@@ -286,4 +286,104 @@ class PaymentGatewayService
             return ['success' => false, 'message' => 'Authorize.net connection failed: ' . $e->getMessage()];
         }
     }
+
+    /**
+     * Get supported payment methods for a website
+     */
+    public function getSupportedPaymentMethods(Website $website): array
+    {
+        $methods = [];
+        
+        // Check if Authorize.Net is configured
+        $authorizeNetConfig = $this->getAuthorizeNetConfig($website);
+        if (!empty($authorizeNetConfig)) {
+            $methods[] = [
+                'method' => 'authorize_net',
+                'name' => 'Credit/Debit Card (Authorize.Net)',
+                'supported_types' => ['card'],
+                'enabled' => true
+            ];
+        }
+
+        // Check if Stripe is configured
+        $stripeConfig = $this->getStripeConfig($website);
+        if (!empty($stripeConfig)) {
+            $methods[] = [
+                'method' => 'stripe',
+                'name' => 'Credit/Debit Card (Stripe)',
+                'supported_types' => ['card', 'apple_pay', 'google_pay'],
+                'enabled' => true
+            ];
+        }
+
+        // Future: Crypto wallet support
+        $cryptoConfig = $this->getCryptoWalletConfig($website);
+        if (!empty($cryptoConfig)) {
+            $methods[] = [
+                'method' => 'crypto',
+                'name' => 'Cryptocurrency Wallet',
+                'supported_types' => ['bitcoin', 'ethereum', 'usdc', 'other'],
+                'enabled' => $cryptoConfig['enabled'] ?? false
+            ];
+        }
+
+        return $methods;
+    }
+
+    /**
+     * Get crypto wallet configuration (Future implementation)
+     */
+    public function getCryptoWalletConfig(Website $website): array
+    {
+        // This will be implemented when crypto payment is added
+        // For now, return empty to indicate crypto is not configured
+        
+        // Future structure might look like:
+        // $cryptoSetting = WebsitePaymentSetting::where('website_id', $website->id)
+        //     ->where('gateway', 'crypto')
+        //     ->first();
+        
+        // if ($cryptoSetting && $cryptoSetting->is_active) {
+        //     return [
+        //         'enabled' => true,
+        //         'supported_currencies' => $cryptoSetting->config['supported_currencies'] ?? ['BTC', 'ETH', 'USDC'],
+        //         'wallet_addresses' => $cryptoSetting->config['wallet_addresses'] ?? [],
+        //         'network' => $cryptoSetting->config['network'] ?? 'mainnet',
+        //         'api_key' => $cryptoSetting->config['api_key'] ?? null,
+        //     ];
+        // }
+        
+        return [];
+    }
+
+    /**
+     * Validate crypto transaction (Future implementation)
+     */
+    public function validateCryptoTransaction(string $txHash, string $currency, float $expectedAmount): array
+    {
+        // Future implementation for blockchain transaction validation
+        // This would integrate with blockchain APIs to verify transactions
+        
+        return [
+            'success' => false,
+            'message' => 'Crypto validation not yet implemented',
+            'transaction_hash' => $txHash,
+            'status' => 'pending'
+        ];
+    }
+
+    /**
+     * Process crypto payment (Future implementation)
+     */
+    public function processCryptoPayment(array $paymentData): array
+    {
+        // Future implementation for crypto payment processing
+        // This would handle crypto payment flows
+        
+        return [
+            'success' => false,
+            'message' => 'Crypto payments not yet implemented',
+            'requires_implementation' => true
+        ];
+    }
 }
