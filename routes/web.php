@@ -48,6 +48,52 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
 
 
 
+// Debug route to check PaymentFunnelEvent data
+Route::get('/debug-analytics', function() {
+    $websites = \App\Models\Website::all(['id', 'name', 'type']);
+    $paymentData = \App\Models\PaymentFunnelEvent::select('website_id', 'funnel_step', 'form_type', 'amount', 'created_at')
+        ->whereIn('funnel_step', ['payment_completed', 'form_view'])
+        ->latest()
+        ->limit(10)
+        ->get();
+    
+    $websiteData = [];
+    foreach($websites as $website) {
+        $conversions = \App\Models\PaymentFunnelEvent::where('website_id', $website->id)
+            ->where('funnel_step', 'payment_completed')
+            ->count();
+        
+        $revenue = \App\Models\PaymentFunnelEvent::where('website_id', $website->id)
+            ->where('funnel_step', 'payment_completed')
+            ->sum('amount') ?? 0;
+            
+        $sessions = \App\Models\PaymentFunnelEvent::where('website_id', $website->id)
+            ->distinct('session_id')
+            ->count();
+            
+        $websiteData[] = [
+            'id' => $website->id,
+            'name' => $website->name,
+            'type' => $website->type,
+            'conversions' => $conversions,
+            'revenue' => $revenue,
+            'sessions' => $sessions
+        ];
+    }
+    
+    return response()->json([
+        'websites' => $websiteData,
+        'recent_payments' => $paymentData,
+        'total_payment_events' => \App\Models\PaymentFunnelEvent::count(),
+        'current_user_websites' => auth()->check() ? (auth()->user()->role === 'admin' ? 'All websites' : \App\Models\Website::where('user_id', auth()->id())->pluck('name', 'id')) : 'Not authenticated'
+    ]);
+});
+
+// Analytics debug page
+Route::get('/debug-analytics-page', function() {
+    return view('debug.analytics');
+})->middleware('auth');
+
 // Test route to populate demo data
 Route::get('/populate-demo', function() {
     Setting::truncate(); // Clear existing data

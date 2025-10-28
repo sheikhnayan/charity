@@ -18,12 +18,22 @@ class DashboardController extends Controller
             $websites = \App\Models\Website::where('user_id', auth()->id())->get();
         }
 
-        // Get selected website
-        $selectedWebsiteId = $request->website_id ?? ($websites->first()->id ?? null);
+        // Get selected website - prioritize websites with PaymentFunnelEvent data
+        $selectedWebsiteId = $request->website_id;
         
-        // Get date range
+        if (!$selectedWebsiteId) {
+            // Find website with most PaymentFunnelEvent data
+            $websiteWithData = PaymentFunnelEvent::select('website_id')
+                ->groupBy('website_id')
+                ->orderByRaw('COUNT(*) DESC')
+                ->first();
+                
+            $selectedWebsiteId = $websiteWithData ? $websiteWithData->website_id : ($websites->first()->id ?? null);
+        }
+        
+        // Get date range - expand default to 90 days to catch more data
         $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() 
-                                        : now()->subDays(30)->startOfDay();
+                                        : now()->subDays(90)->startOfDay();
         $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() 
                                     : now()->endOfDay();
 
@@ -47,6 +57,16 @@ class DashboardController extends Controller
         $today = now()->startOfDay();
         $lastWeek = now()->subWeek();
         $lastMonth = now()->subMonth();
+        
+        // Debug: Log what we're looking for
+        \Log::info("Analytics Stats Debug", [
+            'website_id' => $websiteId,
+            'start_date' => $startDate->toDateTimeString(),
+            'end_date' => $endDate->toDateTimeString(),
+            'payment_events_total' => PaymentFunnelEvent::count(),
+            'payment_events_website' => PaymentFunnelEvent::where('website_id', $websiteId)->count(),
+            'conversions_website' => PaymentFunnelEvent::where('website_id', $websiteId)->where('funnel_step', 'payment_completed')->count()
+        ]);
 
         // Get daily stats for the past week
         $weeklyStats = collect(range(6, 0))->map(function ($daysAgo) use ($websiteId) {
@@ -62,10 +82,11 @@ class DashboardController extends Controller
 
         return [
             'today' => [
-                'pageViews' => $this->getPageViews($websiteId, $today, now()),
-                'uniqueVisitors' => $this->getUniqueVisitors($websiteId, $today, now()),
-                'conversions' => $this->getConversions($websiteId, $today, now()),
-                'revenue' => $this->getRevenue($websiteId, $today, now()),
+                'pageViews' => $this->getPageViews($websiteId, $startDate, $endDate),
+                'uniqueVisitors' => $this->getUniqueVisitors($websiteId, $startDate, $endDate),
+                'conversions' => $this->getConversions($websiteId, $startDate, $endDate),
+                'revenue' => $this->getRevenue($websiteId, $startDate, $endDate),
+                'sessions' => $this->getUniqueVisitors($websiteId, $startDate, $endDate), // Add sessions data
             ],
             'week' => [
                 'dates' => $weeklyStats->pluck('date')->toArray(),
@@ -121,10 +142,21 @@ class DashboardController extends Controller
 
     protected function getUniqueVisitors($websiteId, $startDate, $endDate)
     {
-        return \App\Models\PaymentFunnelEvent::where('website_id', $websiteId)
+        // Try visitor_id first, then fall back to session_id
+        $visitorCount = \App\Models\PaymentFunnelEvent::where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('session_id')
-            ->count('session_id');
+            ->whereNotNull('visitor_id')
+            ->distinct('visitor_id')
+            ->count('visitor_id');
+            
+        if ($visitorCount === 0) {
+            $visitorCount = \App\Models\PaymentFunnelEvent::where('website_id', $websiteId)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->distinct('session_id')
+                ->count('session_id');
+        }
+        
+        return $visitorCount;
     }
 
     protected function getConversions($websiteId, $startDate, $endDate)
@@ -139,10 +171,23 @@ class DashboardController extends Controller
     protected function getRevenue($websiteId, $startDate, $endDate)
     {
         // Get revenue from PaymentFunnelEvent
-        return \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+        $revenue = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount') ?? 0;
+            
+        // Debug: Log revenue calculation
+        \Log::info("Revenue Debug", [
+            'website_id' => $websiteId,
+            'revenue_raw' => $revenue,
+            'completed_payments' => \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+                ->where('website_id', $websiteId)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get(['amount', 'created_at'])
+                ->toArray()
+        ]);
+            
+        return $revenue;
     }
 
     protected function getTopPages($websiteId, $startDate, $endDate)
