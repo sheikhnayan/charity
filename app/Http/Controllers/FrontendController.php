@@ -15,6 +15,7 @@ use App\Models\TicektSell;
 use App\Models\TicketSellDetail;
 use App\Models\Investment;
 use App\Models\DealmakerConfig;
+use App\Services\PaymentFunnelService;
 use Mail;
 
 class FrontendController extends Controller
@@ -412,6 +413,25 @@ class FrontendController extends Controller
         $add->status = 0;
         $add->save();
 
+        // Track payment initiation for student donation
+        try {
+            $funnelService = new PaymentFunnelService();
+            $funnelService->trackPaymentInitiated(
+                'student',
+                $request->donation_amount,
+                'authorize_net',
+                [
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'comment' => $request->leave_comment,
+                    'anonymous' => isset($request->anonymous_donation)
+                ],
+                $request->user_id
+            );
+        } catch (\Exception $e) {
+            \Log::error('Payment funnel tracking error in student donation: ' . $e->getMessage());
+        }
 
         return redirect('/authorize/payment/donation/'.$add->id)->with('success', 'Donation Pending');
     }
@@ -497,6 +517,25 @@ class FrontendController extends Controller
         $add->status = 0;
         $add->save();
 
+        // Track payment initiation for general donation
+        try {
+            $funnelService = new PaymentFunnelService();
+            $funnelService->trackPaymentInitiated(
+                'general',
+                $request->donation_amount,
+                'authorize_net',
+                [
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'comment' => $request->leave_comment,
+                    'anonymous' => isset($request->anonymous_donation)
+                ],
+                null // general donations don't have user_id
+            );
+        } catch (\Exception $e) {
+            \Log::error('Payment funnel tracking error in general donation: ' . $e->getMessage());
+        }
 
         return redirect('/authorize/payment/donation/'.$add->id)->with('success', 'Donation Pending');
     }

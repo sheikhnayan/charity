@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\BidController;
+use App\Http\Controllers\Api\FunnelTrackingController;
 use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Log;
 
@@ -14,6 +15,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
+
+// Payment Funnel Tracking API routes (no auth required for public tracking)
+Route::post('/track-funnel', [FunnelTrackingController::class, 'trackEvent']);
+Route::post('/track-funnel/bulk', [FunnelTrackingController::class, 'bulkTrackEvents']);
+Route::get('/funnel-progress', [FunnelTrackingController::class, 'getSessionProgress']);
+Route::get('/funnel-step-check', [FunnelTrackingController::class, 'checkStepCompletion']);
 
 // Public comment routes (no auth required for posting comments)
 Route::post('/comments', [CommentController::class, 'store']);

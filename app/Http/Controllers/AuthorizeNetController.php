@@ -17,6 +17,7 @@ use App\Models\Website;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Services\PaymentGatewayService;
+use App\Services\PaymentFunnelService;
 use App\Mail\TransactionInvoice;
 use Illuminate\Support\Facades\Mail;
 use Stripe;
@@ -167,6 +168,9 @@ class AuthorizeNetController extends Controller
 
                         // Send invoice email and handle post-transaction operations
                         $this->afterTransactionSaved($tran, $website);
+
+                        // Track successful payment
+                        $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $tresponse->getTransId(), null, $request->input('student_id'));
 
                         return view('thank-you', compact('type'));
                     }elseif ($donation->type == 'general') {
@@ -321,10 +325,20 @@ class AuthorizeNetController extends Controller
 
 
             } else {
+                // Track payment failure
+                $amount = $request->input('amount', 0);
+                $type = $request->input('type', 'general');
+                $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment failed - Response error');
+                
                 dd($response);
                 return back()->with('error', "Payment failed");
             }
         } else {
+            // Track payment failure
+            $amount = $request->input('amount', 0);
+            $type = $request->input('type', 'general');
+            $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment failed - Transaction not approved');
+            
             // dd($response);
                 dd($response);
             return back()->with('error', "Payment failed ");
@@ -388,7 +402,7 @@ class AuthorizeNetController extends Controller
                         $tran->zip = $request->zipcode;
                         $tran->phone = $request->phone;
                         $tran->name_on_card = $request->name_on_card;
-                        $tran->country = $request->country;
+                        $tran->ip_address = $request->ip();
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
 
@@ -398,6 +412,9 @@ class AuthorizeNetController extends Controller
 
                         // Send invoice email and handle post-transaction operations
                         $this->afterTransactionSaved($tran, $website);
+
+                        // Track successful payment
+                        $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $tresponse->getTransId(), null, $request->input('student_id'));
 
                         return view('thank-you', compact('type'));
                         return view('stripe',compact('data','type'));
@@ -544,6 +561,9 @@ class AuthorizeNetController extends Controller
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
 
+                    // Track successful Stripe payment for investment
+                    $this->trackPaymentFunnel('completed', 'investment', $investment->investment_amount, $charge->id, null, null);
+
                     return view('thank-you', compact('type'));
 
                 }else {
@@ -553,12 +573,19 @@ class AuthorizeNetController extends Controller
 
         } catch (CardException $e) {
             // Card declined or invalid
-            // dd($e);
+            // Track payment failure
+            $amount = $request->input('amount', 0);
+            $type = $request->input('type', 'general');
+            $this->trackPaymentFunnel('failed', $type, $amount, null, 'Card declined: ' . $e->getError()->message);
+            
             return back()->with('error', "Payment failed: ". $e->getError()->message);
-            // return back()->withErrors(['Payment failed: ' => $e->getError()->message]);
         } catch (\Exception $e) {
             // Anything else
-            // dd($e);
+            // Track payment failure
+            $amount = $request->input('amount', 0);
+            $type = $request->input('type', 'general');
+            $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment processing error: ' . $e->getMessage());
+            
             report($e);
             return back()->with('error', "Payment failed: ". 'Payment could not be processed.');
             // return back()->withErrors(['Payment failed: ' => 'Payment could not be processed.']);
@@ -641,5 +668,61 @@ class AuthorizeNetController extends Controller
         $transaction->fee_paid = 1;
         
         return $transaction;
+    }
+
+    /**
+     * Track payment funnel events
+     */
+    protected function trackPaymentFunnel($event, $type, $amount, $transactionId = null, $errorMessage = null, $userId = null)
+    {
+        try {
+            $funnelService = new PaymentFunnelService();
+            
+            // Determine form type based on type parameter
+            $formType = $this->mapTypeToFormType($type);
+            
+            if ($event === 'completed') {
+                $funnelService->trackPaymentCompleted(
+                    $formType,
+                    $amount,
+                    'authorize_net',
+                    $transactionId,
+                    $userId
+                );
+            } elseif ($event === 'failed') {
+                $funnelService->trackPaymentFailed(
+                    $formType,
+                    $amount,
+                    'authorize_net',
+                    $errorMessage,
+                    $userId
+                );
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the payment process
+            \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Map payment type to form type for funnel tracking
+     */
+    protected function mapTypeToFormType($type)
+    {
+        switch ($type) {
+            case 'student':
+                return 'student';
+            case 'donation':
+            case 'general':
+                return 'general';
+            case 'ticket':
+                return 'ticket';
+            case 'auction':
+                return 'auction';
+            case 'investment':
+                return 'investment';
+            default:
+                return 'general';
+        }
     }
 }
