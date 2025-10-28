@@ -73,9 +73,13 @@ class PaymentFunnelService
             return $existing;
         }
 
+        // Get visitor ID from cookie (Shopify approach)
+        $visitorId = request()->cookie('_charity_visitor_id');
+        
         $eventData = [
             'website_id' => $this->website->id,
             'session_id' => $sessionId,
+            'visitor_id' => $visitorId,
             'funnel_step' => $step,
             'form_type' => $formType,
             'completed_at' => now(),

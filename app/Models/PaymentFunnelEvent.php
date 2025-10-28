@@ -13,6 +13,7 @@ class PaymentFunnelEvent extends Model
     protected $fillable = [
         'website_id',
         'session_id',
+        'visitor_id',
         'funnel_step',
         'form_type',
         'user_id',
