@@ -516,15 +516,15 @@
                         Total Revenue
                     @endif
                 </h6>
-                <div class="metric-value" id="total-revenue-card">${{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</div>
+                <div class="metric-value" id="total-revenue-card">{{ $stats['today']['revenueFormatted'] ?? '$0.00' }}</div>
                 <div class="metric-subtitle">
                     <i class="fas fa-coins me-1"></i>
                     @if($selectedWebsite && $selectedWebsite->isInvestment())
-                        Avg Investment: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                        Avg Investment: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
                     @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
-                        Avg Donation: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                        Avg Donation: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
                     @else
-                        Avg: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format((($stats['today']['revenue'] ?? 0) / 100) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
+                        Avg: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
                     @endif
                 </div>
             </div>

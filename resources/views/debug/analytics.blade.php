@@ -28,20 +28,73 @@
             }
         @endphp
     </div>
+ 
+    <div class="debug-section">
+        <h3>� Funnel Step Analysis</h3>
+        @php
+            $funnelSteps = \App\Models\PaymentFunnelEvent::select('funnel_step')
+                ->selectRaw('COUNT(*) as count')
+                ->groupBy('funnel_step')
+                ->orderByDesc('count')
+                ->get();
+        @endphp
+        
+        <p><strong>Available Funnel Steps in Database:</strong></p>
+        @if($funnelSteps->count() > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th>Funnel Step</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($funnelSteps as $step)
+                        <tr>
+                            <td><code>{{ $step->funnel_step }}</code></td>
+                            <td>{{ number_format($step->count) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="error">❌ No funnel steps found</div>
+        @endif
+    </div>
 
     <div class="debug-section">
-        <h3>📊 PaymentFunnelEvent Data Overview</h3>
+        <h3>�📊 PaymentFunnelEvent Data Overview</h3>
         @php
             $totalEvents = \App\Models\PaymentFunnelEvent::count();
-            $totalCompletedPayments = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')->count();
+            
+            // Try multiple possible completion step names
+            $completionSteps = ['payment_completed', 'payment_complete', 'completed', 'payment_success', 'success'];
+            $totalCompletedPayments = 0;
+            $actualCompletionStep = null;
+            
+            foreach ($completionSteps as $step) {
+                $count = \App\Models\PaymentFunnelEvent::where('funnel_step', $step)->count();
+                if ($count > 0) {
+                    $totalCompletedPayments = $count;
+                    $actualCompletionStep = $step;
+                    break;
+                }
+            }
+            
             $websiteDataCounts = \App\Models\PaymentFunnelEvent::select('website_id')
                 ->selectRaw('COUNT(*) as total_events')
-                ->selectRaw('COUNT(CASE WHEN funnel_step = "payment_completed" THEN 1 END) as completed_payments')
-                ->selectRaw('SUM(CASE WHEN funnel_step = "payment_completed" THEN amount ELSE 0 END) as total_revenue')
+                ->selectRaw('COUNT(CASE WHEN funnel_step = "' . ($actualCompletionStep ?? 'payment_completed') . '" THEN 1 END) as completed_payments')
+                ->selectRaw('SUM(CASE WHEN funnel_step = "' . ($actualCompletionStep ?? 'payment_completed') . '" THEN amount ELSE 0 END) as total_revenue')
                 ->groupBy('website_id')
                 ->orderByDesc('total_events')
                 ->get();
         @endphp
+        
+        @if($actualCompletionStep)
+            <div class="success">✅ Found completion step: <code>{{ $actualCompletionStep }}</code></div>
+        @else
+            <div class="error">❌ No completion step found. Looking for: {{ implode(', ', $completionSteps) }}</div>
+        @endif
         
         <p><strong>Total PaymentFunnelEvent records:</strong> {{ number_format($totalEvents) }}</p>
         <p><strong>Total completed payments:</strong> {{ number_format($totalCompletedPayments) }}</p>

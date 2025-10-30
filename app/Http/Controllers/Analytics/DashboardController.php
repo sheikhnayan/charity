@@ -80,12 +80,17 @@ class DashboardController extends Controller
             ];
         });
 
+        // Calculate revenue values
+        $todayRevenue = $this->getRevenue($websiteId, $startDate, $endDate);
+        $monthRevenue = $this->getRevenue($websiteId, $lastMonth, now());
+        
         return [
             'today' => [
                 'pageViews' => $this->getPageViews($websiteId, $startDate, $endDate),
                 'uniqueVisitors' => $this->getUniqueVisitors($websiteId, $startDate, $endDate),
                 'conversions' => $this->getConversions($websiteId, $startDate, $endDate),
-                'revenue' => $this->getRevenue($websiteId, $startDate, $endDate),
+                'revenue' => $todayRevenue,
+                'revenueFormatted' => '$' . number_format($todayRevenue, 2),
                 'sessions' => $this->getUniqueVisitors($websiteId, $startDate, $endDate), // Add sessions data
             ],
             'week' => [
@@ -99,7 +104,8 @@ class DashboardController extends Controller
                 'pageViews' => $this->getPageViews($websiteId, $lastMonth, now()),
                 'uniqueVisitors' => $this->getUniqueVisitors($websiteId, $lastMonth, now()),
                 'conversions' => $this->getConversions($websiteId, $lastMonth, now()),
-                'revenue' => $this->getRevenue($websiteId, $lastMonth, now()),
+                'revenue' => $monthRevenue,
+                'revenueFormatted' => '$' . number_format($monthRevenue, 2),
             ],
             'topPages' => $this->getTopPages($websiteId, $startDate, $endDate),
             'topReferrers' => $this->getTopReferrers($websiteId, $startDate, $endDate),
@@ -159,19 +165,50 @@ class DashboardController extends Controller
         return $visitorCount;
     }
 
+    protected function getCompletionFunnelStep()
+    {
+        // Dynamically detect the correct completion funnel step
+        $possibleSteps = ['payment_completed', 'payment_complete', 'completed', 'payment_success', 'success'];
+        
+        foreach ($possibleSteps as $step) {
+            $count = \App\Models\PaymentFunnelEvent::where('funnel_step', $step)->count();
+            if ($count > 0) {
+                \Log::info("Using funnel step: {$step} (found {$count} records)");
+                return $step;
+            }
+        }
+        
+        // Fallback to payment_completed if nothing found
+        \Log::warning("No completion funnel step found, defaulting to 'payment_completed'");
+        return 'payment_completed';
+    }
+
     protected function getConversions($websiteId, $startDate, $endDate)
     {
-        // Get conversions from PaymentFunnelEvent
-        return \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+        // Get conversions from PaymentFunnelEvent using dynamic step detection
+        $completionStep = $this->getCompletionFunnelStep();
+        
+        $count = \App\Models\PaymentFunnelEvent::where('funnel_step', $completionStep)
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
+            
+        \Log::info("Conversions Debug", [
+            'website_id' => $websiteId,
+            'funnel_step' => $completionStep,
+            'count' => $count,
+            'date_range' => [$startDate, $endDate]
+        ]);
+            
+        return $count;
     }
 
     protected function getRevenue($websiteId, $startDate, $endDate)
     {
-        // Get revenue from PaymentFunnelEvent
-        $revenue = \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+        // Get revenue from PaymentFunnelEvent using dynamic step detection
+        $completionStep = $this->getCompletionFunnelStep();
+        
+        $revenue = \App\Models\PaymentFunnelEvent::where('funnel_step', $completionStep)
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount') ?? 0;
@@ -179,11 +216,13 @@ class DashboardController extends Controller
         // Debug: Log revenue calculation
         \Log::info("Revenue Debug", [
             'website_id' => $websiteId,
+            'funnel_step' => $completionStep,
             'revenue_raw' => $revenue,
-            'completed_payments' => \App\Models\PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+            'revenue_formatted' => number_format($revenue, 2),
+            'completed_payments' => \App\Models\PaymentFunnelEvent::where('funnel_step', $completionStep)
                 ->where('website_id', $websiteId)
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['amount', 'created_at'])
+                ->get(['amount', 'form_type', 'created_at'])
                 ->toArray()
         ]);
             
