@@ -1179,9 +1179,16 @@ function loadLocationData() {
         return;
     }
     
+    console.log('Loading location data:', { website: currentWebsiteId, start: currentStartDate, end: currentEndDate });
+    
     fetch(`/analytics/api/locations?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Location API response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Location data received:', data);
+            console.log('Number of locations:', data.length);
             const topLocations = data.slice(0, 10); // Show top 10 for chart
             locationChart.data.labels = topLocations.map(item => item.country_name || item.country);
             locationChart.data.datasets[0].data = topLocations.map(item => item.visitors);
@@ -1327,42 +1334,56 @@ function loadGeoMapData() {
 
 // Real-time data loading function
 function loadRealTimeData() {
+    console.log('Loading real-time data for website:', currentWebsiteId);
+    
     fetch(`/analytics/real-time?website_id=${currentWebsiteId}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Real-time API response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Real-time data received:', data);
+            console.log('Active users:', data.activeUsers);
+            console.log('Recent page views count:', data.recentPageViews ? data.recentPageViews.length : 0);
+            
             // Update active users count
             document.getElementById('active-count').textContent = data.activeUsers || 0;
             
             // Update real-time activity table
             const tbody = document.querySelector('#realtime-activity tbody');
             if (data.recentPageViews && data.recentPageViews.length > 0) {
+                console.log('Displaying', data.recentPageViews.length, 'activities');
                 tbody.innerHTML = '';
                 
                 data.recentPageViews.slice(0, 10).forEach(activity => {
                     const timeAgo = formatTimeAgo(new Date(activity.created_at));
+                    const location = activity.country ? ` from ${activity.state ? activity.state + ', ' : ''}${activity.country}` : '';
                     const user = activity.user_id ? `User ${activity.user_id}` : `Visitor ${activity.session_id.substring(0, 8)}`;
                     
                     // Determine action type and badge color
                     let action = '';
                     let badgeColor = 'primary';
                     
-                    if (activity.event_type === 'payment_completed') {
-                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
-                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Completed${amount}`;
+                    // Check for completion events (payment_completed, payment_complete, completed, etc.)
+                    const isCompleted = activity.event_type.includes('complete') || activity.event_type === 'success';
+                    
+                    if (isCompleted) {
+                        const amount = activity.amount ? ` ($${parseFloat(activity.amount).toFixed(2)})` : '';
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Completed${amount}${location}`;
                         badgeColor = 'success';
                     } else if (activity.event_type === 'amount_entered') {
-                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
-                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Amount Entered${amount}`;
+                        const amount = activity.amount ? ` ($${parseFloat(activity.amount).toFixed(2)})` : '';
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Amount Entered${amount}${location}`;
                         badgeColor = 'warning';
                     } else if (activity.event_type === 'form_view') {
-                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Form Viewed`;
+                        action = `${activity.form_type.charAt(0).toUpperCase() + activity.form_type.slice(1)} Form Viewed${location}`;
                         badgeColor = 'info';
                     } else if (activity.event_type === 'auction_activity') {
-                        const amount = activity.amount ? ` ($${(activity.amount / 100).toFixed(2)})` : '';
-                        action = `Auction Bid${amount}`;
+                        const amount = activity.amount ? ` ($${parseFloat(activity.amount).toFixed(2)})` : '';
+                        action = `Auction Bid${amount}${location}`;
                         badgeColor = 'danger';
                     } else {
-                        action = activity.event_type.replace('_', ' ');
+                        action = activity.event_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + location;
                         badgeColor = 'primary';
                     }
                     

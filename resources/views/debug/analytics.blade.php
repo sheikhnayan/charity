@@ -294,6 +294,143 @@
         @endforeach
     </div>
 
+    <div class="debug-section">
+        <h3>🌍 Location Data Check</h3>
+        @php
+            $eventsWithLocation = \App\Models\PaymentFunnelEvent::whereNotNull('country_code')->count();
+            $locationBreakdown = \App\Models\PaymentFunnelEvent::whereNotNull('country_code')
+                ->select('country_code', 'country', 'state')
+                ->selectRaw('COUNT(*) as count')
+                ->groupBy('country_code', 'country', 'state')
+                ->orderByDesc('count')
+                ->limit(10)
+                ->get();
+        @endphp
+        
+        <p><strong>Location Data Status:</strong></p>
+        <ul>
+            <li>Total Events: <strong>{{ number_format($totalEvents) }}</strong></li>
+            <li>Events with Location: <strong>{{ number_format($eventsWithLocation) }}</strong> ({{ $totalEvents > 0 ? round(($eventsWithLocation / $totalEvents) * 100, 1) : 0 }}%)</li>
+        </ul>
+
+        @if($locationBreakdown->count() > 0)
+            <p><strong>Top 10 Locations:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Country Code</th>
+                        <th>Location</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($locationBreakdown as $loc)
+                        <tr>
+                            <td><code>{{ $loc->country_code }}</code></td>
+                            <td>{{ $loc->state ? $loc->state . ', ' : '' }}{{ $loc->country ?: $loc->country_code }}</td>
+                            <td>{{ number_format($loc->count) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="error">❌ No location data found!</div>
+            <p><strong>Solution:</strong> Run this command on your server:</p>
+            <code style="background: #333; color: #0f0; padding: 10px; display: block; margin: 10px 0;">php update_locations.php</code>
+        @endif
+    </div>
+
+    <div class="debug-section">
+        <h3>⏱️ Real-Time Activity Test</h3>
+        @php
+            $last7Days = now()->subDays(7);
+            $recentActivity = \App\Models\PaymentFunnelEvent::where('created_at', '>=', $last7Days)
+                ->orderByDesc('created_at')
+                ->limit(20)
+                ->get(['id', 'funnel_step', 'form_type', 'amount', 'country', 'state', 'created_at']);
+        @endphp
+        
+        <p><strong>Recent Activity (Last 7 Days):</strong></p>
+        <p>Found <strong>{{ $recentActivity->count() }}</strong> events</p>
+
+        @if($recentActivity->count() > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Event</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($recentActivity as $activity)
+                        <tr>
+                            <td>{{ $activity->id }}</td>
+                            <td><small>{{ $activity->created_at->diffForHumans() }}</small></td>
+                            <td><code>{{ $activity->funnel_step }}</code></td>
+                            <td><span style="background: #e3f2fd; padding: 2px 6px; border-radius: 3px;">{{ $activity->form_type }}</span></td>
+                            <td>{{ $activity->amount ? '$' . number_format($activity->amount, 2) : '-' }}</td>
+                            <td>{{ $activity->state ? $activity->state . ', ' : '' }}{{ $activity->country ?: 'N/A' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="error">❌ No activity in the last 7 days! This is why real-time feed is empty.</div>
+            <p><strong>What this means:</strong> Visitors aren't creating payment_funnel_events when they visit your site.</p>
+        @endif
+    </div>
+
+    <div class="debug-section">
+        <h3>🔗 API Endpoint Tests (Click to Test)</h3>
+        <p><strong>Test these URLs directly in your browser:</strong></p>
+        
+        @php
+            $testWebsiteId = \App\Models\PaymentFunnelEvent::first()->website_id ?? 1;
+            $testStartDate = now()->subDays(90)->format('Y-m-d');
+            $testEndDate = now()->format('Y-m-d');
+        @endphp
+
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin: 15px 0;">
+                <strong>📊 Location API:</strong><br>
+                <a href="{{ url('/analytics/api/locations') }}?website_id={{ $testWebsiteId }}&start_date={{ $testStartDate }}&end_date={{ $testEndDate }}" target="_blank" style="background: #2196F3; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 5px;">
+                    Test Location API
+                </a>
+            </li>
+            <li style="margin: 15px 0;">
+                <strong>🗺️ Geomap API:</strong><br>
+                <a href="{{ url('/analytics/api/geomap') }}?website_id={{ $testWebsiteId }}&start_date={{ $testStartDate }}&end_date={{ $testEndDate }}" target="_blank" style="background: #4CAF50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 5px;">
+                    Test Geomap API
+                </a>
+            </li>
+            <li style="margin: 15px 0;">
+                <strong>⏱️ Real-Time API:</strong><br>
+                <a href="{{ url('/analytics/real-time') }}?website_id={{ $testWebsiteId }}" target="_blank" style="background: #FF9800; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 5px;">
+                    Test Real-Time API
+                </a>
+            </li>
+            <li style="margin: 15px 0;">
+                <strong>📈 Full Dashboard:</strong><br>
+                <a href="{{ url('/analytics/dashboard') }}" target="_blank" style="background: #9C27B0; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 5px;">
+                    Open Dashboard
+                </a>
+            </li>
+        </ul>
+
+        <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin-top: 15px;">
+            <p><strong>📝 What to Check:</strong></p>
+            <ul>
+                <li><strong>Location API:</strong> Should return array with <code>country_name</code>, <code>visitors</code>, <code>conversions</code>, <code>revenue</code></li>
+                <li><strong>Geomap API:</strong> Should return array with <code>lat</code>, <code>lng</code>, <code>country_name</code>, <code>visitors</code></li>
+                <li><strong>Real-Time API:</strong> Should return <code>recentPageViews</code> array with activity (check if empty or has data)</li>
+            </ul>
+        </div>
+    </div>
+
     <p><em>This debug page helps identify issues with the analytics dashboard. Please share this information when reporting problems.</em></p>
 </body>
 </html>

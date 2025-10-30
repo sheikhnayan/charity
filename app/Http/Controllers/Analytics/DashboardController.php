@@ -117,13 +117,13 @@ class DashboardController extends Controller
     protected function getRealTimeStats($websiteId = null)
     {
         $lastFiveMinutes = now()->subMinutes(5);
-        $lastDay = now()->subDay(); // Extended time for testing - show last 24 hours of activity
+        $lastWeek = now()->subDays(7); // Extended to 7 days to show recent activity
         
         // Get recent payment activity
-        $paymentActivity = $this->getRecentPaymentActivity($lastDay, $websiteId);
+        $paymentActivity = $this->getRecentPaymentActivity($lastWeek, $websiteId);
         
         // Get recent auction activity (bids, new auctions)
-        $auctionActivity = $this->getRecentAuctionActivity($lastDay, $websiteId);
+        $auctionActivity = $this->getRecentAuctionActivity($lastWeek, $websiteId);
         
         // Merge and sort all activities by time
         $allActivities = collect($paymentActivity)->merge($auctionActivity)
@@ -131,10 +131,16 @@ class DashboardController extends Controller
             ->values()
             ->take(10);
         
+        \Log::info('Real-time activity loaded', [
+            'payment_count' => $paymentActivity->count(),
+            'auction_count' => $auctionActivity->count(),
+            'total_activities' => $allActivities->count()
+        ]);
+        
         return [
             'activeUsers' => $this->getActiveUsers($lastFiveMinutes, $websiteId),
             'recentPageViews' => $allActivities,
-            'recentConversions' => $this->getRecentConversions($lastDay, $websiteId),
+            'recentConversions' => $this->getRecentConversions($lastWeek, $websiteId),
         ];
     }
 
@@ -333,12 +339,22 @@ class DashboardController extends Controller
 
     protected function getRecentPaymentActivity($since, $websiteId = null)
     {
-        $query = PaymentFunnelEvent::whereIn('funnel_step', ['form_view', 'amount_entered', 'payment_completed'])
+        // Get the actual completion step name
+        $completionStep = $this->getCompletionFunnelStep();
+        
+        $query = PaymentFunnelEvent::whereIn('funnel_step', ['form_view', 'amount_entered', $completionStep])
             ->where('created_at', '>=', $since);
             
         if ($websiteId) {
             $query->where('website_id', $websiteId);
         }
+        
+        \Log::info('Recent Payment Activity Query', [
+            'since' => $since,
+            'website_id' => $websiteId,
+            'completion_step' => $completionStep,
+            'count' => $query->count()
+        ]);
         
         return $query->orderByDesc('created_at')
             ->limit(10)
@@ -351,6 +367,8 @@ class DashboardController extends Controller
                     'amount' => $event->amount,
                     'session_id' => $event->session_id,
                     'user_id' => $event->user_id,
+                    'country' => $event->country,
+                    'state' => $event->state,
                     'url' => $event->form_type . ' form',
                     'page_url' => ucfirst($event->form_type) . ' Page'
                 ];
