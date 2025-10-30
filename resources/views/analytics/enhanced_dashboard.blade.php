@@ -696,6 +696,27 @@
                 <div class="chart-container">
                     <canvas id="locationChart"></canvas>
                 </div>
+                <div class="mt-3">
+                    <h6 class="mb-2"><i class="fas fa-list"></i> Top Locations</h6>
+                    <div id="location-breakdown-table" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-sm table-hover">
+                            <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                                <tr>
+                                    <th>Location</th>
+                                    <th class="text-center">Visitors</th>
+                                    <th class="text-center">Conversions</th>
+                                    <th class="text-center">Rate</th>
+                                    <th class="text-end">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="location-breakdown-body">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1019,11 +1040,25 @@ function initializeCharts() {
 }
 
 function initializeGeomap() {
-    geomap = L.map('geomap').setView([20, 0], 2);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(geomap);
+    try {
+        // Initialize map with world view
+        geomap = L.map('geomap', {
+            center: [20, 0],
+            zoom: 2,
+            minZoom: 2,
+            maxZoom: 18
+        });
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(geomap);
+        
+        console.log('Geomap initialized successfully');
+    } catch (error) {
+        console.error('Error initializing geomap:', error);
+    }
 }
 
 function loadAllData() {
@@ -1147,10 +1182,37 @@ function loadLocationData() {
     fetch(`/analytics/api/locations?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}`)
         .then(response => response.json())
         .then(data => {
-            const topLocations = data.slice(0, 10); // Show top 10
+            const topLocations = data.slice(0, 10); // Show top 10 for chart
             locationChart.data.labels = topLocations.map(item => item.country_name || item.country);
             locationChart.data.datasets[0].data = topLocations.map(item => item.visitors);
             locationChart.update();
+            
+            // Populate the location breakdown table
+            const tableBody = document.getElementById('location-breakdown-body');
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No location data available</td></tr>';
+            } else {
+                tableBody.innerHTML = data.slice(0, 20).map(location => `
+                    <tr>
+                        <td>
+                            <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                            <strong>${location.country_name || location.country}</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info">${location.visitors.toLocaleString()}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success">${location.conversions.toLocaleString()}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge ${location.conversion_rate >= 5 ? 'bg-success' : location.conversion_rate >= 2 ? 'bg-warning' : 'bg-secondary'}">${location.conversion_rate}%</span>
+                        </td>
+                        <td class="text-end">
+                            <strong>$${location.revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         })
         .catch(error => console.error('Error loading location data:', error));
 }
@@ -1191,9 +1253,16 @@ function loadProductData() {
 }
 
 function loadGeoMapData() {
+    if (!geomap) {
+        console.error('Geomap not initialized');
+        return;
+    }
+    
     fetch(`/analytics/api/geomap?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}`)
         .then(response => response.json())
         .then(data => {
+            console.log('Geomap data loaded:', data);
+            
             // Clear existing markers
             geomap.eachLayer(layer => {
                 if (layer instanceof L.Marker) {
@@ -1201,30 +1270,57 @@ function loadGeoMapData() {
                 }
             });
             
+            if (data.length === 0) {
+                console.warn('No location data available for map');
+                return;
+            }
+            
             // Add markers for each location
-            data.forEach(location => {
+            data.forEach((location, index) => {
+                console.log(`Adding marker ${index + 1}:`, location);
+                
+                // Create marker at location coordinates
                 const marker = L.marker([location.lat, location.lng])
                     .bindPopup(`
-                        <div>
-                            <h6>${location.country_name}</h6>
-                            <p><strong>Visitors:</strong> ${location.visitors.toLocaleString()}</p>
-                            <p><strong>Sessions:</strong> ${location.sessions.toLocaleString()}</p>
-                            <p><strong>Conversions:</strong> ${location.conversions.toLocaleString()}</p>
-                            <p><strong>Revenue:</strong> $${location.revenue.toLocaleString()}</p>
-                            <p><strong>Conversion Rate:</strong> ${location.conversion_rate}%</p>
+                        <div style="min-width: 200px;">
+                            <h6 style="margin-bottom: 10px; color: #333;"><i class="fas fa-map-marker-alt"></i> ${location.country_name}</h6>
+                            <p style="margin: 5px 0;"><strong>Visitors:</strong> ${location.visitors.toLocaleString()}</p>
+                            <p style="margin: 5px 0;"><strong>Sessions:</strong> ${location.sessions.toLocaleString()}</p>
+                            <p style="margin: 5px 0;"><strong>Conversions:</strong> ${location.conversions.toLocaleString()}</p>
+                            <p style="margin: 5px 0;"><strong>Revenue:</strong> $${location.revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                            <p style="margin: 5px 0;"><strong>Conversion Rate:</strong> <span style="color: ${location.conversion_rate >= 5 ? 'green' : location.conversion_rate >= 2 ? 'orange' : 'gray'}">${location.conversion_rate}%</span></p>
                         </div>
                     `)
                     .addTo(geomap);
                 
                 // Adjust marker size based on visitor count
-                const size = Math.max(10, Math.min(50, location.visitors / 10));
+                const baseSize = 20;
+                const size = Math.max(baseSize, Math.min(60, baseSize + (location.visitors / 50)));
+                const color = location.conversion_rate >= 5 ? '#4CAF50' : location.conversion_rate >= 2 ? '#FF9800' : '#9E9E9E';
+                
                 marker.setIcon(L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div style="background-color: #4CAF50; width: ${size}px; height: ${size}px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: bold;">${location.visitors}</div>`,
+                    className: 'custom-map-marker',
+                    html: `<div style="
+                        background-color: ${color}; 
+                        width: ${size}px; 
+                        height: ${size}px; 
+                        border-radius: 50%; 
+                        border: 3px solid white; 
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center; 
+                        color: white; 
+                        font-size: ${Math.max(10, size/4)}px; 
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">${location.visitors}</div>`,
                     iconSize: [size, size],
                     iconAnchor: [size/2, size/2]
                 }));
             });
+            
+            console.log(`Added ${data.length} markers to map`);
         })
         .catch(error => console.error('Error loading geomap data:', error));
 }

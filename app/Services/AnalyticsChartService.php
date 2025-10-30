@@ -197,39 +197,76 @@ class AnalyticsChartService
      */
     public function getLocationBreakdown($websiteId, $startDate, $endDate)
     {
-        // Get location data from PaymentFunnelEvent using IP address
+        // Get completion step
+        $completionStep = $this->getCompletionFunnelStep();
+        
+        // Get location data from PaymentFunnelEvent grouped by country/state
         $locationData = PaymentFunnelEvent::where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->whereNotNull('ip_address')
-            ->selectRaw('ip_address as country, COUNT(DISTINCT session_id) as visitors')
-            ->groupBy('ip_address')
+            ->whereNotNull('country_code')
+            ->selectRaw('
+                country_code,
+                country,
+                state,
+                COUNT(DISTINCT COALESCE(visitor_id, session_id)) as visitors,
+                COUNT(DISTINCT session_id) as sessions
+            ')
+            ->groupBy('country_code', 'country', 'state')
             ->orderByDesc('visitors')
-            ->limit(10)
+            ->limit(20)
             ->get();
 
         // Get conversions by location from PaymentFunnelEvent
-        $locationConversions = PaymentFunnelEvent::where('funnel_step', 'payment_completed')
+        $locationConversions = PaymentFunnelEvent::where('funnel_step', $completionStep)
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->whereNotNull('ip_address')
-            ->selectRaw('ip_address as country, COUNT(*) as conversions, SUM(amount) as revenue')
-            ->groupBy('ip_address')
+            ->whereNotNull('country_code')
+            ->selectRaw('
+                country_code,
+                state,
+                COUNT(*) as conversions,
+                SUM(amount) as revenue
+            ')
+            ->groupBy('country_code', 'state')
             ->get()
-            ->keyBy('country');
+            ->mapWithKeys(function($item) {
+                $key = $item->country_code . ($item->state ? '_' . $item->state : '');
+                return [$key => $item];
+            });
 
         return $locationData->map(function ($item) use ($locationConversions) {
-            $conversions = $locationConversions->get($item->country);
-            $conversionRate = $item->visitors > 0 ? (($conversions->conversions ?? 0) / $item->visitors) * 100 : 0;
+            $key = $item->country_code . ($item->state ? '_' . $item->state : '');
+            $conversions = $locationConversions->get($key);
+            $conversionRate = $item->sessions > 0 ? (($conversions->conversions ?? 0) / $item->sessions) * 100 : 0;
+            
+            $location = $item->state 
+                ? ($item->state . ', ' . ($item->country ?: $item->country_code))
+                : ($item->country ?: $item->country_code);
             
             return [
-                'country' => $item->country,
-                'country_name' => $this->getCountryName($item->country),
+                'country' => $item->country_code,
+                'country_name' => $location,
                 'visitors' => (int) $item->visitors,
+                'sessions' => (int) $item->sessions,
                 'conversions' => (int) ($conversions->conversions ?? 0),
                 'revenue' => (float) ($conversions->revenue ?? 0),
                 'conversion_rate' => round($conversionRate, 2)
             ];
         });
+    }
+    
+    protected function getCompletionFunnelStep()
+    {
+        $possibleSteps = ['payment_completed', 'payment_complete', 'completed', 'payment_success', 'success'];
+        
+        foreach ($possibleSteps as $step) {
+            $count = PaymentFunnelEvent::where('funnel_step', $step)->count();
+            if ($count > 0) {
+                return $step;
+            }
+        }
+        
+        return 'payment_completed'; // fallback
     }
 
     /**
@@ -348,69 +385,74 @@ class AnalyticsChartService
      */
     public function getGeoMapData($websiteId, $startDate, $endDate)
     {
-        // Get total visitors and conversions from PaymentFunnelEvent
-        $totalVisitors = PaymentFunnelEvent::where('website_id', $websiteId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->distinct('session_id')
-            ->count();
-            
-        $totalConversions = PaymentFunnelEvent::where('funnel_step', 'payment_completed')
-            ->where('website_id', $websiteId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->count();
-            
-        $totalRevenue = PaymentFunnelEvent::where('funnel_step', 'payment_completed')
-            ->where('website_id', $websiteId)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->sum('amount') ?? 0;
+        // Get completion step
+        $completionStep = $this->getCompletionFunnelStep();
         
-        // Create geographic distribution based on real data
-        $result = collect([
-            [
-                'country_code' => 'US',
-                'country_name' => 'United States', 
-                'lat' => 39.8283,
-                'lng' => -98.5795,
-                'visitors' => (int) ($totalVisitors * 0.4), // 40% of traffic
-                'sessions' => (int) ($totalVisitors * 0.4),
-                'conversions' => (int) ($totalConversions * 0.35),
-                'revenue' => (float) (($totalRevenue * 0.4) / 100), // Convert cents to dollars
-                'conversion_rate' => $totalVisitors > 0 ? round((($totalConversions * 0.35) / ($totalVisitors * 0.4)) * 100, 2) : 0
-            ],
-            [
-                'country_code' => 'CA',
-                'country_name' => 'Canada',
-                'lat' => 56.1304,
-                'lng' => -106.3468,
-                'visitors' => (int) ($totalVisitors * 0.25), // 25% of traffic
-                'sessions' => (int) ($totalVisitors * 0.25),
-                'conversions' => (int) ($totalConversions * 0.3),
-                'revenue' => (float) (($totalRevenue * 0.3) / 100),
-                'conversion_rate' => $totalVisitors > 0 ? round((($totalConversions * 0.3) / ($totalVisitors * 0.25)) * 100, 2) : 0
-            ],
-            [
-                'country_code' => 'GB',
-                'country_name' => 'United Kingdom',
-                'lat' => 55.3781,
-                'lng' => -3.436,
-                'visitors' => (int) ($totalVisitors * 0.2), // 20% of traffic
-                'sessions' => (int) ($totalVisitors * 0.2),
-                'conversions' => (int) ($totalConversions * 0.25),
-                'revenue' => (float) (($totalRevenue * 0.2) / 100),
-                'conversion_rate' => $totalVisitors > 0 ? round((($totalConversions * 0.25) / ($totalVisitors * 0.2)) * 100, 2) : 0
-            ],
-            [
-                'country_code' => 'AU',
-                'country_name' => 'Australia',
-                'lat' => -25.2744,
-                'lng' => 133.7751,
-                'visitors' => (int) ($totalVisitors * 0.15), // 15% of traffic
-                'sessions' => (int) ($totalVisitors * 0.15),
-                'conversions' => (int) ($totalConversions * 0.1),
-                'revenue' => (float) (($totalRevenue * 0.1) / 100),
-                'conversion_rate' => $totalVisitors > 0 ? round((($totalConversions * 0.1) / ($totalVisitors * 0.15)) * 100, 2) : 0
-            ]
-        ]);
+        // Get real location data from PaymentFunnelEvent grouped by country
+        $locationData = PaymentFunnelEvent::where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('country_code')
+            ->selectRaw('
+                country_code,
+                country,
+                COUNT(DISTINCT COALESCE(visitor_id, session_id)) as visitors,
+                COUNT(DISTINCT session_id) as sessions
+            ')
+            ->groupBy('country_code', 'country')
+            ->get();
+
+        // Get conversions by country
+        $locationConversions = PaymentFunnelEvent::where('funnel_step', $completionStep)
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('country_code')
+            ->selectRaw('
+                country_code,
+                COUNT(*) as conversions,
+                SUM(amount) as revenue
+            ')
+            ->groupBy('country_code')
+            ->get()
+            ->keyBy('country_code');
+
+        // Country coordinates mapping
+        $coordinates = [
+            'US' => ['lat' => 39.8283, 'lng' => -98.5795, 'name' => 'United States'],
+            'CA' => ['lat' => 56.1304, 'lng' => -106.3468, 'name' => 'Canada'],
+            'GB' => ['lat' => 55.3781, 'lng' => -3.436, 'name' => 'United Kingdom'],
+            'AU' => ['lat' => -25.2744, 'lng' => 133.7751, 'name' => 'Australia'],
+            'DE' => ['lat' => 51.1657, 'lng' => 10.4515, 'name' => 'Germany'],
+            'FR' => ['lat' => 46.2276, 'lng' => 2.2137, 'name' => 'France'],
+            'IN' => ['lat' => 20.5937, 'lng' => 78.9629, 'name' => 'India'],
+            'MX' => ['lat' => 23.6345, 'lng' => -102.5528, 'name' => 'Mexico'],
+            'BR' => ['lat' => -14.2350, 'lng' => -51.9253, 'name' => 'Brazil'],
+            'JP' => ['lat' => 36.2048, 'lng' => 138.2529, 'name' => 'Japan'],
+            'IT' => ['lat' => 41.8719, 'lng' => 12.5674, 'name' => 'Italy'],
+            'ES' => ['lat' => 40.4637, 'lng' => -3.7492, 'name' => 'Spain'],
+            'NL' => ['lat' => 52.1326, 'lng' => 5.2913, 'name' => 'Netherlands'],
+            'SE' => ['lat' => 60.1282, 'lng' => 18.6435, 'name' => 'Sweden'],
+            'CH' => ['lat' => 46.8182, 'lng' => 8.2275, 'name' => 'Switzerland'],
+        ];
+
+        $result = $locationData->map(function ($item) use ($locationConversions, $coordinates) {
+            $conversions = $locationConversions->get($item->country_code);
+            $conversionRate = $item->sessions > 0 ? (($conversions->conversions ?? 0) / $item->sessions) * 100 : 0;
+            
+            // Get coordinates or use default
+            $coords = $coordinates[$item->country_code] ?? ['lat' => 0, 'lng' => 0, 'name' => $item->country ?: $item->country_code];
+            
+            return [
+                'country_code' => $item->country_code,
+                'country_name' => $item->country ?: $coords['name'],
+                'lat' => $coords['lat'],
+                'lng' => $coords['lng'],
+                'visitors' => (int) $item->visitors,
+                'sessions' => (int) $item->sessions,
+                'conversions' => (int) ($conversions->conversions ?? 0),
+                'revenue' => (float) ($conversions->revenue ?? 0),
+                'conversion_rate' => round($conversionRate, 2)
+            ];
+        });
         
         // Only return countries with visitors
         return $result->filter(function ($item) {

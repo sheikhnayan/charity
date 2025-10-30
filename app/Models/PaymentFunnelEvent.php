@@ -29,7 +29,11 @@ class PaymentFunnelEvent extends Model
         'utm_campaign',
         'device_type',
         'browser',
-        'ip_address'
+        'ip_address',
+        'country',
+        'country_code',
+        'state',
+        'city'
     ];
 
     protected $casts = [
