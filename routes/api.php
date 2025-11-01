@@ -29,23 +29,23 @@ Route::prefix('session-recording')->group(function () {
     Route::post('/start', [SessionRecordingController::class, 'start']);
     Route::post('/events', [SessionRecordingController::class, 'storeEvents']);
     Route::post('/complete', [SessionRecordingController::class, 'complete']);
-    Route::get('/{recordingId}', [SessionRecordingController::class, 'getSession']);
-    Route::get('/', [SessionRecordingController::class, 'list']);
-    Route::delete('/{recordingId}', [SessionRecordingController::class, 'delete'])->middleware('auth');
-    Route::post('/{recordingId}/star', [SessionRecordingController::class, 'toggleStar'])->middleware('auth');
-    Route::post('/{recordingId}/meta', [SessionRecordingController::class, 'updateMeta'])->middleware('auth');
+    Route::get('/{recordingId}', [SessionRecordingController::class, 'getSession'])->middleware('web', 'auth');
+    Route::get('/', [SessionRecordingController::class, 'list'])->middleware('web', 'auth');
+    Route::delete('/{recordingId}', [SessionRecordingController::class, 'delete'])->middleware('web', 'auth');
+    Route::post('/{recordingId}/star', [SessionRecordingController::class, 'toggleStar'])->middleware('web', 'auth');
+    Route::post('/{recordingId}/meta', [SessionRecordingController::class, 'updateMeta'])->middleware('web', 'auth');
 });
 
 // Hotjar-style Heatmap API routes (no auth required for public tracking)
 Route::prefix('heatmap')->group(function () {
     Route::post('/track', [HeatmapController::class, 'trackEvent']);
     Route::post('/track/batch', [HeatmapController::class, 'trackBatch']);
-    Route::get('/click', [HeatmapController::class, 'getClickHeatmap'])->middleware('auth');
-    Route::get('/move', [HeatmapController::class, 'getMoveHeatmap'])->middleware('auth');
-    Route::get('/scroll', [HeatmapController::class, 'getScrollHeatmap'])->middleware('auth');
-    Route::get('/aggregated', [HeatmapController::class, 'getAggregatedHeatmap'])->middleware('auth');
-    Route::get('/popular-pages', [HeatmapController::class, 'getPopularPages'])->middleware('auth');
-    Route::get('/element-stats', [HeatmapController::class, 'getElementStats'])->middleware('auth');
+    Route::get('/click', [HeatmapController::class, 'getClickHeatmap'])->middleware('web', 'auth');
+    Route::get('/move', [HeatmapController::class, 'getMoveHeatmap'])->middleware('web', 'auth');
+    Route::get('/scroll', [HeatmapController::class, 'getScrollHeatmap'])->middleware('web', 'auth');
+    Route::get('/aggregated', [HeatmapController::class, 'getAggregatedHeatmap'])->middleware('web', 'auth');
+    Route::get('/popular-pages', [HeatmapController::class, 'getPopularPages'])->middleware('web', 'auth');
+    Route::get('/element-stats', [HeatmapController::class, 'getElementStats'])->middleware('web', 'auth');
 });
 
 // Public comment routes (no auth required for posting comments)
