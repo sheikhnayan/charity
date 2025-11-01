@@ -30,6 +30,7 @@ if (isset($state['components'])) {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rrweb@2.0.0-alpha.11/dist/rrweb.min.js"></script>
     @if ($data->website->type == 'investment')
         <style>
             .navbar-expand-xl{
@@ -1299,6 +1300,8 @@ if (isset($state['components'])) {
     </style>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
+    <div data-hotjar-tracker data-website-id="{{ $website->id }}"></div>
+    <script src="{{ asset('js/hotjar-tracker.js') }}"></script>
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);

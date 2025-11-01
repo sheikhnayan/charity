@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\HotjarViewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\WebsitePaymentController;
@@ -44,7 +45,20 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::get('/analytics/api', [PaymentMethodAnalyticsController::class, 'api'])->name('analytics.api');
         Route::get('/analytics/export', [PaymentMethodAnalyticsController::class, 'export'])->name('analytics.export');
     });
+    
+    // Hotjar-style Session Recording & Heatmap Routes
+    Route::prefix('hotjar')->name('hotjar.')->group(function () {
+        Route::get('/recordings', [HotjarViewController::class, 'recordings'])->name('recordings');
+        Route::get('/recordings/{recordingId}/replay', [HotjarViewController::class, 'replay'])->name('recordings.replay');
+        Route::get('/heatmaps', [HotjarViewController::class, 'heatmaps'])->name('heatmaps');
+    });
 });
+
+// Public Hotjar Demo (no auth required)
+Route::get('/hotjar/demo', function() {
+    $website = \App\Models\Website::first();
+    return view('hotjar.demo', compact('website'));
+})->name('hotjar.demo');
 
 
 
