@@ -19,7 +19,7 @@
         batchSize: 50, // Events per batch
         batchInterval: 10000, // 10 seconds
         inactivityThreshold: 30000, // 30 seconds
-        heatmapSampleRate: 0.1, // 10% for heatmap
+        heatmapSampleRate: 1.0, // 100% for heatmap (change to 0.1 for production)
         mouseMoveThrottle: 500, // Track mouse every 500ms
     };
 
