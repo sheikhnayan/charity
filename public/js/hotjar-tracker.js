@@ -38,7 +38,7 @@
             
             // Heatmap tracking
             this.shouldTrackHeatmap = Math.random() < this.config.heatmapSampleRate;
-            this.lastMouseMove = { x: 0, y: 0, time: 0 };
+            this.lastMouseMove = { x: 0, y: 0, time: Date.now() };
             this.attentionZones = [];
             
             this.init();
@@ -184,11 +184,15 @@
 
                 clearTimeout(mouseMoveTimeout);
                 mouseMoveTimeout = setTimeout(() => {
+                    const duration = now - this.lastMouseMove.time;
+                    // Cap duration at 60 seconds to prevent overflow
+                    const cappedDuration = Math.min(duration, 60000);
+                    
                     this.trackHeatmapEvent({
                         event_type: 'move',
                         x: e.clientX + window.scrollX,
                         y: e.clientY + window.scrollY,
-                        duration_ms: now - this.lastMouseMove.time,
+                        duration_ms: cappedDuration,
                     });
 
                     this.lastMouseMove = { x: e.clientX, y: e.clientY, time: now };
