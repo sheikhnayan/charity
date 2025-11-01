@@ -1300,18 +1300,18 @@ if (isset($state['components'])) {
     </style>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
-    <div data-hotjar-tracker data-website-id="{{ $website->id }}"></div>
-    <script src="{{ asset('js/hotjar-tracker.js') }}"></script>
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
         $check = \App\Models\Website::where('domain', $domain)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
-
+        
         $header = \App\Models\Header::where('website_id', $check->id)->first();
         $footer = \App\Models\Footer::where('website_id', $check->id)->first();
-    @endphp
+        @endphp
+    <div data-hotjar-tracker data-website-id="{{ $check->id }}"></div>
+    <script src="{{ asset('js/hotjar-tracker.js') }}"></script>
     
     @if ($header && $header->status == 1)
         {{-- Contact Information Top Bar --}}
