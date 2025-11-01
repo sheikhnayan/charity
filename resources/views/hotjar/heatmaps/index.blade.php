@@ -52,7 +52,7 @@
                         <select class="form-select" id="websiteSelect">
                             <option value="">Select Website</option>
                             @foreach($websites as $website)
-                                <option value="{{ $website->id }}">{{ $website->title }}</option>
+                                <option value="{{ $website->id }}">{{ $website->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -136,7 +136,18 @@
 
         async function loadPopularPages() {
             try {
-                const response = await fetch(`/api/heatmap/popular-pages?website_id=${currentWebsiteId}`);
+                const response = await fetch(`/api/heatmap/popular-pages?website_id=${currentWebsiteId}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
                 const container = document.getElementById('pagesList');
@@ -199,7 +210,18 @@
             });
             if (device) params.append('device_type', device);
 
-            const response = await fetch(`${endpoint}?${params}`);
+            const response = await fetch(`${endpoint}?${params}`, {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const result = await response.json();
 
             if (!result.data || result.data.length === 0) {
@@ -223,7 +245,18 @@
             });
             if (device) params.append('device_type', device);
 
-            const response = await fetch(`/api/heatmap/scroll?${params}`);
+            const response = await fetch(`/api/heatmap/scroll?${params}`, {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const result = await response.json();
 
             renderScrollDepth(result.data);
@@ -330,7 +363,18 @@
 
         async function loadElementStats() {
             try {
-                const response = await fetch(`/api/heatmap/element-stats?website_id=${currentWebsiteId}&page_path=${currentPagePath}`);
+                const response = await fetch(`/api/heatmap/element-stats?website_id=${currentWebsiteId}&page_path=${currentPagePath}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const result = await response.json();
                 
                 const container = document.getElementById('elementStats');

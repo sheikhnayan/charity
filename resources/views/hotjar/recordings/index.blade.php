@@ -65,7 +65,7 @@
                     <select class="form-select" id="filterWebsite">
                         <option value="">All Websites</option>
                         @foreach($websites as $website)
-                            <option value="{{ $website->id }}">{{ $website->title }}</option>
+                            <option value="{{ $website->id }}">{{ $website->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -172,7 +172,18 @@
             if (activeFilters.starred) params.append('starred', '1');
 
             try {
-                const response = await fetch(`/api/session-recording?${params}`);
+                const response = await fetch(`/api/session-recording?${params}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
                 displayRecordings(data.data);

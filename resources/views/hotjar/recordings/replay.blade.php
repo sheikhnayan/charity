@@ -131,7 +131,18 @@
 
         async function loadPlayer() {
             try {
-                const response = await fetch(`/api/session-recording/${recordingId}`);
+                const response = await fetch(`/api/session-recording/${recordingId}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
 
                 if (!data.events || data.events.length === 0) {
