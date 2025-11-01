@@ -13,7 +13,7 @@ class HotjarViewController extends Controller
      */
     public function recordings()
     {
-        $websites = Website::orderBy('title')->get();
+        $websites = Website::orderBy('name')->get();
         
         return view('hotjar.recordings.index', compact('websites'));
     }
@@ -33,7 +33,7 @@ class HotjarViewController extends Controller
      */
     public function heatmaps()
     {
-        $websites = Website::orderBy('title')->get();
+        $websites = Website::orderBy('name')->get();
         
         return view('hotjar.heatmaps.index', compact('websites'));
     }
