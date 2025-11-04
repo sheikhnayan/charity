@@ -111,7 +111,7 @@ class HeatmapService
         $this->applyFilters($query, $filters);
 
         return $query->groupBy('x', 'y', 'viewport_width', 'viewport_height')
-            ->having('move_count', '>', 5) // Filter noise
+            ->having('move_count', '>=', 1) // Show all moves (changed from > 5)
             ->orderByDesc('total_duration')
             ->get();
     }

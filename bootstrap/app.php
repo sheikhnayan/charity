@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\AnalyticsTrackingMiddleware::class,
             \App\Http\Middleware\TrackUniqueVisitor::class,
         ]);
+        
+        // Exclude CSRF for public tracking endpoints
+        $middleware->validateCsrfTokens(except: [
+            'api/heatmap/screenshot/capture',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

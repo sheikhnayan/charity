@@ -1,41 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Session Recordings - Hotjar Style</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header { background: white; border-bottom: 1px solid #e0e0e0; padding: 20px 0; margin-bottom: 30px; }
-        .filters-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .recording-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.3s; cursor: pointer; }
-        .recording-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .badge-rage { background: #ff4444; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; }
-        .badge-error { background: #ff9800; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; }
-        .badge-starred { color: #ffc107; font-size: 16px; }
-        .device-icon { font-size: 14px; color: #666; }
-        .duration { font-weight: 600; color: #2196f3; }
-        .location { color: #666; font-size: 13px; }
-        .timestamp { color: #999; font-size: 12px; }
-        .filter-btn { margin-right: 10px; margin-bottom: 10px; }
-        .stats-row { display: flex; gap: 20px; margin-bottom: 20px; }
-        .stat-card { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-value { font-size: 32px; font-weight: 700; color: #2196f3; }
-        .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="container">
-            <h2><i class="fas fa-video"></i> Session Recordings</h2>
-            <p class="text-muted mb-0">Watch how users interact with your website</p>
-        </div>
-    </div>
+@extends('admin.main')
 
-    <div class="container">
+@section('content')
+<style>
+    .filters-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .recording-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.3s; cursor: pointer; }
+    .recording-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .badge-rage { background: #ff4444; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; }
+    .badge-error { background: #ff9800; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; }
+    .badge-starred { color: #ffc107; font-size: 16px; }
+    .device-icon { font-size: 14px; color: #666; }
+    .duration { font-weight: 600; color: #696cff; }
+    .location { color: #666; font-size: 13px; }
+    .timestamp { color: #999; font-size: 12px; }
+    .filter-btn { margin-right: 10px; margin-bottom: 10px; }
+    .stats-row { display: flex; gap: 20px; margin-bottom: 20px; }
+    .stat-card { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-value { font-size: 32px; font-weight: 700; color: #696cff; }
+    .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
+</style>
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">User Behavior /</span> Session Recordings
+    </h4>
         <!-- Stats Row -->
         <div class="stats-row">
             <div class="stat-card">
@@ -117,9 +104,7 @@
 
         <!-- Pagination -->
         <div id="pagination" class="mt-4"></div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentPage = 1;
         let activeFilters = {
@@ -185,6 +170,8 @@
                 }
                 
                 const data = await response.json();
+                console.log('API Response:', data);
+                console.log('Recordings Array:', data.data);
                 
                 displayRecordings(data.data);
                 displayPagination(data);
@@ -196,8 +183,9 @@
 
         function displayRecordings(recordings) {
             const container = document.getElementById('recordingsList');
+            console.log('displayRecordings called with:', recordings);
             
-            if (recordings.length === 0) {
+            if (!recordings || recordings.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-5">
                         <i class="fas fa-video fa-3x text-muted mb-3"></i>
@@ -207,7 +195,7 @@
                 return;
             }
 
-            container.innerHTML = recordings.map(rec => `
+            container.innerHTML = recordings.filter(rec => rec && rec.id).map(rec => `
                 <div class="recording-card" onclick="viewRecording(${rec.id})">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
@@ -217,7 +205,7 @@
                                 ${rec.has_rage_clicks ? '<span class="badge-rage"><i class="fas fa-angry"></i> Rage Clicks</span>' : ''}
                                 ${rec.has_errors ? '<span class="badge-error"><i class="fas fa-exclamation-triangle"></i> Errors</span>' : ''}
                             </div>
-                            <div class="text-muted small mb-2">${rec.url}</div>
+                            <div class="text-muted small mb-2">${rec.url || 'Unknown URL'}</div>
                             <div class="d-flex gap-3 align-items-center">
                                 <span class="duration">
                                     <i class="fas fa-clock"></i> ${formatDuration(rec.duration_ms)}
@@ -275,6 +263,11 @@
         }
 
         function viewRecording(id) {
+            if (!id) {
+                console.error('Cannot view recording: ID is undefined');
+                alert('Error: Recording ID is missing. Please refresh and try again.');
+                return;
+            }
             window.location.href = `/hotjar/recordings/${id}/replay`;
         }
 
@@ -324,5 +317,5 @@
         // Load on page load
         loadRecordings();
     </script>
-</body>
-</html>
+</div>
+@endsection

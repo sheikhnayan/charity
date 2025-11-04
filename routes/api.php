@@ -46,6 +46,8 @@ Route::prefix('heatmap')->group(function () {
     Route::get('/aggregated', [HeatmapController::class, 'getAggregatedHeatmap'])->middleware('web', 'auth');
     Route::get('/popular-pages', [HeatmapController::class, 'getPopularPages'])->middleware('web', 'auth');
     Route::get('/element-stats', [HeatmapController::class, 'getElementStats'])->middleware('web', 'auth');
+    Route::get('/screenshot', [HeatmapController::class, 'getScreenshot'])->middleware('web', 'auth');
+    Route::post('/screenshot/capture', [HeatmapController::class, 'captureScreenshot'])->middleware('web', 'auth');
 });
 
 // Public comment routes (no auth required for posting comments)

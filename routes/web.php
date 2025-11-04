@@ -52,6 +52,103 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::get('/recordings/{recordingId}/replay', [HotjarViewController::class, 'replay'])->name('recordings.replay');
         Route::get('/heatmaps', [HotjarViewController::class, 'heatmaps'])->name('heatmaps');
     });
+    
+    // Hotjar API Routes
+    Route::prefix('api')->group(function () {
+        Route::get('/session-recording', [HotjarViewController::class, 'getRecordings']);
+        Route::get('/heatmap/popular-pages', [HotjarViewController::class, 'getPopularPages']);
+        Route::get('/heatmap/click', [HotjarViewController::class, 'getClickHeatmap']);
+        Route::get('/heatmap/move', [HotjarViewController::class, 'getMoveHeatmap']);
+        Route::get('/heatmap/scroll', [HotjarViewController::class, 'getScrollDepth']);
+        Route::get('/heatmap/element-stats', [HotjarViewController::class, 'getElementStats']);
+        Route::get('/heatmap/screenshot', [HotjarViewController::class, 'getScreenshot']);
+    });
+    
+    // Heatmaps & Session Recordings (use existing working system)
+    Route::get('/heatmaps', [HotjarViewController::class, 'heatmaps'])->name('heatmaps.index');
+    Route::get('/recordings', [HotjarViewController::class, 'recordings'])->name('recordings.index');
+    
+    // Fraud Detection Routes
+    Route::prefix('fraud')->name('fraud.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\FraudDetectionController::class, 'index'])->name('index');
+        Route::get('/statistics', [\App\Http\Controllers\FraudDetectionController::class, 'getStatistics'])->name('statistics');
+        Route::get('/pending', [\App\Http\Controllers\FraudDetectionController::class, 'pending'])->name('pending');
+        Route::post('/detections/{id}/review', [\App\Http\Controllers\FraudDetectionController::class, 'review'])->name('detections.review');
+        
+        // API routes for dashboard
+        Route::get('/api/stats', [\App\Http\Controllers\FraudDetectionController::class, 'getStatistics'])->name('api.stats');
+        Route::get('/api/recent', [\App\Http\Controllers\FraudDetectionController::class, 'getRecentDetections'])->name('api.recent');
+        
+        Route::get('/rules', [\App\Http\Controllers\FraudDetectionController::class, 'rules'])->name('rules');
+        Route::post('/rules', [\App\Http\Controllers\FraudDetectionController::class, 'createRule'])->name('rules.create');
+        Route::put('/rules/{id}', [\App\Http\Controllers\FraudDetectionController::class, 'updateRule'])->name('rules.update');
+        Route::delete('/rules/{id}', [\App\Http\Controllers\FraudDetectionController::class, 'deleteRule'])->name('rules.delete');
+        Route::post('/rules/{id}/toggle', [\App\Http\Controllers\FraudDetectionController::class, 'toggleRule'])->name('rules.toggle');
+    });
+
+    // Cohort Analysis Routes
+    Route::prefix('cohorts')->name('cohorts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\CohortController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\CohortController::class, 'create'])->name('create');
+        Route::get('/{id}', [\App\Http\Controllers\CohortController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\CohortController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\CohortController::class, 'destroy'])->name('destroy');
+        
+        // API routes for dashboard
+        Route::get('/api/retention-heatmap', [\App\Http\Controllers\CohortController::class, 'getRetentionHeatmap'])->name('api.retention-heatmap');
+        
+        Route::post('/{id}/refresh', [\App\Http\Controllers\CohortController::class, 'refresh'])->name('refresh');
+        Route::post('/{id}/retention', [\App\Http\Controllers\CohortController::class, 'calculateRetention'])->name('retention');
+        Route::get('/{id}/retention-chart', [\App\Http\Controllers\CohortController::class, 'retentionChart'])->name('retention.chart');
+        Route::get('/{id}/members', [\App\Http\Controllers\CohortController::class, 'members'])->name('members');
+        Route::get('/{id}/export', [\App\Http\Controllers\CohortController::class, 'export'])->name('export');
+        
+        Route::post('/compare', [\App\Http\Controllers\CohortController::class, 'compare'])->name('compare');
+    });
+
+    // A/B Testing Routes
+    Route::prefix('ab-tests')->name('abtests.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ABTestController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\ABTestController::class, 'create'])->name('create');
+        Route::get('/{id}', [\App\Http\Controllers\ABTestController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\ABTestController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\ABTestController::class, 'destroy'])->name('destroy');
+        
+        Route::post('/{id}/start', [\App\Http\Controllers\ABTestController::class, 'start'])->name('start');
+        Route::post('/{id}/pause', [\App\Http\Controllers\ABTestController::class, 'pause'])->name('pause');
+        Route::post('/{id}/end', [\App\Http\Controllers\ABTestController::class, 'end'])->name('end');
+        
+        Route::post('/{id}/assign', [\App\Http\Controllers\ABTestController::class, 'assignVariant'])->name('assign');
+        Route::post('/{id}/conversion', [\App\Http\Controllers\ABTestController::class, 'trackConversion'])->name('conversion');
+        
+        Route::get('/{id}/results', [\App\Http\Controllers\ABTestController::class, 'results'])->name('results');
+        Route::post('/{id}/calculate', [\App\Http\Controllers\ABTestController::class, 'calculateResults'])->name('calculate');
+        Route::post('/{id}/winner', [\App\Http\Controllers\ABTestController::class, 'determineWinner'])->name('winner');
+        Route::get('/{id}/chart', [\App\Http\Controllers\ABTestController::class, 'conversionChart'])->name('chart');
+        Route::get('/{id}/export', [\App\Http\Controllers\ABTestController::class, 'export'])->name('export');
+    });
+
+    // Scheduled Reports Routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\ReportController::class, 'create'])->name('create');
+        Route::get('/{id}', [\App\Http\Controllers\ReportController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\ReportController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\ReportController::class, 'destroy'])->name('destroy');
+        
+        Route::post('/{id}/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('generate');
+        Route::get('/{id}/executions', [\App\Http\Controllers\ReportController::class, 'executions'])->name('executions');
+        Route::get('/execution/{executionId}/download', [\App\Http\Controllers\ReportController::class, 'download'])->name('download');
+    });
+
+    // Data Export Routes
+    Route::prefix('exports')->name('exports.')->group(function () {
+        Route::post('/analytics', [\App\Http\Controllers\ExportController::class, 'analytics'])->name('analytics');
+        Route::post('/donations', [\App\Http\Controllers\ExportController::class, 'donations'])->name('donations');
+        Route::post('/transactions', [\App\Http\Controllers\ExportController::class, 'transactions'])->name('transactions');
+        Route::post('/users', [\App\Http\Controllers\ExportController::class, 'users'])->name('users');
+        Route::post('/custom', [\App\Http\Controllers\ExportController::class, 'custom'])->name('custom');
+    });
 });
 
 // Public Hotjar Demo (no auth required)

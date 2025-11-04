@@ -214,4 +214,117 @@ class HeatmapController extends Controller
             'elements' => $stats,
         ]);
     }
+
+    /**
+     * Get screenshot for page
+     */
+    public function getScreenshot(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'website_id' => 'required|integer',
+            'page_path' => 'required|string',
+        ]);
+
+        $screenshot = \App\Models\PageScreenshot::where('website_id', $validated['website_id'])
+            ->where('page_path', $validated['page_path'])
+            ->first();
+
+        if (!$screenshot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No screenshot found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'screenshot_url' => asset('storage/' . $screenshot->screenshot_path),
+            'viewport_width' => $screenshot->viewport_width,
+            'viewport_height' => $screenshot->viewport_height,
+        ]);
+    }
+
+    /**
+     * Capture screenshot for page
+     */
+    public function captureScreenshot(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'website_id' => 'required|integer',
+                'page_url' => 'required|string',
+                'page_path' => 'required|string',
+                'screenshot_data' => 'required|string', // Base64 image data
+                'viewport_width' => 'required|integer',
+                'viewport_height' => 'required|integer',
+                'device_type' => 'string|nullable',
+            ]);
+
+            \Log::info('Screenshot capture request', [
+                'website_id' => $validated['website_id'],
+                'page_path' => $validated['page_path'],
+                'data_size' => strlen($validated['screenshot_data'])
+            ]);
+
+            // Decode base64 image
+            $imageData = explode(',', $validated['screenshot_data']);
+            $imageData = end($imageData);
+            $imageData = base64_decode($imageData);
+
+            if (!$imageData) {
+                throw new \Exception('Failed to decode screenshot data');
+            }
+
+            // Generate filename
+            $filename = 'screenshots/' . $validated['website_id'] . '/' . md5($validated['page_path']) . '_' . time() . '.png';
+            $path = storage_path('app/public/' . $filename);
+
+            // Create directory if it doesn't exist
+            $dir = dirname($path);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            // Save image
+            $bytes = file_put_contents($path, $imageData);
+            if ($bytes === false) {
+                throw new \Exception('Failed to save screenshot file');
+            }
+
+            \Log::info('Screenshot file saved', ['path' => $path, 'bytes' => $bytes]);
+
+            // Store in database
+            $screenshot = \App\Models\PageScreenshot::updateOrCreate(
+                [
+                    'website_id' => $validated['website_id'],
+                    'page_path' => $validated['page_path'],
+                    'device_type' => $validated['device_type'] ?? 'desktop',
+                ],
+                [
+                    'page_url' => $validated['page_url'],
+                    'screenshot_path' => $filename,
+                    'viewport_width' => $validated['viewport_width'],
+                    'viewport_height' => $validated['viewport_height'],
+                ]
+            );
+
+            \Log::info('Screenshot record saved', ['id' => $screenshot->id]);
+
+            return response()->json([
+                'success' => true,
+                'screenshot' => $screenshot,
+                'screenshot_url' => asset('storage/' . $filename),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Screenshot capture failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

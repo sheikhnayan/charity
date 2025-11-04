@@ -129,6 +129,13 @@
         let player;
         let isStarred = {{ $recording->is_starred ? 'true' : 'false' }};
 
+        // Configure rrweb to allow scripts in iframe
+        window.rrwebPlayerConfig = {
+            insertStyleRules: [
+                'iframe { border: none; }',
+            ]
+        };
+
         async function loadPlayer() {
             try {
                 const response = await fetch(`/api/session-recording/${recordingId}`, {
@@ -150,7 +157,7 @@
                     return;
                 }
 
-                // Initialize rrweb player
+                // Initialize rrweb player with proper configuration for rendering
                 player = new rrwebPlayer({
                     target: document.getElementById('player'),
                     props: {
@@ -161,6 +168,25 @@
                         showController: true,
                         skipInactive: true,
                         speed: 1,
+                        unpackFn: rrwebPlayer.unpack,
+                        UNSAFE_replayCanvas: true,
+                        mouseTail: {
+                            duration: 500,
+                            lineCap: 'round',
+                            lineWidth: 2,
+                            strokeStyle: 'red',
+                        },
+                        // Insert style rules to ensure proper rendering
+                        insertStyleRules: [
+                            'iframe { pointer-events: auto !important; border: none !important; }',
+                            '.replayer-wrapper { background: #fff !important; }',
+                            '.replayer-wrapper iframe { background: #fff !important; }',
+                        ],
+                        // Inlined stylesheets
+                        inlineStylesheet: true,
+                        // Block unwanted elements
+                        blockClass: 'rr-block',
+                        ignoreClass: 'rr-ignore',
                         tags: {
                             'rage-click': 'Rage Click',
                             'error': 'Error'
@@ -168,7 +194,21 @@
                     }
                 });
 
+                // Log player info
                 console.log('Player initialized with', data.events.length, 'events');
+                console.log('First event:', data.events[0]);
+                
+                // Fix iframe sandboxing issue - allow scripts
+                setTimeout(() => {
+                    const iframe = document.querySelector('.rr-player iframe');
+                    if (iframe) {
+                        // Remove sandbox attribute or add allow-scripts
+                        iframe.removeAttribute('sandbox');
+                        // Or add proper permissions
+                        // iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+                        console.log('Iframe sandbox attribute removed');
+                    }
+                }, 100);
             } catch (error) {
                 console.error('Failed to load recording:', error);
                 alert('Failed to load recording. Please try again.');

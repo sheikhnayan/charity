@@ -35,6 +35,7 @@
             this.sessionStartTime = Date.now();
             this.lastActivityTime = Date.now();
             this.inactivityTimer = null;
+            this.batchTimer = null;
             
             // Heatmap tracking
             this.shouldTrackHeatmap = Math.random() < this.config.heatmapSampleRate;
@@ -58,6 +59,7 @@
 
             this.startRecording();
             this.setupHeatmapTracking();
+            this.captureScreenshotIfNeeded();
             this.setupInactivityDetection();
             this.setupBeforeUnload();
         }
@@ -86,7 +88,12 @@
                 // Start session on server
                 const response = await fetch(`${this.config.apiBaseUrl}/session-recording/start`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         session_id: this.sessionId,
                         website_id: this.config.websiteId,
@@ -105,17 +112,50 @@
                 const data = await response.json();
                 this.recordingId = data.recording_id;
 
-                // Start rrweb recording
+                // Start rrweb recording with comprehensive settings
                 this.stopRecordingFn = rrweb.record({
                     emit: (event) => this.handleRrwebEvent(event),
-                    maskAllInputs: this.config.privacy.maskAllInputs,
-                    maskTextSelector: this.config.privacy.maskTextSelector,
+                    
+                    // CRITICAL: Don't mask any text - we want to see everything
+                    maskAllText: false,
+                    maskAllInputs: false, // Don't mask input values either
+                    maskTextSelector: null,
                     blockSelector: this.config.privacy.blockSelector,
                     checkoutEveryNms: 5 * 60 * 1000, // Full snapshot every 5 minutes
+                    
+                    // CRITICAL: Capture all styles and CSS properly
+                    inlineStylesheet: true,
+                    inlineImages: true, // Capture images to show them in replay
+                    recordCanvas: true,
+                    collectFonts: true,
+                    
+                    // Don't block any CSS or assets
+                    blockClass: 'rr-block',
+                    ignoreClass: 'rr-ignore',
+                    maskTextClass: 'rr-mask',
+                    maskInputOptions: {
+                        password: true,
+                    },
+                    
+                    // Sampling configs
+                    sampling: {
+                        // Don't skip any mouse movements
+                        mousemove: true,
+                        mouseInteraction: true,
+                        scroll: 150, // Capture scroll every 150ms
+                        input: 'last', // Capture last input value
+                    },
                 });
 
                 this.isRecording = true;
                 console.log('Hotjar Tracker: Recording started', this.sessionId);
+
+                // Setup batch timer to send events periodically
+                this.batchTimer = setInterval(() => {
+                    if (this.events.length > 0) {
+                        this.sendEvents();
+                    }
+                }, this.config.batchInterval);
 
             } catch (error) {
                 console.error('Hotjar Tracker: Failed to start recording', error);
@@ -131,7 +171,14 @@
 
             this.lastActivityTime = Date.now();
 
-            // Batch send events
+            // CRITICAL: Send full snapshot (type 2) immediately
+            // Without this, the player has no DOM structure to replay on
+            if (event.type === 2) {
+                this.sendEvents();
+                return;
+            }
+
+            // Batch send other events
             if (this.events.length >= this.config.batchSize) {
                 this.sendEvents();
             }
@@ -219,7 +266,12 @@
             try {
                 await fetch(`${this.config.apiBaseUrl}/heatmap/track`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
                     body: JSON.stringify({
                         website_id: this.config.websiteId,
                         page_url: window.location.href,
@@ -307,6 +359,7 @@
 
             this.isRecording = false;
             clearInterval(this.inactivityTimer);
+            clearInterval(this.batchTimer);
             console.log('Hotjar Tracker: Session completed', duration, 'ms');
         }
 
@@ -334,6 +387,95 @@
             if (ua.includes('Android')) return 'Android';
             if (ua.includes('iOS')) return 'iOS';
             return 'Other';
+        }
+
+        async captureScreenshotIfNeeded() {
+            // Wait for page to fully load
+            if (document.readyState !== 'complete') {
+                window.addEventListener('load', () => this.captureScreenshotIfNeeded());
+                return;
+            }
+
+            try {
+                // Check if screenshot exists
+                const pagePath = window.location.pathname;
+                const checkResponse = await fetch(`${this.config.apiBaseUrl}/heatmap/screenshot?website_id=${this.config.websiteId}&page_path=${encodeURIComponent(pagePath)}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (checkResponse.ok) {
+                    console.log('Hotjar Tracker: Screenshot already exists');
+                    return;
+                }
+
+                // Capture screenshot using html2canvas
+                console.log('Hotjar Tracker: Capturing screenshot...');
+                
+                // Load html2canvas if not already loaded
+                if (typeof html2canvas === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    script.onload = () => this.doScreenshotCapture();
+                    document.head.appendChild(script);
+                } else {
+                    this.doScreenshotCapture();
+                }
+            } catch (error) {
+                console.log('Hotjar Tracker: Screenshot check failed:', error);
+            }
+        }
+
+        async doScreenshotCapture() {
+            try {
+                const canvas = await html2canvas(document.body, {
+                    allowTaint: true,
+                    useCORS: true,
+                    logging: false,
+                    width: window.innerWidth,
+                    height: document.documentElement.scrollHeight,
+                    windowWidth: window.innerWidth,
+                    windowHeight: document.documentElement.scrollHeight,
+                });
+
+                const screenshotData = canvas.toDataURL('image/png');
+                
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
+                const response = await fetch(`${this.config.apiBaseUrl}/heatmap/screenshot/capture`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        website_id: this.config.websiteId,
+                        page_url: window.location.href,
+                        page_path: window.location.pathname,
+                        screenshot_data: screenshotData,
+                        viewport_width: window.innerWidth,
+                        viewport_height: document.documentElement.scrollHeight,
+                        device_type: this.getDeviceType(),
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Hotjar Tracker: Screenshot save failed:', response.status, errorText);
+                    return;
+                }
+
+                console.log('Hotjar Tracker: Screenshot captured successfully');
+            } catch (error) {
+                console.error('Hotjar Tracker: Screenshot capture failed:', error);
+            }
         }
     }
 

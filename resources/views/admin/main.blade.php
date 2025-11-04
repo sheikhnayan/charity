@@ -245,6 +245,46 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}">
+    <a href="/fraud" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
+      <div class="text-truncate">Fraud Detection</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('cohorts*') ? 'active' : '' }}">
+    <a href="/cohorts" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-group"></i>
+      <div class="text-truncate">Cohort Analysis</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('ab-tests*') ? 'active' : '' }}">
+    <a href="/ab-tests" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-test-tube"></i>
+      <div class="text-truncate">A/B Testing</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('hotjar*') || request()->is('heatmaps*') || request()->is('recordings*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+      <i class="menu-icon tf-icons bx bx-map"></i>
+      <div class="text-truncate">User Behavior</div>
+    </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('hotjar/heatmaps') ? 'active' : '' }}">
+        <a href="/hotjar/heatmaps" class="menu-link">
+          <div class="text-truncate">Heatmaps</div>
+        </a>
+      </li>
+      <li class="menu-item {{ request()->is('hotjar/recordings') ? 'active' : '' }}">
+        <a href="/hotjar/recordings" class="menu-link">
+          <div class="text-truncate">Session Recordings</div>
+        </a>
+      </li>
+    </ul>
+  </li>
+
   <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}">
     <a href="/admins/donation" class="menu-link">
       <i class="menu-icon tf-icons bx bx-transfer"></i>

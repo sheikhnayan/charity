@@ -1,48 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Heatmaps - Hotjar Style</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header { background: white; border-bottom: 1px solid #e0e0e0; padding: 20px 0; margin-bottom: 30px; }
-        .controls-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .page-list { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .page-item-custom { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.3s; }
-        .page-item-custom:hover { background: #f8f9fa; }
-        .page-item-custom.active { background: #e3f2fd; border-left: 4px solid #2196f3; }
-        .heatmap-container { position: relative; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
-        .heatmap-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
-        .heatmap-iframe { width: 100%; height: 800px; border: none; }
-        .heatmap-legend { position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 20; }
-        .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .legend-color { width: 30px; height: 20px; border-radius: 4px; }
-        .heatmap-type-btn { margin-right: 10px; margin-bottom: 10px; }
-        .heatmap-type-btn.active { background: #2196f3; color: white; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 6px; text-align: center; }
-        .stat-value { font-size: 28px; font-weight: 700; color: #2196f3; }
-        .stat-label { color: #666; font-size: 13px; margin-top: 5px; }
-        .scroll-depth-bar { height: 30px; background: linear-gradient(to right, #4caf50, #ffeb3b, #ff5722); border-radius: 4px; position: relative; margin: 10px 0; }
-        .scroll-marker { position: absolute; top: -5px; width: 3px; height: 40px; background: #333; }
-        .element-stats-table { max-height: 400px; overflow-y: auto; }
-        .element-row { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .element-row:hover { background: #f8f9fa; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="container">
-            <h2><i class="fas fa-fire"></i> Heatmaps</h2>
-            <p class="text-muted mb-0">Visualize user interactions and engagement</p>
-        </div>
-    </div>
+@extends('admin.main')
 
-    <div class="container-fluid">
+@section('content')
+<style>
+    .controls-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .page-list { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .page-item-custom { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.3s; }
+    .page-item-custom:hover { background: #f8f9fa; }
+    .page-item-custom.active { background: #e3f2fd; border-left: 4px solid #2196f3; }
+    .heatmap-container { position: relative; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+    .heatmap-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+    .heatmap-iframe { width: 100%; height: 800px; border: none; }
+    .heatmap-legend { position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 20; }
+    .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .legend-color { width: 30px; height: 20px; border-radius: 4px; }
+    .heatmap-type-btn { margin-right: 10px; margin-bottom: 10px; }
+    .heatmap-type-btn.active { background: #696cff; color: white; border-color: #696cff; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-box { background: #f8f9fa; padding: 15px; border-radius: 6px; text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #696cff; }
+    .stat-label { color: #666; font-size: 13px; margin-top: 5px; }
+    .scroll-depth-bar { height: 30px; background: linear-gradient(to right, #4caf50, #ffeb3b, #ff5722); border-radius: 4px; position: relative; margin: 10px 0; }
+    .scroll-marker { position: absolute; top: -5px; width: 3px; height: 40px; background: #333; }
+    .element-stats-table { max-height: 400px; overflow-y: auto; }
+    .element-row { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .element-row:hover { background: #f8f9fa; }
+</style>
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">User Behavior /</span> Heatmaps
+    </h4>
+
+    <div class="row">
         <div class="row">
             <!-- Page List Sidebar -->
             <div class="col-md-3">
@@ -114,10 +103,7 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/heatmap.js@2.0.5/build/heatmap.min.js"></script>
     <script>
         let currentWebsiteId = null;
         let currentPagePath = null;
@@ -210,6 +196,8 @@
             });
             if (device) params.append('device_type', device);
 
+            console.log('Loading heatmap:', endpoint, params.toString());
+
             const response = await fetch(`${endpoint}?${params}`, {
                 credentials: 'same-origin',
                 headers: {
@@ -223,6 +211,7 @@
             }
             
             const result = await response.json();
+            console.log('API response:', result);
 
             if (!result.data || result.data.length === 0) {
                 document.getElementById('heatmapDisplay').innerHTML = `
@@ -262,65 +251,163 @@
             renderScrollDepth(result.data);
         }
 
-        function renderHeatmap(data) {
+        async function renderHeatmap(data) {
+            console.log('renderHeatmap called with data:', data);
             const display = document.getElementById('heatmapDisplay');
             
-            // Create container with canvas
+            // Fetch screenshot for this page
+            let screenshotUrl = null;
+            try {
+                const response = await fetch(`/api/heatmap/screenshot?website_id=${currentWebsiteId}&page_path=${encodeURIComponent(currentPagePath)}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    screenshotUrl = result.screenshot_url;
+                }
+            } catch (e) {
+                console.log('No screenshot available:', e);
+            }
+            
+            // Create container with screenshot as background and canvas on top
             display.innerHTML = `
-                <div class="heatmap-container">
-                    <div id="heatmapCanvas" style="width: 1440px; height: 2400px; margin: 0 auto;"></div>
-                    <div class="heatmap-legend">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(255, 0, 0, 0.8);"></div>
-                            <span>High</span>
+                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 1440px;">
+                    ${screenshotUrl ? `
+                        <img id="screenshotImg" src="${screenshotUrl}" style="display: none;" onload="window.initHeatmapAfterImageLoad();" />
+                        <div id="heatmapCanvas" style="background-image: url('${screenshotUrl}'); background-size: contain; background-repeat: no-repeat; background-position: top center; width: 100%; min-height: 800px;"></div>
+                    ` : `
+                        <div id="heatmapCanvas" style="width: 100%; height: 2400px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                            <p class="text-muted">No screenshot available. <a href="#" onclick="captureScreenshot(); return false;">Capture now</a></p>
                         </div>
+                    `}
+                    <div class="heatmap-legend" style="position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000;">
                         <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(255, 165, 0, 0.6);"></div>
-                            <span>Medium</span>
+                            <div class="legend-color" style="background: rgba(255, 0, 0, 0.8); width: 30px; height: 20px; border-radius: 4px; display: inline-block;"></div>
+                            <span style="margin-left: 10px;">High</span>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: rgba(0, 255, 0, 0.4);"></div>
-                            <span>Low</span>
+                        <div class="legend-item" style="margin-top: 8px;">
+                            <div class="legend-color" style="background: rgba(255, 165, 0, 0.6); width: 30px; height: 20px; border-radius: 4px; display: inline-block;"></div>
+                            <span style="margin-left: 10px;">Medium</span>
+                        </div>
+                        <div class="legend-item" style="margin-top: 8px;">
+                            <div class="legend-color" style="background: rgba(0, 255, 0, 0.4); width: 30px; height: 20px; border-radius: 4px; display: inline-block;"></div>
+                            <span style="margin-left: 10px;">Low</span>
                         </div>
                     </div>
                 </div>
             `;
 
-            // Initialize heatmap.js
-            if (heatmapInstance) {
-                heatmapInstance.setData({ data: [] });
+            // Check for empty data
+            if (!data || data.length === 0) {
+                console.log('No heatmap data to render');
+                display.innerHTML += '<div class="alert alert-info mt-3">No heatmap data available for this page.</div>';
+                return;
             }
 
-            heatmapInstance = h337.create({
-                container: document.getElementById('heatmapCanvas'),
-                radius: currentType === 'click' ? 30 : 50,
-                maxOpacity: 0.8,
-                minOpacity: 0.1,
-                blur: 0.75,
-                gradient: {
-                    0.0: 'rgba(0, 255, 0, 0)',
-                    0.2: 'rgba(0, 255, 0, 0.5)',
-                    0.4: 'rgba(255, 255, 0, 0.7)',
-                    0.6: 'rgba(255, 165, 0, 0.8)',
-                    0.8: 'rgba(255, 69, 0, 0.9)',
-                    1.0: 'rgba(255, 0, 0, 1)'
+            console.log('Processing', data.length, 'data points');
+
+            // Define init function globally so image onload can call it
+            window.initHeatmapAfterImageLoad = () => {
+                initHeatmap();
+            };
+
+            const initHeatmap = () => {
+                // Initialize heatmap.js
+                if (heatmapInstance) {
+                    heatmapInstance.setData({ data: [] });
                 }
-            });
 
-            // Convert data to heatmap.js format
-            const points = data.map(point => ({
-                x: Math.round((point.x / point.viewport_width) * 1440),
-                y: Math.round((point.y / point.viewport_height) * 2400),
-                value: point.click_count || point.move_count || 1
-            }));
+                const canvasEl = document.getElementById('heatmapCanvas');
+                const screenshotImg = document.getElementById('screenshotImg');
+                console.log('Canvas element:', canvasEl);
 
-            heatmapInstance.setData({
-                max: Math.max(...points.map(p => p.value)),
-                data: points
-            });
+                // Get actual canvas dimensions
+                let canvasWidth, canvasHeight;
+                if (screenshotImg && screenshotImg.complete) {
+                    // Use natural dimensions of the screenshot image
+                    canvasWidth = screenshotImg.naturalWidth;
+                    canvasHeight = screenshotImg.naturalHeight;
+                    // Set canvas height to match screenshot aspect ratio
+                    const aspectRatio = canvasHeight / canvasWidth;
+                    const displayWidth = canvasEl.offsetWidth;
+                    canvasEl.style.height = (displayWidth * aspectRatio) + 'px';
+                } else {
+                    canvasWidth = canvasEl.offsetWidth || 1440;
+                    canvasHeight = canvasEl.offsetHeight || 2400;
+                }
+                console.log('Canvas dimensions:', canvasWidth, 'x', canvasHeight);
 
-            // Show stats
-            displayStats(data);
+                heatmapInstance = h337.create({
+                    container: canvasEl,
+                    radius: currentType === 'click' ? 30 : 50,
+                    maxOpacity: 0.8,
+                    minOpacity: 0.1,
+                    blur: 0.75,
+                    gradient: {
+                        0.0: 'rgba(0, 255, 0, 0)',
+                        0.2: 'rgba(0, 255, 0, 0.5)',
+                        0.4: 'rgba(255, 255, 0, 0.7)',
+                        0.6: 'rgba(255, 165, 0, 0.8)',
+                        0.8: 'rgba(255, 69, 0, 0.9)',
+                        1.0: 'rgba(255, 0, 0, 1)'
+                    }
+                });
+
+                console.log('Heatmap instance created:', heatmapInstance);
+
+                // Get the original viewport dimensions from the data (all points should have same viewport)
+                const originalViewportWidth = data[0].viewport_width;
+                const originalViewportHeight = data[0].viewport_height;
+                console.log('Original viewport:', originalViewportWidth, 'x', originalViewportHeight);
+
+                // Calculate scale factors
+                const scaleX = canvasWidth / originalViewportWidth;
+                const scaleY = canvasHeight / originalViewportHeight;
+                console.log('Scale factors:', scaleX, scaleY);
+
+                // Convert data to heatmap.js format - scale coordinates to current canvas size
+                const points = data.map(point => {
+                    const x = Math.round(point.x * scaleX);
+                    const y = Math.round(point.y * scaleY);
+                    const value = point.click_count || point.move_count || 1;
+                    console.log('Point:', { x, y, value, original: { x: point.x, y: point.y } });
+                    return { x, y, value };
+                });
+
+                console.log('Converted points:', points);
+
+                const maxValue = Math.max(...points.map(p => p.value), 1);
+                console.log('Max value:', maxValue);
+
+                heatmapInstance.setData({
+                    max: maxValue,
+                    data: points
+                });
+
+                console.log('Heatmap data set complete');
+
+                // Show stats
+                displayStats(data);
+            };
+
+            // Initialize immediately or wait for image
+            const screenshotImg = document.getElementById('screenshotImg');
+            if (screenshotImg) {
+                if (screenshotImg.complete && screenshotImg.naturalWidth > 0) {
+                    console.log('Screenshot already loaded, initializing now');
+                    initHeatmap();
+                } else {
+                    console.log('Waiting for screenshot to load');
+                    // The image onload will call window.initHeatmapAfterImageLoad()
+                }
+            } else {
+                console.log('No screenshot, initializing heatmap');
+                initHeatmap();
+            }
         }
 
         function renderScrollDepth(scrollData) {
@@ -449,6 +536,29 @@
                 loadHeatmap();
             }
         }
+
+        async function captureScreenshot() {
+            if (!currentWebsiteId || !currentPagePath) {
+                alert('Please select a website and page first');
+                return;
+            }
+
+            const pageUrl = prompt('Enter the full URL of the page to capture:', window.location.origin + currentPagePath);
+            if (!pageUrl) return;
+
+            // Open page in new window for screenshot
+            const win = window.open(pageUrl, '_blank', 'width=1920,height=1080');
+            
+            alert('Please wait for the page to load fully, then click OK to capture the screenshot.');
+            
+            // Note: Actual screenshot capture would require server-side tool like Puppeteer
+            // For now, show instructions
+            alert('Screenshot capture requires server-side setup with Puppeteer or similar tool. For now, use browser screenshot and upload manually.');
+            
+            if (win) win.close();
+        }
     </script>
-</body>
-</html>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/heatmap.js@2.0.5/build/heatmap.min.js"></script>
+@endsection

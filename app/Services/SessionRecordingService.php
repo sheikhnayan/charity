@@ -127,11 +127,11 @@ class SessionRecordingService
         return [
             'recording' => $recording,
             'events' => $recording->events->map(function ($event) {
-                return [
-                    'timestamp' => $event->timestamp,
-                    'type' => $event->event_type,
-                    'data' => json_decode($event->data, true),
-                ];
+                // The data field already contains the complete rrweb event
+                $rrwebEvent = json_decode($event->data, true);
+                
+                // Return the event as-is, rrweb expects the full event object
+                return $rrwebEvent;
             }),
         ];
     }
