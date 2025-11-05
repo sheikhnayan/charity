@@ -116,11 +116,8 @@
                 this.stopRecordingFn = rrweb.record({
                     emit: (event) => this.handleRrwebEvent(event),
                     
-                    // CRITICAL: Don't mask any text - we want to see everything
-                    maskAllText: false,
-                    maskAllInputs: false, // Don't mask input values either
-                    maskTextSelector: null,
-                    blockSelector: this.config.privacy.blockSelector,
+                    // CRITICAL: Don't mask any text - capture everything as-is
+                    // Remove ALL masking to prevent "null" text issue
                     checkoutEveryNms: 5 * 60 * 1000, // Full snapshot every 5 minutes
                     
                     // CRITICAL: Capture all styles and CSS properly
@@ -137,13 +134,11 @@
                         password: true,
                     },
                     
-                    // Sampling configs
+                    // Sampling configs - capture frequently for smooth replay
                     sampling: {
-                        // Don't skip any mouse movements
-                        mousemove: true,
-                        mouseInteraction: true,
-                        scroll: 150, // Capture scroll every 150ms
-                        input: 'last', // Capture last input value
+                        mousemove: 50,  // Capture mouse position every 50ms
+                        scroll: 150,    // Capture scroll every 150ms
+                        input: 'last',  // Capture last input value
                     },
                 });
 
@@ -162,7 +157,132 @@
             }
         }
 
+        cleanNullTextNodes(node) {
+            // Recursively remove "null" text from all text nodes
+            if (!node) return;
+            
+            // rrweb uses type 3 for text nodes
+            // Check both textContent and childNodes[0] for the text value
+            if (node.type === 3) {
+                // Text node - check if it contains "null"
+                if (node.textContent === 'null') {
+                    node.textContent = '';
+                }
+                // Also check childNodes array (some versions use this)
+                if (node.childNodes && node.childNodes[0] === 'null') {
+                    node.childNodes[0] = '';
+                }
+            }
+            
+            // Recurse through children
+            if (node.childNodes && Array.isArray(node.childNodes)) {
+                node.childNodes.forEach(child => this.cleanNullTextNodes(child));
+            }
+        }
+
         handleRrwebEvent(event) {
+            // Clean "null" text nodes from snapshots
+            if (event.type === 2 && event.data?.node) {
+                // Debug: Find first text node to see its structure
+                const findTextNode = (node, depth = 0) => {
+                    if (depth > 10) return null;
+                    if (node.type === 3) return node;
+                    if (node.childNodes) {
+                        for (let child of node.childNodes) {
+                            const found = findTextNode(child, depth + 1);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+                // Find a text node with "null" content
+                const findNullTextNode = (node, depth = 0) => {
+                    if (depth > 15) return null;
+                    if (node.type === 3 && node.textContent === 'null') {
+                        return node;
+                    }
+                    if (node.childNodes) {
+                        for (let child of node.childNodes) {
+                            const found = findNullTextNode(child, depth + 1);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+                const nullText = findNullTextNode(event.data.node);
+                if (nullText) {
+                    console.log('⚠️ Found "null" text node:', JSON.stringify(nullText, null, 2));
+                } else {
+                    console.log('✅ No "null" text nodes found in snapshot');
+                }
+                
+                this.cleanNullTextNodes(event.data.node);
+            }
+            
+            // Debug logging for first few events
+            if (event.type === 2) {
+                console.log('Full snapshot captured:', {
+                    type: event.type,
+                    hasNode: !!event.data?.node,
+                    nodeType: event.data?.node?.type,
+                    nodeId: event.data?.node?.id,
+                    childNodeCount: event.data?.node?.childNodes?.length
+                });
+                
+                // Debug the actual DOM structure
+                console.log('Root node structure:', {
+                    rootChildren: event.data?.node?.childNodes?.length,
+                    firstChild: event.data?.node?.childNodes?.[0]?.type,
+                    firstChildTag: event.data?.node?.childNodes?.[0]?.tagName
+                });
+                
+                // Try to find HTML node
+                const htmlNode = event.data?.node?.childNodes?.find(n => n.tagName === 'html');
+                if (htmlNode) {
+                    console.log('HTML node found:', {
+                        htmlChildren: htmlNode.childNodes?.length,
+                        childTags: htmlNode.childNodes?.map(n => n.tagName)
+                    });
+                    
+                    // Find body
+                    const bodyNode = htmlNode.childNodes?.find(n => n.tagName === 'body');
+                    if (bodyNode) {
+                        console.log('Body node captured:', {
+                            bodyId: bodyNode.id,
+                            bodyChildren: bodyNode.childNodes?.length,
+                            firstFewChildren: bodyNode.childNodes?.slice(0, 5).map(n => ({
+                                tag: n.tagName,
+                                id: n.attributes?.id,
+                                class: n.attributes?.class
+                            }))
+                        });
+                        
+                        // Check for rendered-page div
+                        const checkForContent = (nodes, depth = 0) => {
+                            if (depth > 10) return false;
+                            for (let node of (nodes || [])) {
+                                if (node.attributes?.id === 'rendered-page') {
+                                    console.log('✅ Found #rendered-page with', node.childNodes?.length, 'children');
+                                    return true;
+                                }
+                                if (node.childNodes && checkForContent(node.childNodes, depth + 1)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        };
+                        
+                        if (!checkForContent(bodyNode.childNodes)) {
+                            console.warn('⚠️ #rendered-page not found in snapshot!');
+                        }
+                    } else {
+                        console.error('❌ Body node not found!');
+                    }
+                } else {
+                    console.error('❌ HTML node not found!');
+                }
+            }
+            
             this.events.push({
                 timestamp: event.timestamp - this.sessionStartTime,
                 type: event.type,
@@ -174,6 +294,7 @@
             // CRITICAL: Send full snapshot (type 2) immediately
             // Without this, the player has no DOM structure to replay on
             if (event.type === 2) {
+                console.log('Sending full snapshot immediately');
                 this.sendEvents();
                 return;
             }
@@ -483,14 +604,18 @@
     window.HotjarTracker = HotjarTracker;
 
     // Auto-initialize if data attribute exists
-    document.addEventListener('DOMContentLoaded', () => {
-        const trackerElement = document.querySelector('[data-hotjar-tracker]');
-        if (trackerElement) {
-            const websiteId = trackerElement.getAttribute('data-website-id');
-            if (websiteId) {
-                window.hotjarTracker = new HotjarTracker(parseInt(websiteId));
+    // Use 'load' event instead of 'DOMContentLoaded' to ensure all content is rendered
+    window.addEventListener('load', () => {
+        // Add small delay to ensure all dynamic content is loaded
+        setTimeout(() => {
+            const trackerElement = document.querySelector('[data-hotjar-tracker]');
+            if (trackerElement) {
+                const websiteId = trackerElement.getAttribute('data-website-id');
+                if (websiteId) {
+                    window.hotjarTracker = new HotjarTracker(parseInt(websiteId));
+                }
             }
-        }
+        }, 5000); // Wait 5 seconds after page load to start recording
     });
 
 })();

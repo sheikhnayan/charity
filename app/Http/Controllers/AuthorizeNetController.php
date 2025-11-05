@@ -138,6 +138,14 @@ class AuthorizeNetController extends Controller
                     $donation = Donation::find($request->donation_id);
                     $donation->status = 1;
                     $donation->transaction_id = $tresponse->getTransId();
+                    
+                    // Process tip if enabled
+                    if ($request->input('tip_enabled') && $request->input('tip_amount') > 0) {
+                        $donation->tip_amount = $request->input('tip_amount');
+                        $donation->tip_percentage = $request->input('tip_percentage');
+                        $donation->tip_enabled = true;
+                    }
+                    
                     $donation->update();
 
                     if ($donation->type == 'student') {
@@ -161,6 +169,12 @@ class AuthorizeNetController extends Controller
                         $tran->ip_address = $request->ip();
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
+                        
+                        // Add tip information
+                        if ($donation->tip_enabled) {
+                            $tran->tip_amount = $donation->tip_amount;
+                            $tran->tip_percentage = $donation->tip_percentage;
+                        }
 
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
@@ -193,6 +207,13 @@ class AuthorizeNetController extends Controller
                         $tran->country = $request->country;
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
+                        
+                        // Add tip information
+                        if ($donation->tip_enabled) {
+                            $tran->tip_amount = $donation->tip_amount;
+                            $tran->tip_percentage = $donation->tip_percentage;
+                        }
+                        
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();
@@ -392,6 +413,14 @@ class AuthorizeNetController extends Controller
                     $donation = Donation::find($request->donation_id);
                     $donation->status = 1;
                     $donation->transaction_id = $charge->id;
+                    
+                    // Process tip if enabled
+                    if ($request->input('tip_enabled') && $request->input('tip_amount') > 0) {
+                        $donation->tip_amount = $request->input('tip_amount');
+                        $donation->tip_percentage = $request->input('tip_percentage');
+                        $donation->tip_enabled = true;
+                    }
+                    
                     $donation->update();
 
                     if ($donation->type == 'student') {
@@ -414,6 +443,12 @@ class AuthorizeNetController extends Controller
                         $tran->ip_address = $request->ip();
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
+                        
+                        // Add tip information (Stripe)
+                        if ($donation->tip_enabled) {
+                            $tran->tip_amount = $donation->tip_amount;
+                            $tran->tip_percentage = $donation->tip_percentage;
+                        }
 
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
@@ -446,6 +481,13 @@ class AuthorizeNetController extends Controller
                         $tran->country = $request->country;
                         $tran->fee = 0;
                         $tran->fee_paid = 1;
+                        
+                        // Add tip information (Stripe)
+                        if ($donation->tip_enabled) {
+                            $tran->tip_amount = $donation->tip_amount;
+                            $tran->tip_percentage = $donation->tip_percentage;
+                        }
+                        
                         $tran->status = $donation->status;
                         $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                         $tran->save();

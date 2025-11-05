@@ -25,7 +25,8 @@ class HotjarViewController extends Controller
     {
         $recording = SessionRecording::with('website')->findOrFail($recordingId);
         
-        return view('hotjar.recordings.replay', compact('recording'));
+        // Use hybrid replay: renders actual page in iframe + overlays interactions
+        return view('hotjar.recordings.replay-hybrid', compact('recording'));
     }
 
     /**

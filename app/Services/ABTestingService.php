@@ -394,13 +394,47 @@ class ABTestingService
      */
     public function getTestStats($websiteId)
     {
-        return [
-            'total_tests' => ABTest::where('website_id', $websiteId)->count(),
-            'running_tests' => ABTest::where('website_id', $websiteId)->where('status', 'running')->count(),
-            'completed_tests' => ABTest::where('website_id', $websiteId)->where('status', 'completed')->count(),
-            'total_conversions' => ABTestConversion::whereHas('test', function($q) use ($websiteId) {
+        $query = ABTest::query();
+        if ($websiteId) {
+            $query->where('website_id', $websiteId);
+        }
+
+        $runningTests = (clone $query)->where('status', 'running')->count();
+        $winnersFound = (clone $query)->whereNotNull('winning_variant_id')->count();
+        
+        $assignmentsQuery = ABTestAssignment::query();
+        if ($websiteId) {
+            $assignmentsQuery->whereHas('test', function($q) use ($websiteId) {
                 $q->where('website_id', $websiteId);
-            })->count()
+            });
+        }
+        $totalParticipants = $assignmentsQuery->count();
+
+        // Calculate average lift across all completed tests
+        $completedTests = (clone $query)->where('status', 'completed')->with('results')->get();
+        $avgLift = 0;
+        $liftCount = 0;
+        
+        foreach ($completedTests as $test) {
+            $control = $test->results->where('variant.is_control', true)->first();
+            $variants = $test->results->where('variant.is_control', false);
+            
+            foreach ($variants as $variant) {
+                if ($control && $control->conversion_rate > 0) {
+                    $lift = (($variant->conversion_rate - $control->conversion_rate) / $control->conversion_rate) * 100;
+                    $avgLift += $lift;
+                    $liftCount++;
+                }
+            }
+        }
+        
+        $avgLift = $liftCount > 0 ? round($avgLift / $liftCount, 1) : 0;
+
+        return [
+            'running' => $runningTests,
+            'winners' => $winnersFound,
+            'total_participants' => $totalParticipants,
+            'avg_lift' => $avgLift
         ];
     }
 }

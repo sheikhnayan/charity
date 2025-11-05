@@ -238,10 +238,34 @@
     <span class="menu-header-text">Reports</span>
   </li>
 
-  <li class="menu-item {{ request()->is('analytics') ? 'active' : '' }}">
-    <a href="/analytics" class="menu-link">
+  <li class="menu-item {{ request()->is('analytics') || request()->is('analytics/*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
       <i class="menu-icon tf-icons bx bx-chart"></i>
       <div class="text-truncate">Analytics</div>
+    </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('analytics') && !request()->is('analytics/*') ? 'active' : '' }}">
+        <a href="/analytics" class="menu-link">
+          <div class="text-truncate">Dashboard</div>
+        </a>
+      </li>
+      <li class="menu-item {{ request()->is('analytics/utm') ? 'active' : '' }}">
+        <a href="/analytics/utm" class="menu-link">
+          <div class="text-truncate">UTM Attribution</div>
+        </a>
+      </li>
+      <li class="menu-item {{ request()->is('analytics/referrer') ? 'active' : '' }}">
+        <a href="/analytics/referrer" class="menu-link">
+          <div class="text-truncate">Referrer Analytics</div>
+        </a>
+      </li>
+    </ul>
+  </li>
+
+  <li class="menu-item {{ request()->is('qr-codes*') ? 'active' : '' }}">
+    <a href="/qr-codes" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-qr"></i>
+      <div class="text-truncate">QR Codes</div>
     </a>
   </li>
 

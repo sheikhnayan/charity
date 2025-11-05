@@ -412,6 +412,13 @@
                             </div>
                         </div>
                     </div>
+                    
+                    {{-- Tipping Component --}}
+                    @include('components.tipping', [
+                        'baseAmount' => $data->amount,
+                        'primaryColor' => '#1773b0'
+                    ])
+                    
                     <div class="sc-gyZVQB fWNGEI mt-4">
                         <div class="sc-cVAmsi cvolSU"><button type="submit"
                                 data-testid="combinedAuthenticationLocationFormSubmitButton" height="45px"

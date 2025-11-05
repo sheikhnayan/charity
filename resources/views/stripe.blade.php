@@ -1150,6 +1150,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                {{-- Tipping Component --}}
+                                @include('components.tipping', [
+                                    'baseAmount' => $data->amount,
+                                    'primaryColor' => '#0d6efd'
+                                ])
+                                
                                 <div class="mt-3 svelte-5rmvok"> <button type="submit" style="background-color: #0d6efd" id="pay-btn"
                                         class="btn btn btn-primary btn-lg btn-block submit-button svelte-1d88ver"><span
                                             data-testid="button-pay-button-content-wrapper"> Pay &amp; Submit

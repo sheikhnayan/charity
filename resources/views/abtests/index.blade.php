@@ -174,68 +174,93 @@
         </div>
     </div>
 
-    <!-- Featured Test - Variant Comparison -->
+    <!-- Featured Test - Only show if there's a test with a winner -->
+    @php
+        $featuredTest = $tests->firstWhere('winning_variant_id', '!=', null);
+    @endphp
+    
+    @if($featuredTest)
     <div class="card mb-4">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="mb-0">Featured Test: Homepage CTA Button</h5>
-                    <small class="text-muted">Running for 14 days • 95% confidence level reached</small>
+                    <h5 class="mb-0">Featured Test: {{ $featuredTest->name }}</h5>
+                    <small class="text-muted">
+                        @if($featuredTest->started_at)
+                            Running for {{ $featuredTest->started_at->diffInDays(now()) }} days
+                        @endif
+                    </small>
                 </div>
                 <span class="badge bg-success">Winner Detected</span>
             </div>
         </div>
         <div class="card-body">
             <div class="row g-4 mb-4">
+                @php
+                    $control = $featuredTest->results->where('variant.is_control', true)->first();
+                    $winner = $featuredTest->results->where('variant_id', $featuredTest->winning_variant_id)->first();
+                @endphp
+                
+                @if($control)
                 <div class="col-md-6">
                     <div class="variant-card control">
-                        <div class="badge bg-primary mb-2">Control (A)</div>
-                        <h6 class="fw-bold mb-3">Blue "Donate Now" Button</h6>
-                        <div class="conversion-badge text-primary">23.4%</div>
+                        <div class="badge bg-primary mb-2">Control</div>
+                        <h6 class="fw-bold mb-3">{{ $control->variant->name ?? 'Control Variant' }}</h6>
+                        <div class="conversion-badge text-primary">{{ number_format($control->conversion_rate, 1) }}%</div>
                         <p class="text-muted mb-3">Conversion Rate</p>
                         <div class="d-flex justify-content-around text-center">
                             <div>
-                                <p class="mb-0 fw-bold">1,247</p>
+                                <p class="mb-0 fw-bold">{{ number_format($control->conversions) }}</p>
                                 <small class="text-muted">Conversions</small>
                             </div>
                             <div>
-                                <p class="mb-0 fw-bold">5,328</p>
+                                <p class="mb-0 fw-bold">{{ number_format($control->impressions) }}</p>
                                 <small class="text-muted">Visitors</small>
                             </div>
                         </div>
                     </div>
                 </div>
+                @endif
+                
+                @if($winner)
                 <div class="col-md-6">
                     <div class="variant-card winner">
-                        <div class="badge bg-success mb-2">Variant (B) - Winner! 🎉</div>
-                        <h6 class="fw-bold mb-3">Green "Make Impact" Button</h6>
-                        <div class="conversion-badge text-success">28.7%</div>
+                        <div class="badge bg-success mb-2">Winner! 🎉</div>
+                        <h6 class="fw-bold mb-3">{{ $winner->variant->name ?? 'Winner Variant' }}</h6>
+                        <div class="conversion-badge text-success">{{ number_format($winner->conversion_rate, 1) }}%</div>
                         <p class="text-muted mb-3">Conversion Rate</p>
                         <div class="d-flex justify-content-around text-center">
                             <div>
-                                <p class="mb-0 fw-bold">1,529</p>
+                                <p class="mb-0 fw-bold">{{ number_format($winner->conversions) }}</p>
                                 <small class="text-muted">Conversions</small>
                             </div>
                             <div>
-                                <p class="mb-0 fw-bold">5,327</p>
+                                <p class="mb-0 fw-bold">{{ number_format($winner->impressions) }}</p>
                                 <small class="text-muted">Visitors</small>
                             </div>
                         </div>
+                        @if($control && $control->conversion_rate > 0)
+                        @php
+                            $improvement = (($winner->conversion_rate - $control->conversion_rate) / $control->conversion_rate) * 100;
+                        @endphp
                         <div class="mt-3">
-                            <span class="badge bg-success">+22.6% Improvement</span>
+                            <span class="badge bg-success">+{{ number_format($improvement, 1) }}% Improvement</span>
                         </div>
+                        @endif
                     </div>
                 </div>
+                @endif
             </div>
 
+            @if($winner && $winner->confidence_level)
             <!-- Statistical Significance Meter -->
             <div class="mt-4">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Statistical Significance</span>
-                    <span class="fw-bold text-success">98.5%</span>
+                    <span class="fw-bold text-success">{{ number_format($winner->confidence_level, 1) }}%</span>
                 </div>
                 <div class="significance-meter">
-                    <div class="significance-pointer" style="left: 98.5%;"></div>
+                    <div class="significance-pointer" style="left: {{ $winner->confidence_level }}%;"></div>
                 </div>
                 <div class="d-flex justify-content-between text-muted small">
                     <span>Not Significant</span>
@@ -243,14 +268,21 @@
                     <span>Highly Significant</span>
                 </div>
             </div>
+            @endif
 
+            @if($control && $winner && $winner->is_significant)
             <div class="alert alert-success mt-4" role="alert">
                 <i class="bx bx-check-circle me-2"></i>
-                <strong>Test Complete:</strong> Variant B shows a statistically significant improvement. 
-                Consider implementing this change to increase conversions by 22.6%.
+                <strong>Test Complete:</strong> {{ $winner->variant->name }} shows a statistically significant improvement. 
+                @if($control->conversion_rate > 0)
+                    @php $lift = (($winner->conversion_rate - $control->conversion_rate) / $control->conversion_rate) * 100; @endphp
+                    Consider implementing this change to increase conversions by {{ number_format($lift, 1) }}%.
+                @endif
             </div>
+            @endif
         </div>
     </div>
+    @endif
 
     <!-- Charts Row -->
     <div class="row g-3 mb-4">
@@ -387,16 +419,19 @@
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="/ab-tests/{{ $test->id }}"><i class="bx bx-show me-2"></i>View Results</a></li>
+                                        <li><a class="dropdown-item" href="/ab-tests/{{ $test->id }}/results"><i class="bx bx-show me-2"></i>View Results</a></li>
                                         <li><a class="dropdown-item" href="/ab-tests/{{ $test->id }}/edit"><i class="bx bx-edit me-2"></i>Edit</a></li>
-                                        @if($test->status === 'running')
-                                        <li><a class="dropdown-item" href="#"><i class="bx bx-pause me-2"></i>Pause Test</a></li>
+                                        @if($test->status === 'draft')
+                                        <li><a class="dropdown-item" href="#" onclick="startTest({{ $test->id }}); return false;"><i class="bx bx-play me-2"></i>Start Test</a></li>
+                                        @elseif($test->status === 'running')
+                                        <li><a class="dropdown-item" href="#" onclick="pauseTest({{ $test->id }}); return false;"><i class="bx bx-pause me-2"></i>Pause Test</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="endTest({{ $test->id }}); return false;"><i class="bx bx-stop-circle me-2"></i>End Test</a></li>
                                         @elseif($test->status === 'paused')
-                                        <li><a class="dropdown-item" href="#"><i class="bx bx-play me-2"></i>Resume Test</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="startTest({{ $test->id }}); return false;"><i class="bx bx-play me-2"></i>Resume Test</a></li>
                                         @endif
-                                        <li><a class="dropdown-item" href="#"><i class="bx bx-download me-2"></i>Export Data</a></li>
+                                        <li><a class="dropdown-item" href="/ab-tests/{{ $test->id }}/export"><i class="bx bx-download me-2"></i>Export Data</a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#"><i class="bx bx-trash me-2"></i>Delete</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteTest({{ $test->id }}); return false;"><i class="bx bx-trash me-2"></i>Delete</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -496,11 +531,12 @@ websiteFilter.addEventListener('change', function() {
     window.location.href = url.toString();
 });
 
-// Load Stats
-document.getElementById('active-tests').textContent = '{{ $stats["running"] ?? 5 }}';
-document.getElementById('winners').textContent = '{{ $stats["winners"] ?? 12 }}';
-document.getElementById('total-participants').textContent = '{{ number_format($stats["total_participants"] ?? 45230) }}';
-document.getElementById('avg-lift').textContent = '+{{ $stats["avg_lift"] ?? 18.5 }}%';
+// Load Stats - Real data from backend
+document.getElementById('active-tests').textContent = '{{ $stats["running"] ?? 0 }}';
+document.getElementById('winners').textContent = '{{ $stats["winners"] ?? 0 }}';
+document.getElementById('total-participants').textContent = '{{ number_format($stats["total_participants"] ?? 0) }}';
+const avgLift = {{ $stats["avg_lift"] ?? 0 }};
+document.getElementById('avg-lift').textContent = (avgLift >= 0 ? '+' : '') + avgLift + '%';
 
 // Conversion Trends Chart - Real Data
 const ctx1 = document.getElementById('conversionTrendsChart').getContext('2d');
@@ -584,19 +620,37 @@ function createTest() {
     const form = document.getElementById('createTestForm');
     const formData = new FormData(form);
     
+    // Validate form
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
     const data = {
         name: formData.get('name'),
         test_type: formData.get('test_type'),
-        description: formData.get('description'),
+        description: formData.get('description') || '',
         goal_metric: formData.get('goal_metric'),
         variants: [
-            { name: 'Control', configuration: {}, is_control: true, traffic_percentage: 50 },
-            { name: 'Variant A', configuration: {}, is_control: false, traffic_percentage: 50 }
+            { 
+                name: 'Control', 
+                configuration: {}, 
+                is_control: true, 
+                traffic_percentage: 50 
+            },
+            { 
+                name: 'Variant A', 
+                configuration: {}, 
+                is_control: false, 
+                traffic_percentage: 50 
+            }
         ],
         traffic_split: { control: 50, variant: 50 },
         min_sample_size: 100,
         confidence_level: 95
     };
+    
+    console.log('Sending AB Test data:', data);
     
     fetch('/ab-tests/', {
         method: 'POST',
@@ -607,8 +661,15 @@ function createTest() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(async response => {
+        const responseData = await response.json();
+        if (!response.ok) {
+            throw new Error(responseData.message || JSON.stringify(responseData.errors || responseData));
+        }
+        return responseData;
+    })
     .then(data => {
+        console.log('Success:', data);
         if (data.message) {
             alert(data.message);
             window.location.reload();
@@ -642,6 +703,95 @@ function safeShowModal(selector) {
     } catch (e) {
         console.error('safeShowModal error', e);
     }
+}
+
+// Test Action Functions
+function startTest(testId) {
+    if (!confirm('Are you sure you want to start this test?')) return;
+    
+    fetch(`/ab-tests/${testId}/start`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Test started successfully');
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to start test');
+    });
+}
+
+function pauseTest(testId) {
+    if (!confirm('Are you sure you want to pause this test?')) return;
+    
+    fetch(`/ab-tests/${testId}/pause`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Test paused successfully');
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to pause test');
+    });
+}
+
+function endTest(testId) {
+    if (!confirm('Are you sure you want to end this test? This action cannot be undone.')) return;
+    
+    fetch(`/ab-tests/${testId}/end`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Test ended successfully');
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to end test');
+    });
+}
+
+function deleteTest(testId) {
+    if (!confirm('Are you sure you want to delete this test? This will permanently remove all data.')) return;
+    
+    fetch(`/ab-tests/${testId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Test deleted successfully');
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to delete test');
+    });
 }
 </script>
 @endsection

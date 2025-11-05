@@ -7,7 +7,7 @@
     <title>Session Replay - {{ $recording->page_title ?? 'Recording' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rrweb-player@2.0.0-alpha.11/dist/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rrweb-player@2.0.0-alpha.13/dist/style.css">
     <style>
         body { margin: 0; padding: 0; background: #1a1a1a; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .header { background: #2c2c2c; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/rrweb-player@2.0.0-alpha.11/dist/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rrweb-player@2.0.0-alpha.13/dist/index.js"></script>
     <script>
         const recordingId = {{ $recording->id }};
         let player;
@@ -157,11 +157,35 @@
                     return;
                 }
 
+                // CRITICAL FIX: Clean "null" text nodes from events before playback
+                const cleanEvents = data.events.map(event => {
+                    if (event.type === 2 && event.data?.node) {
+                        // Clone the event to avoid mutating original
+                        const cleanedEvent = JSON.parse(JSON.stringify(event));
+                        
+                        // Recursively remove "null" text nodes
+                        const cleanNode = (node) => {
+                            if (node.type === 3 && node.textContent === 'null') {
+                                node.textContent = '';
+                            }
+                            if (node.childNodes && Array.isArray(node.childNodes)) {
+                                node.childNodes.forEach(child => cleanNode(child));
+                            }
+                        };
+                        
+                        cleanNode(cleanedEvent.data.node);
+                        return cleanedEvent;
+                    }
+                    return event;
+                });
+                
+                console.log('Cleaned events, checking for null text...');
+                
                 // Initialize rrweb player with proper configuration for rendering
                 player = new rrwebPlayer({
                     target: document.getElementById('player'),
                     props: {
-                        events: data.events,
+                        events: cleanEvents,
                         width: 1280,
                         height: 720,
                         autoPlay: false,
@@ -184,6 +208,10 @@
                         ],
                         // Inlined stylesheets
                         inlineStylesheet: true,
+                        // CRITICAL: Disable ALL text masking during replay
+                        maskAllText: false,
+                        maskTextClass: null,
+                        maskTextSelector: null,
                         // Block unwanted elements
                         blockClass: 'rr-block',
                         ignoreClass: 'rr-ignore',
@@ -197,6 +225,43 @@
                 // Log player info
                 console.log('Player initialized with', data.events.length, 'events');
                 console.log('First event:', data.events[0]);
+                
+                // Debug: Check if the first event has proper HTML structure
+                const firstSnapshot = data.events.find(e => e.type === 2);
+                if (firstSnapshot) {
+                    console.log('Snapshot event found:', {
+                        hasData: !!firstSnapshot.data,
+                        hasNode: !!firstSnapshot.data?.node,
+                        nodeType: firstSnapshot.data?.node?.type,
+                        childCount: firstSnapshot.data?.node?.childNodes?.length
+                    });
+                    
+                    // Check for HTML/body
+                    const htmlNode = firstSnapshot.data?.node?.childNodes?.find(n => n.tagName === 'html');
+                    if (htmlNode) {
+                        const headNode = htmlNode.childNodes?.find(n => n.tagName === 'head');
+                        const bodyNode = htmlNode.childNodes?.find(n => n.tagName === 'body');
+                        
+                        console.log('HTML structure in player:', {
+                            hasHead: !!headNode,
+                            headChildren: headNode?.childNodes?.length,
+                            hasBody: !!bodyNode,
+                            bodyChildren: bodyNode?.childNodes?.length
+                        });
+                        
+                        // Check for style/link tags in head
+                        if (headNode) {
+                            const styleTags = headNode.childNodes?.filter(n => n.tagName === 'style' || n.tagName === 'link');
+                            console.log('Styles in head:', {
+                                styleCount: styleTags?.length,
+                                hasInlineStyles: styleTags?.some(s => s.tagName === 'style'),
+                                hasLinkTags: styleTags?.some(s => s.tagName === 'link')
+                            });
+                        }
+                    }
+                } else {
+                    console.error('❌ No snapshot event (type 2) found in events!');
+                }
                 
                 // Fix iframe sandboxing issue - allow scripts
                 setTimeout(() => {

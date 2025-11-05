@@ -302,4 +302,31 @@ class CohortService
         return CohortMember::where('cohort_id', $cohortId)
             ->sum('lifetime_value');
     }
+
+    /**
+     * Calculate retention rate for a cohort at a specific period
+     * 
+     * @param int $cohortId
+     * @param int $period Number of days from cohort start
+     * @return float Retention rate as percentage
+     */
+    public function calculateRetentionRate($cohortId, $period = 30)
+    {
+        $cohort = Cohort::find($cohortId);
+        if (!$cohort || $cohort->member_count == 0) {
+            return 0;
+        }
+
+        $baseDate = $cohort->start_date ?? $cohort->created_at;
+        $periodDate = Carbon::parse($baseDate)->addDays($period);
+        
+        // Count users who made a donation on or after this period
+        $retainedUsers = CohortMember::where('cohort_id', $cohortId)
+            ->whereHas('user.donations', function($q) use ($periodDate) {
+                $q->whereDate('created_at', '>=', $periodDate);
+            })
+            ->count();
+
+        return ($retainedUsers / $cohort->member_count) * 100;
+    }
 }

@@ -26,9 +26,22 @@ class ABTestController extends Controller
         $tests = ABTest::when($websiteId, function($query) use ($websiteId) {
                 return $query->where('website_id', $websiteId);
             })
-            ->with(['testVariants', 'results'])
+            ->with(['testVariants', 'results', 'winningVariant'])
+            ->withCount(['assignments as participants_count', 'testVariants as variants_count'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
+        
+        // Add winner variant name and latest confidence to each test
+        $tests->each(function($test) {
+            if ($test->winningVariant) {
+                $test->winner_variant = $test->winningVariant->name;
+            }
+            // Get latest result for confidence level
+            $latestResult = $test->results->sortByDesc('calculated_at')->first();
+            if ($latestResult) {
+                $test->confidence_level = $latestResult->confidence_level;
+            }
+        });
         
         $stats = $this->abTestService->getTestStats($websiteId);
         
@@ -38,7 +51,7 @@ class ABTestController extends Controller
 
         // Chart Data: Conversion trends over last 7 days
         $conversionTrend = \DB::table('ab_test_conversions as conv')
-            ->join('ab_tests as test', 'conv.ab_test_id', '=', 'test.id')
+            ->join('ab_tests as test', 'conv.test_id', '=', 'test.id')
             ->selectRaw('DATE(conv.created_at) as date, COUNT(*) as conversions')
             ->when($websiteId, function($query) use ($websiteId) {
                 return $query->where('test.website_id', $websiteId);
@@ -50,14 +63,18 @@ class ABTestController extends Controller
 
         // Chart Data: Variant performance comparison
         $variantPerformance = \DB::table('ab_test_variants as var')
-            ->join('ab_tests as test', 'var.ab_test_id', '=', 'test.id')
+            ->join('ab_tests as test', 'var.test_id', '=', 'test.id')
             ->leftJoin('ab_test_conversions as conv', 'var.id', '=', 'conv.variant_id')
-            ->selectRaw('var.variant_name, COUNT(DISTINCT conv.id) as conversions, var.views')
+            ->leftJoin('ab_test_results as res', function($join) {
+                $join->on('var.id', '=', 'res.variant_id')
+                     ->on('var.test_id', '=', 'res.test_id');
+            })
+            ->selectRaw('var.name, COUNT(DISTINCT conv.id) as conversions, COALESCE(res.impressions, 0) as views')
             ->when($websiteId, function($query) use ($websiteId) {
                 return $query->where('test.website_id', $websiteId);
             })
             ->where('test.status', 'running')
-            ->groupBy('var.id', 'var.variant_name', 'var.views')
+            ->groupBy('var.id', 'var.name', 'res.impressions')
             ->get();
 
         $chartData = [
@@ -66,7 +83,7 @@ class ABTestController extends Controller
                 'conversions' => $conversionTrend->pluck('conversions')->toArray(),
             ],
             'variants' => [
-                'labels' => $variantPerformance->pluck('variant_name')->toArray(),
+                'labels' => $variantPerformance->pluck('name')->toArray(),
                 'conversions' => $variantPerformance->pluck('conversions')->toArray(),
                 'views' => $variantPerformance->pluck('views')->toArray(),
             ]
@@ -86,7 +103,7 @@ class ABTestController extends Controller
             'test_type' => 'required|string',
             'variants' => 'required|array|min:2',
             'variants.*.name' => 'required|string',
-            'variants.*.configuration' => 'required|array',
+            'variants.*.configuration' => 'nullable|array',
             'variants.*.is_control' => 'nullable|boolean',
             'variants.*.traffic_percentage' => 'required|integer|min:0|max:100',
             'traffic_split' => 'required|array',
@@ -95,6 +112,15 @@ class ABTestController extends Controller
             'min_sample_size' => 'nullable|integer|min:10',
             'confidence_level' => 'nullable|numeric|min:80|max:99.99'
         ]);
+
+        // Ensure each variant has a configuration array (default to empty if not provided)
+        if (isset($validated['variants'])) {
+            foreach ($validated['variants'] as $key => $variant) {
+                if (!isset($variant['configuration']) || !is_array($variant['configuration'])) {
+                    $validated['variants'][$key]['configuration'] = [];
+                }
+            }
+        }
 
         $websiteId = Auth::user()->website_id ?? 1;
         
@@ -115,6 +141,17 @@ class ABTestController extends Controller
             ->findOrFail($id);
 
         return response()->json($test);
+    }
+
+    /**
+     * Show edit form
+     */
+    public function edit($id)
+    {
+        $test = ABTest::with(['testVariants', 'website'])->findOrFail($id);
+        $websites = \App\Models\Website::all();
+        
+        return view('abtests.edit', compact('test', 'websites'));
     }
 
     /**
@@ -280,19 +317,36 @@ class ABTestController extends Controller
     public function results($id)
     {
         $test = ABTest::with(['testVariants', 'results' => function($q) {
-            $q->orderBy('calculated_at', 'desc')
-              ->limit(100);
-        }, 'winningVariant'])->findOrFail($id);
+            $q->orderBy('calculated_at', 'desc');
+        }, 'winningVariant', 'website'])->findOrFail($id);
 
-        // Group results by variant
+        // Group results by variant and get latest result for each
         $resultsByVariant = $test->results->groupBy('variant_id')->map(function($variantResults) {
             return $variantResults->first(); // Get latest result
         });
 
-        return response()->json([
-            'test' => $test,
-            'results' => $resultsByVariant->values()
-        ]);
+        // Get conversion trend over time for chart
+        $conversionTrend = \DB::table('ab_test_conversions')
+            ->where('test_id', $id)
+            ->selectRaw('DATE(converted_at) as date, COUNT(*) as conversions')
+            ->whereBetween('converted_at', [\Carbon\Carbon::now()->subDays(30), \Carbon\Carbon::now()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Get variant comparison data
+        $variantStats = [];
+        foreach ($test->testVariants as $variant) {
+            $latestResult = $resultsByVariant->get($variant->id);
+            $variantStats[] = [
+                'variant' => $variant,
+                'result' => $latestResult,
+                'assignments_count' => $variant->assignments()->count(),
+                'conversions_count' => $variant->conversions()->count()
+            ];
+        }
+
+        return view('abtests.results', compact('test', 'variantStats', 'conversionTrend'));
     }
 
     /**

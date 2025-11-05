@@ -124,15 +124,23 @@ class SessionRecordingService
             return null;
         }
 
+        // CRITICAL: Sort events so type 2 (full snapshot) is FIRST
+        // Without this, rrweb can't replay because it needs the DOM structure first
+        $events = $recording->events
+            ->map(function ($event) {
+                // Decode the rrweb event
+                return json_decode($event->data, true);
+            })
+            ->sortBy(function ($rrwebEvent) {
+                // Type 2 (full snapshot) gets priority 0
+                // All other events sorted by timestamp
+                return $rrwebEvent['type'] === 2 ? 0 : (1000000000000 + $rrwebEvent['timestamp']);
+            })
+            ->values(); // Re-index array starting from 0
+
         return [
             'recording' => $recording,
-            'events' => $recording->events->map(function ($event) {
-                // The data field already contains the complete rrweb event
-                $rrwebEvent = json_decode($event->data, true);
-                
-                // Return the event as-is, rrweb expects the full event object
-                return $rrwebEvent;
-            }),
+            'events' => $events,
         ];
     }
 

@@ -106,10 +106,32 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::post('/compare', [\App\Http\Controllers\CohortController::class, 'compare'])->name('compare');
     });
 
+    // UTM Attribution Analytics Routes (WEBSITE-BASED)
+    Route::prefix('analytics/utm')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Analytics\UTMAnalyticsController::class, 'index'])->name('analytics.utm');
+        Route::get('/export', [\App\Http\Controllers\Analytics\UTMAnalyticsController::class, 'export'])->name('analytics.utm.export');
+    });
+
+    // Referrer Analytics Routes (WEBSITE-BASED)
+    Route::prefix('analytics/referrer')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Analytics\ReferrerAnalyticsController::class, 'index'])->name('analytics.referrer');
+        Route::get('/export', [\App\Http\Controllers\Analytics\ReferrerAnalyticsController::class, 'export'])->name('analytics.referrer.export');
+    });
+    
+    // QR Code Donation Admin Routes
+    Route::prefix('qr-codes')->name('admin.qr.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\QRCodeDonationController::class, 'adminIndex'])->name('index');
+        Route::post('/generate', [\App\Http\Controllers\QRCodeDonationController::class, 'generate'])->name('generate');
+        Route::post('/generate-campaign', [\App\Http\Controllers\QRCodeDonationController::class, 'generateCampaign'])->name('generate.campaign');
+        Route::post('/download', [\App\Http\Controllers\QRCodeDonationController::class, 'download'])->name('download');
+        Route::get('/statistics', [\App\Http\Controllers\QRCodeDonationController::class, 'statistics'])->name('statistics');
+    });
+
     // A/B Testing Routes
     Route::prefix('ab-tests')->name('abtests.')->group(function () {
         Route::get('/', [\App\Http\Controllers\ABTestController::class, 'index'])->name('index');
         Route::post('/', [\App\Http\Controllers\ABTestController::class, 'create'])->name('create');
+        Route::get('/{id}/edit', [\App\Http\Controllers\ABTestController::class, 'edit'])->name('edit');
         Route::get('/{id}', [\App\Http\Controllers\ABTestController::class, 'show'])->name('show');
         Route::put('/{id}', [\App\Http\Controllers\ABTestController::class, 'update'])->name('update');
         Route::delete('/{id}', [\App\Http\Controllers\ABTestController::class, 'destroy'])->name('destroy');
@@ -355,6 +377,10 @@ Route::post('/contact-form', [FrontendController::class, 'contact_form'])->name(
 
 // Newsletter subscription route
 Route::post('/newsletter/subscribe', [FrontendController::class, 'newsletterSubscribe'])->name('newsletter.subscribe');
+
+// QR Code Donation Routes (Public)
+Route::get('/qr-donate', [\App\Http\Controllers\QRCodeDonationController::class, 'donate'])->name('qr.donate');
+Route::post('/qr-donate/process', [\App\Http\Controllers\QRCodeDonationController::class, 'process'])->name('qr.donate.process');
 
 Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/', [AdminController::class, 'donation']);
