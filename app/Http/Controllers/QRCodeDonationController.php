@@ -23,7 +23,20 @@ class QRCodeDonationController extends Controller
         // Get current host
         $domain = $_SERVER['HTTP_HOST'] ?? request()->getHost();
         
-        return $protocol . $domain;
+        $fullDomain = $protocol . $domain;
+        
+        // Log for debugging
+        \Log::info('QR Code Domain Detection', [
+            'protocol' => $protocol,
+            'domain' => $domain,
+            'full_domain' => $fullDomain,
+            'http_host' => $_SERVER['HTTP_HOST'] ?? 'not set',
+            'request_host' => request()->getHost(),
+            'https' => $_SERVER['HTTPS'] ?? 'not set',
+            'x_forwarded_proto' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'not set'
+        ]);
+        
+        return $fullDomain;
     }
     
     /**
@@ -160,15 +173,23 @@ class QRCodeDonationController extends Controller
                 ->with('success', 'Processing your donation...');
                 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('QR Donation Validation Error', [
+                'errors' => $e->errors(),
+                'input' => $request->except(['_token'])
+            ]);
             return back()
                 ->withErrors($e->errors())
                 ->withInput()
-                ->with('error', 'Please check all required fields.');
+                ->with('error', 'Please check all required fields: ' . implode(', ', array_keys($e->errors())));
         } catch (\Exception $e) {
-            \Log::error('QR Donation Processing Error: ' . $e->getMessage());
+            \Log::error('QR Donation Processing Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()
                 ->withInput()
-                ->with('error', 'An error occurred. Please try again.');
+                ->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 
