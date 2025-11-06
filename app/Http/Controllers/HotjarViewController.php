@@ -241,8 +241,15 @@ class HotjarViewController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
+        // If no screenshot found, return 404 so JavaScript knows to capture one
+        if (!$screenshot || !$screenshot->screenshot_url) {
+            return response()->json([
+                'message' => 'No screenshot found'
+            ], 404);
+        }
+
         return response()->json([
-            'screenshot_url' => $screenshot->screenshot_url ?? null
+            'screenshot_url' => $screenshot->screenshot_url
         ]);
     }
 
