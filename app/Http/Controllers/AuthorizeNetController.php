@@ -310,6 +310,26 @@ class AuthorizeNetController extends Controller
                     // Track successful Authorize.Net payment for ticket purchase
                     $this->trackPaymentFunnel('completed', 'ticket', $request->amount, $tresponse->getTransId(), null, null);
 
+                    // Send push notification to website owner
+                    try {
+                        if ($website && $website->user_id) {
+                            $totalQuantity = $donation->details->sum('quantity');
+                            $ticketNames = $donation->details->map(function($detail) {
+                                $ticket = Ticket::find($detail->ticket_id);
+                                return $ticket ? $ticket->name : 'Event Ticket';
+                            })->unique()->implode(', ');
+                            
+                            $this->pushNotificationService->sendTicketPurchaseNotification(
+                                $website->user_id,
+                                $ticketNames,
+                                $totalQuantity,
+                                $donation->id
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send ticket purchase notification: ' . $e->getMessage());
+                    }
+
                     foreach ($donation->details as $key => $value) {
                         # code...
                         $ticket = Ticket::find($value->ticket_id);
@@ -389,6 +409,20 @@ class AuthorizeNetController extends Controller
 
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
+
+                    // Send push notification to website owner (Authorize.Net investment)
+                    try {
+                        if ($website && $website->user_id) {
+                            $this->pushNotificationService->sendInvestmentMilestoneNotification(
+                                $website->user_id,
+                                'New Investment Received',
+                                $investment->investment_amount,
+                                $investment->id
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send investment notification: ' . $e->getMessage());
+                    }
 
                     // Track successful Authorize.Net payment for investment
                     $this->trackPaymentFunnel('completed', 'investment', $investment->investment_amount, $tresponse->getTransId(), null, null);
@@ -504,6 +538,20 @@ class AuthorizeNetController extends Controller
                         // Send invoice email and handle post-transaction operations
                         $this->afterTransactionSaved($tran, $website);
 
+                        // Send push notification to website owner
+                        try {
+                            if ($website && $website->user_id) {
+                                $this->pushNotificationService->sendDonationNotification(
+                                    $website->user_id,
+                                    $donation->amount,
+                                    $request->first_name . ' ' . $request->last_name,
+                                    $donation->id
+                                );
+                            }
+                        } catch (\Exception $e) {
+                            \Log::error('Failed to send donation notification: ' . $e->getMessage());
+                        }
+
                         // Track successful Stripe payment
                         $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $charge->id, null, $request->input('student_id'));
 
@@ -541,6 +589,20 @@ class AuthorizeNetController extends Controller
 
                         // Send invoice email and handle post-transaction operations
                         $this->afterTransactionSaved($tran, $website);
+
+                        // Send push notification to website owner (general donation - Stripe)
+                        try {
+                            if ($website && $website->user_id) {
+                                $this->pushNotificationService->sendDonationNotification(
+                                    $website->user_id,
+                                    $donation->amount,
+                                    $request->first_name . ' ' . $request->last_name,
+                                    $donation->id
+                                );
+                            }
+                        } catch (\Exception $e) {
+                            \Log::error('Failed to send donation notification: ' . $e->getMessage());
+                        }
 
                         return view('thank-you', compact('type'));
                     } else {
@@ -583,6 +645,26 @@ class AuthorizeNetController extends Controller
 
                     // Track successful Stripe payment for ticket purchase
                     $this->trackPaymentFunnel('completed', 'ticket', $request->amount, $charge->id, null, null);
+
+                    // Send push notification to website owner
+                    try {
+                        if ($website && $website->user_id) {
+                            $totalQuantity = $donation->details->sum('quantity');
+                            $ticketNames = $donation->details->map(function($detail) {
+                                $ticket = Ticket::find($detail->ticket_id);
+                                return $ticket ? $ticket->name : 'Event Ticket';
+                            })->unique()->implode(', ');
+                            
+                            $this->pushNotificationService->sendTicketPurchaseNotification(
+                                $website->user_id,
+                                $ticketNames,
+                                $totalQuantity,
+                                $donation->id
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send ticket purchase notification: ' . $e->getMessage());
+                    }
 
                     foreach ($donation->details as $key => $value) {
                         # code...
@@ -663,6 +745,20 @@ class AuthorizeNetController extends Controller
 
                     // Send invoice email and handle post-transaction operations
                     $this->afterTransactionSaved($tran, $website);
+
+                    // Send push notification to website owner (Stripe investment)
+                    try {
+                        if ($website && $website->user_id) {
+                            $this->pushNotificationService->sendInvestmentMilestoneNotification(
+                                $website->user_id,
+                                'New Investment Received',
+                                $investment->investment_amount,
+                                $investment->id
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send investment notification: ' . $e->getMessage());
+                    }
 
                     // Track successful Stripe payment for investment
                     $this->trackPaymentFunnel('completed', 'investment', $investment->investment_amount, $charge->id, null, null);
