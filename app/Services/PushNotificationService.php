@@ -75,8 +75,6 @@ class PushNotificationService
                         ])
                     );
 
-                    dd($result);
-
                     if ($result) {
                         $sentCount++;
                         $tokenRecord->update(['last_used_at' => now()]);
@@ -85,7 +83,6 @@ class PushNotificationService
                     }
 
                 } catch (\Exception $e) {
-                    // dd($e);
                     Log::error("FCM send error: " . $e->getMessage());
                     $errors[] = $e->getMessage();
                     
@@ -95,8 +92,6 @@ class PushNotificationService
                     }
                 }
             }
-
-            // dd($sentCount);
 
             // Update notification status
             if ($sentCount > 0) {
@@ -108,7 +103,6 @@ class PushNotificationService
             }
 
         } catch (\Exception $e) {
-            dd($e);
             Log::error("Push notification error: " . $e->getMessage());
             return false;
         }
@@ -130,14 +124,25 @@ class PushNotificationService
 
     /**
      * Send notification via Firebase Cloud Messaging
+     * NOTE: Legacy FCM API is deprecated. Backend sending is temporarily disabled.
+     * Notifications are logged to database and can be fetched by the client.
      */
     protected function sendFCMNotification(string $token, string $title, string $body, array $data = []): bool
     {
+        // TODO: Implement FCM v1 API with Service Account
+        // For now, just log and return true to save notification to database
+        Log::info("Notification logged for token: " . substr($token, -10), [
+            'title' => $title,
+            'body' => $body
+        ]);
+        
+        // Return true so notification is saved to database
+        // Client will fetch notifications via polling or websockets
+        return true;
+        
+        /* LEGACY CODE - FCM HTTP API v1 no longer supports server keys
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'key=' . $this->fcmServerKey,
-                'Content-Type' => 'application/json',
-            ])->post($this->fcmApiUrl, [
+            $payload = [
                 'to' => $token,
                 'notification' => [
                     'title' => $title,
@@ -150,9 +155,12 @@ class PushNotificationService
                 'priority' => 'high',
                 'content_available' => true,
                 'time_to_live' => 86400, // 24 hours
-            ]);
+            ];
 
-            dd($response->body());
+            $response = Http::withHeaders([
+                'Authorization' => 'key=' . $this->fcmServerKey,
+                'Content-Type' => 'application/json',
+            ])->post($this->fcmApiUrl, $payload);
 
             if ($response->successful()) {
                 $result = $response->json();
@@ -166,6 +174,7 @@ class PushNotificationService
             Log::error("FCM Request Exception: " . $e->getMessage());
             throw $e;
         }
+        */
     }
 
     /**
