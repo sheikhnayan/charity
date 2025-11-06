@@ -145,7 +145,7 @@ class QRCodeDonationController extends Controller
             $donation->first_name = $request->first_name;
             $donation->last_name = $request->last_name;
             $donation->email = $request->email;
-            $donation->phone = $request->phone;
+            // $donation->phone = $request->phone;
             $donation->amount = $request->amount;
             $donation->website_id = $request->website_id;
             $donation->type = $request->type ?? 'general';
