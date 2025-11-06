@@ -62,8 +62,6 @@ class PushNotificationService
             $sentCount = 0;
             $errors = [];
 
-            dd($tokens);
-
             foreach ($tokens as $tokenRecord) {
                 try {
                     $result = $this->sendFCMNotification(
@@ -105,6 +103,7 @@ class PushNotificationService
             }
 
         } catch (\Exception $e) {
+            dd($e);
             Log::error("Push notification error: " . $e->getMessage());
             return false;
         }
