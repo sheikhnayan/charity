@@ -82,7 +82,7 @@ class PushNotificationService
                     }
 
                 } catch (\Exception $e) {
-                    // dd($e);
+                    dd($e);
                     Log::error("FCM send error: " . $e->getMessage());
                     $errors[] = $e->getMessage();
                     
@@ -103,7 +103,7 @@ class PushNotificationService
             }
 
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             Log::error("Push notification error: " . $e->getMessage());
             return false;
         }
