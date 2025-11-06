@@ -130,7 +130,6 @@ class PushNotificationService
      */
     protected function sendFCMNotification(string $token, string $title, string $body, array $data = []): bool
     {
-        dd('s');
         try {
             $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
             
@@ -186,6 +185,7 @@ class PushNotificationService
             return false;
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             Log::error("FCM v1 Request Exception", [
                 'message' => $e->getMessage(),
                 'token_suffix' => substr($token, -10)
