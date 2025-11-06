@@ -83,7 +83,7 @@ class PushNotificationService
                     }
 
                 } catch (\Exception $e) {
-                    // dd($e);
+                    dd($e);
                     Log::error("FCM send error: " . $e->getMessage());
                     $errors[] = $e->getMessage();
                     
@@ -94,7 +94,7 @@ class PushNotificationService
                 }
             }
 
-            dd($sentCount);
+            // dd($sentCount);
 
             // Update notification status
             if ($sentCount > 0) {
