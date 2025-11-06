@@ -235,7 +235,7 @@ class PushNotificationController extends Controller
                 'general'
             );
 
-            dd($success);
+            // dd($success);
 
             return response()->json([
                 'success' => $success,
