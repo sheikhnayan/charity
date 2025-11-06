@@ -162,6 +162,8 @@ class PushNotificationService
                 'Content-Type' => 'application/json',
             ])->post($url, $payload);
 
+            dd($response->body());
+
             if ($response->successful()) {
                 $result = $response->json();
                 Log::info("FCM Response", ['result' => $result]);
