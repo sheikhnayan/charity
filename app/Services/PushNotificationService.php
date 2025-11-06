@@ -124,57 +124,60 @@ class PushNotificationService
 
     /**
      * Send notification via Firebase Cloud Messaging
-     * NOTE: Legacy FCM API is deprecated. Backend sending is temporarily disabled.
-     * Notifications are logged to database and can be fetched by the client.
+     * Using Web Push Protocol directly to the browser
      */
     protected function sendFCMNotification(string $token, string $title, string $body, array $data = []): bool
     {
-        // TODO: Implement FCM v1 API with Service Account
-        // For now, just log and return true to save notification to database
-        Log::info("Notification logged for token: " . substr($token, -10), [
-            'title' => $title,
-            'body' => $body
-        ]);
-        
-        // Return true so notification is saved to database
-        // Client will fetch notifications via polling or websockets
-        return true;
-        
-        /* LEGACY CODE - FCM HTTP API v1 no longer supports server keys
         try {
+            // Use the Web API Key to send directly to browser
+            $apiKey = env('FIREBASE_API_KEY');
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            
+            $notification = [
+                'title' => $title,
+                'body' => $body,
+                'icon' => url('/images/icon-192x192.png'),
+                'badge' => url('/images/icon-72x72.png'),
+                'click_action' => $data['url'] ?? url('/'),
+                'requireInteraction' => true,
+            ];
+            
             $payload = [
                 'to' => $token,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $body,
-                    'icon' => url('/images/icon-192x192.png'),
-                    'badge' => url('/images/icon-72x72.png'),
-                    'click_action' => $data['url'] ?? url('/'),
-                ],
+                'notification' => $notification,
                 'data' => $data,
-                'priority' => 'high',
-                'content_available' => true,
-                'time_to_live' => 86400, // 24 hours
+                'webpush' => [
+                    'headers' => [
+                        'TTL' => '86400'
+                    ],
+                    'notification' => $notification,
+                    'fcm_options' => [
+                        'link' => $data['url'] ?? url('/')
+                    ]
+                ]
             ];
 
             $response = Http::withHeaders([
-                'Authorization' => 'key=' . $this->fcmServerKey,
+                'Authorization' => 'key=' . $apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->fcmApiUrl, $payload);
+            ])->post($url, $payload);
 
             if ($response->successful()) {
                 $result = $response->json();
+                Log::info("FCM Response", ['result' => $result]);
                 return isset($result['success']) && $result['success'] > 0;
             }
 
-            Log::error("FCM API Error: " . $response->body());
+            Log::error("FCM API Error", [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
             return false;
 
         } catch (\Exception $e) {
             Log::error("FCM Request Exception: " . $e->getMessage());
-            throw $e;
+            return false;
         }
-        */
     }
 
     /**
