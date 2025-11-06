@@ -114,7 +114,8 @@ class PushNotificationController extends Controller
                 ], 401);
             }
 
-            $devices = $this->notificationService->getUserTokens($user->id);
+            // Pass null to get all devices for the user across all websites
+            $devices = $this->notificationService->getUserTokens($user->id, null);
 
             return response()->json([
                 'success' => true,

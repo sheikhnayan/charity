@@ -305,13 +305,17 @@ class PushNotificationService
      */
     public function getUserTokens(int $userId, ?int $websiteId = null)
     {
-        $websiteId = $websiteId ?? $this->getCurrentWebsiteId();
+        // If website_id is explicitly null, get ALL devices for the user
+        // Otherwise filter by website_id
+        $query = UserNotificationToken::where('user_id', $userId)
+            ->where('is_active', true);
         
-        return UserNotificationToken::where('user_id', $userId)
-            ->where('website_id', $websiteId)
-            ->where('is_active', true)
-            ->orderBy('last_used_at', 'desc')
-            ->get();
+        if ($websiteId !== null) {
+            $websiteId = $websiteId ?? $this->getCurrentWebsiteId();
+            $query->where('website_id', $websiteId);
+        }
+        
+        return $query->orderBy('last_used_at', 'desc')->get();
     }
 
     /**
