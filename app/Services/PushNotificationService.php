@@ -185,7 +185,6 @@ class PushNotificationService
             return false;
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
             Log::error("FCM v1 Request Exception", [
                 'message' => $e->getMessage(),
                 'token_suffix' => substr($token, -10)

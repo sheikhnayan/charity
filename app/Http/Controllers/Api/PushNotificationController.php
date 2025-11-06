@@ -235,8 +235,6 @@ class PushNotificationController extends Controller
                 'general'
             );
 
-            dd($success);
-
             return response()->json([
                 'success' => $success,
                 'message' => $success ? 'Test notification sent!' : 'Failed to send test notification'
