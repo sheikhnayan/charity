@@ -31,7 +31,7 @@ class PushNotificationService
                 Log::warning("User not found: {$userId}");
                 return false;
             }
-            dd($user);
+            dd($this->shouldSendNotification($userId, $type));
             // Check user preferences
             if (!$this->shouldSendNotification($userId, $type)) {
                 Log::info("Notification skipped due to user preferences: User {$userId}, Type {$type}");
