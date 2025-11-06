@@ -152,6 +152,8 @@ class PushNotificationService
                 'time_to_live' => 86400, // 24 hours
             ]);
 
+            dd($response->body());
+
             if ($response->successful()) {
                 $result = $response->json();
                 return isset($result['success']) && $result['success'] > 0;
