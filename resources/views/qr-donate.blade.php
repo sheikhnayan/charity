@@ -192,6 +192,25 @@
         </div>
         
         <div class="qr-body">
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <ul class="mb-0 ps-3">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            
             <form action="{{ route('qr.donate.process') }}" method="POST" id="qrDonateForm">
                 @csrf
                 <input type="hidden" name="website_id" value="{{ $website->id }}">
@@ -223,7 +242,7 @@
                            placeholder="Enter Amount" 
                            step="0.01" 
                            min="1"
-                           value="{{ $presetAmount ?? '' }}"
+                           value="{{ old('amount', $presetAmount ?? '') }}"
                            required>
                 </div>
                 
@@ -233,14 +252,16 @@
                         <input type="text" 
                                class="form-control" 
                                name="first_name" 
-                               placeholder="First Name" 
+                               placeholder="First Name"
+                               value="{{ old('first_name') }}"
                                required>
                     </div>
                     <div class="col-6">
                         <input type="text" 
                                class="form-control" 
                                name="last_name" 
-                               placeholder="Last Name" 
+                               placeholder="Last Name"
+                               value="{{ old('last_name') }}"
                                required>
                     </div>
                 </div>
@@ -248,13 +269,15 @@
                 <input type="email" 
                        class="form-control" 
                        name="email" 
-                       placeholder="Email Address" 
+                       placeholder="Email Address"
+                       value="{{ old('email') }}"
                        required>
                 
                 <input type="tel" 
                        class="form-control" 
                        name="phone" 
-                       placeholder="Phone Number (Optional)">
+                       placeholder="Phone Number (Optional)"
+                       value="{{ old('phone') }}">
                 
                 <!-- Optional Comment -->
                 <textarea class="form-control" 

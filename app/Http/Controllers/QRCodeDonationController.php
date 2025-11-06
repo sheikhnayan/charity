@@ -45,7 +45,10 @@ class QRCodeDonationController extends Controller
             $params['type'] = $request->type;
         }
         
-        $donationUrl = url('/qr-donate?' . http_build_query($params));
+        // Use current domain for QR code URL
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $currentDomain = $_SERVER['HTTP_HOST'] ?? $website->domain;
+        $donationUrl = $protocol . $currentDomain . '/qr-donate?' . http_build_query($params);
         
         // Generate QR code
         $qrCode = QrCode::size(300)
@@ -95,47 +98,64 @@ class QRCodeDonationController extends Controller
      */
     public function process(Request $request)
     {
-        $request->validate([
-            'website_id' => 'required|exists:websites,id',
-            'amount' => 'required|numeric|min:1',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'qr_identifier' => 'required|string',
-            'type' => 'nullable|string|in:general,student,ticket,auction,investment'
-        ]);
+        try {
+            $request->validate([
+                'website_id' => 'required|exists:websites,id',
+                'amount' => 'required|numeric|min:1',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|string|max:20',
+                'qr_identifier' => 'required|string',
+                'type' => 'nullable|string|in:general,student,ticket,auction,investment'
+            ]);
 
-        // Create donation record
-        $donation = new Donation;
-        $donation->first_name = $request->first_name;
-        $donation->last_name = $request->last_name;
-        $donation->email = $request->email;
-        $donation->amount = $request->amount;
-        $donation->website_id = $request->website_id;
-        $donation->type = $request->type ?? 'general';
-        $donation->status = 0; // Pending
-        $donation->hide = $request->anonymous_donation ? 1 : 0;
-        $donation->comment = $request->comment;
-        
-        // Process tip if enabled
-        if ($request->input('tip_enabled') && $request->input('tip_amount') > 0) {
-            $donation->tip_amount = $request->input('tip_amount');
-            $donation->tip_percentage = $request->input('tip_percentage');
-            $donation->tip_enabled = true;
+            // Get website
+            $website = Website::findOrFail($request->website_id);
+
+            // Create donation record
+            $donation = new Donation;
+            $donation->first_name = $request->first_name;
+            $donation->last_name = $request->last_name;
+            $donation->email = $request->email;
+            $donation->phone = $request->phone;
+            $donation->amount = $request->amount;
+            $donation->website_id = $request->website_id;
+            $donation->type = $request->type ?? 'general';
+            $donation->status = 0; // Pending
+            $donation->hide = $request->anonymous_donation ? 1 : 0;
+            $donation->comment = $request->comment;
+            
+            // Process tip if enabled
+            if ($request->input('tip_enabled') && $request->input('tip_amount') > 0) {
+                $donation->tip_amount = $request->input('tip_amount');
+                $donation->tip_percentage = $request->input('tip_percentage');
+                $donation->tip_enabled = true;
+            }
+            
+            // Add QR tracking metadata
+            $donation->utm_source = 'qr_code';
+            $donation->utm_medium = 'qr';
+            $donation->utm_campaign = $request->campaign_name ?? 'qr_donation';
+            $donation->referrer_url = 'qr://' . $request->qr_identifier;
+            
+            $donation->save();
+
+            // Redirect to payment processing
+            return redirect('/authorize/payment/donation/' . $donation->id)
+                ->with('success', 'Processing your donation...');
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Please check all required fields.');
+        } catch (\Exception $e) {
+            \Log::error('QR Donation Processing Error: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'An error occurred. Please try again.');
         }
-        
-        // Add QR tracking metadata
-        $donation->utm_source = 'qr_code';
-        $donation->utm_medium = 'qr';
-        $donation->utm_campaign = $request->campaign_name ?? 'qr_donation';
-        $donation->referrer_url = 'qr://' . $request->qr_identifier;
-        
-        $donation->save();
-
-        // Redirect to payment processing
-        return redirect('/authorize/payment/donation/' . $donation->id)
-            ->with('success', 'Processing your donation...');
     }
 
     /**
@@ -183,7 +203,7 @@ class QRCodeDonationController extends Controller
             $website = Website::findOrFail($request->website_id);
             $size = $request->size ?? 300;
             
-            // Build campaign URL
+            // Build campaign URL using website's domain
             $params = [
                 'website_id' => $website->id,
                 'campaign' => $request->campaign_name
@@ -193,7 +213,10 @@ class QRCodeDonationController extends Controller
                 $params['amount'] = $request->preset_amount;
             }
             
-            $donationUrl = url('/qr-donate?' . http_build_query($params));
+            // Use website domain for QR code URL
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+            $currentDomain = $_SERVER['HTTP_HOST'] ?? $website->domain;
+            $donationUrl = $protocol . $currentDomain . '/qr-donate?' . http_build_query($params);
             
             // Generate QR code as base64
             $qrCode = base64_encode(
