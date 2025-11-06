@@ -245,4 +245,88 @@ class HotjarViewController extends Controller
             'screenshot_url' => $screenshot->screenshot_url ?? null
         ]);
     }
+
+    /**
+     * Capture and save page screenshot
+     */
+    public function captureScreenshot(Request $request)
+    {
+        try {
+            $request->validate([
+                'website_id' => 'required|integer',
+                'page_path' => 'required|string',
+                'screenshot_data' => 'required|string',
+                'viewport_width' => 'nullable|integer',
+                'viewport_height' => 'nullable|integer'
+            ]);
+
+            // Extract base64 image data
+            $screenshotData = $request->screenshot_data;
+            
+            if (preg_match('/^data:image\/(\w+);base64,/', $screenshotData, $type)) {
+                $screenshotData = substr($screenshotData, strpos($screenshotData, ',') + 1);
+                $type = strtolower($type[1]); // jpg, png, gif
+
+                $screenshotData = base64_decode($screenshotData);
+
+                if ($screenshotData === false) {
+                    throw new \Exception('Base64 decode failed');
+                }
+            } else {
+                throw new \Exception('Invalid image data');
+            }
+
+            // Generate filename
+            $filename = 'screenshot_' . $request->website_id . '_' . md5($request->page_path) . '_' . time() . '.png';
+            $filepath = 'screenshots/' . $filename;
+            
+            // Ensure directory exists
+            $directory = public_path('screenshots');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            // Save file
+            $fullPath = public_path($filepath);
+            file_put_contents($fullPath, $screenshotData);
+
+            // Save to database
+            $screenshotUrl = asset($filepath);
+            
+            \DB::table('page_screenshots')->insert([
+                'website_id' => $request->website_id,
+                'page_path' => $request->page_path,
+                'screenshot_url' => $screenshotUrl,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            \Log::info('Screenshot captured successfully', [
+                'website_id' => $request->website_id,
+                'page_path' => $request->page_path,
+                'screenshot_url' => $screenshotUrl
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'screenshot_url' => $screenshotUrl,
+                'message' => 'Screenshot captured successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Screenshot capture failed: ' . $e->getMessage(), [
+                'website_id' => $request->website_id ?? null,
+                'page_path' => $request->page_path ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to capture screenshot: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

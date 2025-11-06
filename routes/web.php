@@ -75,7 +75,7 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         return view('admin.notification-settings');
     })->name('admin.notification-settings');
     
-    // Hotjar API Routes
+    // Hotjar Admin API Routes (for viewing data)
     Route::prefix('api')->group(function () {
         Route::get('/session-recording', [HotjarViewController::class, 'getRecordings']);
         Route::get('/heatmap/popular-pages', [HotjarViewController::class, 'getPopularPages']);
@@ -83,7 +83,6 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::get('/heatmap/move', [HotjarViewController::class, 'getMoveHeatmap']);
         Route::get('/heatmap/scroll', [HotjarViewController::class, 'getScrollDepth']);
         Route::get('/heatmap/element-stats', [HotjarViewController::class, 'getElementStats']);
-        Route::get('/heatmap/screenshot', [HotjarViewController::class, 'getScreenshot']);
     });
     
     // Heatmaps & Session Recordings (use existing working system)
@@ -193,6 +192,17 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::post('/users', [\App\Http\Controllers\ExportController::class, 'users'])->name('users');
         Route::post('/custom', [\App\Http\Controllers\ExportController::class, 'custom'])->name('custom');
     });
+});
+
+// Public Hotjar Tracking API Routes (NO AUTH REQUIRED - for tracking scripts on public pages)
+Route::prefix('api')->group(function () {
+    Route::post('/session-recording/start', [HotjarViewController::class, 'startRecording']);
+    Route::post('/session-recording/events', [HotjarViewController::class, 'saveEvents']);
+    Route::post('/heatmap/click', [HotjarViewController::class, 'trackClick']);
+    Route::post('/heatmap/move', [HotjarViewController::class, 'trackMouseMove']);
+    Route::post('/heatmap/scroll', [HotjarViewController::class, 'trackScroll']);
+    Route::get('/heatmap/screenshot', [HotjarViewController::class, 'getScreenshot']);
+    Route::post('/heatmap/screenshot/capture', [HotjarViewController::class, 'captureScreenshot']);
 });
 
 // Public Hotjar Demo (no auth required)
