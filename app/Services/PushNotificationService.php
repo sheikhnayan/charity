@@ -130,6 +130,7 @@ class PushNotificationService
      */
     protected function sendFCMNotification(string $token, string $title, string $body, array $data = []): bool
     {
+        dd('s');
         try {
             $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
             
@@ -167,7 +168,7 @@ class PushNotificationService
                 'Content-Type' => 'application/json',
             ])->post($url, $message);
 
-            dd($response->body());
+            // dd($response->body());
 
             if ($response->successful()) {
                 Log::info("FCM v1 notification sent successfully", [
