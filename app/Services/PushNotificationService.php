@@ -167,6 +167,8 @@ class PushNotificationService
                 'Content-Type' => 'application/json',
             ])->post($url, $message);
 
+            dd($response->body());
+
             if ($response->successful()) {
                 Log::info("FCM v1 notification sent successfully", [
                     'token_suffix' => substr($token, -10),
