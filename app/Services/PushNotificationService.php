@@ -31,7 +31,6 @@ class PushNotificationService
                 Log::warning("User not found: {$userId}");
                 return false;
             }
-            dd($this->shouldSendNotification($userId, $type));
             // Check user preferences
             if (!$this->shouldSendNotification($userId, $type)) {
                 Log::info("Notification skipped due to user preferences: User {$userId}, Type {$type}");
@@ -42,6 +41,8 @@ class PushNotificationService
             $tokens = UserNotificationToken::where('user_id', $userId)
                 ->active()
                 ->get();
+
+            dd($tokens);
 
             if ($tokens->isEmpty()) {
                 Log::info("No active tokens for user: {$userId}");
