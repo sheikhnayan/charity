@@ -25,6 +25,7 @@ class PushNotificationService
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = [], string $type = 'general'): bool
     {
+        dd('s');
         try {
             $user = User::find($userId);
             if (!$user) {
