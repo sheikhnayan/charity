@@ -12,12 +12,15 @@ use Illuminate\Support\Facades\Log;
 class PushNotificationService
 {
     protected $fcmServerKey;
-    protected $fcmApiUrl = 'https://fcm.googleapis.com/fcm/send';
+    protected $projectId;
+    protected $serviceAccountPath;
 
     public function __construct()
     {
         // FCM Server Key - should be in .env file
         $this->fcmServerKey = env('FCM_SERVER_KEY', 'YOUR_FCM_SERVER_KEY');
+        $this->projectId = env('FIREBASE_PROJECT_ID', 'charity-390ca');
+        $this->serviceAccountPath = base_path('firebase-service-account.json');
     }
 
     /**
@@ -123,62 +126,127 @@ class PushNotificationService
     }
 
     /**
-     * Send notification via Firebase Cloud Messaging
-     * Using Web Push Protocol directly to the browser
+     * Send notification via Firebase Cloud Messaging HTTP v1 API
      */
     protected function sendFCMNotification(string $token, string $title, string $body, array $data = []): bool
     {
         try {
-            // Use the Web API Key to send directly to browser
-            $apiKey = env('FIREBASE_API_KEY');
-            $url = 'https://fcm.googleapis.com/fcm/send';
+            $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
             
-            $notification = [
-                'title' => $title,
-                'body' => $body,
-                'icon' => url('/images/icon-192x192.png'),
-                'badge' => url('/images/icon-72x72.png'),
-                'click_action' => $data['url'] ?? url('/'),
-                'requireInteraction' => true,
-            ];
+            // Convert all data values to strings (v1 API requirement)
+            $stringData = [];
+            foreach ($data as $key => $value) {
+                $stringData[$key] = (string) $value;
+            }
             
-            $payload = [
-                'to' => $token,
-                'notification' => $notification,
-                'data' => $data,
-                'webpush' => [
-                    'headers' => [
-                        'TTL' => '86400'
+            $message = [
+                'message' => [
+                    'token' => $token,
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
                     ],
-                    'notification' => $notification,
-                    'fcm_options' => [
-                        'link' => $data['url'] ?? url('/')
-                    ]
+                    'webpush' => [
+                        'notification' => [
+                            'icon' => url('/images/icon-192x192.png'),
+                            'badge' => url('/images/icon-72x72.png'),
+                            'requireInteraction' => true,
+                        ],
+                        'fcm_options' => [
+                            'link' => $data['url'] ?? url('/'),
+                        ],
+                    ],
+                    'data' => $stringData,
                 ]
             ];
 
+            $accessToken = $this->getAccessToken();
+            
             $response = Http::withHeaders([
-                'Authorization' => 'key=' . $apiKey,
+                'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
-            ])->post($url, $payload);
-
-            dd($response->body());
+            ])->post($url, $message);
 
             if ($response->successful()) {
-                $result = $response->json();
-                Log::info("FCM Response", ['result' => $result]);
-                return isset($result['success']) && $result['success'] > 0;
+                Log::info("FCM v1 notification sent successfully", [
+                    'token_suffix' => substr($token, -10),
+                    'title' => $title
+                ]);
+                return true;
             }
 
-            Log::error("FCM API Error", [
+            Log::error("FCM v1 API Error", [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
+                'token_suffix' => substr($token, -10)
             ]);
             return false;
 
         } catch (\Exception $e) {
-            Log::error("FCM Request Exception: " . $e->getMessage());
+            Log::error("FCM v1 Request Exception", [
+                'message' => $e->getMessage(),
+                'token_suffix' => substr($token, -10)
+            ]);
             return false;
+        }
+    }
+
+    /**
+     * Get OAuth 2.0 access token from Service Account
+     */
+    protected function getAccessToken(): string
+    {
+        try {
+            // Check if service account file exists
+            if (!file_exists($this->serviceAccountPath)) {
+                throw new \Exception("Service account file not found: {$this->serviceAccountPath}");
+            }
+
+            $serviceAccount = json_decode(file_get_contents($this->serviceAccountPath), true);
+            
+            // Create JWT
+            $now = time();
+            $jwtHeader = base64_encode(json_encode([
+                'alg' => 'RS256',
+                'typ' => 'JWT'
+            ]));
+            
+            $jwtClaim = base64_encode(json_encode([
+                'iss' => $serviceAccount['client_email'],
+                'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+                'aud' => 'https://oauth2.googleapis.com/token',
+                'iat' => $now,
+                'exp' => $now + 3600
+            ]));
+            
+            $jwtSignature = '';
+            $dataToSign = $jwtHeader . '.' . $jwtClaim;
+            
+            openssl_sign(
+                $dataToSign,
+                $jwtSignature,
+                $serviceAccount['private_key'],
+                OPENSSL_ALGO_SHA256
+            );
+            
+            $jwt = $dataToSign . '.' . base64_encode($jwtSignature);
+            
+            // Exchange JWT for access token
+            $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion' => $jwt
+            ]);
+            
+            if ($response->successful()) {
+                $result = $response->json();
+                return $result['access_token'];
+            }
+            
+            throw new \Exception("Failed to get access token: " . $response->body());
+            
+        } catch (\Exception $e) {
+            Log::error("OAuth token generation failed: " . $e->getMessage());
+            throw $e;
         }
     }
 
