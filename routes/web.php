@@ -343,6 +343,43 @@ Route::get('/run-migrate', function () {
     }
 });
 
+// Clear all cache route (for deployment)
+Route::get('/clear-all-cache', function () {
+    try {
+        Artisan::call('route:clear');
+        $route = Artisan::output();
+        
+        Artisan::call('config:clear');
+        $config = Artisan::output();
+        
+        Artisan::call('cache:clear');
+        $cache = Artisan::output();
+        
+        Artisan::call('view:clear');
+        $view = Artisan::output();
+        
+        Artisan::call('optimize');
+        $optimize = Artisan::output();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'All caches cleared successfully!',
+            'details' => [
+                'route' => $route,
+                'config' => $config,
+                'cache' => $cache,
+                'view' => $view,
+                'optimize' => $optimize
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::get('/', [
     FrontendController::class, 'index'
 ])->name('home');
