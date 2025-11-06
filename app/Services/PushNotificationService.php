@@ -42,7 +42,7 @@ class PushNotificationService
                 ->active()
                 ->get();
 
-            dd($tokens);
+            // dd($tokens);
 
             if ($tokens->isEmpty()) {
                 Log::info("No active tokens for user: {$userId}");
@@ -62,8 +62,6 @@ class PushNotificationService
             // Send to all devices
             $sentCount = 0;
             $errors = [];
-
-            dd($tokens);
 
             foreach ($tokens as $tokenRecord) {
                 try {
