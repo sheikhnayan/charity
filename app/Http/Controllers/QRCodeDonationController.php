@@ -7,6 +7,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Website;
 use App\Models\Donation;
 use Illuminate\Support\Str;
+use App\Services\PaymentFunnelService;
 
 class QRCodeDonationController extends Controller
 {
@@ -168,8 +169,46 @@ class QRCodeDonationController extends Controller
             
             $donation->save();
 
-            // Redirect to payment processing
-            return redirect('/authorize/payment/donation/' . $donation->id)
+            // Track payment initiation funnel event
+            try {
+                $funnelService = new PaymentFunnelService();
+                $funnelService->trackPaymentInitiated(
+                    $donation->type ?? 'general',
+                    $donation->amount,
+                    'authorize_net',
+                    [
+                        'first_name' => $donation->first_name,
+                        'last_name' => $donation->last_name,
+                        'email' => $donation->email,
+                        'comment' => $donation->comment,
+                        'anonymous' => $donation->hide ? true : false,
+                        'source' => 'qr_code',
+                        'qr_identifier' => $request->qr_identifier,
+                        'campaign' => $request->campaign_name
+                    ],
+                    null, // user_id (QR donations are usually anonymous/public)
+                    $website->id
+                );
+            } catch (\Exception $e) {
+                \Log::error('Payment funnel tracking error in QR donation: ' . $e->getMessage());
+            }
+
+            // Build payment URL using website's domain
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+                        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') 
+                        ? 'https://' : 'http://';
+            
+            $paymentUrl = $protocol . $website->domain . '/authorize/payment/donation/' . $donation->id;
+            
+            \Log::info('QR Donation Payment Redirect', [
+                'donation_id' => $donation->id,
+                'website_id' => $website->id,
+                'website_domain' => $website->domain,
+                'payment_url' => $paymentUrl
+            ]);
+
+            // Redirect to payment processing on the correct website domain
+            return redirect($paymentUrl)
                 ->with('success', 'Processing your donation...');
                 
         } catch (\Illuminate\Validation\ValidationException $e) {
