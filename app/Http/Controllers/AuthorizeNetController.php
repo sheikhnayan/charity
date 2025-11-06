@@ -18,12 +18,19 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Services\PaymentGatewayService;
 use App\Services\PaymentFunnelService;
+use App\Services\PushNotificationService;
 use App\Mail\TransactionInvoice;
 use Illuminate\Support\Facades\Mail;
 use Stripe;
 
 class AuthorizeNetController extends Controller
 {
+    protected $pushNotificationService;
+
+    public function __construct()
+    {
+        $this->pushNotificationService = new PushNotificationService();
+    }
     /**
      * success response method.
      *
@@ -147,6 +154,46 @@ class AuthorizeNetController extends Controller
                     }
                     
                     $donation->update();
+
+                    // Send push notification to website owner
+                    try {
+                        $donorName = trim($donation->first_name . ' ' . $donation->last_name);
+                        if (empty($donorName)) {
+                            $donorName = 'Anonymous Donor';
+                        }
+                        
+                        $this->pushNotificationService->sendDonationNotification(
+                            $donation->user_id,
+                            $donation->amount,
+                            $donorName,
+                            $donation->id
+                        );
+
+                        // Check if goal is reached and send notification
+                        $website = Website::find($donation->website_id);
+                        if ($website) {
+                            $setting = Setting::where('website_id', $website->id)->first();
+                            if ($setting && $setting->goal > 0) {
+                                // Calculate total donations
+                                $totalDonations = Donation::where('website_id', $website->id)
+                                    ->where('status', 1)
+                                    ->sum('amount');
+                                
+                                // Check if we just reached the goal (within donation amount tolerance)
+                                $previousTotal = $totalDonations - $donation->amount;
+                                if ($previousTotal < $setting->goal && $totalDonations >= $setting->goal) {
+                                    // Goal just reached!
+                                    $this->pushNotificationService->sendGoalReachedNotification(
+                                        $donation->user_id,
+                                        $website->name ?? 'Campaign',
+                                        $setting->goal
+                                    );
+                                }
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Push notification error for donation: ' . $e->getMessage());
+                    }
 
                     if ($donation->type == 'student') {
                         # code...

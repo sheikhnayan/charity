@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Bid;
 use App\Models\Auction;
+use App\Models\User;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class BidController extends Controller
 {
+    protected $pushNotificationService;
+
+    public function __construct()
+    {
+        $this->pushNotificationService = new PushNotificationService();
+    }
     /**
      * Store a new bid
      */
@@ -46,6 +54,25 @@ class BidController extends Controller
                 'email' => $request->email,
                 'amount' => $request->amount
             ]);
+
+            // Send outbid notification to previous highest bidder
+            try {
+                if ($latestBid && $latestBid->email) {
+                    // Find user by email
+                    $previousBidder = User::where('email', $latestBid->email)->first();
+                    
+                    if ($previousBidder) {
+                        $this->pushNotificationService->sendAuctionOutbidNotification(
+                            $previousBidder->id,
+                            $auction->title ?? 'Auction Item',
+                            $request->amount,
+                            $auction->id
+                        );
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Push notification error for auction outbid: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => true,

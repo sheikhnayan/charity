@@ -15,6 +15,25 @@
 
     <meta name="description" content="" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @auth
+    <meta name="user-id" content="{{ Auth::id() }}" />
+    @endauth
+    
+    <!-- Firebase Configuration -->
+    <meta name="firebase-api-key" content="{{ env('FIREBASE_API_KEY') }}">
+    <meta name="firebase-auth-domain" content="{{ env('FIREBASE_AUTH_DOMAIN') }}">
+    <meta name="firebase-project-id" content="{{ env('FIREBASE_PROJECT_ID') }}">
+    <meta name="firebase-storage-bucket" content="{{ env('FIREBASE_STORAGE_BUCKET') }}">
+    <meta name="firebase-messaging-sender-id" content="{{ env('FIREBASE_MESSAGING_SENDER_ID') }}">
+    <meta name="firebase-app-id" content="{{ env('FIREBASE_APP_ID') }}">
+    <meta name="firebase-vapid-key" content="{{ env('FIREBASE_VAPID_KEY') }}">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fundably">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
@@ -154,6 +173,13 @@
     <a href="/admins/dealmaker-settings" class="menu-link">
       <i class="menu-icon tf-icons bx bx-home"></i>
       <div class="text-truncate">Homepage Settings</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('admin/notification-settings') ? 'active' : '' }}">
+    <a href="/admin/notification-settings" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-bell"></i>
+      <div class="text-truncate">Notifications</div>
     </a>
   </li>
 
@@ -376,17 +402,45 @@
               <!-- /Search -->
 
               <ul class="navbar-nav flex-row align-items-center ms-md-auto">
-                <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item lh-1 me-4">
+                <!-- Notifications -->
+                <li class="nav-item navbar-dropdown dropdown me-3">
                   <a
-                    class="github-button"
-                    href="https://github.com/themeselection/sneat-bootstrap-html-admin-template-free"
-                    data-icon="octicon-star"
-                    data-size="large"
-                    data-show-count="true"
-                    aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
-                    >Star</a
-                  >
+                    class="nav-link dropdown-toggle hide-arrow p-0"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bx bx-bell bx-md"></i>
+                    <span class="badge rounded-pill bg-danger badge-notifications" id="notification-badge" style="display: none;">0</span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" style="width: 380px; max-height: 450px; overflow-y: auto;">
+                    <li>
+                      <div class="dropdown-header d-flex justify-content-between align-items-center py-3">
+                        <h6 class="mb-0">Notifications</h6>
+                        <a href="/admin/notification-settings" class="small text-muted">
+                          <i class="bx bx-cog"></i> Settings
+                        </a>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider my-0"></div>
+                    </li>
+                    <li>
+                      <div id="notifications-list" class="px-3 py-2">
+                        <div class="text-center text-muted py-4">
+                          <i class="bx bx-bell-off bx-lg mb-2"></i>
+                          <p class="mb-0">No notifications yet</p>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider my-0"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item text-center py-2" href="javascript:void(0);" id="mark-all-read">
+                        <small>Mark all as read</small>
+                      </a>
+                    </li>
+                  </ul>
                 </li>
 
                 <!-- User -->
@@ -488,7 +542,30 @@
 
     <!-- endbuild -->
 
-    <!-- Vendors JS -->
+    <!-- Custom Notification Styles -->
+    <style>
+    .badge-notifications {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        min-width: 18px;
+        height: 18px;
+        padding: 2px 5px;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 14px;
+    }
+    
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .notification-unread {
+        background-color: #f0f7ff;
+    }
+    </style>
+
+    <!-- Vendors CSS -->
     <script src="{{asset('user/assets/vendor/libs/apex-charts/apexcharts.js')}}"></script>
 
     <!-- Main JS -->
@@ -496,10 +573,215 @@
     <script src="{{asset('user/assets/js/main.js')}}"></script>
 
     <!-- Page JS -->
+        <!-- Page JS -->
     <script src="{{asset('user/assets/js/dashboards-analytics.js')}}"></script>
+
+    <!-- Push Notifications -->
+    <script src="{{asset('js/push-notifications.js')}}"></script>
+    
+    <!-- Notification Bell Handler -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationBadge = document.getElementById('notification-badge');
+        const notificationsList = document.getElementById('notifications-list');
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        
+        // Exit if notification elements don't exist on this page
+        if (!notificationBadge || !notificationsList || !markAllReadBtn) {
+            return;
+        }
+        
+        // Load unread count
+        async function loadUnreadCount() {
+            try {
+                const response = await fetch('/api/notifications/unread-count', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data.unread_count || 0;
+                    
+                    if (count > 0) {
+                        notificationBadge.textContent = count > 99 ? '99+' : count;
+                        notificationBadge.style.display = 'block';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load unread count:', error);
+            }
+        }
+        
+        // Load notification list
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications/list?limit=10', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.notifications && data.notifications.length > 0) {
+                        notificationsList.innerHTML = '';
+                        
+                        data.notifications.forEach(notification => {
+                            const notifItem = document.createElement('div');
+                            notifItem.className = 'dropdown-item d-flex align-items-start p-3 ' + (notification.read_at ? '' : 'bg-light');
+                            notifItem.style.cursor = 'pointer';
+                            
+                            const icon = getNotificationIcon(notification.type);
+                            const timeAgo = formatTimeAgo(notification.created_at);
+                            
+                            notifItem.innerHTML = `
+                                <div class="me-3">
+                                    <i class="bx ${icon} bx-md text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 ${notification.read_at ? 'text-muted' : ''}">${notification.title}</h6>
+                                    <p class="mb-1 small ${notification.read_at ? 'text-muted' : ''}">${notification.body}</p>
+                                    <small class="text-muted">${timeAgo}</small>
+                                </div>
+                                ${!notification.read_at ? '<span class="badge bg-primary">New</span>' : ''}
+                            `;
+                            
+                            notifItem.addEventListener('click', () => handleNotificationClick(notification));
+                            notificationsList.appendChild(notifItem);
+                        });
+                    } else {
+                        notificationsList.innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                <i class="bx bx-bell-off bx-lg mb-2"></i>
+                                <p class="mb-0">No notifications yet</p>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load notifications:', error);
+            }
+        }
+        
+        // Handle notification click
+        async function handleNotificationClick(notification) {
+            // Mark as read
+            if (!notification.read_at) {
+                try {
+                    await fetch(`/api/notifications/${notification.id}/read`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    loadUnreadCount();
+                    loadNotifications();
+                } catch (error) {
+                    console.error('Failed to mark as read:', error);
+                }
+            }
+            
+            // Navigate to URL if provided
+            if (notification.data && notification.data.url) {
+                window.location.href = notification.data.url;
+            }
+        }
+        
+        // Mark all as read
+        markAllReadBtn.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/notifications/mark-all-read', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    loadUnreadCount();
+                    loadNotifications();
+                }
+            } catch (error) {
+                console.error('Failed to mark all as read:', error);
+            }
+        });
+        
+        // Helper functions
+        function getNotificationIcon(type) {
+            const icons = {
+                'donation': 'bx-donate-heart',
+                'auction_outbid': 'bx-gavel',
+                'auction_won': 'bx-trophy',
+                'goal_reached': 'bx-target-lock',
+                'campaign_update': 'bx-news',
+                'investment_milestone': 'bx-trending-up',
+                'ticket_purchased': 'bx-receipt'
+            };
+            return icons[type] || 'bx-bell';
+        }
+        
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+        
+        // Load data on page load
+        loadUnreadCount();
+        
+        // Reload when dropdown is opened
+        const dropdownTrigger = notificationBadge.closest('.nav-item').querySelector('[data-bs-toggle="dropdown"]');
+        if (dropdownTrigger) {
+            dropdownTrigger.addEventListener('click', function() {
+                loadNotifications();
+            });
+        }
+        
+        // Refresh every 30 seconds
+        setInterval(loadUnreadCount, 30000);
+    });
+    </script>
+    
+    <!-- PWA Install Prompt -->
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button/banner (you can customize this)
+            console.log('PWA install prompt available');
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            deferredPrompt = null;
+        });
+    </script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>
 
     <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\BidController;
 use App\Http\Controllers\Api\FunnelTrackingController;
+use App\Http\Controllers\API\PushNotificationController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\SessionRecordingController;
 use App\Http\Controllers\HeatmapController;
@@ -195,6 +196,20 @@ Route::post('/klaviyo-v5/subscribe', function (Request $request) {
             'list_id' => 'default'
         ]
     ], 200);
+});
+
+// Push Notification API Routes
+Route::prefix('notifications')->middleware(['web', 'auth'])->group(function () {
+    Route::post('/save-token', [PushNotificationController::class, 'saveToken']);
+    Route::post('/delete-token', [PushNotificationController::class, 'deleteToken']);
+    Route::get('/devices', [PushNotificationController::class, 'getDevices']);
+    Route::get('/list', [PushNotificationController::class, 'getNotifications']);
+    Route::post('/{id}/read', [PushNotificationController::class, 'markAsRead']);
+    Route::post('/mark-all-read', [PushNotificationController::class, 'markAllAsRead']);
+    Route::get('/unread-count', [PushNotificationController::class, 'getUnreadCount']);
+    Route::get('/preferences', [PushNotificationController::class, 'getPreferences']);
+    Route::post('/preferences', [PushNotificationController::class, 'updatePreferences']);
+    Route::post('/test', [PushNotificationController::class, 'testNotification']);
 });
 
 // DealMaker logger endpoint

@@ -2333,6 +2333,278 @@ button a:hover {
         z-index: 999;
         backdrop-filter: blur(2px);
     }
+    
+    /* ============================================ */
+    /* VIDEO BACKGROUND COMPONENT */
+    /* ============================================ */
+    
+    .video-background-component {
+        position: relative;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .video-background-section {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    .video-background-section .video-bg {
+        z-index: 0;
+    }
+    
+    .video-background-section .video-overlay {
+        pointer-events: none;
+    }
+    
+    .video-background-section .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .video-background-section h1 {
+            font-size: 2rem !important;
+        }
+        
+        .video-background-section p {
+            font-size: 1.2rem !important;
+        }
+        
+        .video-background-section .btn {
+            padding: 12px 30px !important;
+            font-size: 1rem !important;
+        }
+        
+        .video-background-section img {
+            max-width: 90% !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .video-background-section h1 {
+            font-size: 1.5rem !important;
+        }
+        
+        .video-background-section p {
+            font-size: 1rem !important;
+        }
+        
+        .video-background-section .btn {
+            padding: 10px 25px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+    
+    /* ============================================ */
+    /* ADVANCED ANIMATION SYSTEM */
+    /* ============================================ */
+    
+    /* Base animated section - hidden by default */
+    .animated-section {
+        position: relative;
+    }
+    
+    .animated-column {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    
+    /* Slide In from Left */
+    .animated-section[data-animation="slideLeft"] .animated-column {
+        transform: translateX(-100px);
+    }
+    .animated-section[data-animation="slideLeft"] .animated-column.animation-triggered {
+        animation: slideInLeft forwards;
+    }
+    @keyframes slideInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Slide In from Right */
+    .animated-section[data-animation="slideRight"] .animated-column {
+        transform: translateX(100px);
+    }
+    .animated-section[data-animation="slideRight"] .animated-column.animation-triggered {
+        animation: slideInRight forwards;
+    }
+    @keyframes slideInRight {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Slide In from Bottom */
+    .animated-section[data-animation="slideUp"] .animated-column {
+        transform: translateY(80px);
+    }
+    .animated-section[data-animation="slideUp"] .animated-column.animation-triggered {
+        animation: slideInUp forwards;
+    }
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Slide In from Top */
+    .animated-section[data-animation="slideDown"] .animated-column {
+        transform: translateY(-80px);
+    }
+    .animated-section[data-animation="slideDown"] .animated-column.animation-triggered {
+        animation: slideInDown forwards;
+    }
+    @keyframes slideInDown {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Fade In */
+    .animated-section[data-animation="fade"] .animated-column.animation-triggered {
+        animation: fadeIn forwards;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Fade In + Zoom */
+    .animated-section[data-animation="fadeZoom"] .animated-column {
+        transform: scale(0.8);
+    }
+    .animated-section[data-animation="fadeZoom"] .animated-column.animation-triggered {
+        animation: fadeZoom forwards;
+    }
+    @keyframes fadeZoom {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    /* Fade In + Blur */
+    .animated-section[data-animation="fadeBlur"] .animated-column {
+        filter: blur(10px);
+    }
+    .animated-section[data-animation="fadeBlur"] .animated-column.animation-triggered {
+        animation: fadeBlur forwards;
+    }
+    @keyframes fadeBlur {
+        to {
+            opacity: 1;
+            filter: blur(0);
+        }
+    }
+    
+    /* Bounce In */
+    .animated-section[data-animation="bounce"] .animated-column {
+        transform: scale(0.3);
+    }
+    .animated-section[data-animation="bounce"] .animated-column.animation-triggered {
+        animation: bounceIn forwards;
+    }
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    /* Flip In */
+    .animated-section[data-animation="flip"] .animated-column {
+        transform: perspective(400px) rotateY(90deg);
+    }
+    .animated-section[data-animation="flip"] .animated-column.animation-triggered {
+        animation: flipIn forwards;
+    }
+    @keyframes flipIn {
+        to {
+            opacity: 1;
+            transform: perspective(400px) rotateY(0deg);
+        }
+    }
+    
+    /* Rotate In */
+    .animated-section[data-animation="rotate"] .animated-column {
+        transform: rotate(-180deg) scale(0.5);
+    }
+    .animated-section[data-animation="rotate"] .animated-column.animation-triggered {
+        animation: rotateIn forwards;
+    }
+    @keyframes rotateIn {
+        to {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+    }
+    
+    /* Parallax Section */
+    .parallax-section {
+        background-attachment: scroll !important;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+        will-change: background-position;
+    }
+    
+    /* Preview indicator for animations (only visible in builder) */
+    .animated-section::before {
+        content: '✨ Animated';
+        position: absolute;
+        top: -20px;
+        left: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 20;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+    
+    .parallax-section::after {
+        content: '🏔️ Parallax';
+        position: absolute;
+        top: -20px;
+        right: 10px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 20;
+        pointer-events: none;
+        opacity: 0.8;
+    }
   </style>
 
 
@@ -2424,6 +2696,10 @@ button a:hover {
             <button class="save-btn" onclick="showApplyTemplateModal()" style="background: #17a2b8; margin-left: 10px;">
                 <i class="bi bi-clipboard-plus"></i> Apply Template
             </button>
+            
+            <button class="save-btn" onclick="showInsertSectionTemplateModal()" style="background: #6f42c1; margin-left: 10px;">
+                <i class="bi bi-folder-symlink"></i> Insert Section
+            </button>
 
             <div id="componentsTab" class="tab-section">
                 <h3><i class="bi bi-collection"></i> Components</h3>
@@ -2481,6 +2757,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="invest-cta"><i class="fas fa-dollar-sign me-2"></i>Investment CTA</div>
                 <div class="component-item" draggable="true" data-type="image"><i class="fas fa-image me-2"></i>Image</div>
                 <div class="component-item" draggable="true" data-type="numbered-timeline"><i class="fas fa-list-ol me-2"></i>Numbered Timeline</div>
+                <div class="component-item" draggable="true" data-type="video-background"><i class="fas fa-video me-2"></i>Video Background</div>
                 </div>
             </div>
 
@@ -2498,7 +2775,12 @@ button a:hover {
 
     <div class="canvas" id="canvas">
       <div class="page" id="page" style="background-color: {{ $data->background_color ?? '#fff' }}">
-        <div class="dropzone">Drop components here</div>
+        <div class="dropzone">
+          <div style="margin-bottom: 15px;">Drop components here</div>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); currentTargetColumn = null; showInsertSectionTemplateModal();" style="pointer-events: auto;">
+            <i class="fas fa-plus-circle"></i> Insert Section Template
+          </button>
+        </div>
       </div>
     </div>
 
@@ -2700,6 +2982,121 @@ button a:hover {
         </div>
     </div>
 
+    <!-- Save Section as Template Modal -->
+    <div id="saveSectionTemplateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#fff; border-radius:10px; padding:30px; position:relative; max-width:500px; width:90vw;">
+            <span class="close" onclick="closeSaveSectionTemplateModal()" style="position:absolute; top:15px; right:25px; cursor:pointer; font-size:28px; color:#333;">&times;</span>
+            
+            <h3 style="margin-bottom:20px; color:#333;">
+                <i class="bi bi-folder-plus" style="margin-right:10px; color:#28a745;"></i>
+                Save Section as Template
+            </h3>
+            
+            <form id="saveSectionTemplateForm" style="margin-bottom:0;">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Template Name</label>
+                    <input type="text" id="sectionTemplateName" name="template_name" 
+                           style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;"
+                           placeholder="Enter section template name..." required>
+                </div>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Description</label>
+                    <textarea id="sectionTemplateDescription" name="template_description" 
+                              style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; resize:vertical;"
+                              rows="3" placeholder="Describe what this section template is for..."></textarea>
+                </div>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Category</label>
+                    <select id="sectionTemplateCategory" name="template_category" 
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;">
+                        <option value="header">Header</option>
+                        <option value="hero">Hero Section</option>
+                        <option value="features">Features</option>
+                        <option value="services">Services</option>
+                        <option value="testimonials">Testimonials</option>
+                        <option value="pricing">Pricing</option>
+                        <option value="team">Team</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="contact">Contact</option>
+                        <option value="footer">Footer</option>
+                        <option value="cta">Call to Action</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="display:flex; align-items:center; cursor:pointer;">
+                        <input type="checkbox" id="sectionTemplateIsPublic" name="is_public" checked
+                               style="margin-right:8px; transform:scale(1.2);">
+                        <span style="color:#555;">Make this section template available to all users</span>
+                    </label>
+                </div>
+                
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeSaveSectionTemplateModal()" 
+                            style="padding:10px 20px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="saveSectionTemplateConfirm()" 
+                            style="padding:10px 20px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">
+                        <i class="bi bi-check-circle" style="margin-right:5px;"></i>
+                        Save Section Template
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Insert Section Template Modal -->
+    <div id="insertSectionTemplateModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#fff; border-radius:10px; padding:30px; position:relative; max-width:700px; width:90vw; max-height:80vh; overflow-y:auto;">
+            <span class="close" onclick="closeInsertSectionTemplateModal()" style="position:absolute; top:15px; right:25px; cursor:pointer; font-size:28px; color:#333;">&times;</span>
+            
+            <h3 style="margin-bottom:20px; color:#333;">
+                <i class="bi bi-folder-symlink" style="margin-right:10px; color:#6f42c1;"></i>
+                Insert Section Template
+            </h3>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:10px; font-weight:bold; color:#555;">Filter by Category</label>
+                <select id="sectionTemplateCategoryFilter" onchange="loadSectionTemplates()" 
+                        style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px;">
+                    <option value="">All Categories</option>
+                    <option value="header">Header</option>
+                    <option value="hero">Hero Section</option>
+                    <option value="features">Features</option>
+                    <option value="services">Services</option>
+                    <option value="testimonials">Testimonials</option>
+                    <option value="pricing">Pricing</option>
+                    <option value="team">Team</option>
+                    <option value="gallery">Gallery</option>
+                    <option value="contact">Contact</option>
+                    <option value="footer">Footer</option>
+                    <option value="cta">Call to Action</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            
+            <div id="sectionTemplatesContainer" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:5px; padding:10px;">
+                <p style="text-align:center; color:#666;">Loading section templates...</p>
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                <button type="button" onclick="closeInsertSectionTemplateModal()" 
+                        style="padding:10px 20px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="button" id="insertSectionBtn" onclick="insertSelectedSectionTemplate()" disabled
+                        style="padding:10px 20px; background:#6f42c1; color:white; border:none; border-radius:5px; cursor:pointer; opacity:0.5;">
+                    <i class="bi bi-folder-symlink" style="margin-right:5px;"></i>
+                    Insert Section
+                </button>
+            </div>
+        </div>
+    </div>
+
   <style>
     .modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -2731,6 +3128,14 @@ button a:hover {
 
 
   <script>
+
+    // Helper function to convert hex color to rgba
+    function hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
 
     // Responsive Preview Header Functions
     function initDevicePreview() {
@@ -3639,9 +4044,23 @@ button a:hover {
 
       const controls = document.createElement('div');
       controls.className = 'component-controls';
-      controls.innerHTML = `
-        <button class="btn" onclick="deleteComponent(this, event)">Delete</button>
-      `;
+      
+      // Check if this is an inner-section to add Save Template button
+      if (type === 'inner-section') {
+        controls.innerHTML = `
+          <button class="btn" onclick="insertSectionToInnerSection(this, event)" style="background: #6f42c1; color: white;" title="Insert Section Template Here">
+            <i class="bi bi-folder-symlink"></i> Insert Section
+          </button>
+          <button class="btn" onclick="saveSectionAsTemplate(this, event)" style="background: #28a745; color: white;" title="Save as Section Template">
+            <i class="bi bi-folder-plus"></i> Save Template
+          </button>
+          <button class="btn" onclick="deleteComponent(this, event)">Delete</button>
+        `;
+      } else {
+        controls.innerHTML = `
+          <button class="btn" onclick="deleteComponent(this, event)">Delete</button>
+        `;
+      }
 
       let content;
       switch (type) {
@@ -4086,7 +4505,6 @@ break;
                 // Background options
                 backgroundType: 'color', // 'color' or 'image'
                 backgroundImage: '',
-                backgroundAttachment: 'scroll', // 'scroll' or 'fixed'
                 // Menu options for investment websites
                 addToMenu: false,
                 menuTitle: '',
@@ -4108,7 +4526,7 @@ break;
                     content.style.backgroundImage = `linear-gradient(#000,#000c 18%),url(${data.backgroundImage})`;
                     content.style.backgroundPosition = '0 0,0 0';
                     content.style.backgroundSize = 'auto,cover';
-                    content.style.backgroundAttachment = `scroll,${data.backgroundAttachment}`;
+                    content.style.backgroundAttachment = 'scroll,scroll';
                 }
             };
             
@@ -4524,6 +4942,102 @@ break;
             };
             
             content.renderNewsletter();
+        break;
+
+        case 'video-background':
+            content = document.createElement('div');
+            content.className = 'video-background-component';
+            content.videoData = {
+                videoSource: 'url', // url or upload
+                videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                videoType: 'mp4',
+                overlayColor: '#000000',
+                overlayOpacity: '0.5',
+                contentType: 'text', // text, image, or both
+                heading: 'Your Heading Here',
+                subheading: 'Your subheading or description goes here',
+                buttonText: 'Learn More',
+                buttonUrl: '#',
+                buttonColor: '#667eea',
+                textColor: '#ffffff',
+                imageUrl: '',
+                imageWidth: '300',
+                textAlign: 'center', // left, center, right
+                verticalAlign: 'center', // top, center, bottom
+                minHeight: '500',
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false
+            };
+            
+            content.renderVideoBackground = function() {
+                const d = content.videoData;
+                if (!d) return;
+                
+                const rgbaOverlay = hexToRgba(d.overlayColor, parseFloat(d.overlayOpacity));
+                
+                const alignmentClasses = {
+                    top: 'flex-start',
+                    center: 'center',
+                    bottom: 'flex-end'
+                };
+                
+                let contentHtml = '';
+                
+                if (d.contentType === 'text' || d.contentType === 'both') {
+                    contentHtml += `
+                        <div style="text-align: ${d.textAlign}; color: ${d.textColor}; z-index: 2; max-width: 800px; margin: ${d.contentType === 'both' ? '0 0 30px 0' : '0'};">
+                            ${d.heading ? `<h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">${d.heading}</h1>` : ''}
+                            ${d.subheading ? `<p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${d.subheading}</p>` : ''}
+                            ${d.buttonText ? `<a href="${d.buttonUrl}" class="btn" style="background-color: ${d.buttonColor}; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s;">${d.buttonText}</a>` : ''}
+                        </div>
+                    `;
+                }
+                
+                if (d.contentType === 'image' || d.contentType === 'both') {
+                    contentHtml += d.imageUrl ? `
+                        <div style="z-index: 2; text-align: ${d.textAlign};">
+                            <img src="${d.imageUrl}" alt="Content Image" style="max-width: ${d.imageWidth}px; width: 100%; height: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px;">
+                        </div>
+                    ` : `
+                        <div style="z-index: 2; text-align: ${d.textAlign}; color: ${d.textColor};">
+                            <div style="width: ${d.imageWidth}px; height: 200px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                                <i class="fas fa-image" style="font-size: 3rem; opacity: 0.5;"></i>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">Add an image from properties panel</p>
+                        </div>
+                    `;
+                }
+                
+                content.innerHTML = `
+                    <div class="video-background-section" style="position: relative; min-height: ${d.minHeight}px; overflow: hidden; display: flex; align-items: ${alignmentClasses[d.verticalAlign]}; justify-content: center;">
+                        <video 
+                            class="video-bg" 
+                            ${d.autoplay ? 'autoplay' : ''} 
+                            ${d.loop ? 'loop' : ''} 
+                            ${d.muted ? 'muted' : ''} 
+                            ${d.controls ? 'controls' : ''}
+                            playsinline
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; z-index: 0;">
+                            <source src="${d.videoUrl}" type="video/${d.videoType}">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: ${rgbaOverlay}; z-index: 1;"></div>
+                        <div style="position: relative; z-index: 2; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: ${d.textAlign === 'left' ? 'flex-start' : d.textAlign === 'right' ? 'flex-end' : 'center'};">
+                            ${contentHtml}
+                        </div>
+                    </div>
+                `;
+                
+                // Auto-play the video in builder preview
+                const video = content.querySelector('video');
+                if (video && d.autoplay) {
+                    video.play().catch(e => console.log('Video autoplay prevented:', e));
+                }
+            };
+            
+            content.renderVideoBackground();
         break;
 
         case 'auction-list':
@@ -6766,7 +7280,23 @@ break;
     function createDropzone() {
       const dropzone = document.createElement('div');
       dropzone.className = 'dropzone';
-      dropzone.textContent = 'Drop components here';
+      
+      const text = document.createElement('div');
+      text.textContent = 'Drop components here';
+      text.style.marginBottom = '15px';
+      dropzone.appendChild(text);
+      
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary btn-sm';
+      btn.innerHTML = '<i class="fas fa-plus-circle"></i> Insert Section Template';
+      btn.style.pointerEvents = 'auto';
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        currentTargetColumn = null;
+        showInsertSectionTemplateModal();
+      };
+      dropzone.appendChild(btn);
+      
       return dropzone;
     }
 
@@ -7446,15 +7976,7 @@ break;
                         <label>Upload Background Image</label>
                         <input type="file" accept="image/*" onchange="uploadInnerSectionBackgroundImage(event)">
                         ${innerSectionData.backgroundImage ? `<div style="margin-top: 8px;"><img src="${innerSectionData.backgroundImage}" style="max-width: 100%; max-height: 100px; border-radius: 4px; border: 1px solid #ddd;"></div>` : ''}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Background Attachment</label>
-                        <select oninput="updateInnerSectionField(this.value, 'backgroundAttachment')">
-                            <option value="scroll" ${innerSectionData.backgroundAttachment === 'scroll' ? 'selected' : ''}>Scroll with content</option>
-                            <option value="fixed" ${innerSectionData.backgroundAttachment === 'fixed' ? 'selected' : ''}>Fixed (parallax effect)</option>
-                        </select>
-                        <small>Fixed creates a parallax scrolling effect</small>
+                        <small class="text-muted">Use the parallax component for parallax effects</small>
                     </div>
                 </div>
                 
@@ -7466,6 +7988,111 @@ break;
                 <div class="form-group">
                     <label>Margin</label>
                     <input type="text" value="${innerSectionData.margin || '10px 0'}" oninput="updateInnerSectionField(this.value, 'margin')">
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333; border-top: 2px solid #667eea; padding-top: 15px;">
+                    <i class="fas fa-magic"></i> Advanced Animations
+                </h4>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" ${innerSectionData.animationEnabled ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'animationEnabled'); toggleAnimationSettings(this.checked)">
+                        Enable Animations
+                    </label>
+                    <small class="text-muted">Trigger animations when section enters viewport</small>
+                </div>
+                
+                <div id="animationSettings" style="display: ${innerSectionData.animationEnabled ? 'block' : 'none'}; border-left: 3px solid #667eea; padding-left: 15px; margin-left: 5px;">
+                    <div class="form-group">
+                        <label>Animation Type</label>
+                        <select oninput="updateInnerSectionField(this.value, 'animationType')">
+                            <option value="none" ${innerSectionData.animationType === 'none' ? 'selected' : ''}>None</option>
+                            <optgroup label="Slide Animations">
+                                <option value="slideLeft" ${innerSectionData.animationType === 'slideLeft' ? 'selected' : ''}>Slide In from Left</option>
+                                <option value="slideRight" ${innerSectionData.animationType === 'slideRight' ? 'selected' : ''}>Slide In from Right</option>
+                                <option value="slideUp" ${innerSectionData.animationType === 'slideUp' ? 'selected' : ''}>Slide In from Bottom</option>
+                                <option value="slideDown" ${innerSectionData.animationType === 'slideDown' ? 'selected' : ''}>Slide In from Top</option>
+                            </optgroup>
+                            <optgroup label="Fade Animations">
+                                <option value="fade" ${innerSectionData.animationType === 'fade' ? 'selected' : ''}>Fade In</option>
+                                <option value="fadeZoom" ${innerSectionData.animationType === 'fadeZoom' ? 'selected' : ''}>Fade In + Zoom</option>
+                                <option value="fadeBlur" ${innerSectionData.animationType === 'fadeBlur' ? 'selected' : ''}>Fade In + Blur</option>
+                            </optgroup>
+                            <optgroup label="Special Effects">
+                                <option value="bounce" ${innerSectionData.animationType === 'bounce' ? 'selected' : ''}>Bounce In</option>
+                                <option value="flip" ${innerSectionData.animationType === 'flip' ? 'selected' : ''}>Flip In</option>
+                                <option value="rotate" ${innerSectionData.animationType === 'rotate' ? 'selected' : ''}>Rotate In</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Animation Duration (seconds)</label>
+                        <input type="range" min="0.3" max="2" step="0.1" value="${innerSectionData.animationDuration || '0.8'}" 
+                               oninput="updateInnerSectionField(this.value, 'animationDuration'); this.nextElementSibling.textContent = this.value + 's'">
+                        <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.animationDuration || '0.8'}s</span>
+                        <small class="text-muted">How long the animation takes to complete</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Section Delay (seconds)</label>
+                        <input type="range" min="0" max="2" step="0.1" value="${innerSectionData.animationDelay || '0'}" 
+                               oninput="updateInnerSectionField(this.value, 'animationDelay'); this.nextElementSibling.textContent = this.value + 's'">
+                        <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.animationDelay || '0'}s</span>
+                        <small class="text-muted">Delay before section animation starts</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Column Stagger Delay (seconds)</label>
+                        <input type="range" min="0" max="1" step="0.05" value="${innerSectionData.staggerDelay || '0.15'}" 
+                               oninput="updateInnerSectionField(this.value, 'staggerDelay'); this.nextElementSibling.textContent = this.value + 's'">
+                        <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.staggerDelay || '0.15'}s</span>
+                        <small class="text-muted">Delay between each column animation (creates sequence effect)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Animation Easing</label>
+                        <select oninput="updateInnerSectionField(this.value, 'animationEasing')">
+                            <option value="ease" ${innerSectionData.animationEasing === 'ease' ? 'selected' : ''}>Ease (default)</option>
+                            <option value="ease-in" ${innerSectionData.animationEasing === 'ease-in' ? 'selected' : ''}>Ease In</option>
+                            <option value="ease-out" ${innerSectionData.animationEasing === 'ease-out' ? 'selected' : ''}>Ease Out</option>
+                            <option value="ease-in-out" ${innerSectionData.animationEasing === 'ease-in-out' ? 'selected' : ''}>Ease In Out</option>
+                            <option value="linear" ${innerSectionData.animationEasing === 'linear' ? 'selected' : ''}>Linear</option>
+                            <option value="cubic-bezier(0.68, -0.55, 0.265, 1.55)" ${innerSectionData.animationEasing === 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' ? 'selected' : ''}>Bounce</option>
+                        </select>
+                        <small class="text-muted">Animation timing function</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${innerSectionData.animationLoop ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'animationLoop')">
+                            Loop Animation (repeat on every view)
+                        </label>
+                        <small class="text-muted">If unchecked, animation plays once only</small>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #333;">
+                    <i class="fas fa-mountain"></i> Parallax Effect
+                </h4>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" ${innerSectionData.parallaxEnabled ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'parallaxEnabled'); toggleParallaxSettings(this.checked)">
+                        Enable Parallax Scrolling
+                    </label>
+                    <small class="text-muted">Background moves slower than content (depth effect)</small>
+                </div>
+                
+                <div id="parallaxSettings" style="display: ${innerSectionData.parallaxEnabled ? 'block' : 'none'}; border-left: 3px solid #28a745; padding-left: 15px; margin-left: 5px;">
+                    <div class="form-group">
+                        <label>Parallax Speed</label>
+                        <input type="range" min="0.1" max="1" step="0.1" value="${innerSectionData.parallaxSpeed || '0.5'}" 
+                               oninput="updateInnerSectionField(this.value, 'parallaxSpeed'); this.nextElementSibling.textContent = this.value">
+                        <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.parallaxSpeed || '0.5'}</span>
+                        <small class="text-muted">Lower = slower movement (0.5 = half speed)</small>
+                    </div>
+                    <small style="color: #856404; background: #fff3cd; padding: 10px; border-radius: 4px; display: block; margin-top: 10px;">
+                        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Parallax works best with background images and requires background attachment to be "scroll"
+                    </small>
                 </div>
             `;
             break;
@@ -9506,6 +10133,193 @@ break;
                 `;
             break;
 
+            case 'video-background':
+                const videoData = content.videoData || {
+                    videoSource: 'url',
+                    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                    videoType: 'mp4',
+                    overlayColor: '#000000',
+                    overlayOpacity: '0.5',
+                    contentType: 'text',
+                    heading: 'Your Heading Here',
+                    subheading: 'Your subheading or description goes here',
+                    buttonText: 'Learn More',
+                    buttonUrl: '#',
+                    buttonColor: '#667eea',
+                    textColor: '#ffffff',
+                    imageUrl: '',
+                    imageWidth: '300',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    minHeight: '500',
+                    autoplay: true,
+                    loop: true,
+                    muted: true,
+                    controls: false
+                };
+                specificControls = `
+                    <h4 style="margin-top: 0; padding: 10px; background: #f5f5f5; border-radius: 4px;"><i class="fas fa-video me-2"></i>Video Settings</h4>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600; margin-bottom: 10px; display: block;">Video Source</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <button type="button" class="video-source-btn ${!videoData.videoSource || videoData.videoSource === 'url' ? 'active' : ''}" 
+                                onclick="switchVideoSource('url')" 
+                                style="flex: 1; padding: 10px; border: 2px solid #ddd; background: ${!videoData.videoSource || videoData.videoSource === 'url' ? '#667eea' : 'white'}; color: ${!videoData.videoSource || videoData.videoSource === 'url' ? 'white' : '#333'}; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
+                                <i class="fas fa-link me-2"></i>URL
+                            </button>
+                            <button type="button" class="video-source-btn ${videoData.videoSource === 'upload' ? 'active' : ''}" 
+                                onclick="switchVideoSource('upload')" 
+                                style="flex: 1; padding: 10px; border: 2px solid #ddd; background: ${videoData.videoSource === 'upload' ? '#667eea' : 'white'}; color: ${videoData.videoSource === 'upload' ? 'white' : '#333'}; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
+                                <i class="fas fa-upload me-2"></i>Upload
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="videoUrlSection" style="display: ${!videoData.videoSource || videoData.videoSource === 'url' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Video URL</label>
+                            <input type="text" id="videoUrlInput" value="${videoData.videoUrl || ''}" oninput="updateVideoField(this.value, 'videoUrl')" placeholder="https://example.com/video.mp4">
+                            <small style="display: block; margin-top: 5px; color: #666;">Enter direct video URL (MP4, WebM, or OGG)</small>
+                        </div>
+                    </div>
+                    
+                    <div id="videoUploadSection" style="display: ${videoData.videoSource === 'upload' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Upload Video File</label>
+                            <div style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #f9f9f9;">
+                                <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/ogg" style="display: none;" onchange="handleVideoUpload(event)">
+                                <button type="button" onclick="document.getElementById('videoFileInput').click()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 500; margin-bottom: 10px;">
+                                    <i class="fas fa-cloud-upload-alt me-2"></i>Choose Video File
+                                </button>
+                                <div id="uploadProgress" style="display: none; margin-top: 10px;">
+                                    <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
+                                        <div id="uploadProgressBar" style="background: #667eea; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                                    </div>
+                                    <small id="uploadStatus" style="display: block; margin-top: 5px; color: #666;"></small>
+                                </div>
+                                <small style="display: block; margin-top: 10px; color: #666;">Supported: MP4, WebM, OGG (Max 50MB)</small>
+                                ${videoData.videoUrl && videoData.videoSource === 'upload' ? `<div style="margin-top: 10px; color: #28a745;"><i class="fas fa-check-circle me-2"></i>Video uploaded successfully</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Video Type</label>
+                        <select oninput="updateVideoField(this.value, 'videoType')">
+                            <option value="mp4" ${videoData.videoType === 'mp4' ? 'selected' : ''}>MP4</option>
+                            <option value="webm" ${videoData.videoType === 'webm' ? 'selected' : ''}>WebM</option>
+                            <option value="ogg" ${videoData.videoType === 'ogg' ? 'selected' : ''}>OGG</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Min Height (px)</label>
+                        <input type="number" value="${videoData.minHeight}" min="200" max="1000" oninput="updateVideoField(this.value, 'minHeight')">
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" ${videoData.autoplay ? 'checked' : ''} onchange="updateVideoField(this.checked, 'autoplay')" style="margin-right: 8px;">
+                            Autoplay Video
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" ${videoData.loop ? 'checked' : ''} onchange="updateVideoField(this.checked, 'loop')" style="margin-right: 8px;">
+                            Loop Video
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" ${videoData.muted ? 'checked' : ''} onchange="updateVideoField(this.checked, 'muted')" style="margin-right: 8px;">
+                            Mute Video
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" ${videoData.controls ? 'checked' : ''} onchange="updateVideoField(this.checked, 'controls')" style="margin-right: 8px;">
+                            Show Video Controls
+                        </label>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;"><i class="fas fa-layer-group me-2"></i>Overlay Settings</h4>
+                    <div class="form-group">
+                        <label>Overlay Color</label>
+                        <input type="color" value="${videoData.overlayColor}" oninput="updateVideoField(this.value, 'overlayColor')">
+                    </div>
+                    <div class="form-group">
+                        <label>Overlay Opacity</label>
+                        <input type="range" value="${videoData.overlayOpacity}" min="0" max="1" step="0.1" oninput="updateVideoField(this.value, 'overlayOpacity'); this.nextElementSibling.textContent = this.value;">
+                        <span style="margin-left: 10px; font-weight: bold;">${videoData.overlayOpacity}</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;"><i class="fas fa-align-center me-2"></i>Content Settings</h4>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select oninput="updateVideoField(this.value, 'contentType')">
+                            <option value="text" ${videoData.contentType === 'text' ? 'selected' : ''}>Text Only</option>
+                            <option value="image" ${videoData.contentType === 'image' ? 'selected' : ''}>Image Only</option>
+                            <option value="both" ${videoData.contentType === 'both' ? 'selected' : ''}>Text + Image</option>
+                        </select>
+                    </div>
+                    
+                    <div id="textContentSettings" style="display: ${videoData.contentType === 'text' || videoData.contentType === 'both' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Heading</label>
+                            <input type="text" value="${videoData.heading}" oninput="updateVideoField(this.value, 'heading')" placeholder="Your Heading Here">
+                        </div>
+                        <div class="form-group">
+                            <label>Subheading</label>
+                            <textarea rows="2" oninput="updateVideoField(this.value, 'subheading')" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Your subheading or description">${videoData.subheading}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Button Text</label>
+                            <input type="text" value="${videoData.buttonText}" oninput="updateVideoField(this.value, 'buttonText')" placeholder="Learn More">
+                        </div>
+                        <div class="form-group">
+                            <label>Button URL</label>
+                            <input type="text" value="${videoData.buttonUrl}" oninput="updateVideoField(this.value, 'buttonUrl')" placeholder="#">
+                        </div>
+                        <div class="form-group">
+                            <label>Button Color</label>
+                            <input type="color" value="${videoData.buttonColor}" oninput="updateVideoField(this.value, 'buttonColor')">
+                        </div>
+                        <div class="form-group">
+                            <label>Text Color</label>
+                            <input type="color" value="${videoData.textColor}" oninput="updateVideoField(this.value, 'textColor')">
+                        </div>
+                    </div>
+                    
+                    <div id="imageContentSettings" style="display: ${videoData.contentType === 'image' || videoData.contentType === 'both' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="text" value="${videoData.imageUrl}" oninput="updateVideoField(this.value, 'imageUrl')" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label>Image Width (px)</label>
+                            <input type="number" value="${videoData.imageWidth}" min="100" max="800" oninput="updateVideoField(this.value, 'imageWidth')">
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;"><i class="fas fa-arrows-alt me-2"></i>Layout Settings</h4>
+                    <div class="form-group">
+                        <label>Text Alignment</label>
+                        <select oninput="updateVideoField(this.value, 'textAlign')">
+                            <option value="left" ${videoData.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="center" ${videoData.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="right" ${videoData.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vertical Alignment</label>
+                        <select oninput="updateVideoField(this.value, 'verticalAlign')">
+                            <option value="top" ${videoData.verticalAlign === 'top' ? 'selected' : ''}>Top</option>
+                            <option value="center" ${videoData.verticalAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="bottom" ${videoData.verticalAlign === 'bottom' ? 'selected' : ''}>Bottom</option>
+                        </select>
+                    </div>
+                `;
+            break;
+
             case 'ticket-carousel':
                 // Load ticket carousel properties from the Blade template via AJAX
                 specificControls = `
@@ -10959,7 +11773,6 @@ function updateInnerSectionField(value, field) {
             break;
         case 'backgroundType':
         case 'backgroundImage':
-        case 'backgroundAttachment':
             // Update background using the updateBackground function
             if (content.updateBackground) {
                 content.updateBackground();
@@ -10973,6 +11786,38 @@ function updateInnerSectionField(value, field) {
             // Auto-generate section ID when menu title changes
             if (value && value.trim()) {
                 updateSectionId(value.trim());
+            }
+            break;
+        case 'animationEnabled':
+            if (value) {
+                applyInnerSectionAnimation(content);
+            } else {
+                removeInnerSectionAnimation(content);
+            }
+            break;
+        case 'animationType':
+        case 'animationDuration':
+        case 'animationDelay':
+        case 'staggerDelay':
+        case 'animationEasing':
+        case 'animationLoop':
+            // Re-apply animation with new settings
+            if (content._innerSectionData.animationEnabled) {
+                applyInnerSectionAnimation(content);
+            }
+            break;
+        case 'parallaxEnabled':
+            if (value) {
+                applyParallaxEffect(content);
+            } else {
+                removeParallaxEffect(content);
+            }
+            break;
+        case 'parallaxSpeed':
+            // Re-apply parallax with new speed
+            if (content._innerSectionData.parallaxEnabled) {
+                removeParallaxEffect(content);
+                applyParallaxEffect(content);
             }
             break;
     }
@@ -11110,6 +11955,177 @@ function updateSectionVisualIndicator(content, addToMenu) {
     }
 }
 
+// Animation helper functions
+function toggleAnimationSettings(enabled) {
+    const animationSettings = document.getElementById('animationSettings');
+    if (animationSettings) {
+        animationSettings.style.display = enabled ? 'block' : 'none';
+    }
+    
+    // Apply or remove animations from the section
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._innerSectionData) return;
+    
+    if (enabled) {
+        applyInnerSectionAnimation(content);
+    } else {
+        removeInnerSectionAnimation(content);
+    }
+}
+
+function toggleParallaxSettings(enabled) {
+    const parallaxSettings = document.getElementById('parallaxSettings');
+    if (parallaxSettings) {
+        parallaxSettings.style.display = enabled ? 'block' : 'none';
+    }
+    
+    // Apply or remove parallax effect
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._innerSectionData) return;
+    
+    if (enabled) {
+        applyParallaxEffect(content);
+    } else {
+        removeParallaxEffect(content);
+    }
+}
+
+function applyInnerSectionAnimation(content) {
+    if (!content._innerSectionData || !content._innerSectionData.animationEnabled) return;
+    
+    const data = content._innerSectionData;
+    const animationType = data.animationType || 'fade';
+    const duration = data.animationDuration || '0.8';
+    const delay = data.animationDelay || '0';
+    const stagger = data.staggerDelay || '0.15';
+    const easing = data.animationEasing || 'ease';
+    
+    // Add animation class to section
+    content.classList.add('animated-section');
+    content.setAttribute('data-animation', animationType);
+    content.setAttribute('data-animation-duration', duration);
+    content.setAttribute('data-animation-delay', delay);
+    content.setAttribute('data-animation-easing', easing);
+    
+    // Apply stagger to columns
+    const columns = content.querySelectorAll('.inner-column');
+    columns.forEach((column, index) => {
+        column.classList.add('animated-column');
+        const columnDelay = parseFloat(delay) + (index * parseFloat(stagger));
+        column.style.animationDelay = columnDelay + 's';
+        column.style.animationDuration = duration + 's';
+        column.style.animationTimingFunction = easing;
+    });
+    
+    // Setup Intersection Observer for scroll trigger
+    setupAnimationObserver(content, data.animationLoop);
+}
+
+function removeInnerSectionAnimation(content) {
+    content.classList.remove('animated-section', 'animation-triggered');
+    content.removeAttribute('data-animation');
+    content.removeAttribute('data-animation-duration');
+    content.removeAttribute('data-animation-delay');
+    content.removeAttribute('data-animation-easing');
+    
+    const columns = content.querySelectorAll('.inner-column');
+    columns.forEach(column => {
+        column.classList.remove('animated-column', 'animation-triggered');
+        column.style.animationDelay = '';
+        column.style.animationDuration = '';
+        column.style.animationTimingFunction = '';
+    });
+    
+    // Remove observer if exists
+    if (content._animationObserver) {
+        content._animationObserver.disconnect();
+        delete content._animationObserver;
+    }
+}
+
+function setupAnimationObserver(content, loop = false) {
+    // Remove existing observer
+    if (content._animationObserver) {
+        content._animationObserver.disconnect();
+    }
+    
+    // Create new Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Trigger animation
+                content.classList.add('animation-triggered');
+                const columns = content.querySelectorAll('.inner-column');
+                columns.forEach(column => {
+                    column.classList.add('animation-triggered');
+                });
+                
+                // If not looping, stop observing after first trigger
+                if (!loop) {
+                    observer.unobserve(content);
+                }
+            } else if (loop) {
+                // Reset animation if looping is enabled
+                content.classList.remove('animation-triggered');
+                const columns = content.querySelectorAll('.inner-column');
+                columns.forEach(column => {
+                    column.classList.remove('animation-triggered');
+                });
+            }
+        });
+    }, {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger slightly before element enters viewport
+    });
+    
+    observer.observe(content);
+    content._animationObserver = observer;
+}
+
+function applyParallaxEffect(content) {
+    if (!content._innerSectionData || !content._innerSectionData.parallaxEnabled) return;
+    
+    const speed = content._innerSectionData.parallaxSpeed || 0.5;
+    
+    // Add parallax class
+    content.classList.add('parallax-section');
+    content.setAttribute('data-parallax-speed', speed);
+    
+    // Setup scroll listener
+    if (!content._parallaxHandler) {
+        content._parallaxHandler = function() {
+            const rect = content.getBoundingClientRect();
+            const scrolled = window.pageYOffset;
+            const elementTop = rect.top + scrolled;
+            const windowHeight = window.innerHeight;
+            
+            // Calculate parallax offset
+            if (rect.top < windowHeight && rect.bottom > 0) {
+                const offset = (scrolled - elementTop) * speed;
+                content.style.backgroundPositionY = offset + 'px';
+            }
+        };
+        
+        window.addEventListener('scroll', content._parallaxHandler);
+        // Initial call
+        content._parallaxHandler();
+    }
+}
+
+function removeParallaxEffect(content) {
+    content.classList.remove('parallax-section');
+    content.removeAttribute('data-parallax-speed');
+    content.style.backgroundPositionY = '';
+    
+    // Remove scroll listener
+    if (content._parallaxHandler) {
+        window.removeEventListener('scroll', content._parallaxHandler);
+        delete content._parallaxHandler;
+    }
+}
+
 // Newsletter component field update function
 function updateNewsletterField(value, field) {
     if (!selectedComponent) return;
@@ -11150,6 +12166,205 @@ function updateNewsletterField(value, field) {
     if (content.renderNewsletter) {
         content.renderNewsletter();
     }
+}
+
+// Video Background component field update function
+function updateVideoField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    // Initialize video data if it doesn't exist
+    if (!content.videoData) {
+        content.videoData = {
+            videoSource: 'url',
+            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            videoType: 'mp4',
+            overlayColor: '#000000',
+            overlayOpacity: '0.5',
+            contentType: 'text',
+            heading: 'Your Heading Here',
+            subheading: 'Your subheading or description goes here',
+            buttonText: 'Learn More',
+            buttonUrl: '#',
+            buttonColor: '#667eea',
+            textColor: '#ffffff',
+            imageUrl: '',
+            imageWidth: '300',
+            textAlign: 'center',
+            verticalAlign: 'center',
+            minHeight: '500',
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false
+        };
+    }
+    
+    // Update the field
+    content.videoData[field] = value;
+    
+    // Toggle content type visibility in properties panel
+    if (field === 'contentType') {
+        const textSettings = document.getElementById('textContentSettings');
+        const imageSettings = document.getElementById('imageContentSettings');
+        
+        if (textSettings && imageSettings) {
+            if (value === 'text') {
+                textSettings.style.display = 'block';
+                imageSettings.style.display = 'none';
+            } else if (value === 'image') {
+                textSettings.style.display = 'none';
+                imageSettings.style.display = 'block';
+            } else if (value === 'both') {
+                textSettings.style.display = 'block';
+                imageSettings.style.display = 'block';
+            }
+        }
+    }
+    
+    // Re-render the component using the existing renderVideoBackground function
+    if (content.renderVideoBackground) {
+        content.renderVideoBackground();
+    }
+}
+
+// Switch between URL and Upload for video source
+function switchVideoSource(source) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    if (!content.videoData) return;
+    
+    // Update video source
+    content.videoData.videoSource = source;
+    
+    // Toggle sections
+    const urlSection = document.getElementById('videoUrlSection');
+    const uploadSection = document.getElementById('videoUploadSection');
+    const buttons = document.querySelectorAll('.video-source-btn');
+    
+    if (source === 'url') {
+        urlSection.style.display = 'block';
+        uploadSection.style.display = 'none';
+        buttons[0].style.background = '#667eea';
+        buttons[0].style.color = 'white';
+        buttons[1].style.background = 'white';
+        buttons[1].style.color = '#333';
+    } else {
+        urlSection.style.display = 'none';
+        uploadSection.style.display = 'block';
+        buttons[0].style.background = 'white';
+        buttons[0].style.color = '#333';
+        buttons[1].style.background = '#667eea';
+        buttons[1].style.color = 'white';
+    }
+}
+
+// Handle video file upload
+function handleVideoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!selectedComponent) {
+        alert('Please select a component first');
+        return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Please upload a valid video file (MP4, WebM, or OGG)');
+        return;
+    }
+    
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+    if (file.size > maxSize) {
+        alert('File size must be less than 50MB');
+        return;
+    }
+    
+    // Show progress
+    const progressDiv = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const statusText = document.getElementById('uploadStatus');
+    
+    progressDiv.style.display = 'block';
+    progressBar.style.width = '0%';
+    statusText.textContent = 'Uploading...';
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('video', file);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+    
+    // Upload using XMLHttpRequest for progress tracking
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            progressBar.style.width = percentComplete + '%';
+            statusText.textContent = 'Uploading: ' + Math.round(percentComplete) + '%';
+        }
+    });
+    
+    xhr.addEventListener('load', function() {
+        if (xhr.status === 200) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success && response.url) {
+                    // Update video URL
+                    updateVideoField(response.url, 'videoUrl');
+                    
+                    // Detect video type from filename
+                    const extension = response.url.split('.').pop().toLowerCase();
+                    if (['mp4', 'webm', 'ogg'].includes(extension)) {
+                        updateVideoField(extension, 'videoType');
+                    }
+                    
+                    // Update progress
+                    progressBar.style.width = '100%';
+                    progressBar.style.background = '#28a745';
+                    statusText.textContent = 'Upload complete!';
+                    statusText.style.color = '#28a745';
+                    
+                    // Update URL input
+                    const urlInput = document.getElementById('videoUrlInput');
+                    if (urlInput) {
+                        urlInput.value = response.url;
+                    }
+                    
+                    // Hide progress after 2 seconds
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                        progressBar.style.background = '#667eea';
+                        statusText.style.color = '#666';
+                    }, 2000);
+                    
+                } else {
+                    throw new Error(response.message || 'Upload failed');
+                }
+            } catch (error) {
+                progressBar.style.background = '#dc3545';
+                statusText.textContent = 'Upload failed: ' + error.message;
+                statusText.style.color = '#dc3545';
+            }
+        } else {
+            progressBar.style.background = '#dc3545';
+            statusText.textContent = 'Upload failed: Server error';
+            statusText.style.color = '#dc3545';
+        }
+    });
+    
+    xhr.addEventListener('error', function() {
+        progressBar.style.background = '#dc3545';
+        statusText.textContent = 'Upload failed: Network error';
+        statusText.style.color = '#dc3545';
+    });
+    
+    xhr.open('POST', '/admins/upload-video');
+    xhr.send(formData);
 }
 
 // Button component field update function
@@ -13451,6 +14666,36 @@ function applyResponsiveStyles() {
                 }
                 break;
 
+            case 'video-background':
+                console.log('Serializing video-background, content.videoData:', content.videoData);
+                data.videoData = content.videoData;
+                // Also save to properties for front-end compatibility
+                if (content.videoData) {
+                    data.properties = data.properties || {};
+                    data.properties.video_source = content.videoData.videoSource || 'url';
+                    data.properties.video_url = content.videoData.videoUrl || '';
+                    data.properties.video_type = content.videoData.videoType || 'mp4';
+                    data.properties.overlay_color = content.videoData.overlayColor || '#000000';
+                    data.properties.overlay_opacity = content.videoData.overlayOpacity || '0.5';
+                    data.properties.content_type = content.videoData.contentType || 'text';
+                    data.properties.heading = content.videoData.heading || '';
+                    data.properties.subheading = content.videoData.subheading || '';
+                    data.properties.button_text = content.videoData.buttonText || '';
+                    data.properties.button_url = content.videoData.buttonUrl || '#';
+                    data.properties.button_color = content.videoData.buttonColor || '#667eea';
+                    data.properties.text_color = content.videoData.textColor || '#ffffff';
+                    data.properties.image_url = content.videoData.imageUrl || '';
+                    data.properties.image_width = content.videoData.imageWidth || '300';
+                    data.properties.text_align = content.videoData.textAlign || 'center';
+                    data.properties.vertical_align = content.videoData.verticalAlign || 'center';
+                    data.properties.min_height = content.videoData.minHeight || '500';
+                    data.properties.autoplay = content.videoData.autoplay ? '1' : '0';
+                    data.properties.loop = content.videoData.loop ? '1' : '0';
+                    data.properties.muted = content.videoData.muted ? '1' : '0';
+                    data.properties.controls = content.videoData.controls ? '1' : '0';
+                }
+                break;
+
             case 'full-width-text-image':
                 data.fwtiData = content._fwtiData;
                 break;
@@ -13756,6 +15001,12 @@ function applyResponsiveStyles() {
                       if (compContent._videoData) {
                         console.log('Serializing nested video with data:', compContent._videoData);
                         compData.videoData = compContent._videoData;
+                      }
+                      break;
+                    case 'video-background':
+                      if (compContent.videoData) {
+                        console.log('Serializing nested video-background with data:', compContent.videoData);
+                        compData.videoData = compContent.videoData;
                       }
                       break;
                     case 'ticket-category-carousel':
@@ -14092,6 +15343,75 @@ function applyResponsiveStyles() {
                 // Re-render the component with saved data using the renderNewsletter function
                 if (actualContent.renderNewsletter) {
                     actualContent.renderNewsletter();
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'video-background':
+                console.log('Restoring video-background, data:', data);
+                console.log('data.videoData:', data.videoData);
+                console.log('data.properties:', data.properties);
+                // Load from properties if available (for front-end compatibility)
+                let videoDefaults = {
+                    videoSource: 'url',
+                    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                    videoType: 'mp4',
+                    overlayColor: '#000000',
+                    overlayOpacity: '0.5',
+                    contentType: 'text',
+                    heading: 'Your Heading Here',
+                    subheading: 'Your subheading or description goes here',
+                    buttonText: 'Learn More',
+                    buttonUrl: '#',
+                    buttonColor: '#667eea',
+                    textColor: '#ffffff',
+                    imageUrl: '',
+                    imageWidth: '300',
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    minHeight: '500',
+                    autoplay: true,
+                    loop: true,
+                    muted: true,
+                    controls: false
+                };
+                
+                // Merge saved data with defaults (saved data takes precedence)
+                if (data.videoData && typeof data.videoData === 'object') {
+                    actualContent.videoData = Object.assign({}, videoDefaults, data.videoData);
+                } else if (data.properties) {
+                    // If we have properties from front-end, map them back to builder format
+                    actualContent.videoData = {
+                        videoSource: data.properties.video_source || videoDefaults.videoSource,
+                        videoUrl: data.properties.video_url || videoDefaults.videoUrl,
+                        videoType: data.properties.video_type || videoDefaults.videoType,
+                        overlayColor: data.properties.overlay_color || videoDefaults.overlayColor,
+                        overlayOpacity: data.properties.overlay_opacity || videoDefaults.overlayOpacity,
+                        contentType: data.properties.content_type || videoDefaults.contentType,
+                        heading: data.properties.heading || videoDefaults.heading,
+                        subheading: data.properties.subheading || videoDefaults.subheading,
+                        buttonText: data.properties.button_text || videoDefaults.buttonText,
+                        buttonUrl: data.properties.button_url || videoDefaults.buttonUrl,
+                        buttonColor: data.properties.button_color || videoDefaults.buttonColor,
+                        textColor: data.properties.text_color || videoDefaults.textColor,
+                        imageUrl: data.properties.image_url || videoDefaults.imageUrl,
+                        imageWidth: data.properties.image_width || videoDefaults.imageWidth,
+                        textAlign: data.properties.text_align || videoDefaults.textAlign,
+                        verticalAlign: data.properties.vertical_align || videoDefaults.verticalAlign,
+                        minHeight: data.properties.min_height || videoDefaults.minHeight,
+                        autoplay: data.properties.autoplay === '1' || data.properties.autoplay === true || videoDefaults.autoplay,
+                        loop: data.properties.loop === '1' || data.properties.loop === true || videoDefaults.loop,
+                        muted: data.properties.muted === '1' || data.properties.muted === true || videoDefaults.muted,
+                        controls: data.properties.controls === '1' || data.properties.controls === true || videoDefaults.controls
+                    };
+                } else {
+                    actualContent.videoData = videoDefaults;
+                }
+                // Re-render the component with saved data using the renderVideoBackground function
+                if (actualContent.renderVideoBackground) {
+                    actualContent.renderVideoBackground();
                 }
                 if (data.style) Object.assign(actualContent.style, data.style);
                 if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
@@ -15244,6 +16564,25 @@ function applyResponsiveStyles() {
                         }
                         console.log('=== END NESTED VIDEO DESERIALIZATION ===');
                         break;
+                      case 'video-background':
+                        console.log('=== DESERIALIZING NESTED VIDEO-BACKGROUND COMPONENT ===');
+                        if (compData.videoData) {
+                          console.log('Nested video-background data found:', compData.videoData);
+                          
+                          // Set the videoData
+                          nestedContent.videoData = compData.videoData;
+                          console.log('Set nested videoData:', nestedContent.videoData);
+                          
+                          // Re-render the component
+                          if (nestedContent.renderVideoBackground && typeof nestedContent.renderVideoBackground === 'function') {
+                            console.log('Calling nested renderVideoBackground');
+                            nestedContent.renderVideoBackground();
+                          } else {
+                            console.warn('renderVideoBackground function not found on nested component');
+                          }
+                        }
+                        console.log('=== END NESTED VIDEO-BACKGROUND DESERIALIZATION ===');
+                        break;
                       case 'ticket-category-carousel':
                         if (compData.properties) {
                           nestedContent._properties = compData.properties;
@@ -15626,15 +16965,631 @@ function applyResponsiveStyles() {
       });
     }
 
+    // Section Template Functions
+    let currentSectionComponent = null;
+    let selectedSectionTemplateId = null;
+
+    function saveSectionAsTemplate(btn, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Get the component element
+      currentSectionComponent = btn.closest('.component');
+      
+      if (!currentSectionComponent || currentSectionComponent.dataset.type !== 'inner-section') {
+        showErrorNotification('Invalid Section', 'Please select a valid inner-section to save as template.');
+        return;
+      }
+      
+      // Show modal
+      const modal = document.getElementById('saveSectionTemplateModal');
+      modal.style.display = 'flex';
+      
+      // Set default template name
+      const sectionData = currentSectionComponent.querySelector('.inner-section-component')._innerSectionData;
+      const columns = sectionData.columns || 2;
+      document.getElementById('sectionTemplateName').value = `${columns} Column Section`;
+    }
+
+    function closeSaveSectionTemplateModal() {
+      const modal = document.getElementById('saveSectionTemplateModal');
+      modal.style.display = 'none';
+      currentSectionComponent = null;
+      document.getElementById('saveSectionTemplateForm').reset();
+    }
+
+    function saveSectionTemplateConfirm() {
+      const templateName = document.getElementById('sectionTemplateName').value.trim();
+      const templateDescription = document.getElementById('sectionTemplateDescription').value.trim();
+      const templateCategory = document.getElementById('sectionTemplateCategory').value;
+      const isPublic = document.getElementById('sectionTemplateIsPublic').checked;
+
+      if (!templateName) {
+        showWarningNotification('Template Name Required', 'Please enter a name for your section template.');
+        return;
+      }
+
+      if (!currentSectionComponent) {
+        showErrorNotification('No Section Selected', 'Please select a section to save as template.');
+        return;
+      }
+
+      // Extract section data
+      const content = currentSectionComponent.querySelector('.inner-section-component');
+      const sectionData = {
+        componentType: 'inner-section',
+        innerSectionData: content._innerSectionData || {},
+        nestedComponents: []
+      };
+
+      // Extract nested components from columns
+      const columns = content.querySelectorAll('.inner-column');
+      columns.forEach((column, columnIndex) => {
+        sectionData.nestedComponents[columnIndex] = [];
+        
+        const components = column.querySelectorAll('.component');
+        components.forEach(comp => {
+          const compData = extractComponentData(comp);
+          if (compData) {
+            sectionData.nestedComponents[columnIndex].push(compData);
+          }
+        });
+      });
+
+      // Save to backend
+      const formData = new FormData();
+      formData.append('template_name', templateName);
+      formData.append('template_description', templateDescription);
+      formData.append('template_category', templateCategory);
+      formData.append('template_data', JSON.stringify(sectionData));
+      if (isPublic) {
+        formData.append('is_public', '1');
+      }
+
+      fetch('/admins/section-templates/save', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showSuccessNotification('Section Template Saved!', data.message || 'Your section has been successfully saved as a template.');
+          closeSaveSectionTemplateModal();
+        } else {
+          showErrorNotification('Save Failed', data.message || 'An error occurred while saving the section template.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showErrorNotification('Save Failed', 'Unable to save section template. Please check your connection and try again.');
+      });
+    }
+
+    // Helper function to extract component data
+    function extractComponentData(component) {
+      const type = component.dataset.type;
+      const content = component.querySelector('.component-content') || 
+                      component.querySelector('.inner-section-component') ||
+                      component.querySelector('[class*="-preview"]') ||
+                      component.querySelector('[class*="-component"]');
+      
+      if (!content && type !== 'inner-section') return null;
+
+      let componentData = {
+        type: type,
+        componentType: type
+      };
+
+      // Save common styles
+      if (content && content.style) {
+        componentData.style = {
+          color: content.style.color || '',
+          backgroundColor: content.style.backgroundColor || '',
+          fontSize: content.style.fontSize || '',
+          padding: content.style.padding || '',
+          textAlign: content.style.textAlign || '',
+          border: content.style.border || '',
+          borderRadius: content.style.borderRadius || '',
+          margin: content.style.margin || '',
+        };
+      }
+
+      // Extract data based on component type - matching serializeBuilder logic
+      switch(type) {
+        case 'inner-section':
+          const innerContent = component.querySelector('.inner-section-component');
+          if (innerContent && innerContent._innerSectionData) {
+            componentData.innerSectionData = innerContent._innerSectionData;
+            componentData.nestedComponents = [];
+            
+            const columns = innerContent.querySelectorAll('.inner-column');
+            columns.forEach((column, columnIndex) => {
+              componentData.nestedComponents[columnIndex] = [];
+              const nestedComps = column.querySelectorAll(':scope > .component');
+              nestedComps.forEach(nested => {
+                const nestedData = extractComponentData(nested);
+                if (nestedData) {
+                  componentData.nestedComponents[columnIndex].push(nestedData);
+                }
+              });
+            });
+          }
+          break;
+        
+        case 'video-background':
+          if (content._videoData) {
+            componentData.videoData = content._videoData;
+          }
+          break;
+        
+        case 'slider':
+          if (content._sliderData) {
+            componentData.sliderData = content._sliderData;
+          }
+          break;
+        
+        case 'gallery':
+          if (content._galleryData) {
+            componentData.galleryData = content._galleryData;
+          }
+          break;
+        
+        case 'image':
+          if (content._imageData) {
+            componentData.imageData = content._imageData;
+          }
+          break;
+        
+        case 'invest-cta':
+          if (content._investCtaData) {
+            componentData.investCtaData = content._investCtaData;
+          }
+          break;
+        
+        case 'newsletter':
+          if (content.newsletterData) {
+            componentData.newsletterData = content.newsletterData;
+          }
+          break;
+        
+        case 'text-images':
+          if (content._textImagesData) {
+            componentData.textImagesData = content._textImagesData;
+          }
+          break;
+        
+        case 'feature-grid':
+          if (content._featureGridData) {
+            componentData.featureGridData = content._featureGridData;
+          }
+          break;
+        
+        case 'text':
+          componentData.html = content.innerHTML;
+          break;
+        
+        default:
+          // For other components, try to get saved data
+          if (content.innerHTML) {
+            componentData.html = content.innerHTML;
+          }
+      }
+
+      return componentData;
+    }
+
+    // Insert Section Template Functions
+    function showInsertSectionTemplateModal() {
+      targetInnerSectionComponent = null; // Clear target for global insert (add to canvas)
+      const modal = document.getElementById('insertSectionTemplateModal');
+      modal.style.display = 'flex';
+      loadSectionTemplates();
+    }
+
+    function closeInsertSectionTemplateModal() {
+      const modal = document.getElementById('insertSectionTemplateModal');
+      modal.style.display = 'none';
+      selectedSectionTemplateId = null;
+      targetInnerSectionComponent = null; // Reset target
+      
+      // Reset insert button
+      const insertBtn = document.getElementById('insertSectionBtn');
+      if (insertBtn) {
+        insertBtn.disabled = true;
+        insertBtn.style.opacity = '0.5';
+      }
+    }
+
+    function loadSectionTemplates() {
+      const category = document.getElementById('sectionTemplateCategoryFilter').value;
+      const container = document.getElementById('sectionTemplatesContainer');
+      
+      container.innerHTML = '<p style="text-align:center; color:#666;">Loading section templates...</p>';
+      
+      let url = '/admins/section-templates/list';
+      if (category) {
+        url += `?category=${category}`;
+      }
+      
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.templates && data.templates.length > 0) {
+            container.innerHTML = '';
+            
+            data.templates.forEach(template => {
+              const templateCard = document.createElement('div');
+              templateCard.style.cssText = 'border:1px solid #ddd; border-radius:5px; padding:15px; margin-bottom:10px; cursor:pointer; transition:all 0.3s;';
+              templateCard.onmouseover = function() { this.style.borderColor = '#6f42c1'; this.style.backgroundColor = '#f8f5ff'; };
+              templateCard.onmouseout = function() { this.style.borderColor = '#ddd'; this.style.backgroundColor = 'white'; };
+              templateCard.onclick = function() { selectSectionTemplate(template.id, templateCard); };
+              
+              templateCard.innerHTML = `
+                <h5 style="margin:0 0 10px 0; color:#333;">${template.name}</h5>
+                ${template.description ? `<p style="margin:0 0 10px 0; color:#666; font-size:13px;">${template.description}</p>` : ''}
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="background:#6f42c1; color:white; padding:4px 8px; border-radius:4px; font-size:12px;">${template.category || 'general'}</span>
+                  <span style="color:#999; font-size:12px;">Created: ${new Date(template.created_at).toLocaleDateString()}</span>
+                </div>
+              `;
+              
+              container.appendChild(templateCard);
+            });
+          } else {
+            container.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">No section templates found. Create your first section template by clicking "Save Template" on any inner-section!</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading section templates:', error);
+          container.innerHTML = '<p style="text-align:center; color:#dc3545;">Error loading templates. Please try again.</p>';
+        });
+    }
+
+    function selectSectionTemplate(templateId, cardElement) {
+      selectedSectionTemplateId = templateId;
+      
+      // Remove selected class from all cards
+      const cards = document.querySelectorAll('#sectionTemplatesContainer > div');
+      cards.forEach(card => {
+        card.style.borderColor = '#ddd';
+        card.style.backgroundColor = 'white';
+      });
+      
+      // Add selected class to this card
+      cardElement.style.borderColor = '#6f42c1';
+      cardElement.style.backgroundColor = '#f8f5ff';
+      cardElement.style.borderWidth = '2px';
+      
+      // Enable insert button
+      const insertBtn = document.getElementById('insertSectionBtn');
+      if (insertBtn) {
+        insertBtn.disabled = false;
+        insertBtn.style.opacity = '1';
+      }
+    }
+
+    // Insert section template into specific inner-section
+    let targetInnerSectionComponent = null;
+
+    function insertSectionToInnerSection(btn, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Get the target inner-section component
+      targetInnerSectionComponent = btn.closest('.component');
+      
+      if (!targetInnerSectionComponent || targetInnerSectionComponent.dataset.type !== 'inner-section') {
+        showErrorNotification('Invalid Section', 'Please select a valid inner-section.');
+        return;
+      }
+      
+      // Show the insert modal
+      const modal = document.getElementById('insertSectionTemplateModal');
+      modal.style.display = 'flex';
+      loadSectionTemplates();
+    }
+
+    function insertSelectedSectionTemplate() {
+      if (!selectedSectionTemplateId) {
+        showWarningNotification('No Template Selected', 'Please select a section template to insert.');
+        return;
+      }
+      
+      fetch(`/admins/section-templates/get/${selectedSectionTemplateId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.template_data) {
+            // Parse template data
+            let templateData = data.template_data;
+            if (typeof templateData === 'string') {
+              templateData = JSON.parse(templateData);
+            }
+            
+            // Create component from template data
+            const newComponent = createComponentFromData(templateData);
+            
+            if (newComponent) {
+              // Check if we have a target column (inner-section column)
+              if (currentTargetColumn) {
+                // Insert into the target column
+                currentTargetColumn.appendChild(newComponent);
+                
+                // Hide dropzone text
+                const dropzone = currentTargetColumn.querySelector('.column-dropzone');
+                if (dropzone) dropzone.style.display = 'none';
+                
+                // Refresh and select
+                refreshInsertionZones();
+                updateStructurePanel();
+                selectComponent(newComponent);
+                
+                showSuccessNotification('Section Inserted!', 'The section template has been inserted into the column.');
+                closeInsertSectionTemplateModal();
+                
+                // Reset target
+                currentTargetColumn = null;
+                return;
+              }
+              
+              // Check if we have a target inner-section (legacy)
+              if (targetInnerSectionComponent) {
+                // Insert into the first column of the target inner-section
+                const content = targetInnerSectionComponent.querySelector('.inner-section-component');
+                if (content) {
+                  const columns = content.querySelectorAll('.inner-column');
+                  if (columns.length > 0) {
+                    // Add to first column
+                    columns[0].appendChild(newComponent);
+                    
+                    // Hide dropzone text
+                    const dropzone = columns[0].querySelector('.column-dropzone');
+                    if (dropzone) dropzone.style.display = 'none';
+                    
+                    // Refresh and select
+                    refreshInsertionZones();
+                    updateStructurePanel();
+                    selectComponent(newComponent);
+                    
+                    showSuccessNotification('Section Inserted!', 'The section template has been inserted into the inner-section.');
+                    closeInsertSectionTemplateModal();
+                    
+                    // Reset target
+                    targetInnerSectionComponent = null;
+                    return;
+                  }
+                }
+              }
+              
+              // Add to main page if no target column
+              const page = document.getElementById('page');
+              const dropzone = page.querySelector('.dropzone');
+              if (dropzone) {
+                page.insertBefore(newComponent, dropzone);
+                dropzone.style.display = 'none';
+              } else {
+                page.appendChild(newComponent);
+              }
+              
+              // Refresh and select
+              refreshInsertionZones();
+              updateStructurePanel();
+              selectComponent(newComponent);
+              
+              showSuccessNotification('Section Inserted!', 'The section template has been successfully inserted into your page.');
+              closeInsertSectionTemplateModal();
+              
+              // Reset target
+              targetInnerSectionComponent = null;
+            } else {
+              showErrorNotification('Insert Failed', 'Unable to create section from template data.');
+            }
+          } else {
+            showErrorNotification('Load Failed', data.message || 'Unable to load section template.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showErrorNotification('Insert Failed', 'Unable to insert section template. Please try again.');
+        });
+    }
+
+    // Helper function to create component from data
+    function createComponentFromData(data) {
+      console.log('Creating component from data:', data);
+      
+      if (!data || (!data.componentType && !data.type)) return null;
+      
+      const type = data.componentType || data.type;
+      const component = createComponent(type);
+      
+      if (!component) {
+        console.error('Failed to create component of type:', type);
+        return null;
+      }
+      
+      const content = component.querySelector('.component-content') || 
+                      component.querySelector('.inner-section-component') ||
+                      component.querySelector('[class*="-preview"]') ||
+                      component.querySelector('[class*="-component"]');
+      
+      // Apply common styles
+      if (content && data.style) {
+        Object.keys(data.style).forEach(key => {
+          if (data.style[key]) {
+            content.style[key] = data.style[key];
+          }
+        });
+      }
+      
+      // Handle specific component types
+      switch(type) {
+        case 'inner-section':
+          if (data.innerSectionData && content) {
+            const sectionData = data.innerSectionData;
+            content._innerSectionData = sectionData;
+            
+            // Update columns first
+            if (content.updateColumns) {
+              content.updateColumns(sectionData.columns || 2);
+            }
+            
+            // Apply background styling
+            if (sectionData.backgroundColor) {
+              content.style.backgroundColor = sectionData.backgroundColor;
+            }
+            
+            if (sectionData.backgroundType === 'image' && sectionData.backgroundImage) {
+              content.style.backgroundImage = `linear-gradient(#000,#000c 18%), url(${sectionData.backgroundImage})`;
+              content.style.backgroundPosition = '0 0, 50%';
+              content.style.backgroundSize = 'auto, cover';
+              content.style.backgroundAttachment = 'scroll, scroll';
+            }
+            
+            // Apply padding, margin, borders
+            if (sectionData.padding) content.style.padding = sectionData.padding;
+            if (sectionData.margin) content.style.margin = sectionData.margin;
+            if (sectionData.border) content.style.border = sectionData.border;
+            if (sectionData.borderRadius) content.style.borderRadius = sectionData.borderRadius;
+            
+            // Apply gap
+            if (sectionData.gap && content.updateGap) {
+              content.updateGap(sectionData.gap);
+            }
+            
+            // Apply full-width mode
+            if (sectionData.fullWidth && content.renderInnerSection) {
+              content.renderInnerSection();
+            }
+            
+            // Update section label
+            const label = content.querySelector('.section-label');
+            if (label) {
+              const columns = sectionData.columns || 2;
+              const fullWidthText = sectionData.fullWidth ? ' - FULL WIDTH' : '';
+              label.textContent = `Inner Section (${columns} Column${columns > 1 ? 's' : ''})${fullWidthText}`;
+              
+              if (sectionData.fullWidth) {
+                label.style.backgroundColor = '#007bff';
+                label.style.color = '#fff';
+              }
+            }
+            
+            // Add nested components recursively
+            if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
+              const columns = content.querySelectorAll('.inner-column');
+              console.log('Processing nested components:', data.nestedComponents.length, 'columns');
+              
+              data.nestedComponents.forEach((columnComps, columnIndex) => {
+                console.log(`Column ${columnIndex} has ${columnComps ? columnComps.length : 0} components`);
+                
+                if (columns[columnIndex] && Array.isArray(columnComps)) {
+                  columnComps.forEach(compData => {
+                    console.log('Creating nested component:', compData);
+                    const nestedComp = createComponentFromData(compData);
+                    if (nestedComp) {
+                      columns[columnIndex].appendChild(nestedComp);
+                      
+                      // Hide dropzone text
+                      const dropzone = columns[columnIndex].querySelector('.column-dropzone');
+                      if (dropzone) dropzone.style.display = 'none';
+                    }
+                  });
+                }
+              });
+            }
+          }
+          break;
+        
+        case 'video-background':
+          if (data.videoData && content) {
+            content._videoData = data.videoData;
+            // TODO: Apply video data to component if needed
+          }
+          break;
+        
+        case 'slider':
+          if (data.sliderData && content) {
+            content._sliderData = data.sliderData;
+          }
+          break;
+        
+        case 'gallery':
+          if (data.galleryData && content) {
+            content._galleryData = data.galleryData;
+          }
+          break;
+        
+        case 'image':
+          if (data.imageData && content) {
+            content._imageData = data.imageData;
+          }
+          break;
+        
+        case 'invest-cta':
+          if (data.investCtaData && content) {
+            content._investCtaData = data.investCtaData;
+          }
+          break;
+        
+        case 'newsletter':
+          if (data.newsletterData && content) {
+            content.newsletterData = data.newsletterData;
+          }
+          break;
+        
+        case 'text-images':
+          if (data.textImagesData && content) {
+            content._textImagesData = data.textImagesData;
+          }
+          break;
+        
+        case 'feature-grid':
+          if (data.featureGridData && content) {
+            content._featureGridData = data.featureGridData;
+          }
+          break;
+        
+        case 'text':
+          if (data.html && content) {
+            content.innerHTML = data.html;
+          }
+          break;
+        
+        default:
+          if (data.html && content) {
+            content.innerHTML = data.html;
+          }
+      }
+      
+      // Trigger re-render for the component
+      if (content && typeof content.render === 'function') {
+        content.render();
+      }
+      
+      return component;
+    }
+
     // Close modals when clicking outside
     document.addEventListener('click', function(event) {
       const saveModal = document.getElementById('saveAsTemplateModal');
       const applyModal = document.getElementById('applyTemplateModal');
+      const saveSectionModal = document.getElementById('saveSectionTemplateModal');
+      const insertSectionModal = document.getElementById('insertSectionTemplateModal');
+      
       if (event.target === saveModal) {
         closeSaveAsTemplateModal();
       }
       if (event.target === applyModal) {
         closeApplyTemplateModal();
+      }
+      if (event.target === saveSectionModal) {
+        closeSaveSectionTemplateModal();
+      }
+      if (event.target === insertSectionModal) {
+        closeInsertSectionTemplateModal();
       }
     });
 

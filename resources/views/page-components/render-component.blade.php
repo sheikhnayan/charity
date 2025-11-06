@@ -526,6 +526,25 @@ h5, .ql-header-5 {
                 $contentWidth = $innerSectionData['contentWidth'] ?? 'full';
                 $contentWidth = $innerSectionData['contentWidth'] ?? 'full'; // 'full' or 'boxed'
                 
+                // Animation settings
+                $animationEnabled = $innerSectionData['animationEnabled'] ?? false;
+                // Convert boolean strings to actual booleans
+                if (is_string($animationEnabled)) {
+                    $animationEnabled = ($animationEnabled === '1' || $animationEnabled === 'true' || $animationEnabled === true);
+                }
+                $animationType = $innerSectionData['animationType'] ?? 'fade';
+                $animationDuration = $innerSectionData['animationDuration'] ?? '0.8';
+                $animationDelay = $innerSectionData['animationDelay'] ?? '0';
+                $columnStaggerDelay = $innerSectionData['columnStaggerDelay'] ?? '0.1';
+                
+                // Parallax settings
+                $parallaxEnabled = $innerSectionData['parallaxEnabled'] ?? false;
+                // Convert boolean strings to actual booleans
+                if (is_string($parallaxEnabled)) {
+                    $parallaxEnabled = ($parallaxEnabled === '1' || $parallaxEnabled === 'true' || $parallaxEnabled === true);
+                }
+                $parallaxSpeed = $innerSectionData['parallaxSpeed'] ?? '0.5';
+                
                 // Apply inner-section styling - ENABLE ALL STYLES for frontend
                 $sectionStyle = '';
                 
@@ -585,7 +604,7 @@ h5, .ql-header-5 {
             
             @if($fullWidth)
                 {{-- Full Width Section - Use CSS to break out of container --}}
-                <div class="inner-section-fullwidth" id="{{ $componentId }}" style="{{ $sectionStyle }}">
+                <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="{{ $sectionStyle }}" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
                     <style>
                         #{{ $componentId }} {
                             width: 100vw;
@@ -631,6 +650,26 @@ h5, .ql-header-5 {
                             padding-right: 15px;
                         }
                         @endif
+                        
+                        /* Remove ALL padding for video-background components to make them truly full-width */
+                        #{{ $componentId }} .row > [class*="col-"]:has(.video-background-section),
+                        #{{ $componentId }} .row > [class*="col-"] .nested-component:has(.video-background-section),
+                        #{{ $componentId }} .video-background-section {
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                            margin-left: 0 !important;
+                            margin-right: 0 !important;
+                        }
+                        
+                        /* Force video-background to break out of column padding */
+                        #{{ $componentId }} .nested-component .video-background-section {
+                            width: 100vw !important;
+                            position: relative !important;
+                            left: 50% !important;
+                            right: 50% !important;
+                            margin-left: -50vw !important;
+                            margin-right: -50vw !important;
+                        }
                         
                         /* Parallax background support - Force fixed attachment */
                         @if(isset($innerSectionData['backgroundType']) && $innerSectionData['backgroundType'] === 'image' && 
@@ -683,7 +722,7 @@ h5, .ql-header-5 {
                         <div class="content-wrapper">
                             <div class="row">
                                 @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                    <div class="{{ $bootstrapClass }}">
+                                    <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}">
                                         @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                             @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
                                                 @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
@@ -704,7 +743,7 @@ h5, .ql-header-5 {
                         {{-- Full width content - direct row --}}
                         <div class="row">
                             @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="{{ $bootstrapClass }}">
+                                <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
                                             @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
@@ -724,7 +763,7 @@ h5, .ql-header-5 {
                 </div>
             @else
                 {{-- Regular Section - Stay within container --}}
-                <div class="inner-section-frontend" id="{{ $componentId }}" style="{{ $sectionStyle }}">
+                <div class="inner-section-frontend {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="{{ $sectionStyle }}" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
                     <style>
                         #{{ $componentId }} {
                             max-width: 1200px;
@@ -747,7 +786,7 @@ h5, .ql-header-5 {
                     @if($gap !== '0px' && $gap !== '15px')
                         <div class="row">
                             @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="{{ $bootstrapClass }}">
+                                <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
                                             @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
@@ -767,7 +806,7 @@ h5, .ql-header-5 {
                         {{-- Standard Bootstrap grid with default spacing --}}
                         <div class="row">
                             @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="{{ $bootstrapClass }}">
+                                <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
                                             @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
@@ -786,6 +825,195 @@ h5, .ql-header-5 {
                     @endif
                 </div>
             @endif
+            
+            @if($animationEnabled)
+                {{-- Animation CSS and JavaScript --}}
+                <style>
+                    /* Animation base styles - section stays visible, only columns animate */
+                    #{{ $componentId }}.animated-section {
+                        /* Section background/container stays visible */
+                    }
+                    
+                    #{{ $componentId }}.animated-section.visible {
+                        /* Animation completed */
+                    }
+                    
+                    #{{ $componentId }} .animated-column {
+                        opacity: 0;
+                        transition-property: opacity, transform;
+                        transition-timing-function: ease;
+                    }
+                    
+                    #{{ $componentId }} .animated-column.visible {
+                        opacity: 1 !important;
+                        transform: none !important;
+                    }
+                    
+                    /* Animation types */
+                    @if($animationType === 'slideLeft')
+                        #{{ $componentId }} .animated-column { transform: translateX(-50px); }
+                    @elseif($animationType === 'slideRight')
+                        #{{ $componentId }} .animated-column { transform: translateX(50px); }
+                    @elseif($animationType === 'slideUp')
+                        #{{ $componentId }} .animated-column { transform: translateY(50px); }
+                    @elseif($animationType === 'slideDown')
+                        #{{ $componentId }} .animated-column { transform: translateY(-50px); }
+                    @elseif($animationType === 'fade')
+                        #{{ $componentId }} .animated-column { opacity: 0; }
+                    @elseif($animationType === 'fadeZoom')
+                        #{{ $componentId }} .animated-column { transform: scale(0.8); }
+                    @elseif($animationType === 'fadeBlur')
+                        #{{ $componentId }} .animated-column { filter: blur(10px); }
+                        #{{ $componentId }} .animated-column.visible { filter: blur(0); }
+                    @elseif($animationType === 'bounce')
+                        #{{ $componentId }} .animated-column.visible {
+                            animation: bounceIn {{ $animationDuration }}s ease;
+                        }
+                        @keyframes bounceIn {
+                            0% { opacity: 0; transform: scale(0.3); }
+                            50% { opacity: 1; transform: scale(1.05); }
+                            70% { transform: scale(0.9); }
+                            100% { transform: scale(1); }
+                        }
+                    @elseif($animationType === 'flip')
+                        #{{ $componentId }} .animated-column { transform: perspective(400px) rotateY(90deg); }
+                        #{{ $componentId }} .animated-column.visible {
+                            animation: flipIn {{ $animationDuration }}s ease;
+                        }
+                        @keyframes flipIn {
+                            0% { transform: perspective(400px) rotateY(90deg); opacity: 0; }
+                            40% { transform: perspective(400px) rotateY(-20deg); }
+                            60% { transform: perspective(400px) rotateY(10deg); opacity: 1; }
+                            80% { transform: perspective(400px) rotateY(-5deg); }
+                            100% { transform: perspective(400px) rotateY(0deg); }
+                        }
+                    @elseif($animationType === 'rotate')
+                        #{{ $componentId }} .animated-column { transform: rotate(-180deg); }
+                    @endif
+                </style>
+                
+                <script>
+                    (function() {
+                        function initAnimation() {
+                            const section = document.getElementById('{{ $componentId }}');
+                            if (!section) {
+                                console.error('Section not found: {{ $componentId }}');
+                                return;
+                            }
+                            
+                            const columns = section.querySelectorAll('.animated-column');
+                            
+                            // Fallback: show content after 5 seconds if animation doesn't trigger
+                            setTimeout(() => {
+                                if (!section.classList.contains('visible')) {
+                                    section.classList.add('visible');
+                                    columns.forEach(column => column.classList.add('visible'));
+                                }
+                            }, 5000);
+                            
+                            // Check if IntersectionObserver is supported
+                            if (!('IntersectionObserver' in window)) {
+                                // Fallback for older browsers - show immediately
+                                section.classList.add('visible');
+                                columns.forEach(column => column.classList.add('visible'));
+                                return;
+                            }
+                            
+                            const observer = new IntersectionObserver((entries) => {
+                                entries.forEach(entry => {
+                                    if (entry.isIntersecting) {
+                                        // Animate section first
+                                        setTimeout(() => {
+                                            section.classList.add('visible');
+                                        }, {{ floatval($animationDelay) * 1000 }});
+                                        
+                                        // Animate columns with stagger
+                                        columns.forEach((column, index) => {
+                                            const staggerDelay = parseFloat(column.dataset.staggerDelay || 0);
+                                            const totalDelay = ({{ floatval($animationDelay) }} + staggerDelay) * 1000;
+                                            
+                                            setTimeout(() => {
+                                                column.style.transitionDuration = '{{ $animationDuration }}s';
+                                                column.classList.add('visible');
+                                            }, totalDelay);
+                                        });
+                                        
+                                        observer.unobserve(entry.target);
+                                    }
+                                });
+                            }, {
+                                threshold: 0.1,
+                                rootMargin: '0px 0px -50px 0px'
+                            });
+                            
+                            observer.observe(section);
+                        }
+                        
+                        // Wait for DOM to be ready
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', initAnimation);
+                        } else {
+                            initAnimation();
+                        }
+                    })();
+                </script>
+            @endif
+            
+            @if($parallaxEnabled && isset($innerSectionData['backgroundImage']) && !empty($innerSectionData['backgroundImage']))
+                {{-- Parallax Effect JavaScript --}}
+                <script>
+                    (function() {
+                        const section = document.getElementById('{{ $componentId }}');
+                        if (!section) {
+                            console.error('Parallax: Section not found - {{ $componentId }}');
+                            return;
+                        }
+                        
+                        const speed = {{ $parallaxSpeed }};
+                        const isFullWidth = section.classList.contains('inner-section-fullwidth');
+                        
+                        // Ensure background is set up correctly for parallax
+                        if (isFullWidth) {
+                            // For full-width sections, we need to ensure the background attachment is NOT fixed
+                            const currentAttachment = window.getComputedStyle(section).backgroundAttachment;
+                            if (currentAttachment === 'fixed') {
+                                section.style.setProperty('background-attachment', 'scroll', 'important');
+                            }
+                        }
+                        
+                        function updateParallax() {
+                            const rect = section.getBoundingClientRect();
+                            const scrolled = window.pageYOffset || window.scrollY;
+                            const elementTop = rect.top + scrolled;
+                            const windowHeight = window.innerHeight;
+                            
+                            // Calculate parallax offset when element is in viewport
+                            if (rect.top < windowHeight && rect.bottom > 0) {
+                                const offset = (scrolled - elementTop) * speed;
+                                section.style.setProperty('background-position-y', offset + 'px', 'important');
+                            }
+                        }
+                        
+                        // Add scroll listener
+                        window.addEventListener('scroll', updateParallax, { passive: true });
+                        
+                        // Also update on resize in case layout changes
+                        window.addEventListener('resize', updateParallax, { passive: true });
+                        
+                        // Initial call
+                        function init() {
+                            console.log('Parallax initialized for {{ $componentId }}', { speed, isFullWidth });
+                            updateParallax();
+                        }
+                        
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', init);
+                        } else {
+                            init();
+                        }
+                    })();
+                </script>
+            @endif
         @break
 
         @case('heading')
@@ -796,6 +1024,170 @@ h5, .ql-header-5 {
             <{{ $level }} style="{{ $styleStr }}">
                 {!! $text !!}
             </{{ $level }}>
+        @break
+
+        @case('video-background')
+            @php
+                // Debug: Log what we're receiving
+                // error_log('Video Background Component Data: ' . json_encode($component));
+                
+                // Try multiple data sources: videoData, properties, or html content
+                $videoData = $component['videoData'] ?? [];
+                
+                // If videoData is empty, try to get from properties
+                if (empty($videoData) && isset($component['properties'])) {
+                    $props = $component['properties'];
+                    $videoData = [
+                        'videoSource' => $props['video_source'] ?? 'url',
+                        'videoUrl' => $props['video_url'] ?? '',
+                        'videoType' => $props['video_type'] ?? 'mp4',
+                        'overlayColor' => $props['overlay_color'] ?? '#000000',
+                        'overlayOpacity' => $props['overlay_opacity'] ?? '0.5',
+                        'minHeight' => $props['min_height'] ?? '500',
+                        'contentType' => $props['content_type'] ?? 'text',
+                        'heading' => $props['heading'] ?? '',
+                        'subheading' => $props['subheading'] ?? '',
+                        'buttonText' => $props['button_text'] ?? '',
+                        'buttonUrl' => $props['button_url'] ?? '#',
+                        'buttonColor' => $props['button_color'] ?? '#667eea',
+                        'textColor' => $props['text_color'] ?? '#ffffff',
+                        'imageUrl' => $props['image_url'] ?? '',
+                        'imageWidth' => $props['image_width'] ?? '300',
+                        'textAlign' => $props['text_align'] ?? 'center',
+                        'verticalAlign' => $props['vertical_align'] ?? 'center',
+                        'autoplay' => $props['autoplay'] ?? true,
+                        'loop' => $props['loop'] ?? true,
+                        'muted' => $props['muted'] ?? true,
+                        'controls' => $props['controls'] ?? false,
+                    ];
+                }
+                
+                // If still empty, check if there's HTML content with video tag and extract URL
+                if (empty($videoData['videoUrl']) && isset($component['html'])) {
+                    $html = $component['html'];
+                    // Try to extract video URL from HTML using regex
+                    if (preg_match('/<source[^>]+src="([^"]+)"/', $html, $matches)) {
+                        $videoData['videoUrl'] = $matches[1];
+                    }
+                    // Try to extract min-height
+                    if (preg_match('/min-height:\s*(\d+)px/', $html, $matches)) {
+                        $videoData['minHeight'] = $matches[1];
+                    }
+                }
+                
+                $videoSource = $videoData['videoSource'] ?? 'url';
+                $videoUrl = $videoData['videoUrl'] ?? '';
+                $videoType = $videoData['videoType'] ?? 'mp4';
+                $overlayColor = $videoData['overlayColor'] ?? '#000000';
+                $overlayOpacity = $videoData['overlayOpacity'] ?? '0.5';
+                $minHeight = $videoData['minHeight'] ?? '500';
+                
+                // Handle boolean values properly
+                $autoplay = isset($videoData['autoplay']) ? (bool)$videoData['autoplay'] : true;
+                $loop = isset($videoData['loop']) ? (bool)$videoData['loop'] : true;
+                $muted = isset($videoData['muted']) ? (bool)$videoData['muted'] : true;
+                $controls = isset($videoData['controls']) ? (bool)$videoData['controls'] : false;
+                
+                // Content settings with defaults
+                $contentType = $videoData['contentType'] ?? 'text';
+                $heading = $videoData['heading'] ?? 'Your Heading Here';
+                $subheading = $videoData['subheading'] ?? 'Your subheading or description goes here';
+                $buttonText = $videoData['buttonText'] ?? 'Learn More';
+                $buttonUrl = $videoData['buttonUrl'] ?? '#';
+                $buttonColor = $videoData['buttonColor'] ?? '#667eea';
+                $textColor = $videoData['textColor'] ?? '#ffffff';
+                $imageUrl = $videoData['imageUrl'] ?? '';
+                $imageWidth = $videoData['imageWidth'] ?? '300';
+                $textAlign = $videoData['textAlign'] ?? 'center';
+                $verticalAlign = $videoData['verticalAlign'] ?? 'center';
+                
+                // If videoUrl is still empty, use default
+                if (empty($videoUrl)) {
+                    $videoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+                }
+                
+                // Convert hex to rgba for overlay
+                function hexToRgba($hex, $opacity) {
+                    $hex = str_replace('#', '', $hex);
+                    if (strlen($hex) == 3) {
+                        $r = hexdec(str_repeat(substr($hex, 0, 1), 2));
+                        $g = hexdec(str_repeat(substr($hex, 1, 1), 2));
+                        $b = hexdec(str_repeat(substr($hex, 2, 1), 2));
+                    } else {
+                        $r = hexdec(substr($hex, 0, 2));
+                        $g = hexdec(substr($hex, 2, 2));
+                        $b = hexdec(substr($hex, 4, 2));
+                    }
+                    return "rgba($r, $g, $b, $opacity)";
+                }
+                
+                $rgbaOverlay = hexToRgba($overlayColor, floatval($overlayOpacity));
+                
+                $alignmentClasses = [
+                    'top' => 'flex-start',
+                    'center' => 'center',
+                    'bottom' => 'flex-end'
+                ];
+                $alignClass = $alignmentClasses[$verticalAlign] ?? 'center';
+            @endphp
+            
+            <div class="video-background-section" style="position: relative; width: 100%; min-height: {{ $minHeight }}px; overflow: hidden; display: flex; align-items: {{ $alignClass }}; justify-content: center; {{ $styleStr }}">
+                @if(!empty($videoUrl))
+                    <video 
+                        class="video-bg"
+                        @if($autoplay) autoplay @endif
+                        @if($loop) loop @endif
+                        @if($muted) muted @endif
+                        @if($controls) controls @endif
+                        playsinline
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; z-index: 0;"
+                    >
+                        <source src="{{ $videoUrl }}" type="video/{{ $videoType }}">
+                        Your browser does not support the video tag.
+                    </video>
+                @else
+                    {{-- Fallback background when no video is set --}}
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 0;"></div>
+                @endif
+                
+                {{-- Always show overlay --}}
+                <div class="video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: {{ $rgbaOverlay }}; z-index: 1; pointer-events: none;"></div>
+                
+                {{-- Content area - always rendered --}}
+                <div class="video-content" style="position: relative !important; z-index: 10 !important; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: {{ $textAlign === 'left' ? 'flex-start' : ($textAlign === 'right' ? 'flex-end' : 'center') }};">
+                    <div style="text-align: {{ $textAlign }}; color: {{ $textColor }}; z-index: 10; max-width: 800px; margin: 0;">
+                        <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $heading }}</h1>
+                        <p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $subheading }}</p>
+                        <a href="{{ $buttonUrl }}" class="btn" style="background-color: {{ $buttonColor }} !important; color: white !important; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">{{ $buttonText }}</a>
+                    </div>
+                    
+                    @if(!empty($imageUrl))
+                        <div style="z-index: 10; text-align: {{ $textAlign }}; margin-top: 30px;">
+                            <img src="{{ $imageUrl }}" alt="Content Image" style="max-width: {{ $imageWidth }}px; width: 100%; height: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px;">
+                        </div>
+                    @endif
+                </div>
+            </div>
+            
+            {{-- Add script to ensure video plays --}}
+            @if(!empty($videoUrl) && $autoplay)
+            <script>
+                (function() {
+                    const video = document.querySelector('#{{ $componentId }} video.video-bg');
+                    if (video) {
+                        video.muted = true; // Ensure muted for autoplay
+                        video.play().catch(e => {
+                            console.log('Video autoplay prevented:', e);
+                            // Try again after user interaction
+                            document.addEventListener('click', function playOnClick() {
+                                video.play();
+                                document.removeEventListener('click', playOnClick);
+                            }, { once: true });
+                        });
+                    }
+                })();
+            </script>
+            @endif
         @break
 
         @case('text')
@@ -5756,6 +6148,174 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             }
                         }
                     });
+                });
+            </script>
+        @break
+
+        @case('video-background')
+            @php
+                $videoData = $component['videoData'] ?? [];
+                $properties = $component['properties'] ?? [];
+                
+                // Get video settings (support both builder and properties format)
+                $videoSource = $videoData['videoSource'] ?? $properties['video_source'] ?? 'url';
+                $videoUrl = $videoData['videoUrl'] ?? $properties['video_url'] ?? '';
+                $videoType = $videoData['videoType'] ?? $properties['video_type'] ?? 'mp4';
+                
+                // Overlay settings
+                $overlayColor = $videoData['overlayColor'] ?? $properties['overlay_color'] ?? '#000000';
+                $overlayOpacity = $videoData['overlayOpacity'] ?? $properties['overlay_opacity'] ?? '0.5';
+                
+                // Content settings
+                $contentType = $videoData['contentType'] ?? $properties['content_type'] ?? 'text';
+                $heading = $videoData['heading'] ?? $properties['heading'] ?? '';
+                $subheading = $videoData['subheading'] ?? $properties['subheading'] ?? '';
+                $buttonText = $videoData['buttonText'] ?? $properties['button_text'] ?? '';
+                $buttonUrl = $videoData['buttonUrl'] ?? $properties['button_url'] ?? '#';
+                $buttonColor = $videoData['buttonColor'] ?? $properties['button_color'] ?? '#667eea';
+                $textColor = $videoData['textColor'] ?? $properties['text_color'] ?? '#ffffff';
+                $imageUrl = $videoData['imageUrl'] ?? $properties['image_url'] ?? '';
+                $imageWidth = $videoData['imageWidth'] ?? $properties['image_width'] ?? '300';
+                
+                // Layout settings
+                $textAlign = $videoData['textAlign'] ?? $properties['text_align'] ?? 'center';
+                $verticalAlign = $videoData['verticalAlign'] ?? $properties['vertical_align'] ?? 'center';
+                $minHeight = $videoData['minHeight'] ?? $properties['min_height'] ?? '500';
+                
+                // Playback settings
+                $autoplay = ($videoData['autoplay'] ?? $properties['autoplay'] ?? true);
+                if (is_string($autoplay)) {
+                    $autoplay = $autoplay === '1' || $autoplay === 'true';
+                }
+                $loop = ($videoData['loop'] ?? $properties['loop'] ?? true);
+                if (is_string($loop)) {
+                    $loop = $loop === '1' || $loop === 'true';
+                }
+                $muted = ($videoData['muted'] ?? $properties['muted'] ?? true);
+                if (is_string($muted)) {
+                    $muted = $muted === '1' || $muted === 'true';
+                }
+                $controls = ($videoData['controls'] ?? $properties['controls'] ?? false);
+                if (is_string($controls)) {
+                    $controls = $controls === '1' || $controls === 'true';
+                }
+                
+                // Convert hex color to rgba
+                function hexToRgbaFrontend($hex, $alpha) {
+                    $hex = ltrim($hex, '#');
+                    $r = hexdec(substr($hex, 0, 2));
+                    $g = hexdec(substr($hex, 2, 2));
+                    $b = hexdec(substr($hex, 4, 2));
+                    return "rgba($r, $g, $b, $alpha)";
+                }
+                
+                $rgbaOverlay = hexToRgbaFrontend($overlayColor, floatval($overlayOpacity));
+                
+                // Alignment classes
+                $alignmentMap = [
+                    'top' => 'flex-start',
+                    'center' => 'center',
+                    'bottom' => 'flex-end'
+                ];
+                $verticalAlignClass = $alignmentMap[$verticalAlign] ?? 'center';
+                $horizontalAlignClass = $textAlign === 'left' ? 'flex-start' : ($textAlign === 'right' ? 'flex-end' : 'center');
+            @endphp
+            
+            <div class="video-background-component" id="{{ $componentId }}" style="{{ $styleStr }}">
+                <div class="video-background-section" style="position: relative; min-height: {{ $minHeight }}px; overflow: hidden; display: flex; align-items: {{ $verticalAlignClass }}; justify-content: center;">
+                    {{-- Video Element --}}
+                    <video 
+                        class="video-bg" 
+                        @if($autoplay) autoplay @endif
+                        @if($loop) loop @endif
+                        @if($muted) muted @endif
+                        @if($controls) controls @endif
+                        playsinline
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; z-index: 0;">
+                        <source src="{{ $videoUrl }}" type="video/{{ $videoType }}">
+                        Your browser does not support the video tag.
+                    </video>
+                    
+                    {{-- Overlay --}}
+                    <div class="video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: {{ $rgbaOverlay }}; z-index: 1;"></div>
+                    
+                    {{-- Content --}}
+                    <div style="position: relative; z-index: 2; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: {{ $horizontalAlignClass }};">
+                        @if($contentType === 'text' || $contentType === 'both')
+                            <div style="text-align: {{ $textAlign }}; color: {{ $textColor }}; z-index: 2; max-width: 800px; margin: {{ $contentType === 'both' ? '0 0 30px 0' : '0' }};">
+                                @if($heading)
+                                    <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ $heading }}</h1>
+                                @endif
+                                @if($subheading)
+                                    <p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">{{ $subheading }}</p>
+                                @endif
+                                @if($buttonText)
+                                    <a href="{{ $buttonUrl }}" class="btn" style="background-color: {{ $buttonColor }}; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s;">{{ $buttonText }}</a>
+                                @endif
+                            </div>
+                        @endif
+                        
+                        @if($contentType === 'image' || $contentType === 'both')
+                            <div style="z-index: 2; text-align: {{ $textAlign }};">
+                                @if($imageUrl)
+                                    <img src="{{ $imageUrl }}" alt="Content Image" style="max-width: {{ $imageWidth }}px; width: 100%; height: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px;">
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            
+            {{-- Responsive Styles --}}
+            <style>
+                #{{ $componentId }} .video-background-section .btn:hover {
+                    opacity: 0.9;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                }
+                
+                @media (max-width: 768px) {
+                    #{{ $componentId }} .video-background-section h1 {
+                        font-size: 2rem !important;
+                    }
+                    
+                    #{{ $componentId }} .video-background-section p {
+                        font-size: 1.2rem !important;
+                    }
+                    
+                    #{{ $componentId }} .video-background-section .btn {
+                        padding: 12px 30px !important;
+                        font-size: 1rem !important;
+                    }
+                    
+                    #{{ $componentId }} .video-background-section img {
+                        max-width: 90% !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    #{{ $componentId }} .video-background-section h1 {
+                        font-size: 1.5rem !important;
+                    }
+                    
+                    #{{ $componentId }} .video-background-section p {
+                        font-size: 1rem !important;
+                    }
+                    
+                    #{{ $componentId }} .video-background-section .btn {
+                        padding: 10px 25px !important;
+                        font-size: 0.9rem !important;
+                    }
+                }
+            </style>
+            
+            {{-- Auto-play video script --}}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const video = document.querySelector('#{{ $componentId }} video');
+                    if (video && {{ $autoplay ? 'true' : 'false' }}) {
+                        video.play().catch(e => console.log('Video autoplay prevented:', e));
+                    }
                 });
             </script>
         @break

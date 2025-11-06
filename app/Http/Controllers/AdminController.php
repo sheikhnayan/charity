@@ -752,11 +752,11 @@ class AdminController extends Controller
 
     public function uploadVideo(Request $request)
     {
-        // Set runtime upload limits
-        ini_set('upload_max_filesize', '10M');
-        ini_set('post_max_size', '12M');
-        ini_set('max_execution_time', '300');
-        ini_set('memory_limit', '256M');
+        // Set runtime upload limits for larger videos
+        ini_set('upload_max_filesize', '50M');
+        ini_set('post_max_size', '52M');
+        ini_set('max_execution_time', '600');
+        ini_set('memory_limit', '512M');
         
         try {
             // Log for debugging
@@ -767,7 +767,7 @@ class AdminController extends Controller
             ]);
             
             $request->validate([
-                'video' => 'required|file|mimes:mp4,webm,ogg,avi,mov,wmv|max:10240', // 10MB max
+                'video' => 'required|file|mimes:mp4,webm,ogg,avi,mov,wmv|max:51200', // 50MB max
             ]);
 
             $video = $request->file('video');

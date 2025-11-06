@@ -25,6 +25,23 @@ include __DIR__ . '/debug.php';
 include __DIR__ . '/test-funnel.php';
 include __DIR__ . '/test-db.php';
 
+// Firebase Config JS Route
+Route::get('/firebase-config.js', function () {
+    $config = [
+        'apiKey' => env('FIREBASE_API_KEY'),
+        'authDomain' => env('FIREBASE_AUTH_DOMAIN'),
+        'projectId' => env('FIREBASE_PROJECT_ID'),
+        'storageBucket' => env('FIREBASE_STORAGE_BUCKET'),
+        'messagingSenderId' => env('FIREBASE_MESSAGING_SENDER_ID'),
+        'appId' => env('FIREBASE_APP_ID')
+    ];
+    
+    $js = "// Firebase Configuration (Auto-generated from .env)\n";
+    $js .= "self.firebaseConfig = " . json_encode($config) . ";\n";
+    
+    return response($js)->header('Content-Type', 'application/javascript');
+});
+
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
@@ -52,6 +69,11 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::get('/recordings/{recordingId}/replay', [HotjarViewController::class, 'replay'])->name('recordings.replay');
         Route::get('/heatmaps', [HotjarViewController::class, 'heatmaps'])->name('heatmaps');
     });
+    
+    // Push Notification Settings Route
+    Route::get('/admin/notification-settings', function () {
+        return view('admin.notification-settings');
+    })->name('admin.notification-settings');
     
     // Hotjar API Routes
     Route::prefix('api')->group(function () {
@@ -714,6 +736,25 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     
     // Video upload route for page builder
     Route::post('/upload-video', [AdminController::class, 'uploadVideo'])->name('admin.upload.video');
+
+    // Section Template Routes
+    Route::prefix('section-templates')->name('section-templates.')->group(function() {
+        Route::post('/save', [
+            \App\Http\Controllers\SectionTemplateController::class, 'save'
+        ])->name('save');
+        
+        Route::get('/list', [
+            \App\Http\Controllers\SectionTemplateController::class, 'list'
+        ])->name('list');
+        
+        Route::get('/get/{id}', [
+            \App\Http\Controllers\SectionTemplateController::class, 'get'
+        ])->name('get');
+        
+        Route::delete('/delete/{id}', [
+            \App\Http\Controllers\SectionTemplateController::class, 'delete'
+        ])->name('delete');
+    });
 
     // DealMaker Admin Routes
     Route::get('/dealmaker-settings', [App\Http\Controllers\DealmakerAdminController::class, 'index'])->name('dealmaker.admin.index');
