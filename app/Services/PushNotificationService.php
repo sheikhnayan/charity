@@ -94,6 +94,8 @@ class PushNotificationService
                 }
             }
 
+            dd($sentCount);
+
             // Update notification status
             if ($sentCount > 0) {
                 $notification->markAsSent();
