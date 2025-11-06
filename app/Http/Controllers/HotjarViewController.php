@@ -280,18 +280,18 @@ class HotjarViewController extends Controller
             $filename = 'screenshot_' . $request->website_id . '_' . md5($request->page_path) . '_' . time() . '.png';
             $filepath = 'screenshots/' . $filename;
             
-            // Ensure directory exists
-            $directory = public_path('screenshots');
+            // Ensure directory exists in storage/app/public
+            $directory = storage_path('app/public/screenshots');
             if (!file_exists($directory)) {
                 mkdir($directory, 0755, true);
             }
 
-            // Save file
-            $fullPath = public_path($filepath);
+            // Save file to storage
+            $fullPath = storage_path('app/public/' . $filepath);
             file_put_contents($fullPath, $screenshotData);
 
-            // Save to database
-            $screenshotUrl = asset($filepath);
+            // Save to database (URL should use storage link)
+            $screenshotUrl = asset('storage/' . $filepath);
             
             \DB::table('page_screenshots')->insert([
                 'website_id' => $request->website_id,
