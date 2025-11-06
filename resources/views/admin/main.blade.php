@@ -302,7 +302,7 @@
     </a>
   </li>
 
-  <li class="menu-item {{ request()->is('cohorts*') ? 'active' : '' }}">
+  {{-- <li class="menu-item {{ request()->is('cohorts*') ? 'active' : '' }}">
     <a href="/cohorts" class="menu-link">
       <i class="menu-icon tf-icons bx bx-group"></i>
       <div class="text-truncate">Cohort Analysis</div>
@@ -314,7 +314,7 @@
       <i class="menu-icon tf-icons bx bx-test-tube"></i>
       <div class="text-truncate">A/B Testing</div>
     </a>
-  </li>
+  </li> --}}
 
   <li class="menu-item {{ request()->is('hotjar*') || request()->is('heatmaps*') || request()->is('recordings*') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
