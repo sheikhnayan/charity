@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\BidController;
 use App\Http\Controllers\Api\FunnelTrackingController;
-use App\Http\Controllers\API\PushNotificationController;
+use App\Http\Controllers\Api\PushNotificationController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\SessionRecordingController;
 use App\Http\Controllers\HeatmapController;
