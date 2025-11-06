@@ -75,6 +75,8 @@ class PushNotificationService
                         ])
                     );
 
+                    dd($result);
+
                     if ($result) {
                         $sentCount++;
                         $tokenRecord->update(['last_used_at' => now()]);
@@ -83,7 +85,7 @@ class PushNotificationService
                     }
 
                 } catch (\Exception $e) {
-                    dd($e);
+                    // dd($e);
                     Log::error("FCM send error: " . $e->getMessage());
                     $errors[] = $e->getMessage();
                     
