@@ -195,7 +195,7 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
 });
 
 // Public Hotjar Tracking API Routes (NO AUTH REQUIRED - for tracking scripts on public pages)
-Route::prefix('api')->group(function () {
+Route::prefix('api')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
     Route::post('/session-recording/start', [HotjarViewController::class, 'startRecording']);
     Route::post('/session-recording/events', [HotjarViewController::class, 'saveEvents']);
     Route::post('/heatmap/click', [HotjarViewController::class, 'trackClick']);

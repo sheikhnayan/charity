@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackUniqueVisitor::class,
         ]);
         
+        // Add CORS middleware globally for API routes
+        $middleware->api([
+            \App\Http\Middleware\CorsMiddleware::class,
+        ]);
+        
         // Exclude CSRF for public tracking endpoints (Hotjar-style tracking)
         $middleware->validateCsrfTokens(except: [
             'api/session-recording/start',
