@@ -172,44 +172,52 @@ class QRCodeDonationController extends Controller
      */
     public function generateCampaign(Request $request)
     {
-        $request->validate([
-            'website_id' => 'required|exists:websites,id',
-            'campaign_name' => 'required|string|max:255',
-            'preset_amount' => 'nullable|numeric|min:1',
-            'size' => 'nullable|integer|min:100|max:1000'
-        ]);
+        try {
+            $request->validate([
+                'website_id' => 'required|exists:websites,id',
+                'campaign_name' => 'required|string|max:255',
+                'preset_amount' => 'nullable|numeric|min:1',
+                'size' => 'nullable|integer|min:100|max:1000'
+            ]);
 
-        $website = Website::findOrFail($request->website_id);
-        $size = $request->size ?? 300;
-        
-        // Build campaign URL
-        $params = [
-            'website_id' => $website->id,
-            'campaign' => $request->campaign_name
-        ];
-        
-        if ($request->preset_amount) {
-            $params['amount'] = $request->preset_amount;
+            $website = Website::findOrFail($request->website_id);
+            $size = $request->size ?? 300;
+            
+            // Build campaign URL
+            $params = [
+                'website_id' => $website->id,
+                'campaign' => $request->campaign_name
+            ];
+            
+            if ($request->preset_amount) {
+                $params['amount'] = $request->preset_amount;
+            }
+            
+            $donationUrl = url('/qr-donate?' . http_build_query($params));
+            
+            // Generate QR code as base64
+            $qrCode = base64_encode(
+                QrCode::format('png')
+                    ->size($size)
+                    ->margin(2)
+                    ->errorCorrection('H')
+                    ->generate($donationUrl)
+            );
+            
+            return response()->json([
+                'success' => true,
+                'qr_code_base64' => 'data:image/png;base64,' . $qrCode,
+                'donation_url' => $donationUrl,
+                'campaign_name' => $request->campaign_name,
+                'website' => $website->name
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
         }
-        
-        $donationUrl = url('/qr-donate?' . http_build_query($params));
-        
-        // Generate QR code as base64
-        $qrCode = base64_encode(
-            QrCode::format('png')
-                ->size($size)
-                ->margin(2)
-                ->errorCorrection('H')
-                ->generate($donationUrl)
-        );
-        
-        return response()->json([
-            'success' => true,
-            'qr_code_base64' => 'data:image/png;base64,' . $qrCode,
-            'donation_url' => $donationUrl,
-            'campaign_name' => $request->campaign_name,
-            'website' => $website->name
-        ]);
     }
 
     /**

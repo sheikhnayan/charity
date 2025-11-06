@@ -251,12 +251,28 @@ document.getElementById('qrGeneratorForm').addEventListener('submit', async func
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
             },
             body: JSON.stringify(data)
         });
         
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text);
+            throw new Error('Server returned non-JSON response. Check console for details.');
+        }
+        
         const result = await response.json();
+        
+        // Handle validation errors (422)
+        if (response.status === 422 && result.errors) {
+            const errorMessages = Object.values(result.errors).flat().join(', ');
+            showNotification('Validation Error: ' + errorMessages, 'danger');
+            return;
+        }
         
         if (result.success) {
             // Show preview
@@ -271,8 +287,11 @@ document.getElementById('qrGeneratorForm').addEventListener('submit', async func
             
             // Show success message
             showNotification('QR Code generated successfully!', 'success');
+        } else {
+            showNotification('Error: ' + (result.message || result.error || 'Unknown error'), 'danger');
         }
     } catch (error) {
+        console.error('Full error:', error);
         showNotification('Error generating QR code: ' + error.message, 'danger');
     }
 });
