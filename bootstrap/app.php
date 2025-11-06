@@ -17,8 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackUniqueVisitor::class,
         ]);
         
-        // Exclude CSRF for public tracking endpoints
+        // Exclude CSRF for public tracking endpoints (Hotjar-style tracking)
         $middleware->validateCsrfTokens(except: [
+            'api/session-recording/start',
+            'api/session-recording/events',
+            'api/heatmap/click',
+            'api/heatmap/move',
+            'api/heatmap/scroll',
+            'api/heatmap/screenshot',
             'api/heatmap/screenshot/capture',
         ]);
     })
