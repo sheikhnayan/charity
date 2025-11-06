@@ -329,4 +329,190 @@ class HotjarViewController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Start a new session recording
+     */
+    public function startRecording(Request $request)
+    {
+        try {
+            $request->validate([
+                'session_id' => 'required|string',
+                'website_id' => 'required|integer',
+                'page_url' => 'required|string',
+                'user_agent' => 'nullable|string',
+                'viewport_width' => 'nullable|integer',
+                'viewport_height' => 'nullable|integer',
+            ]);
+
+            $recording = SessionRecording::create([
+                'website_id' => $request->website_id,
+                'session_id' => $request->session_id,
+                'page_url' => $request->page_url,
+                'user_agent' => $request->user_agent,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'started_at' => now(),
+                'events' => json_encode([]),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'recording_id' => $recording->id,
+                'message' => 'Recording started'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to start recording: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to start recording'
+            ], 500);
+        }
+    }
+
+    /**
+     * Save session recording events
+     */
+    public function saveEvents(Request $request)
+    {
+        try {
+            $request->validate([
+                'session_id' => 'required|string',
+                'website_id' => 'required|integer',
+                'events' => 'required|array',
+            ]);
+
+            $recording = SessionRecording::where('session_id', $request->session_id)
+                ->where('website_id', $request->website_id)
+                ->latest()
+                ->first();
+
+            if (!$recording) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recording not found'
+                ], 404);
+            }
+
+            // Append new events to existing events
+            $existingEvents = json_decode($recording->events, true) ?? [];
+            $newEvents = array_merge($existingEvents, $request->events);
+            
+            $recording->update([
+                'events' => json_encode($newEvents),
+                'ended_at' => now(),
+                'duration' => now()->diffInSeconds($recording->started_at),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Events saved'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to save events: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save events'
+            ], 500);
+        }
+    }
+
+    /**
+     * Track click events for heatmap
+     */
+    public function trackClick(Request $request)
+    {
+        try {
+            $request->validate([
+                'website_id' => 'required|integer',
+                'page_path' => 'required|string',
+                'x' => 'required|numeric',
+                'y' => 'required|numeric',
+                'element' => 'nullable|string',
+            ]);
+
+            \DB::table('heatmap_clicks')->insert([
+                'website_id' => $request->website_id,
+                'page_path' => $request->page_path,
+                'x' => $request->x,
+                'y' => $request->y,
+                'element' => $request->element,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'created_at' => now(),
+            ]);
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to track click: ' . $e->getMessage());
+            return response()->json(['success' => false], 500);
+        }
+    }
+
+    /**
+     * Track mouse movement for heatmap
+     */
+    public function trackMouseMove(Request $request)
+    {
+        try {
+            $request->validate([
+                'website_id' => 'required|integer',
+                'page_path' => 'required|string',
+                'x' => 'required|numeric',
+                'y' => 'required|numeric',
+            ]);
+
+            \DB::table('heatmap_moves')->insert([
+                'website_id' => $request->website_id,
+                'page_path' => $request->page_path,
+                'x' => $request->x,
+                'y' => $request->y,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'created_at' => now(),
+            ]);
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to track move: ' . $e->getMessage());
+            return response()->json(['success' => false], 500);
+        }
+    }
+
+    /**
+     * Track scroll depth for heatmap
+     */
+    public function trackScroll(Request $request)
+    {
+        try {
+            $request->validate([
+                'website_id' => 'required|integer',
+                'page_path' => 'required|string',
+                'scroll_depth' => 'required|numeric',
+                'max_scroll' => 'required|numeric',
+            ]);
+
+            \DB::table('heatmap_scrolls')->insert([
+                'website_id' => $request->website_id,
+                'page_path' => $request->page_path,
+                'scroll_depth' => $request->scroll_depth,
+                'max_scroll' => $request->max_scroll,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'created_at' => now(),
+            ]);
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to track scroll: ' . $e->getMessage());
+            return response()->json(['success' => false], 500);
+        }
+    }
 }
