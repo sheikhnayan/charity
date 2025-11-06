@@ -25,14 +25,13 @@ class PushNotificationService
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = [], string $type = 'general'): bool
     {
-        dd('s');
         try {
             $user = User::find($userId);
             if (!$user) {
                 Log::warning("User not found: {$userId}");
                 return false;
             }
-
+            dd($user);
             // Check user preferences
             if (!$this->shouldSendNotification($userId, $type)) {
                 Log::info("Notification skipped due to user preferences: User {$userId}, Type {$type}");
