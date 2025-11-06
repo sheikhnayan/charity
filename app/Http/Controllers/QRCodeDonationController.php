@@ -11,6 +11,22 @@ use Illuminate\Support\Str;
 class QRCodeDonationController extends Controller
 {
     /**
+     * Get the current domain for QR code generation
+     */
+    private function getCurrentDomain()
+    {
+        // Check if HTTPS
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+                    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') 
+                    ? 'https://' : 'http://';
+        
+        // Get current host
+        $domain = $_SERVER['HTTP_HOST'] ?? request()->getHost();
+        
+        return $protocol . $domain;
+    }
+    
+    /**
      * Generate QR code for a donation page
      */
     public function generate(Request $request)
@@ -46,9 +62,7 @@ class QRCodeDonationController extends Controller
         }
         
         // Use current domain for QR code URL
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-        $currentDomain = $_SERVER['HTTP_HOST'] ?? $website->domain;
-        $donationUrl = $protocol . $currentDomain . '/qr-donate?' . http_build_query($params);
+        $donationUrl = $this->getCurrentDomain() . '/qr-donate?' . http_build_query($params);
         
         // Generate QR code
         $qrCode = QrCode::size(300)
@@ -79,7 +93,7 @@ class QRCodeDonationController extends Controller
         $website = Website::findOrFail($websiteId);
         
         // Get QR parameters
-        $qrIdentifier = $request->query('qr');
+        $qrIdentifier = $request->query('qr') ?? 'legacy_' . Str::random(8);
         $campaignName = $request->query('campaign');
         $presetAmount = $request->query('amount');
         $donationType = $request->query('type', 'general');
@@ -203,8 +217,12 @@ class QRCodeDonationController extends Controller
             $website = Website::findOrFail($request->website_id);
             $size = $request->size ?? 300;
             
+            // Generate unique QR code identifier
+            $qrIdentifier = Str::random(10);
+            
             // Build campaign URL using website's domain
             $params = [
+                'qr' => $qrIdentifier,
                 'website_id' => $website->id,
                 'campaign' => $request->campaign_name
             ];
@@ -214,9 +232,7 @@ class QRCodeDonationController extends Controller
             }
             
             // Use website domain for QR code URL
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-            $currentDomain = $_SERVER['HTTP_HOST'] ?? $website->domain;
-            $donationUrl = $protocol . $currentDomain . '/qr-donate?' . http_build_query($params);
+            $donationUrl = $this->getCurrentDomain() . '/qr-donate?' . http_build_query($params);
             
             // Generate QR code as base64
             $qrCode = base64_encode(
