@@ -272,7 +272,7 @@ class AdminController extends Controller
         $data->floating = $request->floating;
         $data->logo_size = $request->logo_size;
         $data->logo_height = $request->logo_height;
-        $data->invest_now_button_text = $request->invest_now_button_text;
+        $data->invest_now_button_text = $request->invest_now_button_text ?? 'Invest Now';
         
         // Handle investor exclusives fields for investment websites
         if ($request->has('show_investor_exclusives')) {
