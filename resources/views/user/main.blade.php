@@ -50,6 +50,9 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
 
     <script src="{{asset('user/assets/js/config.js')}}"></script>
+    
+    <!-- Custom Fonts CSS (Dynamically generated from uploaded fonts) -->
+    <link rel="stylesheet" href="{{ route('fonts.css') }}">
   </head>
 
   <body>
@@ -408,6 +411,9 @@
 
     <!-- Page JS -->
     <script src="{{asset('user/assets/js/dashboards-analytics.js')}}"></script>
+
+    <!-- Custom Fonts for CKEditor -->
+    <script src="{{ asset('js/ckeditor-custom-fonts.js') }}"></script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

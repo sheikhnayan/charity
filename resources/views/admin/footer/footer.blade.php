@@ -5,9 +5,83 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <!-- Quill Editor JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
+    <style>
+    /* Custom Fonts @font-face declarations */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    @foreach($customFonts as $font)
+    @font-face {
+        font-family: '{{ $font->font_family }}';
+        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* Quill font dropdown labels */
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="{{ $font->font_family }}"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="{{ $font->font_family }}"]::before {
+        content: '{{ $font->font_name }}';
+        font-family: '{{ $font->font_family }}', sans-serif;
+    }
+    
+    /* Apply custom font classes */
+    .ql-font-{{ $font->font_family }} {
+        font-family: '{{ $font->font_family }}', sans-serif !important;
+    }
+    @endforeach
+    @endif
+    
+    /* System font classes */
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+    
+    /* System font dropdown labels */
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+        content: 'Arial';
+        font-family: Arial, sans-serif;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="helvetica"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="helvetica"]::before {
+        content: 'Helvetica';
+        font-family: Helvetica, sans-serif;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times"]::before {
+        content: 'Times New Roman';
+        font-family: 'Times New Roman', serif;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="georgia"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"]::before {
+        content: 'Georgia';
+        font-family: Georgia, serif;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"]::before {
+        content: 'Verdana';
+        font-family: Verdana, sans-serif;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="courier"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="courier"]::before {
+        content: 'Courier New';
+        font-family: 'Courier New', monospace;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="outfit"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="outfit"]::before {
+        content: 'Outfit';
+        font-family: 'Outfit', sans-serif;
+    }
+    </style>
 
     <!-- Content wrapper -->
     <div class="content-wrapper">
+```
         <!-- Content -->
         <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
@@ -344,12 +418,32 @@
                     SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
                     Quill.register(SizeClass, true);
 
+                    // Register custom font families
+                    var FontClass = Quill.import('attributors/class/font');
+                    var defaultFonts = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier', 'outfit'];
+                    
+                    // Add custom uploaded fonts from database
+                    @if(isset($customFonts) && $customFonts->count() > 0)
+                    var customFonts = [
+                        @foreach($customFonts as $font)
+                        '{{ $font->font_family }}',
+                        @endforeach
+                    ];
+                    @else
+                    var customFonts = [];
+                    @endif
+                    
+                    // Combine default and custom fonts
+                    FontClass.whitelist = defaultFonts.concat(customFonts);
+                    Quill.register(FontClass, true);
+
                     // Initialize Quill for disclaimer text
                     var disclaimerQuill = new Quill('#disclaimer_editor', {
                         theme: 'snow',
                         modules: {
                             toolbar: [
                                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                [{ 'font': FontClass.whitelist }],
                                 [{ 'size': SizeClass.whitelist }],
                                 [{ 'color': [] }, { 'background': [] }],
                                 ['bold', 'italic', 'underline', 'strike'],
@@ -380,6 +474,7 @@
                         modules: {
                             toolbar: [
                                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                [{ 'font': FontClass.whitelist }],
                                 [{ 'size': SizeClass.whitelist }],
                                 [{ 'color': [] }, { 'background': [] }],
                                 ['bold', 'italic', 'underline', 'strike'],

@@ -323,6 +323,11 @@ class AdminController extends Controller
             $data->contact_cta_text_color = $request->contact_cta_text_color;
         }
         
+        // Handle header font family
+        if ($request->has('header_font_family')) {
+            $data->header_font_family = $request->header_font_family;
+        }
+        
         $data->update();
 
         if ($request->has('menu_order')) {
@@ -572,8 +577,9 @@ class AdminController extends Controller
         $data = Header::find($id);
         $pages = \App\Models\Page::where('website_id',$data->website_id)->orderBy('position')->get();
         $website = \App\Models\Website::find($data->website_id);
+        $customFonts = \App\Models\CustomFont::active()->get();
 
-        return view('admin.menu.menu', compact('data', 'pages', 'website'));
+        return view('admin.menu.menu', compact('data', 'pages', 'website', 'customFonts'));
     }
 
     public function menu_index()
@@ -587,10 +593,11 @@ class AdminController extends Controller
     {
         $data = Footer::where('user_id',$id)->first();
         $website = Website::where('user_id', $id)->first();
+        $customFonts = \App\Models\CustomFont::active()->get();
 
         // dd($id);
 
-        return view('admin.footer.footer', compact('data', 'website'));
+        return view('admin.footer.footer', compact('data', 'website', 'customFonts'));
     }
 
     public function footer_index()

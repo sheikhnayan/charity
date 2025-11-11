@@ -14,7 +14,6 @@ if (isset($state['components'])) {
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $data->name ?? 'Page' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <style>body{background:#f9fafb;}</style>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('auction.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
@@ -22,6 +21,69 @@ if (isset($state['components'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts - Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Custom Fonts CSS -->
+    <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    <style>
+    body{background:#f9fafb;}
+    
+    /* Custom Fonts @font-face declarations */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
+    @foreach($customFonts as $font)
+    @font-face {
+        font-family: '{{ $font->font_family }}';
+        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* Apply custom font classes (for Quill editor content) */
+    .ql-font-{{ $font->font_family }} {
+        font-family: '{{ $font->font_family }}', sans-serif !important;
+    }
+    @endforeach
+    @else
+    /* DEBUG: No custom fonts available */
+    @endif
+    
+    /* System font classes (for Quill editor content) */
+    .ql-font-arial {
+        font-family: Arial, sans-serif !important;
+    }
+    .ql-font-helvetica {
+        font-family: Helvetica, sans-serif !important;
+    }
+    .ql-font-times {
+        font-family: 'Times New Roman', serif !important;
+    }
+    .ql-font-georgia {
+        font-family: Georgia, serif !important;
+    }
+    .ql-font-verdana {
+        font-family: Verdana, sans-serif !important;
+    }
+    .ql-font-courier {
+        font-family: 'Courier New', monospace !important;
+    }
+    .ql-font-outfit {
+        font-family: 'Outfit', sans-serif !important;
+    }
+    
+    /* Header Font Family Styling */
+    @if(isset($header) && $header && $header->header_font_family)
+    .navbar,
+    .navbar .nav-link,
+    .navbar .navbar-brand,
+    .navbar .btn,
+    .contact-topbar,
+    .contact-topbar *,
+    .investor-exclusives-bar,
+    .investor-exclusives-bar * {
+        font-family: '{{ $header->header_font_family }}', sans-serif !important;
+    }
+    @endif
+    </style>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- DataTables CSS and JS -->
@@ -2155,7 +2217,39 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         initializeDonationFormTooltips();
     }, 1000);
+    
+    // Move Quill font classes from spans to parent paragraphs
+    moveFontClassesToParent();
 });
+
+/**
+ * Move Quill font classes from inner spans to parent paragraph/div tags
+ * This ensures the entire paragraph uses the custom font, not just the text inside the span
+ */
+function moveFontClassesToParent() {
+    // Find all elements with ql-font-* classes
+    const fontElements = document.querySelectorAll('[class*="ql-font-"]');
+    
+    fontElements.forEach(function(element) {
+        // Get all classes that start with ql-font-
+        const fontClasses = Array.from(element.classList).filter(cls => cls.startsWith('ql-font-'));
+        
+        if (fontClasses.length > 0 && element.parentElement) {
+            const parent = element.parentElement;
+            
+            // Add font classes to parent
+            fontClasses.forEach(cls => {
+                parent.classList.add(cls);
+            });
+            
+            // Remove font classes from child (optional - keeps it cleaner)
+            fontClasses.forEach(cls => {
+                element.classList.remove(cls);
+            });
+        }
+    });
+}
+
 </script>
 
 <!-- Payment Funnel Tracking -->

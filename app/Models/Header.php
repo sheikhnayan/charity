@@ -30,7 +30,8 @@ class Header extends Model
         'contact_topbar_text_color',
         'contact_cta_bg_color',
         'contact_cta_text_color',
-        'invest_now_button_text'
+        'invest_now_button_text',
+        'header_font_family'
     ];
 
     public function setting()

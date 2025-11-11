@@ -139,6 +139,35 @@
                                         data-description="Set the height of your logo in pixels. This controls how tall the logo appears and affects the navbar height."></i>
                                     <input type="number" name="logo_height" id="logo_height" value="{{ $data->logo_height ?? 60 }}" class="form-control" min="20" max="200" placeholder="60">
                                 </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="header_font_family" class="form-label text-capitalize">
+                                        Header Font Family
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Header Font Family"
+                                        data-description="Choose the font for all header text including menu items, topbar, and contact information."></i>
+                                    <select class="form-select" id="header_font_family" name="header_font_family">
+                                        <option value="">Default (System Font)</option>
+                                        <option value="outfit" {{ ($data->header_font_family ?? '') == 'outfit' ? 'selected' : '' }}>Outfit (Google Font)</option>
+                                        <option value="arial" {{ ($data->header_font_family ?? '') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->header_font_family ?? '') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->header_font_family ?? '') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->header_font_family ?? '') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->header_font_family ?? '') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->header_font_family ?? '') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        @if(isset($customFonts) && $customFonts->count() > 0)
+                                            <optgroup label="Custom Fonts">
+                                                @foreach($customFonts as $font)
+                                                    <option value="{{ $font->font_family }}" {{ ($data->header_font_family ?? '') == $font->font_family ? 'selected' : '' }}>
+                                                        {{ $font->font_name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endif
+                                    </select>
+                                </div>
+                                
                                 @if ($website && $website->type == 'investment')
                                     <div class="col-md-6 col-lg-4">
                                         <label for="invest_now_button_text" class="form-label text-capitalize">

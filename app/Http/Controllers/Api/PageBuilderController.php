@@ -171,7 +171,11 @@ class PageBuilderController extends Controller
     public function show($id)
     {
         $data = Page::with(['website', 'website.header'])->find($id);
-        return view('admin.page.page-builder', compact('data'));
+        
+        // Get active custom fonts for the editor
+        $customFonts = \App\Models\CustomFont::active()->get();
+        
+        return view('admin.page.page-builder', compact('data', 'customFonts'));
     }
 
     public function componentProperties(Request $request, $component)

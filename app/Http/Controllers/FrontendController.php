@@ -50,16 +50,19 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = footer::where('user_id', $user_id)->first();
         
+        // Get active custom fonts
+        $customFonts = \App\Models\CustomFont::active()->get();
+        
         // Consolidated template - use page-investment.blade.php for both website types
         $data = Page::where('user_id', $user_id)->where('default', 1)->first();
         $menuSections = $this->extractMenuSections($data);
         
         if($setting->site_status == 1){
-            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
+            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections', 'customFonts'));
         }else{
             $data = null;
             $menuSections = [];
-            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
+            return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections', 'customFonts'));
         }
     }
 
@@ -598,6 +601,9 @@ class FrontendController extends Controller
                 abort(404);
             }
             
+            // Get active custom fonts
+            $customFonts = \App\Models\CustomFont::active()->get();
+            
             // For main site pages, we don't need website-specific settings
             $setting = null;
             $header = null;
@@ -605,7 +611,7 @@ class FrontendController extends Controller
             $check = null;
             $menuSections = $this->extractMenuSections($data);
             
-            return view('page-investment', compact('setting', 'header', 'data', 'check', 'footer', 'menuSections'));
+            return view('page-investment', compact('setting', 'header', 'data', 'check', 'footer', 'menuSections', 'customFonts'));
         }
         
         // Existing website-specific page logic
@@ -621,6 +627,9 @@ class FrontendController extends Controller
             return redirect('/');
         }
         
+        // Get active custom fonts
+        $customFonts = \App\Models\CustomFont::active()->get();
+        
         // For fundraiser websites, continue with existing multi-page behavior
         $data = Page::where('website_id', $check->id)->where('name', str_replace('-', ' ', $id))->first();
         $user_id = $check->user_id;
@@ -630,7 +639,7 @@ class FrontendController extends Controller
 
         // Use consolidated template
         $menuSections = $this->extractMenuSections($data);
-        return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections'));
+        return view('page-investment', compact('setting', 'header', 'data', 'check','footer', 'menuSections', 'customFonts'));
     }
 
     public function dealmakerDemo()

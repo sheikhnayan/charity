@@ -61,6 +61,9 @@
     <link rel="stylesheet" href="{{asset('user/assets/vendor/libs/apex-charts/apex-charts.css')}}" />
 
     <!-- Page CSS -->
+    
+    <!-- Custom Fonts CSS (Dynamically generated from uploaded fonts) -->
+    <link rel="stylesheet" href="{{ route('fonts.css') }}">
 
     <!-- Helpers -->
     <script src="{{asset('user/assets/vendor/js/helpers.js')}}"></script>
@@ -180,6 +183,13 @@
     <a href="/admin/notification-settings" class="menu-link">
       <i class="menu-icon tf-icons bx bx-bell"></i>
       <div class="text-truncate">Notifications</div>
+    </a>
+  </li>
+
+  <li class="menu-item {{ request()->is('admin/fonts*') ? 'active' : '' }}">
+    <a href="{{ route('admin.fonts.index') }}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-font"></i>
+      <div class="text-truncate">Fonts</div>
     </a>
   </li>
 
@@ -777,6 +787,9 @@
             deferredPrompt = null;
         });
     </script>
+
+    <!-- Custom Fonts for CKEditor -->
+    <script src="{{ asset('js/ckeditor-custom-fonts.js') }}"></script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

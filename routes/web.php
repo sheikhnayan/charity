@@ -42,6 +42,9 @@ Route::get('/firebase-config.js', function () {
     return response($js)->header('Content-Type', 'application/javascript');
 });
 
+// Custom Fonts CSS (Public - for loading fonts in editors and frontend)
+Route::get('/fonts/custom.css', [\App\Http\Controllers\Admin\FontController::class, 'css'])->name('fonts.css');
+
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
@@ -146,6 +149,14 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::post('/generate-campaign', [\App\Http\Controllers\QRCodeDonationController::class, 'generateCampaign'])->name('generate.campaign');
         Route::post('/download', [\App\Http\Controllers\QRCodeDonationController::class, 'download'])->name('download');
         Route::get('/statistics', [\App\Http\Controllers\QRCodeDonationController::class, 'statistics'])->name('statistics');
+    });
+
+    // Custom Font Management Routes
+    Route::prefix('admin/fonts')->name('admin.fonts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\FontController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\FontController::class, 'store'])->name('store');
+        Route::patch('/{id}/toggle', [\App\Http\Controllers\Admin\FontController::class, 'toggle'])->name('toggle');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\FontController::class, 'destroy'])->name('destroy');
     });
 
     // A/B Testing Routes

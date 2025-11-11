@@ -23,6 +23,19 @@
 <!-- SortableJS for drag and drop functionality -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
+/* Custom Fonts @font-face declarations */
+@if(isset($customFonts) && $customFonts->count() > 0)
+@foreach($customFonts as $font)
+@font-face {
+    font-family: '{{ $font->font_family }}';
+    src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@endforeach
+@endif
+
 /* Custom Quill styles for better font size and family support */
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {
@@ -114,6 +127,17 @@
   font-family: 'Outfit', sans-serif;
 }
 
+/* Custom uploaded fonts - dropdown labels */
+@if(isset($customFonts) && $customFonts->count() > 0)
+@foreach($customFonts as $font)
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="{{ $font->font_family }}"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="{{ $font->font_family }}"]::before {
+  content: '{{ $font->font_name }}';
+  font-family: '{{ $font->font_family }}', sans-serif;
+}
+@endforeach
+@endif
+
 /* Apply font families to content */
 .ql-font-arial {
   font-family: Arial, sans-serif !important;
@@ -136,6 +160,16 @@
 .ql-font-outfit {
   font-family: 'Outfit', sans-serif !important;
 }
+
+/* Custom uploaded fonts - apply to content */
+@if(isset($customFonts) && $customFonts->count() > 0)
+@foreach($customFonts as $font)
+.ql-font-{{ $font->font_family }} {
+  font-family: '{{ $font->font_family }}', sans-serif !important;
+}
+@endforeach
+@endif
+
 
 /* Apply font sizes to content */
 .ql-size-10px { font-size: 10px !important; }
@@ -231,8 +265,38 @@ Quill.register(SizeClass, true);
 
 // Custom font family configuration using classes
 var FontClass = Quill.import('attributors/class/font');
-FontClass.whitelist = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier', 'outfit'];
+
+// Default system fonts
+var defaultFonts = ['arial', 'helvetica', 'times', 'georgia', 'verdana', 'courier', 'outfit'];
+
+// Add custom uploaded fonts from database
+@if(isset($customFonts) && $customFonts->count() > 0)
+var customFonts = [
+    @foreach($customFonts as $font)
+    '{{ $font->font_family }}',
+    @endforeach
+];
+@else
+var customFonts = [];
+@endif
+
+// Combine default and custom fonts
+FontClass.whitelist = defaultFonts.concat(customFonts);
 Quill.register(FontClass, true);
+
+// Add custom fonts to Quill CSS
+@if(isset($customFonts) && $customFonts->count() > 0)
+var customFontStyles = '';
+@foreach($customFonts as $font)
+customFontStyles += '.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="{{ $font->font_family }}"]::before, .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="{{ $font->font_family }}"]::before { content: "{{ $font->font_name }}"; font-family: "{{ $font->font_family }}"; }\n';
+customFontStyles += '.ql-font-{{ $font->font_family }} { font-family: "{{ $font->font_family }}"; }\n';
+@endforeach
+var styleSheet = document.createElement('style');
+styleSheet.textContent = customFontStyles;
+document.head.appendChild(styleSheet);
+@endif
+
+console.log('Quill fonts loaded:', FontClass.whitelist);
 
 window.addEventListener('load', function() {
     if (typeof Quill !== 'undefined') {
