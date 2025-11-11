@@ -591,8 +591,25 @@ img {
 @if($footer)
 <style>
     .footer_component {
+        @if(($footer->background_type ?? 'color') == 'color')
         background-color: {{ $footer->background ?? '#000000' }} !important;
+        @else
+        /* Background will be set by image */
+        background-color: transparent !important;
+        @endif
     }
+    
+    @if(($footer->background_type ?? 'color') == 'image')
+    /* Show background images when type is image */
+    .footer_bg_image_wrap {
+        display: block !important;
+    }
+    @else
+    /* Hide background images when type is color */
+    .footer_bg_image_wrap {
+        display: none !important;
+    }
+    @endif
     
     .social-icon svg path{
         color: {{ $footer->color ?? '#ffffff' }} !important;

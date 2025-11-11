@@ -346,6 +346,7 @@ class AdminController extends Controller
         $data->color = $request->color;
         $data->privacy = $request->privacy;
         $data->background = $request->background;
+        $data->background_type = $request->background_type ?? 'color';
         $data->menu = $request->menu;
         $data->message = $request->message;
         $data->copy_right = $request->copy_right;

@@ -10,6 +10,7 @@ class Footer extends Model
         'user_id',
         'website_id',
         'background',
+        'background_type',
         'status',
         'color',
         'menu',

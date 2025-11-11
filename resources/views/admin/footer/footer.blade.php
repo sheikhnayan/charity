@@ -170,6 +170,23 @@
                                 </div>
 
                                 <div class="col-md-6 col-lg-4">
+                                    <label for="background_type" class="form-label">
+                                        Footer Background Type
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Background Type"
+                                        data-description="Choose whether to use a solid color or background images for the footer."></i>
+                                    <select class="form-select" id="background_type" name="background_type">
+                                        <option value="color" {{ ($data->background_type ?? 'color') == 'color' ? 'selected' : '' }}>
+                                            Use Color
+                                        </option>
+                                        <option value="image" {{ ($data->background_type ?? 'color') == 'image' ? 'selected' : '' }}>
+                                            Use Background Image
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Menu
                                     </label>
