@@ -328,6 +328,17 @@ class AdminController extends Controller
             $data->header_font_family = $request->header_font_family;
         }
         
+        // Handle section-specific font families
+        if ($request->has('menu_font_family')) {
+            $data->menu_font_family = $request->menu_font_family;
+        }
+        if ($request->has('contact_topbar_font_family')) {
+            $data->contact_topbar_font_family = $request->contact_topbar_font_family;
+        }
+        if ($request->has('investor_exclusives_font_family')) {
+            $data->investor_exclusives_font_family = $request->investor_exclusives_font_family;
+        }
+        
         $data->update();
 
         if ($request->has('menu_order')) {

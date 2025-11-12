@@ -70,17 +70,28 @@ if (isset($state['components'])) {
         font-family: 'Outfit', sans-serif !important;
     }
     
-    /* Header Font Family Styling */
-    @if(isset($header) && $header && $header->header_font_family)
-    .navbar,
+    /* Menu Font Family Styling */
+    @if(isset($header) && $header && $header->menu_font_family)
     .navbar .nav-link,
     .navbar .navbar-brand,
-    .navbar .btn,
+    .navbar .btn {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
     .contact-topbar,
-    .contact-topbar *,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header && $header->investor_exclusives_font_family)
     .investor-exclusives-bar,
-    .investor-exclusives-bar * {
-        font-family: '{{ $header->header_font_family }}', sans-serif !important;
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
     }
     @endif
     </style>
@@ -1271,6 +1282,21 @@ if (isset($state['components'])) {
     .contact-topbar .contact-item i {
         font-size: 12px;
         opacity: 0.9;
+        display: inline-block;
+        width: auto;
+        min-width: 14px;
+        text-align: center;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Ensure FontAwesome icons are visible */
+    .contact-topbar i.fas,
+    .contact-topbar i.fa {
+        font-family: "Font Awesome 6 Free" !important;
+        font-weight: 900 !important;
     }
     
     .contact-topbar .btn:hover {

@@ -31,7 +31,10 @@ class Header extends Model
         'contact_cta_bg_color',
         'contact_cta_text_color',
         'invest_now_button_text',
-        'header_font_family'
+        'header_font_family',
+        'menu_font_family',
+        'contact_topbar_font_family',
+        'investor_exclusives_font_family'
     ];
 
     public function setting()

@@ -141,25 +141,81 @@
                                 </div>
                                 
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="header_font_family" class="form-label text-capitalize">
-                                        Header Font Family
+                                    <label for="menu_font_family" class="form-label text-capitalize">
+                                        Menu Font Family
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
-                                        data-title="Header Font Family"
-                                        data-description="Choose the font for all header text including menu items, topbar, and contact information."></i>
-                                    <select class="form-select" id="header_font_family" name="header_font_family">
+                                        data-title="Menu Font Family"
+                                        data-description="Choose the font for navigation menu items."></i>
+                                    <select class="form-select" id="menu_font_family" name="menu_font_family">
                                         <option value="">Default (System Font)</option>
-                                        <option value="outfit" {{ ($data->header_font_family ?? '') == 'outfit' ? 'selected' : '' }}>Outfit (Google Font)</option>
-                                        <option value="arial" {{ ($data->header_font_family ?? '') == 'arial' ? 'selected' : '' }}>Arial</option>
-                                        <option value="helvetica" {{ ($data->header_font_family ?? '') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
-                                        <option value="times" {{ ($data->header_font_family ?? '') == 'times' ? 'selected' : '' }}>Times New Roman</option>
-                                        <option value="georgia" {{ ($data->header_font_family ?? '') == 'georgia' ? 'selected' : '' }}>Georgia</option>
-                                        <option value="verdana" {{ ($data->header_font_family ?? '') == 'verdana' ? 'selected' : '' }}>Verdana</option>
-                                        <option value="courier" {{ ($data->header_font_family ?? '') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        <option value="outfit" {{ ($data->menu_font_family ?? '') == 'outfit' ? 'selected' : '' }}>Outfit (Google Font)</option>
+                                        <option value="arial" {{ ($data->menu_font_family ?? '') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->menu_font_family ?? '') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->menu_font_family ?? '') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->menu_font_family ?? '') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->menu_font_family ?? '') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->menu_font_family ?? '') == 'courier' ? 'selected' : '' }}>Courier New</option>
                                         @if(isset($customFonts) && $customFonts->count() > 0)
                                             <optgroup label="Custom Fonts">
                                                 @foreach($customFonts as $font)
-                                                    <option value="{{ $font->font_family }}" {{ ($data->header_font_family ?? '') == $font->font_family ? 'selected' : '' }}>
+                                                    <option value="{{ $font->font_family }}" {{ ($data->menu_font_family ?? '') == $font->font_family ? 'selected' : '' }}>
+                                                        {{ $font->font_name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endif
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_topbar_font_family" class="form-label text-capitalize">
+                                        Contact Topbar Font Family
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Contact Topbar Font Family"
+                                        data-description="Choose the font for the contact information topbar (phone, email, address)."></i>
+                                    <select class="form-select" id="contact_topbar_font_family" name="contact_topbar_font_family">
+                                        <option value="">Default (System Font)</option>
+                                        <option value="outfit" {{ ($data->contact_topbar_font_family ?? '') == 'outfit' ? 'selected' : '' }}>Outfit (Google Font)</option>
+                                        <option value="arial" {{ ($data->contact_topbar_font_family ?? '') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->contact_topbar_font_family ?? '') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->contact_topbar_font_family ?? '') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->contact_topbar_font_family ?? '') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->contact_topbar_font_family ?? '') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->contact_topbar_font_family ?? '') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        @if(isset($customFonts) && $customFonts->count() > 0)
+                                            <optgroup label="Custom Fonts">
+                                                @foreach($customFonts as $font)
+                                                    <option value="{{ $font->font_family }}" {{ ($data->contact_topbar_font_family ?? '') == $font->font_family ? 'selected' : '' }}>
+                                                        {{ $font->font_name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endif
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="investor_exclusives_font_family" class="form-label text-capitalize">
+                                        Investor Exclusives Font Family
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Investor Exclusives Font Family"
+                                        data-description="Choose the font for the investor exclusives bar (investment websites only)."></i>
+                                    <select class="form-select" id="investor_exclusives_font_family" name="investor_exclusives_font_family">
+                                        <option value="">Default (System Font)</option>
+                                        <option value="outfit" {{ ($data->investor_exclusives_font_family ?? '') == 'outfit' ? 'selected' : '' }}>Outfit (Google Font)</option>
+                                        <option value="arial" {{ ($data->investor_exclusives_font_family ?? '') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->investor_exclusives_font_family ?? '') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->investor_exclusives_font_family ?? '') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->investor_exclusives_font_family ?? '') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->investor_exclusives_font_family ?? '') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->investor_exclusives_font_family ?? '') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        @if(isset($customFonts) && $customFonts->count() > 0)
+                                            <optgroup label="Custom Fonts">
+                                                @foreach($customFonts as $font)
+                                                    <option value="{{ $font->font_family }}" {{ ($data->investor_exclusives_font_family ?? '') == $font->font_family ? 'selected' : '' }}>
                                                         {{ $font->font_name }}
                                                     </option>
                                                 @endforeach
