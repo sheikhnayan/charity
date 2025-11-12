@@ -10,15 +10,24 @@ class Ticket extends Model
         'name',
         'quantity',
         'price',
+        'price_per_share',
+        'total_shares',
+        'available_shares',
         'status',
         'user_id',
         'hide_until',
         'hide_after',
         'image',
+        'documents',
         'description',
         'website_id',
         'category_id'
     ];
+
+    protected $casts = [
+        'documents' => 'array',
+    ];
+
     public function website()
     {
         return $this->belongsTo(Website::class);

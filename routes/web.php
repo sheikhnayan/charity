@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\AuthorizeNetController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketCategoryController;
+use App\Http\Controllers\Admin\PropertyCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\Analytics\DashboardController;
@@ -688,6 +689,16 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         Route::get('/edit/{id}', [TicketCategoryController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [TicketCategoryController::class, 'update'])->name('update');
         Route::get('/delete/{id}', [TicketCategoryController::class, 'destroy'])->name('delete');
+    });
+
+    Route::prefix('property-category')->name('admin.property-category.')->group(function () {
+        Route::get('/', [PropertyCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [PropertyCategoryController::class, 'create'])->name('create');
+        Route::post('/store', [PropertyCategoryController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [PropertyCategoryController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [PropertyCategoryController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [PropertyCategoryController::class, 'destroy'])->name('destroy');
+        Route::get('/by-website/{websiteId}', [PropertyCategoryController::class, 'getByWebsite'])->name('by-website');
     });
 
     Route::prefix('sponsor')->name('admin.sponsor.')->group(function () {

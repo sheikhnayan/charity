@@ -838,6 +838,63 @@ window.addEventListener('load', function() {
         background: #e9ecef;
     }
 
+    /* Property Category Carousel component styling in page builder */
+    .component[data-type="property-category-carousel"] {
+        border: 2px solid #6f42c1;
+        background: #f8f5ff;
+    }
+
+    .component[data-type="property-category-carousel"]:hover {
+        border-color: #8a5dd1;
+        background: #ede5f7;
+    }
+
+    .component[data-type="property-category-carousel"] .property-category-carousel-placeholder {
+        transition: all 0.3s ease;
+    }
+
+    .component[data-type="property-category-carousel"]:hover .property-category-carousel-placeholder {
+        background: #e9ecef;
+    }
+
+    /* Property Listing Grid component styling in page builder */
+    .component[data-type="property-listing-grid"] {
+        border: 2px solid #8b5cf6;
+        background: #f5f3ff;
+    }
+
+    .component[data-type="property-listing-grid"]:hover {
+        border-color: #a78bfa;
+        background: #ede9fe;
+    }
+
+    .component[data-type="property-listing-grid"] .property-listing-grid-placeholder {
+        transition: all 0.3s ease;
+    }
+
+    .component[data-type="property-listing-grid"]:hover .property-listing-grid-placeholder {
+        background: #e9ecef;
+    }
+
+    /* Product Listing Grid component styling in page builder */
+    .component[data-type="product-listing-grid"] {
+        border: 2px solid #3b82f6;
+        background: #eff6ff;
+    }
+
+    .component[data-type="product-listing-grid"]:hover {
+        border-color: #60a5fa;
+        background: #dbeafe;
+    }
+
+    .component[data-type="product-listing-grid"] .product-listing-grid-placeholder {
+        transition: all 0.3s ease;
+    }
+
+    .component[data-type="product-listing-grid"]:hover .product-listing-grid-placeholder {
+        background: #e9ecef;
+    }
+
     /* Video component specific styling in page builder */
     .component[data-type="video"] {
       cursor: pointer;
@@ -2792,6 +2849,9 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="press-card"><i class="fas fa-newspaper me-2"></i>Press Card</div>
                 <div class="component-item" draggable="true" data-type="ticket-carousel"><i class="fas fa-ticket-alt me-2"></i>Ticket Carousel</div>
                 <div class="component-item" draggable="true" data-type="ticket-category-carousel"><i class="fas fa-tags me-2"></i>Ticket Category Carousel</div>
+                <div class="component-item" draggable="true" data-type="property-category-carousel"><i class="fas fa-building me-2"></i>Property Category Carousel</div>
+                <div class="component-item" draggable="true" data-type="property-listing-grid"><i class="fas fa-th me-2"></i>Property Listing Grid</div>
+                <div class="component-item" draggable="true" data-type="product-listing-grid"><i class="fas fa-grip-horizontal me-2"></i>Product Listing Grid</div>
                 {{-- <div class="component-item" draggable="true" data-type="heading"><i class="fas fa-heading me-2"></i>Heading</div> --}}
                 </div>
             </div>
@@ -4149,6 +4209,52 @@ button a:hover {
                     <i class="fas fa-tags" style="font-size: 24px; color: #28a745; margin-bottom: 10px;"></i>
                     <h4 style="margin: 10px 0; color: #333;">Ticket Category Carousel</h4>
                     <p style="color: #666; margin: 0;">This carousel will display tickets from a specific category in a responsive grid layout.</p>
+                </div>
+            `;
+            break;
+
+        case 'property-category-carousel':
+            content = document.createElement('div');
+            content.className = 'property-category-carousel-preview';
+            content.innerHTML = `
+                <div class="property-category-carousel-placeholder" style="padding: 20px; border: 2px dashed #6f42c1; text-align: center; background: #f8f5ff; margin: 10px;">
+                    <i class="fas fa-building" style="font-size: 24px; color: #6f42c1; margin-bottom: 10px;"></i>
+                    <h4 style="margin: 10px 0; color: #333;">Property Category Carousel</h4>
+                    <p style="color: #666; margin: 0;">This carousel will display properties with share information from a specific category in a responsive grid layout.</p>
+                </div>
+            `;
+            break;
+
+        case 'property-listing-grid':
+            content = document.createElement('div');
+            content.className = 'property-listing-grid-preview';
+            content.innerHTML = `
+                <div class="property-listing-grid-placeholder" style="padding: 30px; border: 2px dashed #8b5cf6; text-align: center; background: #f5f3ff; margin: 10px; border-radius: 8px;">
+                    <i class="fas fa-th" style="font-size: 32px; color: #8b5cf6; margin-bottom: 15px;"></i>
+                    <h4 style="margin: 10px 0; color: #333; font-weight: 600;">Property Listing Grid</h4>
+                    <p style="color: #666; margin: 10px 0; font-size: 14px;">Complete property listing with category filters, image carousels, share pricing, and progress bars.</p>
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px; font-size: 12px; color: #888;">
+                        <span><i class="fas fa-filter"></i> Category Filters</span>
+                        <span><i class="fas fa-images"></i> Image Carousel</span>
+                        <span><i class="fas fa-chart-pie"></i> Share Info</span>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'product-listing-grid':
+            content = document.createElement('div');
+            content.className = 'product-listing-grid-preview';
+            content.innerHTML = `
+                <div class="product-listing-grid-placeholder" style="padding: 30px; border: 2px dashed #3b82f6; text-align: center; background: #eff6ff; margin: 10px; border-radius: 8px;">
+                    <i class="fas fa-grip-horizontal" style="font-size: 32px; color: #3b82f6; margin-bottom: 15px;"></i>
+                    <h4 style="margin: 10px 0; color: #333; font-weight: 600;">Product Listing Grid</h4>
+                    <p style="color: #666; margin: 10px 0; font-size: 14px;">Complete product listing with category filters, image carousels, pricing, and stock status.</p>
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px; font-size: 12px; color: #888;">
+                        <span><i class="fas fa-filter"></i> Category Filters</span>
+                        <span><i class="fas fa-images"></i> Image Carousel</span>
+                        <span><i class="fas fa-dollar-sign"></i> Pricing</span>
+                    </div>
                 </div>
             `;
             break;
@@ -10472,6 +10578,128 @@ break;
                         }
                     });
             break;
+
+            case 'property-category-carousel':
+                // Load property category carousel properties from the Blade template via AJAX
+                specificControls = `
+                    <div class="loading-properties" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                    </div>
+                `;
+                
+                // Fetch the actual properties template with existing component data
+                const propertyCarouselProperties = content._properties || {};
+                console.log('AJAX: Loading properties template with existing data:', propertyCarouselProperties);
+                console.log('AJAX - Component ID:', selectedComponent.id, 'Content element:', content);
+                console.log('AJAX - Content element properties:', content._properties);
+                const propertyCarouselPropertiesParam = encodeURIComponent(JSON.stringify(propertyCarouselProperties));
+                fetch('/admins/page/component-properties/property-category-carousel?website_id=' + (window.currentWebsiteId || 1) + '&properties=' + propertyCarouselPropertiesParam)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const propertiesDiv = doc.querySelector('.component-properties');
+                        if (propertiesDiv) {
+                            // Find and replace the loading message more reliably
+                            const currentPropertiesPanel = document.getElementById('property-panel-content');
+                            const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                            if (loadingDiv) {
+                                // Replace the entire loading div with the properties content
+                                loadingDiv.outerHTML = propertiesDiv.innerHTML;
+                            } else {
+                                // Fallback: replace entire content
+                                currentPropertiesPanel.innerHTML = propertiesDiv.innerHTML;
+                            }
+                            
+                            // Attach event listeners to the newly loaded property fields
+                            attachPropertyEventListeners();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load property category carousel properties:', error);
+                        const currentPropertiesPanel = document.getElementById('property-panel-content');
+                        const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<p style="color: red;">Failed to load properties. Please try again.</p>';
+                        }
+                    });
+            break;
+
+            case 'property-listing-grid':
+                // Load property listing grid properties from the Blade template via AJAX
+                specificControls = `
+                    <div class="loading-properties" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                    </div>
+                `;
+                
+                const propertyListingProperties = content._properties || {};
+                console.log('AJAX: Loading property listing grid properties:', propertyListingProperties);
+                const propertyListingPropertiesParam = encodeURIComponent(JSON.stringify(propertyListingProperties));
+                fetch('/admins/page/component-properties/property-listing-grid?website_id=' + (window.currentWebsiteId || 1) + '&properties=' + propertyListingPropertiesParam)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const propertiesDiv = doc.querySelector('.component-properties');
+                        if (propertiesDiv) {
+                            const currentPropertiesPanel = document.getElementById('property-panel-content');
+                            const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                            if (loadingDiv) {
+                                loadingDiv.outerHTML = propertiesDiv.innerHTML;
+                            } else {
+                                currentPropertiesPanel.innerHTML = propertiesDiv.innerHTML;
+                            }
+                            attachPropertyEventListeners();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load property listing grid properties:', error);
+                        const currentPropertiesPanel = document.getElementById('property-panel-content');
+                        const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<p style="color: red;">Failed to load properties. Please try again.</p>';
+                        }
+                    });
+            break;
+
+            case 'product-listing-grid':
+                // Load product listing grid properties from the Blade template via AJAX
+                specificControls = `
+                    <div class="loading-properties" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                    </div>
+                `;
+                
+                const productListingProperties = content._properties || {};
+                console.log('AJAX: Loading product listing grid properties:', productListingProperties);
+                const productListingPropertiesParam = encodeURIComponent(JSON.stringify(productListingProperties));
+                fetch('/admins/page/component-properties/product-listing-grid?website_id=' + (window.currentWebsiteId || 1) + '&properties=' + productListingPropertiesParam)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const propertiesDiv = doc.querySelector('.component-properties');
+                        if (propertiesDiv) {
+                            const currentPropertiesPanel = document.getElementById('property-panel-content');
+                            const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                            if (loadingDiv) {
+                                loadingDiv.outerHTML = propertiesDiv.innerHTML;
+                            } else {
+                                currentPropertiesPanel.innerHTML = propertiesDiv.innerHTML;
+                            }
+                            attachPropertyEventListeners();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Failed to load product listing grid properties:', error);
+                        const currentPropertiesPanel = document.getElementById('property-panel-content');
+                        const loadingDiv = currentPropertiesPanel.querySelector('.loading-properties');
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<p style="color: red;">Failed to load properties. Please try again.</p>';
+                        }
+                    });
+            break;
         }
 
         // Function to attach event listeners to dynamically loaded component properties
@@ -15079,6 +15307,24 @@ function applyResponsiveStyles() {
                         console.log('SERIALIZE NESTED: Saving ticket-category-carousel properties:', compContent._properties);
                       }
                       break;
+                    case 'property-category-carousel':
+                      if (compContent._properties) {
+                        compData.properties = compContent._properties;
+                        console.log('SERIALIZE NESTED: Saving property-category-carousel properties:', compContent._properties);
+                      }
+                      break;
+                    case 'property-listing-grid':
+                      if (compContent._properties) {
+                        compData.properties = compContent._properties;
+                        console.log('SERIALIZE NESTED: Saving property-listing-grid properties:', compContent._properties);
+                      }
+                      break;
+                    case 'product-listing-grid':
+                      if (compContent._properties) {
+                        compData.properties = compContent._properties;
+                        console.log('SERIALIZE NESTED: Saving product-listing-grid properties:', compContent._properties);
+                      }
+                      break;
                   }
                   
                   // Save responsive styles for nested components
@@ -15117,6 +15363,30 @@ function applyResponsiveStyles() {
                 if (content._properties) {
                     data.properties = content._properties;
                     console.log('SERIALIZE: Saving ticket-category-carousel properties:', content._properties);
+                }
+                break;
+
+            case 'property-category-carousel':
+                // Save property category carousel properties  
+                if (content._properties) {
+                    data.properties = content._properties;
+                    console.log('SERIALIZE: Saving property-category-carousel properties:', content._properties);
+                }
+                break;
+
+            case 'property-listing-grid':
+                // Save property listing grid properties
+                if (content._properties) {
+                    data.properties = content._properties;
+                    console.log('SERIALIZE: Saving property-listing-grid properties:', content._properties);
+                }
+                break;
+
+            case 'product-listing-grid':
+                // Save product listing grid properties
+                if (content._properties) {
+                    data.properties = content._properties;
+                    console.log('SERIALIZE: Saving product-listing-grid properties:', content._properties);
                 }
                 break;
 
@@ -15935,6 +16205,39 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'property-category-carousel':
+                // Load property category carousel properties
+                if (data.properties) {
+                    actualContent._properties = data.properties;
+                    console.log('DESERIALIZE: Loading property-category-carousel properties:', data.properties);
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'property-listing-grid':
+                // Load property listing grid properties
+                if (data.properties) {
+                    actualContent._properties = data.properties;
+                    console.log('DESERIALIZE: Loading property-listing-grid properties:', data.properties);
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'product-listing-grid':
+                // Load product listing grid properties
+                if (data.properties) {
+                    actualContent._properties = data.properties;
+                    console.log('DESERIALIZE: Loading product-listing-grid properties:', data.properties);
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             default:
                 actualContent.innerHTML = data.html;
                 if (data.style) {
@@ -16651,6 +16954,24 @@ function applyResponsiveStyles() {
                         if (compData.properties) {
                           nestedContent._properties = compData.properties;
                           console.log('DESERIALIZE NESTED: Loading ticket-category-carousel properties:', compData.properties);
+                        }
+                        break;
+                      case 'property-category-carousel':
+                        if (compData.properties) {
+                          nestedContent._properties = compData.properties;
+                          console.log('DESERIALIZE NESTED: Loading property-category-carousel properties:', compData.properties);
+                        }
+                        break;
+                      case 'property-listing-grid':
+                        if (compData.properties) {
+                          nestedContent._properties = compData.properties;
+                          console.log('DESERIALIZE NESTED: Loading property-listing-grid properties:', compData.properties);
+                        }
+                        break;
+                      case 'product-listing-grid':
+                        if (compData.properties) {
+                          nestedContent._properties = compData.properties;
+                          console.log('DESERIALIZE NESTED: Loading product-listing-grid properties:', compData.properties);
                         }
                         break;
                       default:

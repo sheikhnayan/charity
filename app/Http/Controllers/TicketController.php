@@ -27,9 +27,19 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $request->validate([
+        $validationRules = [
             'name' => 'required|string|max:255',
-        ]);
+            'type' => 'required|in:ticket,product,property'
+        ];
+        
+        // Add conditional validation for property type
+        if ($request->type === 'property') {
+            $validationRules['category_id'] = 'required|exists:ticket_categories,id';
+            $validationRules['price_per_share'] = 'required|numeric|min:0';
+            $validationRules['total_shares'] = 'required|integer|min:1';
+        }
+        
+        $request->validate($validationRules);
 
         $add = new Ticket;
         $add->name = $request->name;
@@ -37,12 +47,23 @@ class TicketController extends Controller
         $add->status = $request->status;
         $add->hide_until = $request->hide_until;
         $add->hide_after = $request->hide_after;
-        $add->price = $request->price;
-        $add->quantity = $request->quantity;
         $add->type = $request->type;
-        $add->size = $request->size;
         $add->website_id = $request->website_id;
         $add->category_id = $request->category_id;
+        
+        // Handle property type
+        if ($request->type === 'property') {
+            $add->price_per_share = $request->price_per_share;
+            $add->total_shares = $request->total_shares;
+            $add->available_shares = $request->total_shares; // Initially all shares are available
+            $add->price = $request->price_per_share * $request->total_shares; // Total value
+            $add->quantity = $request->total_shares; // Use shares as quantity
+        } else {
+            // Regular ticket or product
+            $add->price = $request->price;
+            $add->quantity = $request->quantity;
+            $add->size = $request->size;
+        }
 
         $website = Website::find($request->website_id);
 
@@ -80,6 +101,23 @@ class TicketController extends Controller
 
         }
 
+        // Handle document uploads for property type
+        if ($request->type === 'property' && $request->hasFile('documents')) {
+            $documents = [];
+            foreach ($request->file('documents') as $document) {
+                $filename = time() . '_' . uniqid() . '.' . $document->getClientOriginalExtension();
+                $document->move(public_path('uploads/property-documents'), $filename);
+                $documents[] = [
+                    'name' => $document->getClientOriginalName(),
+                    'path' => 'uploads/property-documents/' . $filename,
+                    'size' => $document->getSize(),
+                    'type' => $document->getClientOriginalExtension(),
+                ];
+            }
+            $add->documents = $documents;
+            $add->save();
+        }
+
         if($request->features){
             foreach($request->features as $feature){
                 $newFeature = new TicketFeature;
@@ -106,17 +144,48 @@ class TicketController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->all());
+        $validationRules = [
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:ticket,product,property'
+        ];
+        
+        // Add conditional validation for property type
+        if ($request->type === 'property') {
+            $validationRules['category_id'] = 'required|exists:ticket_categories,id';
+            $validationRules['price_per_share'] = 'required|numeric|min:0';
+            $validationRules['total_shares'] = 'required|integer|min:1';
+        }
+        
+        $request->validate($validationRules);
+        
         $add = Ticket::findOrFail($id);
         $add->name = $request->name;
         $add->description = $request->description;
         $add->status = $request->status;
         $add->hide_until = $request->hide_until;
         $add->hide_after = $request->hide_after;
-        $add->price = $request->price;
         $add->type = $request->type;
-        $add->size = $request->size;
-        $add->quantity = $request->quantity;
         $add->category_id = $request->category_id;
+        
+        // Handle property type
+        if ($request->type === 'property') {
+            $add->price_per_share = $request->price_per_share;
+            
+            // Calculate available shares difference if total shares changed
+            $oldTotalShares = $add->total_shares ?? 0;
+            $newTotalShares = $request->total_shares;
+            $soldShares = $oldTotalShares - ($add->available_shares ?? 0);
+            
+            $add->total_shares = $newTotalShares;
+            $add->available_shares = $newTotalShares - $soldShares;
+            $add->price = $request->price_per_share * $newTotalShares;
+            $add->quantity = $newTotalShares;
+        } else {
+            // Regular ticket or product
+            $add->price = $request->price;
+            $add->quantity = $request->quantity;
+            $add->size = $request->size;
+        }
 
         $website = Website::find($request->website_id);
 
@@ -158,6 +227,22 @@ class TicketController extends Controller
 
             }
 
+        }
+
+        // Handle document uploads for property type
+        if ($request->type === 'property' && $request->hasFile('documents')) {
+            $documents = $add->documents ?? []; // Keep existing documents
+            foreach ($request->file('documents') as $document) {
+                $filename = time() . '_' . uniqid() . '.' . $document->getClientOriginalExtension();
+                $document->move(public_path('uploads/property-documents'), $filename);
+                $documents[] = [
+                    'name' => $document->getClientOriginalName(),
+                    'path' => 'uploads/property-documents/' . $filename,
+                    'size' => $document->getSize(),
+                    'type' => $document->getClientOriginalExtension(),
+                ];
+            }
+            $add->documents = $documents;
         }
 
         if($request->features){

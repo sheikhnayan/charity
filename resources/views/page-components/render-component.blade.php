@@ -24,7 +24,7 @@
     
     // Temporary debugging - remove after testing
     error_log("RENDER COMPONENT DEBUG: Type={$componentType}, IsNested=" . (isset($isNested) ? ($isNested ? 'true' : 'false') : 'undefined'));
-    if ($componentType === 'feature-grid' || $componentType === 'numbered-timeline' || $componentType === 'investment-tier' || $componentType === 'ticket-carousel' || $componentType === 'ticket-category-carousel') {
+    if ($componentType === 'feature-grid' || $componentType === 'numbered-timeline' || $componentType === 'investment-tier' || $componentType === 'ticket-carousel' || $componentType === 'ticket-category-carousel' || $componentType === 'property-category-carousel') {
         error_log("RENDER COMPONENT FOUND: {$componentType}");
     }
     $componentId = $componentId ?? ('component-' . uniqid());
@@ -6152,6 +6152,267 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             </script>
         @break
 
+        @case('property-category-carousel')
+            @php
+                // Get component properties
+                $properties = $component['properties'] ?? [];
+                $selectedCategoryId = $properties['category_id'] ?? null;
+                $slidesToShow = $properties['slides_to_show'] ?? 3;
+                $autoplay = ($properties['autoplay'] ?? 0) == 1;
+                $autoplaySpeed = $properties['autoplay_speed'] ?? 3000;
+                $enableLoop = ($properties['loop'] ?? 1) == 1;
+                $dots = true; // Default to true for now
+                $arrows = true; // Default to true for now
+                $sliderId = 'property-category-slider-' . ($componentId ?? uniqid());
+                
+                // Styling options
+                $cardBackgroundColor = $properties['card_background_color'] ?? '#ffffff';
+                $cardBorderRadius = '8px'; // Default value
+                $titleColor = '#000'; // Default value
+                $priceColor = $properties['price_text_color'] ?? '#2e7d3e';
+                $descriptionColor = $properties['description_text_color'] ?? '#666666';
+                $buttonBackgroundColor = $properties['button_background_color'] ?? '#007bff';
+                $buttonTextColor = $properties['button_text_color'] ?? '#ffffff';
+
+                // Get properties filtered by category for this website
+                $query = \App\Models\Ticket::where('website_id', $check->id ?? 1)
+                    ->where('status', 1)
+                    ->where('type', 'property');
+                
+                // Apply category filter if selected
+                if ($selectedCategoryId) {
+                    $query->where('category_id', $selectedCategoryId);
+                }
+                
+                $properties = $query->latest()->get();
+                
+                // Determine if loop should be enabled (only if we have enough items)
+                $actualLoop = $enableLoop && count($properties) >= $slidesToShow;
+                
+                // Debug information
+                $propertyCount = count($properties);
+                $debugInfo = [
+                    'enableLoop' => $enableLoop,
+                    'propertyCount' => $propertyCount,
+                    'slidesToShow' => $slidesToShow,
+                    'actualLoop' => $actualLoop
+                ];
+            @endphp
+            
+            <!-- Load Required CSS -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+            
+            <!-- Component Structure -->
+            <div class="property-category-carousel-component" style="{{ $styleStr }}">
+                <style>
+                    #{{ $sliderId }}.owl-carousel .owl-item {
+                        min-width: 262px;
+                        max-width: 262px;
+                        width: 262px !important;
+                    }
+                    #{{ $sliderId }}.owl-carousel .property-card {
+                        width: 262px;
+                        max-width: 262px;
+                        min-width: 262px;
+                    }
+                    @media (max-width: 767px) {
+                        #{{ $sliderId }}.owl-carousel .owl-item {
+                            width: 262px !important;
+                        }
+                    }
+                </style>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            @if(isset($properties) && count($properties) > 0)
+                                <div class="owl-carousel property-category-carousel" id="{{ $sliderId }}">
+                                    @foreach($properties as $property)
+                                        <div class="property-card">
+                                            <a href="{{ route('product.details', $property->id) }}" class="property-link">
+                                                <div class="property-image">
+                                                    <img src="{{ asset($property->image) }}" alt="{{ $property->name }}">
+                                                    @if($property->available_shares && $property->total_shares)
+                                                        <div class="property-badge">{{ number_format($property->available_shares) }} / {{ number_format($property->total_shares) }} shares</div>
+                                                    @endif
+                                                </div>
+                                                <div class="property-info">
+                                                    <h3 class="property-title">{{ $property->name }}</h3>
+                                                    <div class="property-meta">
+                                                        <span class="property-price">${{ number_format($property->price_per_share, 2) }} per share</span>
+                                                    </div>
+                                                    <div class="property-shares-info">
+                                                        <span class="shares-available">{{ number_format($property->available_shares) }} available</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="no-properties">
+                                    <p>No properties available for this category at this time.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Component Styles -->
+            <style>
+                .property-category-carousel-component {
+                    padding: 40px 0;
+                }
+
+                .property-category-carousel-component .property-card {
+                    background: {{ $cardBackgroundColor }};
+                    border-radius: {{ $cardBorderRadius }};
+                    overflow: hidden;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    transition: transform 0.3s ease;
+                    margin: 10px;
+                }
+
+                .property-category-carousel-component .property-card:hover {
+                    transform: translateY(-5px);
+                }
+
+                .property-category-carousel-component .property-link {
+                    text-decoration: none;
+                    color: inherit;
+                    display: block;
+                }
+
+                .property-category-carousel-component .property-image {
+                    position: relative;
+                    padding-top: 66.67%; /* 3:2 Aspect ratio */
+                    overflow: hidden;
+                    height: 262px;
+                    width: 262px;
+                }
+
+                .property-category-carousel-component .property-image img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: unset;
+                    height: 262px !important;
+                    width: 262px !important;
+                }
+
+                .property-category-carousel-component .property-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: rgba(46, 125, 62, 0.95);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+
+                .property-category-carousel-component .property-info {
+                    padding: 15px;
+                }
+
+                .property-category-carousel-component .property-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: {{ $titleColor }};
+                    margin-bottom: 8px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 0.875rem !important;
+                    font-weight: 400 !important;
+                }
+
+                .property-category-carousel-component .property-meta {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                }
+
+                .property-category-carousel-component .property-price {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: {{ $priceColor }};
+                }
+
+                .property-category-carousel-component .property-shares-info {
+                    font-size: 12px;
+                    color: {{ $descriptionColor }};
+                }
+
+                .property-category-carousel-component .shares-available {
+                    font-weight: 500;
+                }
+
+                .property-category-carousel-component .no-properties {
+                    text-align: center;
+                    padding: 40px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                }
+
+                /* Responsive styles */
+                @media (max-width: 768px) {
+                    .property-category-carousel-component {
+                        padding: 20px 0;
+                    }
+                    
+                    .property-category-carousel-component .property-card {
+                        margin: 5px;
+                    }
+
+                    .property-category-carousel-component .property-title {
+                        font-size: 14px;
+                    }
+
+                    .property-category-carousel-component .property-price {
+                        font-size: 14px;
+                    }
+                }
+            </style>
+
+            <!-- Initialize Owl Carousel -->
+            <script>
+                console.log('Property Category Carousel Debug:', {!! json_encode($debugInfo) !!});
+                
+                $(document).ready(function(){
+                    $("#{{ $sliderId }}").owlCarousel({
+                        items: {{ $slidesToShow }},
+                        loop: {{ $actualLoop ? 'true' : 'false' }},
+                        margin: 20,
+                        autoplay: {{ $autoplay ? 'true' : 'false' }},
+                        autoplayTimeout: {{ $autoplaySpeed }},
+                        autoplayHoverPause: true,
+                        dots: {{ $dots ? 'true' : 'false' }},
+                        nav: {{ $arrows ? 'true' : 'false' }},
+                        responsive: {
+                            0: {
+                                items: 1,
+                                loop: {{ count($properties) >= 1 && $enableLoop ? 'true' : 'false' }}
+                            },
+                            768: {
+                                items: 2,
+                                loop: {{ count($properties) >= 2 && $enableLoop ? 'true' : 'false' }}
+                            },
+                            992: {
+                                items: {{ min($slidesToShow, 3) }},
+                                loop: {{ count($properties) >= min($slidesToShow, 3) && $enableLoop ? 'true' : 'false' }}
+                            }
+                        }
+                    });
+                });
+            </script>
+        @break
+
         @case('video-background')
             @php
                 $videoData = $component['videoData'] ?? [];
@@ -6316,6 +6577,974 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     if (video && {{ $autoplay ? 'true' : 'false' }}) {
                         video.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
+                });
+            </script>
+        @break
+
+        @case('property-listing-grid')
+            @php
+                // Get component settings with defaults
+                $columns = $component['columns'] ?? 3;
+                $perPage = $component['perPage'] ?? 9;
+                $showFilter = ($component['showFilter'] ?? 'true') === 'true';
+                $defaultCategory = $component['defaultCategory'] ?? 'all';
+                $showCarousel = ($component['showCarousel'] ?? 'true') === 'true';
+                $descriptionLength = $component['descriptionLength'] ?? 100;
+                $showShares = ($component['showShares'] ?? 'true') === 'true';
+                $sortBy = $component['sort'] ?? 'newest';
+                $cardStyle = $component['cardStyle'] ?? 'border';
+                $primaryColor = $component['primaryColor'] ?? '#667eea';
+                $bgColor = $component['bgColor'] ?? '#ffffff';
+                $padding = $component['padding'] ?? 60;
+                $sectionTitle = $component['title'] ?? '';
+                $sectionSubtitle = $component['subtitle'] ?? '';
+                
+                // Get properties with their categories
+                $properties = \App\Models\Ticket::where('website_id', $check->id)
+                    ->where('type', 'property')
+                    ->where('status', 1)
+                    ->with(['category', 'images']);
+                
+                // Apply sorting
+                switch($sortBy) {
+                    case 'oldest':
+                        $properties = $properties->oldest();
+                        break;
+                    case 'price_low':
+                        $properties = $properties->orderBy('price_per_share', 'asc');
+                        break;
+                    case 'price_high':
+                        $properties = $properties->orderBy('price_per_share', 'desc');
+                        break;
+                    case 'shares_available':
+                        $properties = $properties->orderBy('available_shares', 'desc');
+                        break;
+                    default: // newest
+                        $properties = $properties->latest();
+                }
+                
+                $properties = $properties->take($perPage)->get();
+                
+                // Get all property categories
+                $categories = \App\Models\TicketCategory::where('website_id', $check->id)
+                    ->where('status', 1)
+                    ->whereHas('tickets', function($query) use ($check) {
+                        $query->where('type', 'property')
+                              ->where('website_id', $check->id)
+                              ->where('status', 1);
+                    })->get();
+                
+                // Card style classes
+                $cardStyleClass = '';
+                switch($cardStyle) {
+                    case 'shadow':
+                        $cardStyleClass = 'property-card-shadow';
+                        break;
+                    case 'minimal':
+                        $cardStyleClass = 'property-card-minimal';
+                        break;
+                    default:
+                        $cardStyleClass = 'property-card-border';
+                }
+                
+                $gridClass = 'col-md-' . (12 / $columns);
+            @endphp
+
+            <div class="property-listing-grid-component" style="{{ $styleStr }} background: {{ $bgColor }}; padding: {{ $padding }}px 0;">
+                <div class="container">
+                    @if($sectionTitle)
+                        <div class="text-center mb-5">
+                            <h2 class="section-title" style="color: #1e293b; font-weight: 700; font-size: 2.5rem; margin-bottom: 1rem;">
+                                {{ $sectionTitle }}
+                            </h2>
+                            @if($sectionSubtitle)
+                                <p class="section-subtitle" style="color: #64748b; font-size: 1.125rem;">
+                                    {{ $sectionSubtitle }}
+                                </p>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if($showFilter && $categories->count() > 0)
+                        <!-- Category Filter Tabs -->
+                        <div class="property-filter-tabs mb-4">
+                            <ul class="nav nav-pills justify-content-center" id="propertyListingFilter-{{ $componentId }}">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-category="all" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
+                                        All Properties
+                                    </button>
+                                </li>
+                                @foreach($categories as $category)
+                                    <li class="nav-item">
+                                        <button class="nav-link" data-category="{{ $category->id }}" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
+                                            {{ $category->name }}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Properties Grid -->
+                    <div class="row property-grid-container" id="propertyGrid-{{ $componentId }}">
+                        @foreach($properties as $property)
+                            <div class="{{ $gridClass }} mb-4 property-item" data-category="{{ $property->category_id ?? 'uncategorized' }}">
+                                <div class="property-card {{ $cardStyleClass }}">
+                                    <a href="/product/{{ $property->id }}" class="property-link">
+                                        <!-- Property Image with Carousel -->
+                                        <div class="property-image-container">
+                                            @if($property->images && $property->images->count() > 0)
+                                                <div class="property-carousel" id="propertyCarousel-{{ $componentId }}-{{ $property->id }}">
+                                                    <div class="carousel-images">
+                                                        <img src="{{ asset($property->image) }}" alt="{{ $property->name }}" class="property-img active">
+                                                        @foreach($property->images as $index => $image)
+                                                            @if($index > 0)
+                                                                <img src="{{ asset($image->image_path) }}" alt="{{ $property->name }}" class="property-img">
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                    
+                                                    @if($showCarousel && $property->images->count() > 1)
+                                                        <button class="carousel-btn carousel-prev" onclick="event.preventDefault(); navigatePropertyCarousel('{{ $componentId }}-{{ $property->id }}', -1)">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </button>
+                                                        <button class="carousel-btn carousel-next" onclick="event.preventDefault(); navigatePropertyCarousel('{{ $componentId }}-{{ $property->id }}', 1)">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </button>
+                                                        <div class="carousel-indicators">
+                                                            <span class="active"></span>
+                                                            @foreach($property->images as $index => $image)
+                                                                @if($index > 0)
+                                                                    <span></span>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <img src="{{ asset($property->image) }}" alt="{{ $property->name }}" class="property-img">
+                                            @endif
+                                        </div>
+
+                                        <!-- Property Content -->
+                                        <div class="property-content">
+                                            <h3 class="property-name">{{ $property->name }}</h3>
+                                            
+                                            @if($property->description)
+                                                <p class="property-description">
+                                                    {{ Str::limit(strip_tags($property->description), $descriptionLength) }}
+                                                </p>
+                                            @endif
+
+                                            @if($showShares)
+                                                <div class="property-shares-info" style="border-top: 2px solid #e2e8f0; padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                                    <div style="border-left: 4px solid {{ $primaryColor }}; padding-left: 12px;">
+                                                        <div style="font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Price per Share</div>
+                                                        <div style="font-size: 1.5rem; font-weight: 700; color: {{ $primaryColor }};">${{ number_format($property->price_per_share, 2) }}</div>
+                                                    </div>
+                                                    <div style="border-left: 4px solid #10b981; padding-left: 12px;">
+                                                        <div style="font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Available Shares</div>
+                                                        <div style="font-size: 1.125rem; font-weight: 700; color: #1e293b;">{{ number_format($property->available_shares) }} / {{ number_format($property->total_shares) }}</div>
+                                                    </div>
+                                                    
+                                                    <!-- Progress Bar -->
+                                                    @php
+                                                        $percentageSold = (($property->total_shares - $property->available_shares) / $property->total_shares) * 100;
+                                                    @endphp
+                                                    <div style="grid-column: 1 / -1; margin-top: 5px;">
+                                                        <div style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                                                            <div style="height: 100%; width: {{ $percentageSold }}%; background: {{ $primaryColor }}; transition: width 0.3s ease;"></div>
+                                                        </div>
+                                                        <div style="font-size: 0.75rem; color: #64748b; text-align: center;">{{ number_format($percentageSold, 1) }}% Funded</div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($properties->count() === 0)
+                        <div class="text-center py-5">
+                            <i class="fas fa-building" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                            <p style="color: #64748b;">No properties available at the moment.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Component Styles -->
+            <style>
+                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link {
+                    border: 2px solid;
+                    background: transparent;
+                    margin: 0 5px;
+                    padding: 8px 20px;
+                    border-radius: 25px;
+                    transition: all 0.3s ease;
+                    font-weight: 500;
+                }
+
+                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link.active,
+                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link:hover {
+                    background: {{ $primaryColor }};
+                    color: white !important;
+                    border-color: {{ $primaryColor }};
+                }
+
+                .property-listing-grid-component .property-card {
+                    border-radius: 12px;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .property-listing-grid-component .property-card-border {
+                    border: 1px solid #e2e8f0;
+                    background: white;
+                }
+
+                .property-listing-grid-component .property-card-shadow {
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    background: white;
+                    border: none;
+                }
+
+                .property-listing-grid-component .property-card-minimal {
+                    background: white;
+                    border: none;
+                }
+
+                .property-listing-grid-component .property-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                }
+
+                .property-listing-grid-component .property-link {
+                    text-decoration: none;
+                    color: inherit;
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                }
+
+                .property-listing-grid-component .property-image-container {
+                    position: relative;
+                    width: 100%;
+                    padding-top: 66.67%;
+                    overflow: hidden;
+                    background: #f1f5f9;
+                }
+
+                .property-listing-grid-component .property-carousel {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .property-listing-grid-component .carousel-images {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .property-listing-grid-component .property-img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    opacity: 0;
+                    transition: opacity 0.4s ease;
+                }
+
+                .property-listing-grid-component .property-img.active {
+                    opacity: 1;
+                }
+
+                .property-listing-grid-component .carousel-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: rgba(255,255,255,0.9);
+                    border: none;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10;
+                    transition: all 0.3s ease;
+                    color: #1e293b;
+                }
+
+                .property-listing-grid-component .carousel-btn:hover {
+                    background: white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                }
+
+                .property-listing-grid-component .carousel-prev {
+                    left: 10px;
+                }
+
+                .property-listing-grid-component .carousel-next {
+                    right: 10px;
+                }
+
+                .property-listing-grid-component .carousel-indicators {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    display: flex;
+                    gap: 6px;
+                    z-index: 10;
+                }
+
+                .property-listing-grid-component .carousel-indicators span {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.6);
+                    transition: all 0.3s ease;
+                }
+
+                .property-listing-grid-component .carousel-indicators span.active {
+                    background: white;
+                    width: 24px;
+                    border-radius: 4px;
+                }
+
+                .property-listing-grid-component .property-content {
+                    padding: 20px;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .property-listing-grid-component .property-name {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin-bottom: 10px;
+                }
+
+                .property-listing-grid-component .property-description {
+                    color: #64748b;
+                    font-size: 0.875rem;
+                    line-height: 1.5;
+                    margin-bottom: 15px;
+                    flex: 1;
+                }
+
+                .property-listing-grid-component .property-shares-info {
+                    border-top: 2px solid #e2e8f0;
+                    padding-top: 15px;
+                    background: transparent !important;
+                }
+
+                .property-listing-grid-component .share-price,
+                .property-listing-grid-component .shares-available {
+                    margin-bottom: 12px;
+                    padding: 10px 0 10px 15px;
+                    border-left: 4px solid;
+                    display: block;
+                    background: transparent !important;
+                }
+
+                .property-listing-grid-component .share-price {
+                    border-left-color: {{ $primaryColor }};
+                }
+
+                .property-listing-grid-component .shares-available {
+                    border-left-color: #10b981;
+                }
+
+                .property-listing-grid-component .share-price .label,
+                .property-listing-grid-component .shares-available .label {
+                    color: #64748b;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    background: transparent !important;
+                    display: inline !important;
+                    float: none !important;
+                }
+
+                .property-listing-grid-component .share-price .value {
+                    font-weight: 700;
+                    font-size: 1.5rem;
+                    color: {{ $primaryColor }};
+                    background: transparent !important;
+                    display: inline !important;
+                    float: none !important;
+                    margin-left: 10px;
+                }
+
+                .property-listing-grid-component .shares-available .value {
+                    font-weight: 700;
+                    font-size: 1.125rem;
+                    color: #1e293b;
+                    background: transparent !important;
+                    display: inline !important;
+                    float: none !important;
+                    margin-left: 10px;
+                }
+
+                .property-listing-grid-component .shares-progress {
+                    margin-top: 12px;
+                }
+
+                .property-listing-grid-component .progress {
+                    height: 8px;
+                    background: #e2e8f0;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    margin-bottom: 6px;
+                }
+
+                .property-listing-grid-component .progress-bar {
+                    height: 100%;
+                    transition: width 0.3s ease;
+                }
+
+                .property-listing-grid-component .progress-text {
+                    font-size: 0.75rem;
+                    color: #64748b;
+                }
+
+                .property-listing-grid-component .property-item {
+                    transition: opacity 0.3s ease;
+                }
+
+                .property-listing-grid-component .property-item.filtered-out {
+                    display: none;
+                }
+            </style>
+
+            <!-- Component Scripts -->
+            <script>
+                // Image carousel navigation
+                function navigatePropertyCarousel(carouselId, direction) {
+                    const carousel = document.getElementById('propertyCarousel-' + carouselId);
+                    const images = carousel.querySelectorAll('.property-img');
+                    const indicators = carousel.querySelectorAll('.carousel-indicators span');
+                    
+                    let currentIndex = 0;
+                    images.forEach((img, index) => {
+                        if (img.classList.contains('active')) {
+                            currentIndex = index;
+                        }
+                    });
+                    
+                    images[currentIndex].classList.remove('active');
+                    indicators[currentIndex].classList.remove('active');
+                    
+                    currentIndex = (currentIndex + direction + images.length) % images.length;
+                    
+                    images[currentIndex].classList.add('active');
+                    indicators[currentIndex].classList.add('active');
+                }
+
+                // Category filtering
+                document.addEventListener('DOMContentLoaded', function() {
+                    const filterButtons = document.querySelectorAll('#propertyListingFilter-{{ $componentId }} .nav-link');
+                    const propertyItems = document.querySelectorAll('#propertyGrid-{{ $componentId }} .property-item');
+                    
+                    filterButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Update active button
+                            filterButtons.forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // Filter properties
+                            const category = this.getAttribute('data-category');
+                            
+                            propertyItems.forEach(item => {
+                                if (category === 'all' || item.getAttribute('data-category') === category) {
+                                    item.classList.remove('filtered-out');
+                                } else {
+                                    item.classList.add('filtered-out');
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+        @break
+
+        @case('product-listing-grid')
+            @php
+                // Get component settings with defaults
+                $columns = $component['columns'] ?? 3;
+                $perPage = $component['perPage'] ?? 12;
+                $showFilter = ($component['showFilter'] ?? 'true') === 'true';
+                $defaultCategory = $component['defaultCategory'] ?? 'all';
+                $showCarousel = ($component['showCarousel'] ?? 'true') === 'true';
+                $descriptionLength = $component['descriptionLength'] ?? 100;
+                $showPrice = ($component['showPrice'] ?? 'true') === 'true';
+                $showStock = ($component['showStock'] ?? 'true') === 'true';
+                $sortBy = $component['sort'] ?? 'newest';
+                $cardStyle = $component['cardStyle'] ?? 'border';
+                $primaryColor = $component['primaryColor'] ?? '#3b82f6';
+                $bgColor = $component['bgColor'] ?? '#ffffff';
+                $padding = $component['padding'] ?? 60;
+                $sectionTitle = $component['title'] ?? '';
+                $sectionSubtitle = $component['subtitle'] ?? '';
+                
+                // Get products with their categories
+                $products = \App\Models\Ticket::where('website_id', $check->id)
+                    ->whereIn('type', ['product', 'ticket'])
+                    ->where('status', 1)
+                    ->with(['category', 'images']);
+                
+                // Apply sorting
+                switch($sortBy) {
+                    case 'oldest':
+                        $products = $products->oldest();
+                        break;
+                    case 'price_low':
+                        $products = $products->orderBy('price', 'asc');
+                        break;
+                    case 'price_high':
+                        $products = $products->orderBy('price', 'desc');
+                        break;
+                    case 'name_az':
+                        $products = $products->orderBy('name', 'asc');
+                        break;
+                    case 'name_za':
+                        $products = $products->orderBy('name', 'desc');
+                        break;
+                    default: // newest
+                        $products = $products->latest();
+                }
+                
+                $products = $products->take($perPage)->get();
+                
+                // Get all product categories
+                $categories = \App\Models\TicketCategory::where('website_id', $check->id)
+                    ->where('status', 1)
+                    ->whereHas('tickets', function($query) use ($check) {
+                        $query->whereIn('type', ['product', 'ticket'])
+                              ->where('website_id', $check->id)
+                              ->where('status', 1);
+                    })->get();
+                
+                // Card style classes
+                $cardStyleClass = '';
+                switch($cardStyle) {
+                    case 'shadow':
+                        $cardStyleClass = 'product-card-shadow';
+                        break;
+                    case 'minimal':
+                        $cardStyleClass = 'product-card-minimal';
+                        break;
+                    default:
+                        $cardStyleClass = 'product-card-border';
+                }
+                
+                $gridClass = 'col-md-' . (12 / $columns);
+            @endphp
+
+            <div class="product-listing-grid-component" style="{{ $styleStr }} background: {{ $bgColor }}; padding: {{ $padding }}px 0;">
+                <div class="container">
+                    @if($sectionTitle)
+                        <div class="text-center mb-5">
+                            <h2 class="section-title" style="color: #1e293b; font-weight: 700; font-size: 2.5rem; margin-bottom: 1rem;">
+                                {{ $sectionTitle }}
+                            </h2>
+                            @if($sectionSubtitle)
+                                <p class="section-subtitle" style="color: #64748b; font-size: 1.125rem;">
+                                    {{ $sectionSubtitle }}
+                                </p>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if($showFilter && $categories->count() > 0)
+                        <!-- Category Filter Tabs -->
+                        <div class="product-filter-tabs mb-4">
+                            <ul class="nav nav-pills justify-content-center" id="productListingFilter-{{ $componentId }}">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-category="all" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
+                                        All Products
+                                    </button>
+                                </li>
+                                @foreach($categories as $category)
+                                    <li class="nav-item">
+                                        <button class="nav-link" data-category="{{ $category->id }}" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
+                                            {{ $category->name }}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Products Grid -->
+                    <div class="row product-grid-container" id="productGrid-{{ $componentId }}">
+                        @foreach($products as $product)
+                            <div class="{{ $gridClass }} mb-4 product-item" data-category="{{ $product->category_id ?? 'uncategorized' }}">
+                                <div class="product-card {{ $cardStyleClass }}">
+                                    <a href="/product/{{ $product->id }}" class="product-link">
+                                        <!-- Product Image with Carousel -->
+                                        <div class="product-image-container">
+                                            @if($product->images && $product->images->count() > 0)
+                                                <div class="product-carousel" id="productCarousel-{{ $componentId }}-{{ $product->id }}">
+                                                    <div class="carousel-images">
+                                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-img active">
+                                                        @foreach($product->images as $index => $image)
+                                                            @if($index > 0)
+                                                                <img src="{{ asset($image->image_path) }}" alt="{{ $product->name }}" class="product-img">
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                    
+                                                    @if($showCarousel && $product->images->count() > 1)
+                                                        <button class="carousel-btn carousel-prev" onclick="event.preventDefault(); navigateProductCarousel('{{ $componentId }}-{{ $product->id }}', -1)">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </button>
+                                                        <button class="carousel-btn carousel-next" onclick="event.preventDefault(); navigateProductCarousel('{{ $componentId }}-{{ $product->id }}', 1)">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </button>
+                                                        <div class="carousel-indicators">
+                                                            <span class="active"></span>
+                                                            @foreach($product->images as $index => $image)
+                                                                @if($index > 0)
+                                                                    <span></span>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-img">
+                                            @endif
+
+                                            @if($showStock)
+                                                @if($product->quantity > 0)
+                                                    <span class="stock-badge stock-in">In Stock</span>
+                                                @else
+                                                    <span class="stock-badge stock-out">Out of Stock</span>
+                                                @endif
+                                            @endif
+                                        </div>
+
+                                        <!-- Product Content -->
+                                        <div class="product-content">
+                                            <h3 class="product-name">{{ $product->name }}</h3>
+                                            
+                                            @if($product->description)
+                                                <p class="product-description">
+                                                    {{ Str::limit(strip_tags($product->description), $descriptionLength) }}
+                                                </p>
+                                            @endif
+
+                                            <div class="product-footer">
+                                                @if($showPrice)
+                                                    <div class="product-price" style="color: {{ $primaryColor }};">
+                                                        ${{ number_format($product->price, 2) }}
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($showStock && $product->quantity > 0)
+                                                    <div class="product-quantity">
+                                                        {{ $product->quantity }} available
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($products->count() === 0)
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                            <p style="color: #64748b;">No products available at the moment.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Component Styles -->
+            <style>
+                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link {
+                    border: 2px solid;
+                    background: transparent;
+                    margin: 0 5px;
+                    padding: 8px 20px;
+                    border-radius: 25px;
+                    transition: all 0.3s ease;
+                    font-weight: 500;
+                }
+
+                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link.active,
+                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link:hover {
+                    background: {{ $primaryColor }};
+                    color: white !important;
+                    border-color: {{ $primaryColor }};
+                }
+
+                .product-listing-grid-component .product-card {
+                    border-radius: 12px;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .product-listing-grid-component .product-card-border {
+                    border: 1px solid #e2e8f0;
+                    background: white;
+                }
+
+                .product-listing-grid-component .product-card-shadow {
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    background: white;
+                    border: none;
+                }
+
+                .product-listing-grid-component .product-card-minimal {
+                    background: white;
+                    border: none;
+                }
+
+                .product-listing-grid-component .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                }
+
+                .product-listing-grid-component .product-link {
+                    text-decoration: none;
+                    color: inherit;
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                }
+
+                .product-listing-grid-component .product-image-container {
+                    position: relative;
+                    width: 100%;
+                    padding-top: 100%;
+                    overflow: hidden;
+                    background: #f1f5f9;
+                }
+
+                .product-listing-grid-component .product-carousel {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .product-listing-grid-component .carousel-images {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .product-listing-grid-component .product-img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    opacity: 0;
+                    transition: opacity 0.4s ease;
+                }
+
+                .product-listing-grid-component .product-img.active {
+                    opacity: 1;
+                }
+
+                .product-listing-grid-component .stock-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    z-index: 10;
+                }
+
+                .product-listing-grid-component .stock-in {
+                    background: #10b981;
+                    color: white;
+                }
+
+                .product-listing-grid-component .stock-out {
+                    background: #ef4444;
+                    color: white;
+                }
+
+                .product-listing-grid-component .carousel-btn {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: rgba(255,255,255,0.9);
+                    border: none;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10;
+                    transition: all 0.3s ease;
+                    color: #1e293b;
+                }
+
+                .product-listing-grid-component .carousel-btn:hover {
+                    background: white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                }
+
+                .product-listing-grid-component .carousel-prev {
+                    left: 10px;
+                }
+
+                .product-listing-grid-component .carousel-next {
+                    right: 10px;
+                }
+
+                .product-listing-grid-component .carousel-indicators {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    display: flex;
+                    gap: 6px;
+                    z-index: 10;
+                }
+
+                .product-listing-grid-component .carousel-indicators span {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.6);
+                    transition: all 0.3s ease;
+                }
+
+                .product-listing-grid-component .carousel-indicators span.active {
+                    background: white;
+                    width: 24px;
+                    border-radius: 4px;
+                }
+
+                .product-listing-grid-component .product-content {
+                    padding: 20px;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .product-listing-grid-component .product-name {
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin-bottom: 10px;
+                }
+
+                .product-listing-grid-component .product-description {
+                    color: #64748b;
+                    font-size: 0.875rem;
+                    line-height: 1.5;
+                    margin-bottom: 15px;
+                    flex: 1;
+                }
+
+                .product-listing-grid-component .product-footer {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-top: 1px solid #e2e8f0;
+                    padding-top: 15px;
+                }
+
+                .product-listing-grid-component .product-price {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                }
+
+                .product-listing-grid-component .product-quantity {
+                    color: #64748b;
+                    font-size: 0.875rem;
+                }
+
+                .product-listing-grid-component .product-item {
+                    transition: opacity 0.3s ease;
+                }
+
+                .product-listing-grid-component .product-item.filtered-out {
+                    display: none;
+                }
+            </style>
+
+            <!-- Component Scripts -->
+            <script>
+                // Image carousel navigation
+                function navigateProductCarousel(carouselId, direction) {
+                    const carousel = document.getElementById('productCarousel-' + carouselId);
+                    const images = carousel.querySelectorAll('.product-img');
+                    const indicators = carousel.querySelectorAll('.carousel-indicators span');
+                    
+                    let currentIndex = 0;
+                    images.forEach((img, index) => {
+                        if (img.classList.contains('active')) {
+                            currentIndex = index;
+                        }
+                    });
+                    
+                    images[currentIndex].classList.remove('active');
+                    indicators[currentIndex].classList.remove('active');
+                    
+                    currentIndex = (currentIndex + direction + images.length) % images.length;
+                    
+                    images[currentIndex].classList.add('active');
+                    indicators[currentIndex].classList.add('active');
+                }
+
+                // Category filtering
+                document.addEventListener('DOMContentLoaded', function() {
+                    const filterButtons = document.querySelectorAll('#productListingFilter-{{ $componentId }} .nav-link');
+                    const productItems = document.querySelectorAll('#productGrid-{{ $componentId }} .product-item');
+                    
+                    filterButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Update active button
+                            filterButtons.forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // Filter products
+                            const category = this.getAttribute('data-category');
+                            
+                            productItems.forEach(item => {
+                                if (category === 'all' || item.getAttribute('data-category') === category) {
+                                    item.classList.remove('filtered-out');
+                                } else {
+                                    item.classList.add('filtered-out');
+                                }
+                            });
+                        });
+                    });
                 });
             </script>
         @break

@@ -31,6 +31,11 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = Footer::where('user_id', $user_id)->first();
         
+        // Route to different views based on ticket type
+        if ($ticket->type === 'property') {
+            return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
+        }
+        
         return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
     }
 
@@ -472,7 +477,12 @@ class FrontendController extends Controller
                 
             $ticket = Ticket::find($value['id']);
 
-            $a = (int) $ticket->price * (int) $value['quantity'];
+            // For property type, use price_per_share instead of price
+            if($ticket->type === 'property') {
+                $a = (float) $ticket->price_per_share * (int) $value['quantity'];
+            } else {
+                $a = (int) $ticket->price * (int) $value['quantity'];
+            }
 
             $amount += $a;
 
@@ -497,7 +507,14 @@ class FrontendController extends Controller
             $sell->ticket_sell_id = $add->id;
             $sell->ticket_id = $value['id'];
             $sell->quantity = $value['quantity'];
-            $sell->amount = (int) $value['quantity'] * (int) $ticket->price;
+            
+            // For property type, use price_per_share instead of price
+            if($ticket->type === 'property') {
+                $sell->amount = (int) $value['quantity'] * (float) $ticket->price_per_share;
+            } else {
+                $sell->amount = (int) $value['quantity'] * (int) $ticket->price;
+            }
+            
             $sell->save();
             }
 

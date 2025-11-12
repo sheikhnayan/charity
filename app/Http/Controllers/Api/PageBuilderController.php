@@ -184,6 +184,9 @@ class PageBuilderController extends Controller
         $componentTemplates = [
             'ticket-carousel' => 'admin.page.page-components.ticket-carousel',
             'ticket-category-carousel' => 'admin.page.page-components.ticket-category-carousel',
+            'property-category-carousel' => 'admin.page.page-components.property-category-carousel',
+            'property-listing-grid' => 'admin.page.page-components.property-listing-grid',
+            'product-listing-grid' => 'admin.page.page-components.product-listing-grid',
         ];
 
         // Check if the component template exists

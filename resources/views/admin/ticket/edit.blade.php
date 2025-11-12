@@ -42,13 +42,39 @@
                         <select name="type" id="type" class="form-select">
                             <option value="ticket" {{ (old('type', $data->type ?? '') == 'ticket') ? 'selected' : '' }}>Ticket</option>
                             <option value="product" {{ (old('type', $data->type ?? '') == 'product') ? 'selected' : '' }}>Product</option>
+                            <option value="property" {{ (old('type', $data->type ?? '') == 'property') ? 'selected' : '' }}>Property</option>
                         </select>
                     </div>
-                    <div class="mb-3">
+                    
+                    <!-- Regular Price (for ticket and product) -->
+                    <div class="mb-3 regular-price-field" style="display: {{ (old('type', $data->type ?? '') != 'property') ? 'block' : 'none' }};">
                         <label for="price" class="form-label">Price</label>
                         <input type="number" step="0.01" name="price" class="form-control" id="price" value="{{ old('price', $data->price ?? '') }}">
                     </div>
-                    <div class="mb-3">
+                    
+                    <!-- Property Share Fields (only for property type) -->
+                    <div class="property-fields" style="display: {{ (old('type', $data->type ?? '') == 'property') ? 'block' : 'none' }};">
+                        <div class="mb-3">
+                            <label for="price_per_share" class="form-label">Price Per Share <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="price_per_share" class="form-control" id="price_per_share" 
+                                   value="{{ old('price_per_share', $data->price_per_share ?? '') }}" placeholder="e.g., 100.00">
+                        </div>
+                        <div class="mb-3">
+                            <label for="total_shares" class="form-label">Total Shares Available <span class="text-danger">*</span></label>
+                            <input type="number" name="total_shares" class="form-control" id="total_shares" 
+                                   value="{{ old('total_shares', $data->total_shares ?? '') }}" placeholder="e.g., 1000">
+                            <small class="text-muted">Total number of shares for this property</small>
+                        </div>
+                        @if(isset($data) && $data->type === 'property')
+                        <div class="alert alert-info">
+                            <strong>Available Shares:</strong> {{ $data->available_shares ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
+                            <strong>Sold Shares:</strong> {{ ($data->total_shares ?? 0) - ($data->available_shares ?? 0) }}
+                        </div>
+                        @endif
+                    </div>
+                    
+                    <!-- Regular Quantity (for ticket and product) -->
+                    <div class="mb-3 regular-quantity-field" style="display: {{ (old('type', $data->type ?? '') != 'property') ? 'block' : 'none' }};">
                         <label for="quantity" class="form-label">Quantity</label>
                         <input type="number" name="quantity" class="form-control" id="quantity" value="{{ old('quantity', $data->quantity ?? '') }}">
                     </div>
@@ -64,6 +90,36 @@
                         <label for="image" class="form-label">Image</label>
                         <input type="file" name="image[]" class="form-control" id="image" multiple>
                     </div>
+                    
+                    <!-- Property Documents (only for property type) -->
+                    <div class="property-documents-field" style="display: {{ (old('type', $data->type ?? '') == 'property') ? 'block' : 'none' }};">
+                        <div class="mb-3">
+                            <label for="documents" class="form-label">Property Documents</label>
+                            <input type="file" name="documents[]" class="form-control" id="documents" multiple 
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx">
+                            <small class="text-muted">Upload legal documents, prospectus, financial reports, etc.</small>
+                        </div>
+                        
+                        @if(isset($data->documents) && $data->documents)
+                        <div class="mb-3">
+                            <label class="form-label">Existing Documents</label>
+                            <div class="list-group">
+                                @php
+                                    $documents = is_string($data->documents) ? json_decode($data->documents, true) : $data->documents;
+                                @endphp
+                                @if(is_array($documents))
+                                    @foreach($documents as $doc)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>{{ basename($doc) }}</span>
+                                        <a href="{{ asset($doc) }}" class="btn btn-sm btn-primary" target="_blank">View</a>
+                                    </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea name="description" class="form-control" id="description">{{ old('description', $data->description ?? '') }}</textarea>
@@ -153,12 +209,35 @@
     $('#type').on('change', function() {
         var selectedType = $(this).val();
         var productDiv = $('.product');
-        // productDiv.empty(); // Clear previous content
+        var propertyFields = $('.property-fields');
+        var propertyDocuments = $('.property-documents-field');
+        var regularPriceField = $('.regular-price-field');
+        var regularQuantityField = $('.regular-quantity-field');
+        var categoryField = $('#category').closest('.mb-3');
+
+        // Hide all conditional sections first
+        productDiv.hide();
+        propertyFields.hide();
+        propertyDocuments.hide();
+        regularPriceField.show();
+        regularQuantityField.show();
 
         if (selectedType === 'product') {
             productDiv.show();
+        } else if (selectedType === 'property') {
+            propertyFields.show();
+            propertyDocuments.show();
+            regularPriceField.hide();
+            regularQuantityField.hide();
+            categoryField.show(); // Show category for properties
+            // Make property fields required
+            $('#category').prop('required', true);
+            $('#price_per_share').prop('required', true);
+            $('#total_shares').prop('required', true);
         } else {
-            productDiv.hide();
+            // Remove required from property fields for non-property types
+            $('#price_per_share').prop('required', false);
+            $('#total_shares').prop('required', false);
         }
     });
 
