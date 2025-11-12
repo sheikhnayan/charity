@@ -6228,12 +6228,17 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             @if(isset($properties) && count($properties) > 0)
                                 <div class="owl-carousel property-category-carousel" id="{{ $sliderId }}">
                                     @foreach($properties as $property)
+                                    @php
+                                        $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)->sum('quantity');
+                                
+                                        $actualAvailableShares = $property->total_shares - $totalSold;
+                                    @endphp
                                         <div class="property-card">
                                             <a href="{{ route('product.details', $property->id) }}" class="property-link">
                                                 <div class="property-image">
                                                     <img src="{{ asset($property->image) }}" alt="{{ $property->name }}">
                                                     @if($property->available_shares && $property->total_shares)
-                                                        <div class="property-badge">{{ number_format($property->available_shares) }} / {{ number_format($property->total_shares) }} shares</div>
+                                                        <div class="property-badge">{{ number_format($actualAvailableShares) }} / {{ number_format($property->total_shares) }} shares</div>
                                                     @endif
                                                 </div>
                                                 <div class="property-info">

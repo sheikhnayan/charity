@@ -721,13 +721,13 @@
                     
                     <!-- Thumbnail Gallery -->
                     @if($ticket->images && count($ticket->images) > 0)
-                    <div class="grid grid-cols-4 md:grid-cols-6 gap-2 mt-4">
-                        <div class="cursor-pointer rounded-lg overflow-hidden border-2 border-purple-500" onclick="changeImage('{{ asset($ticket->image) }}')">
+                    <div class="grid grid-cols-4 md:grid-cols-6 gap-2 mt-4" id="thumbnailGallery">
+                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-purple-500" onclick="changeImage('{{ asset($ticket->image) }}', this)">
                             <img src="{{ asset($ticket->image) }}" alt="Main" class="w-full h-20 object-cover">
                         </div>
                         @foreach($ticket->images as $image)
-                        <div class="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition" 
-                             onclick="changeImage('{{ asset($image->image_path) }}')">
+                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition" 
+                             onclick="changeImage('{{ asset($image->image_path) }}', this)">
                             <img src="{{ asset($image->image_path) }}" alt="Property image" class="w-full h-20 object-cover">
                         </div>
                         @endforeach
@@ -1038,8 +1038,29 @@
         });
 
         // Image Gallery
-        function changeImage(src) {
+        function changeImage(src, element) {
+            // Update main image
             document.getElementById('mainImage').src = src;
+            
+            // Remove border from all thumbnails
+            document.querySelectorAll('.thumbnail-item').forEach(item => {
+                item.classList.remove('border-purple-500');
+                item.classList.add('border-transparent');
+            });
+            
+            // Add border to clicked thumbnail
+            if (element) {
+                element.classList.remove('border-transparent');
+                element.classList.add('border-purple-500');
+            }
+        }
+
+        function toggleGallery() {
+            // Scroll to thumbnail gallery
+            const gallery = document.getElementById('thumbnailGallery');
+            if (gallery) {
+                gallery.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         // Investment Calculator
