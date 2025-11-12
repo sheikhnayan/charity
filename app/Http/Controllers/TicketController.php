@@ -105,13 +105,19 @@ class TicketController extends Controller
         if ($request->type === 'property' && $request->hasFile('documents')) {
             $documents = [];
             foreach ($request->file('documents') as $document) {
-                $filename = time() . '_' . uniqid() . '.' . $document->getClientOriginalExtension();
+                // Get file info BEFORE moving the file
+                $originalName = $document->getClientOriginalName();
+                $fileSize = $document->getSize();
+                $fileExtension = $document->getClientOriginalExtension();
+                
+                $filename = time() . '_' . uniqid() . '.' . $fileExtension;
                 $document->move(public_path('uploads/property-documents'), $filename);
+                
                 $documents[] = [
-                    'name' => $document->getClientOriginalName(),
+                    'name' => $originalName,
                     'path' => 'uploads/property-documents/' . $filename,
-                    'size' => $document->getSize(),
-                    'type' => $document->getClientOriginalExtension(),
+                    'size' => $fileSize,
+                    'type' => $fileExtension,
                 ];
             }
             $add->documents = $documents;
