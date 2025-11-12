@@ -6688,6 +6688,18 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     <!-- Properties Grid -->
                     <div class="row property-grid-container" id="propertyGrid-{{ $componentId }}">
                         @foreach($properties as $property)
+                            @php
+                                // Calculate actual available shares from sales
+                                $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)
+                                    ->whereHas('ticketSell', function($query) {
+                                        $query->where('status', 'success');
+                                    })
+                                    ->sum('quantity');
+                                
+                                $actualAvailableShares = $property->total_shares - $totalSold;
+                                $percentageSold = $property->total_shares > 0 ? (($property->total_shares - $actualAvailableShares) / $property->total_shares) * 100 : 0;
+                            @endphp
+                            
                             <div class="{{ $gridClass }} mb-4 property-item" data-category="{{ $property->category_id ?? 'uncategorized' }}">
                                 <div class="property-card {{ $cardStyleClass }}">
                                     <a href="/product/{{ $property->id }}" class="property-link">
@@ -6744,13 +6756,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                     </div>
                                                     <div style="border-left: 4px solid #10b981; padding-left: 12px;">
                                                         <div style="font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Available Shares</div>
-                                                        <div style="font-size: 1.125rem; font-weight: 700; color: #1e293b;">{{ number_format($property->available_shares) }} / {{ number_format($property->total_shares) }}</div>
+                                                        <div style="font-size: 1.125rem; font-weight: 700; color: #1e293b;">{{ number_format($actualAvailableShares) }} / {{ number_format($property->total_shares) }}</div>
                                                     </div>
                                                     
                                                     <!-- Progress Bar -->
-                                                    @php
-                                                        $percentageSold = (($property->total_shares - $property->available_shares) / $property->total_shares) * 100;
-                                                    @endphp
                                                     <div style="grid-column: 1 / -1; margin-top: 5px;">
                                                         <div style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
                                                             <div style="height: 100%; width: {{ $percentageSold }}%; background: {{ $primaryColor }}; transition: width 0.3s ease;"></div>
