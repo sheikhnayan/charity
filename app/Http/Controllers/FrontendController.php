@@ -31,8 +31,18 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = Footer::where('user_id', $user_id)->first();
         
-        // Route to different views based on ticket type
+        // Calculate actual available shares from sales for property type
         if ($ticket->type === 'property') {
+            // Get total shares sold from ticket_sell_details
+            $totalSold = TicketSellDetail::where('ticket_id', $ticket->id)
+                ->whereHas('ticketSell', function($query) {
+                    $query->where('status', 'success'); // Only count successful sales
+                })
+                ->sum('quantity');
+            
+            // Update the ticket object with calculated values
+            $ticket->available_shares = $ticket->total_shares - $totalSold;
+            
             return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
         }
         
