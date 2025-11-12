@@ -6690,11 +6690,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         @foreach($properties as $property)
                             @php
                                 // Calculate actual available shares from sales
-                                $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)
-                                    ->whereHas('ticketSell', function($query) {
-                                        $query->where('status', 'success');
-                                    })
-                                    ->sum('quantity');
+                                $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)->sum('quantity');
                                 
                                 $actualAvailableShares = $property->total_shares - $totalSold;
                                 $percentageSold = $property->total_shares > 0 ? (($property->total_shares - $actualAvailableShares) / $property->total_shares) * 100 : 0;
