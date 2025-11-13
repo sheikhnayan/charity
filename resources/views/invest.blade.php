@@ -109,10 +109,10 @@
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
 
-    <!-- Keep this css code to improve the font quality-->
     <style>
-
-        /* Custom Fonts @font-face declarations */
+    /* body{background:#f9fafb;} */
+    
+    /* Custom Fonts @font-face declarations */
     @if(isset($customFonts) && $customFonts->count() > 0)
     /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
     @foreach($customFonts as $font)
@@ -155,6 +155,35 @@
     .ql-font-outfit {
         font-family: 'Outfit', sans-serif !important;
     }
+    
+    /* Menu Font Family Styling */
+    @if(isset($header) && $header && $header->menu_font_family)
+    .navbar .nav-link,
+    .navbar .navbar-brand,
+    .navbar .btn {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
+    .contact-topbar,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header && $header->investor_exclusives_font_family)
+    .investor-exclusives-bar,
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+    }
+    @endif
+    </style>
+
+    <!-- Keep this css code to improve the font quality-->
+    <style>
         * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
