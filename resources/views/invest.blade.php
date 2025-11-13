@@ -106,6 +106,9 @@
     </script>
     <!-- End Google Tag Manager -->
 
+    <!-- Custom Fonts CSS -->
+    <link href="{{ route('fonts.css') }}" rel="stylesheet">
+
     <!-- Keep this css code to improve the font quality-->
     <style>
 
