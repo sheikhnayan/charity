@@ -526,9 +526,6 @@
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
         
-        $header = \App\Models\Header::where('website_id', $check->id)->first();
-        $footer = \App\Models\Footer::where('website_id', $check->id)->first();
-        $setting = \App\Models\Setting::first();
         $menuSections = [];
         // dd($header->show_contact_topbar);
     @endphp
