@@ -100,6 +100,9 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = Footer::where('user_id', $user_id)->first();
         
+        // Get custom fonts for the website
+        $customFonts = \App\Models\CustomFont::where('user_id', $user_id)->get();
+        
         // Get amount from URL parameter if provided
         $amount = $request->get('amount');
         
@@ -118,10 +121,10 @@ class FrontendController extends Controller
         // dd($url);
 
         if($url == 'https://ladyoriginaltee.com/invest') {
-            return view('dummy-login', compact('setting', 'header', 'footer', 'website', 'amount'));
+            return view('dummy-login', compact('setting', 'header', 'footer', 'website', 'amount', 'customFonts'));
         }
         
-        return view('invest', compact('setting', 'header', 'footer', 'website', 'amount'));
+        return view('invest', compact('setting', 'header', 'footer', 'website', 'amount', 'customFonts'));
     }
 
     public function saveInvestmentInfo(Request $request)
