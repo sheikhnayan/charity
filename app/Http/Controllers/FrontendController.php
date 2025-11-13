@@ -101,7 +101,7 @@ class FrontendController extends Controller
         $footer = Footer::where('user_id', $user_id)->first();
         
         // Get custom fonts for the website
-        $customFonts = \App\Models\CustomFont::where('website_id', $website->id)->get();
+        $customFonts = \App\Models\CustomFont::get();
         
         // Get amount from URL parameter if provided
         $amount = $request->get('amount');
