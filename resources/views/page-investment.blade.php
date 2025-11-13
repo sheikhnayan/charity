@@ -1173,9 +1173,6 @@ if (isset($state['components'])) {
         font-family: Outfit,sans-serif !important;
     }
 
-    .footer_content_wrap div p {
-        font-family: Outfit,sans-serif !important;
-    }
     
     .investor-exclusives-link:hover {
         background: rgba(255, 255, 255, 0.25);
