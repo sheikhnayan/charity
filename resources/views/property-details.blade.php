@@ -1004,9 +1004,6 @@
         </div>
     </div>
 
-    /* <!-- Footer -->
-    @include('layouts.new-footer') */
-
     <script>
         // Tab Switching
         document.querySelectorAll('.tab-btn').forEach(button => {
