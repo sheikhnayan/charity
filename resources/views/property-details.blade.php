@@ -1004,8 +1004,8 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    @include('layouts.new-footer')
+    /* <!-- Footer -->
+    @include('layouts.new-footer') */
 
     <script>
         // Tab Switching
