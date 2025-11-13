@@ -526,6 +526,11 @@
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
         
+        // Use user_id to fetch header, footer, setting to match controller
+        $user_id = $check->user_id;
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
         $menuSections = [];
         // dd($header->show_contact_topbar);
     @endphp
