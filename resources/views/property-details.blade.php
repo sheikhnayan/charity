@@ -29,6 +29,10 @@
   color: #9da3ab !important;
   font-size: 17px !important;
 }
+
+.collapse{
+    visibility: visible !important;
+}
         .property-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
