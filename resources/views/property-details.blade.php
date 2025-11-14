@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $ticket->name }} | Property Investment Details</title>
+    <title>{{ $ticket->name }} | Investment Details</title>
     <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share, 2) }} per share!">
     
     <!-- Bootstrap CSS -->
@@ -896,7 +896,7 @@
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Value</div>
                         <div class="text-2xl font-bold text-gray-900 break-words responsive-number">${{ number_format($ticket->price, 2) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">property value</div>
+                        <div class="text-xs text-gray-500 mt-1">of investment</div>
                     </div>
                 </div>
 
@@ -938,7 +938,7 @@
                     <div class="p-6">
                         <!-- Overview Tab -->
                         <div class="tab-content active" id="overview">
-                            <h2 class="text-xl font-bold text-gray-900 mb-4">About This Property</h2>
+                            <h2 class="text-xl font-bold text-gray-900 mb-4">About This Investment</h2>
                             <div class="markdown-content text-gray-700">
                                 {!! nl2br(e($ticket->description)) !!}
                             </div>
@@ -955,7 +955,7 @@
                                 </div>
                                 
                                 <div class="bg-gray-50 p-4 rounded-lg">
-                                    <div class="text-gray-600 text-sm mb-2">Total Property Value</div>
+                                    <div class="text-gray-600 text-sm mb-2">Total Investment Value</div>
                                     <div class="text-3xl font-bold text-gray-900">${{ number_format($ticket->price, 2) }}</div>
                                 </div>
                             </div>
@@ -966,7 +966,7 @@
                                     <div>
                                         <h4 class="font-semibold text-blue-900 mb-1">Investment Calculation</h4>
                                         <p class="text-sm text-blue-800">
-                                            To own the entire property, you would need to purchase all {{ number_format($ticket->total_shares) }} shares 
+                                            To own the entire investment, you would need to purchase all {{ number_format($ticket->total_shares) }} shares 
                                             at ${{ number_format($ticket->price_per_share, 2) }} each, totaling ${{ number_format($ticket->price, 2) }}.
                                         </p>
                                     </div>
@@ -1002,7 +1002,7 @@
 
                         <!-- Documents Tab -->
                         <div class="tab-content hidden" id="documents">
-                            <h2 class="text-xl font-bold text-gray-900 mb-4">Property Documents</h2>
+                            <h2 class="text-xl font-bold text-gray-900 mb-4">Investment Documents</h2>
                             <div class="space-y-3">
                                 @if(isset($ticket->documents) && is_array($ticket->documents) && count($ticket->documents) > 0)
                                     @foreach($ticket->documents as $document)
@@ -1043,7 +1043,7 @@
                                 @else
                                     <div class="text-center py-12">
                                         <i class="fas fa-folder-open text-gray-400 text-5xl mb-4"></i>
-                                        <p class="text-gray-500">No documents available for this property yet.</p>
+                                        <p class="text-gray-500">No documents available for this investment yet.</p>
                                     </div>
                                 @endif
                             </div>
@@ -1081,7 +1081,7 @@
                         </div>
                         
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Property Value</span>
+                            <span class="text-gray-600">Investment Value</span>
                             <span class="font-semibold text-gray-900">${{ number_format($ticket->price, 2) }}</span>
                         </div>
                     </div>
@@ -1360,7 +1360,7 @@
             
             if (availableShares <= 0) {
                 e.preventDefault();
-                alert('This property is sold out.');
+                alert('This investment is sold out.');
                 return false;
             }
         });
