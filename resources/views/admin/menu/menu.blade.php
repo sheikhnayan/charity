@@ -236,13 +236,12 @@
                                     </div>
                                 @endif
                                 
-                                @if($website && $website->type === 'investment')
-                                    <!-- Investor Exclusives Section -->
-                                    <div class="col-12">
-                                        <hr class="my-4">
-                                        <h5 class="mb-3"><i class="fa-solid fa-megaphone me-2"></i>Investor Exclusives Top Bar</h5>
-                                        <small class="text-muted">Configure the promotional bar that appears below the menu for investment websites.</small>
-                                    </div>
+                                <!-- Investor Exclusives Section -->
+                                <div class="col-12">
+                                    <hr class="my-4">
+                                    <h5 class="mb-3"><i class="fa-solid fa-megaphone me-2"></i>Investor Exclusives Top Bar</h5>
+                                    <small class="text-muted">Configure the promotional bar that appears below the menu.</small>
+                                </div>
                                     
                                     <div class="col-md-6 col-lg-4">
                                         <label for="show_investor_exclusives" class="form-label">
@@ -355,12 +354,12 @@
                                         </script>
                                     </div>
                                     
-                                    <!-- Contact Top Bar Section -->
-                                    <div class="col-12">
-                                        <hr class="my-4">
-                                        <h5 class="mb-3"><i class="fa-solid fa-phone me-2"></i>Contact Information Top Bar</h5>
-                                        <small class="text-muted">Configure the contact information bar that appears above the menu for investment websites.</small>
-                                    </div>
+                                <!-- Contact Top Bar Section -->
+                                <div class="col-12">
+                                    <hr class="my-4">
+                                    <h5 class="mb-3"><i class="fa-solid fa-phone me-2"></i>Contact Information Top Bar</h5>
+                                    <small class="text-muted">Configure the contact information bar that appears above the menu.</small>
+                                </div>
                                     
                                     <div class="col-md-6 col-lg-4">
                                         <label for="show_contact_topbar" class="form-label">
@@ -579,7 +578,6 @@
                                             });
                                         </script>
                                     </div>
-                                @endif
                             </div>
                             <div class="col-12 mb-4">
                                 <label class="form-label">Menu Order</label>
