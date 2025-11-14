@@ -14,6 +14,7 @@ use App\Models\Ticket;
 use App\Models\TicektSell;
 use App\Models\TicketSellDetail;
 use App\Models\Investment;
+use App\Models\CustomFont;
 use App\Models\DealmakerConfig;
 use App\Services\PaymentFunnelService;
 use Mail;
@@ -31,6 +32,9 @@ class FrontendController extends Controller
         $header = Header::where('user_id', $user_id)->first();
         $footer = Footer::where('user_id', $user_id)->first();
         
+        // Load custom fonts for dynamic font support
+        $customFonts = \App\Models\CustomFont::active()->get();
+        
         // Calculate actual available shares from sales for property type
         if ($ticket->type === 'property') {
             // Get total shares sold from ticket_sell_details (only successful sales)
@@ -43,10 +47,10 @@ class FrontendController extends Controller
             // Update the ticket object with calculated values
             $ticket->available_shares = $ticket->total_shares - $totalSold;
             
-            return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
+            return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts'));
         }
         
-        return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website'));
+        return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts'));
     }
 
     public function index()

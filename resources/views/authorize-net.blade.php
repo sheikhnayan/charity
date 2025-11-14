@@ -182,6 +182,71 @@
             font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
         }
         @endif
+        
+        /* Footer Font Styling - Ensure Quill editor font classes work in footer */
+        @if(isset($footer) && $footer)
+        /* Override hardcoded footer fonts and ensure custom font classes work */
+        .footer_content_wrap .ql-font-arial,
+        .footer-section .ql-font-arial,
+        .new-footer .ql-font-arial,
+        footer .ql-font-arial {
+            font-family: Arial, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-helvetica,
+        .footer-section .ql-font-helvetica,
+        .new-footer .ql-font-helvetica,
+        footer .ql-font-helvetica {
+            font-family: Helvetica, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-times,
+        .footer-section .ql-font-times,
+        .new-footer .ql-font-times,
+        footer .ql-font-times {
+            font-family: 'Times New Roman', serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-georgia,
+        .footer-section .ql-font-georgia,
+        .new-footer .ql-font-georgia,
+        footer .ql-font-georgia {
+            font-family: Georgia, serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-verdana,
+        .footer-section .ql-font-verdana,
+        .new-footer .ql-font-verdana,
+        footer .ql-font-verdana {
+            font-family: Verdana, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-courier,
+        .footer-section .ql-font-courier,
+        .new-footer .ql-font-courier,
+        footer .ql-font-courier {
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .footer_content_wrap .ql-font-outfit,
+        .footer-section .ql-font-outfit,
+        .new-footer .ql-font-outfit,
+        footer .ql-font-outfit {
+            font-family: 'Outfit', sans-serif !important;
+        }
+        
+        /* Custom font classes in footer */
+        @if(isset($customFonts) && $customFonts->count() > 0)
+        @foreach($customFonts as $font)
+        .footer_content_wrap .ql-font-{{ $font->font_family }},
+        .footer-section .ql-font-{{ $font->font_family }},
+        .new-footer .ql-font-{{ $font->font_family }},
+        footer .ql-font-{{ $font->font_family }} {
+            font-family: '{{ $font->font_family }}', sans-serif !important;
+        }
+        @endforeach
+        @endif
+        @endif
     </style>
 </head>
 <body class="body-checkout">
