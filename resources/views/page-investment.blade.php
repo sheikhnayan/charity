@@ -2113,9 +2113,9 @@ if (isset($state['components'])) {
                 min-width: 120px;
             }
 
-            /* footer{
-                margin-bottom: 100px !important;
-            } */
+            footer{
+                margin-bottom: 0px !important;
+            }
         }
     </style>
 
