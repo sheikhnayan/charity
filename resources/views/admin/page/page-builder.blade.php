@@ -18744,9 +18744,11 @@ function applyResponsiveStyles() {
                 textEditor._quillInstance = quill;
                 textEditor._quillContainer = quillContainer;
                 
-                // Set initial content from textarea
+                // Set initial content from textarea using Quill's clipboard for proper parsing
                 if (textEditor.value && textEditor.value.trim() !== '') {
-                    quill.root.innerHTML = textEditor.value;
+                    // Use Quill's clipboard to properly parse HTML and maintain formatting/toolbar state
+                    const delta = quill.clipboard.convert(textEditor.value);
+                    quill.setContents(delta, 'silent');
                 }
                 
                 // Listen for Quill changes and update textarea
@@ -18825,9 +18827,11 @@ function applyResponsiveStyles() {
                 textEditor._quillInstance = quill;
                 textEditor._quillContainer = quillContainer;
                 
-                // Set initial content from textarea
+                // Set initial content from textarea using Quill's clipboard for proper parsing
                 if (textEditor.value && textEditor.value.trim() !== '') {
-                    quill.root.innerHTML = textEditor.value;
+                    // Use Quill's clipboard to properly parse HTML and maintain formatting/toolbar state
+                    const delta = quill.clipboard.convert(textEditor.value);
+                    quill.setContents(delta, 'silent');
                 }
                 
                 // Listen for Quill changes and update textarea and preview
@@ -18863,7 +18867,9 @@ function applyResponsiveStyles() {
     function refreshQuillEditor(editorId, content) {
         const textEditor = document.getElementById(editorId);
         if (textEditor && textEditor._quillInstance) {
-            textEditor._quillInstance.root.innerHTML = content || '';
+            // Use Quill's clipboard to properly parse HTML and maintain formatting
+            const delta = textEditor._quillInstance.clipboard.convert(content || '');
+            textEditor._quillInstance.setContents(delta, 'silent');
             textEditor.value = content || '';
         }
     }
