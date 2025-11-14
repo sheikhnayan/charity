@@ -176,7 +176,7 @@
                                     style="border-radius: 5px; border: 1px solid #eee;">
                                     @if ($item->ticket->type != 'property')
                                         <span
-                                            style="position: relative; left: 50px; top: -75px; background: #666; padding: 3px 9px; border-radius: 50%; color: #fff;">{{ $item->quantity }}</span>
+                                            style="position: relative; left: 50px; top: -75px; background: #666; padding: 3px 9px; border-radius: 50%; color: #fff;">{{ $item->quantity }} {{$item->ticket->type}}</span>
                                     @endif
                             </div>
                             <div class="col-md-6 col-6 text-start" style="padding-top: 7px; font-weight: bold;">
