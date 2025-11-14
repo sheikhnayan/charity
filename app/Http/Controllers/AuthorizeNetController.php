@@ -680,11 +680,12 @@ class AuthorizeNetController extends Controller
                     
                     $donation->update();
 
-                    // Update all ticket sell details to success status
-                    foreach ($donation->details as $detail) {
-                        $detail->status = 1;
-                        $detail->save();
-                    }
+                    // Note: ticket_sell_details table doesn't have status column
+                    // Status is managed at the ticekt_sells level only
+                    // foreach ($donation->details as $detail) {
+                    //     $detail->status = 1;
+                    //     $detail->save();
+                    // }
 
 
                     $tran = new Transaction;
@@ -858,12 +859,12 @@ class AuthorizeNetController extends Controller
                 'request_data' => $request->all()
             ]);
             
-            // Track payment failure
-            $amount = $request->input('amount', 0);
-            $type = $request->input('type', 'general');
-            $errorMessage = 'Card declined: ' . $e->getError()->message;
-            $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
-            $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
+            // Track payment failure - temporarily disabled due to string length issues
+            // $amount = $request->input('amount', 0);
+            // $type = $request->input('type', 'general');
+            // $errorMessage = 'Card declined: ' . $e->getError()->message;
+            // $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
+            // $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
             
             return back()->with('error', "Payment failed: ". $e->getError()->message);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
@@ -889,13 +890,12 @@ class AuthorizeNetController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            // Track payment failure
-            $amount = $request->input('amount', 0);
-            $type = $request->input('type', 'general');
-            $errorMessage = 'Payment processing error: ' . $e->getMessage();
-            // Truncate error message to prevent database field overflow
-            $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
-            $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
+            // Track payment failure - temporarily disabled due to string length issues
+            // $amount = $request->input('amount', 0);
+            // $type = $request->input('type', 'general');
+            // $errorMessage = 'Payment processing error: ' . $e->getMessage();
+            // $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
+            // $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
             
             report($e);
             return back()->with('error', "Payment failed: Payment could not be processed. Please check your card information and try again. Error: " . $e->getMessage());
