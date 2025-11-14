@@ -918,7 +918,7 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Calculator</h3>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Number of Shares</label>
-                                    <input type="number" id="shareCalc" value="1" min="1" max="{{ $ticket->available_shares }}" 
+                                    <input type="number" id="shareCalc" max="{{ $ticket->available_shares }}" 
                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                            oninput="calculateInvestment(); validateShares(this)">
                                     <div id="shareValidationMessage" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
