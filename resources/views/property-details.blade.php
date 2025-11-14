@@ -1124,7 +1124,7 @@
                     <div class="space-y-3 text-sm">
                         <div class="flex items-start">
                             <i class="fas fa-shield-alt text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-600">Secure blockchain-based ownership</span>
+                            <span class="text-gray-600">Secure, transparent ownership</span>
                         </div>
                         
                         <div class="flex items-start">
@@ -1134,7 +1134,16 @@
                         
                         <div class="flex items-start">
                             <i class="fas fa-users text-purple-500 mt-1 mr-3"></i>
-                            <span class="text-gray-600">Join {{ number_format($ticket->total_shares - $ticket->available_shares) }} other investors</span>
+                            @php
+                                // Get unique number of people who purchased this property
+                                $uniqueInvestors = \App\Models\TicketSellDetail::where('ticket_id', $ticket->id)
+                                    ->whereHas('ticketSell', function($query) {
+                                        $query->where('status', 1);
+                                    })
+                                    ->distinct('user_id')
+                                    ->count('user_id');
+                            @endphp
+                            <span class="text-gray-600">Join {{ number_format($uniqueInvestors) }} other investors</span>
                         </div>
                     </div>
                 </div>
