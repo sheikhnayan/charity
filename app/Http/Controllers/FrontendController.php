@@ -477,11 +477,46 @@ class FrontendController extends Controller
         $check = Website::where('domain', $doamin)->first();
 
         $amount = 0;
-
         $quantity = 0;
+        $validationErrors = [];
 
+        // First pass: validate available shares for property types
         foreach ($request->ticket as $key => $value) {
-            # code...
+            if($value['quantity'] > 0){
+                $ticket = Ticket::find($value['id']);
+                
+                // For property type, check available shares
+                if($ticket->type === 'property') {
+                    // Calculate current available shares
+                    $totalSold = TicketSellDetail::where('ticket_id', $ticket->id)
+                        ->whereHas('ticketSell', function($query) {
+                            $query->where('status', 'success');
+                        })
+                        ->sum('quantity');
+                    $availableShares = $ticket->total_shares - $totalSold;
+                    
+                    // Validate requested quantity against available shares
+                    if((int)$value['quantity'] > $availableShares) {
+                        $validationErrors[] = "Property '{$ticket->name}': Only {$availableShares} shares available, but {$value['quantity']} requested.";
+                    }
+                    
+                    if($availableShares <= 0) {
+                        $validationErrors[] = "Property '{$ticket->name}' is sold out.";
+                    }
+                }
+            }
+        }
+        
+        // Return validation errors if any
+        if(!empty($validationErrors)) {
+            return redirect()->back()
+                ->withErrors($validationErrors)
+                ->withInput()
+                ->with('error', 'Share purchase validation failed: ' . implode(' ', $validationErrors));
+        }
+
+        // Second pass: calculate amounts
+        foreach ($request->ticket as $key => $value) {
             if($value['quantity'] > 0){
                 
             $ticket = Ticket::find($value['id']);
@@ -494,20 +529,20 @@ class FrontendController extends Controller
             }
 
             $amount += $a;
-
             $quantity += (int) $value['quantity'];
             }
         }
 
+        // Create ticket sell record with pending status
         $add = new TicektSell;
         $add->quantity = $quantity;
         $add->amount = $amount;
-        $add->status = 0;
+        $add->status = 'pending'; // Changed from 0 to 'pending' for clarity
         $add->website_id = $check->id;
         $add->save();
 
+        // Create ticket sell details with pending status
         foreach ($request->ticket as $key => $value) {
-            # code...
             $ticket= Ticket::find($value['id']);
             
             if((int) $value['quantity'] > 0){
@@ -516,6 +551,7 @@ class FrontendController extends Controller
             $sell->ticket_sell_id = $add->id;
             $sell->ticket_id = $value['id'];
             $sell->quantity = $value['quantity'];
+            $sell->status = 'pending'; // Add pending status to detail record
             
             // For property type, use price_per_share instead of price
             if($ticket->type === 'property') {
@@ -526,7 +562,6 @@ class FrontendController extends Controller
             
             $sell->save();
             }
-
         }
 
         // Track payment initiation for ticket purchase

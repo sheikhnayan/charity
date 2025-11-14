@@ -482,6 +482,31 @@
     }
     
     @media (max-width: 480px) {
+        /* Contact topbar mobile responsive */
+        .contact-topbar {
+            font-size: 12px !important;
+            height: auto !important;
+            padding: 4px 0 !important;
+        }
+        
+        .contact-topbar .row {
+            margin: 0 !important;
+        }
+        
+        .contact-topbar .col-3, .contact-topbar .col-6 {
+            padding: 2px 4px !important;
+            font-size: 11px !important;
+        }
+        
+        .contact-topbar .contact-item {
+            margin: 0 !important;
+            text-align: center !important;
+        }
+        
+        .contact-topbar .contact-item i {
+            margin-right: 4px !important;
+        }
+        
         .investor-exclusives-bar {
             padding: 10px 0;
             top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem); /* Dynamic small mobile position minus gap adjustment */
@@ -844,7 +869,8 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Number of Shares</label>
                                     <input type="number" id="shareCalc" value="1" min="1" max="{{ $ticket->available_shares }}" 
                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                           oninput="calculateInvestment()">
+                                           oninput="calculateInvestment(); validateShares(this)">
+                                    <div id="shareValidationMessage" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                                 </div>
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <div class="flex justify-between items-center mb-2">
@@ -958,7 +984,7 @@
                         </label>
                         <input type="number" value="1" min="1" max="{{ $ticket->available_shares }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
-                               id="investShares" oninput="updateInvestmentCard()">
+                               id="investShares" oninput="updateInvestmentCard(); validatePurchaseShares(this)">
                         <div class="mt-2 text-sm text-gray-500">
                             Min: 1 share • Max: {{ number_format($ticket->available_shares) }} shares
                         </div>
@@ -978,7 +1004,7 @@
                             <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
                             <input type="hidden" name="ticket[{{ $ticket->id }}][quantity]" id="formQuantity" value="1">
                             
-                            <button type="submit" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg mb-3">
+                            <button type="submit" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg mb-3" id="buySharesButton">
                                 <i class="fas fa-shopping-cart mr-2"></i>Buy Shares
                             </button>
                         </form>                    <hr class="my-6">
@@ -1094,6 +1120,110 @@
         // Initialize
         calculateInvestment();
         updateInvestmentCard();
+        
+        // Share validation functions
+        const availableShares = {{ $ticket->available_shares }};
+        
+        function validateShares(input) {
+            const quantity = parseInt(input.value) || 0;
+            const messageDiv = document.getElementById('shareValidationMessage');
+            
+            if (quantity > availableShares) {
+                messageDiv.textContent = `Maximum ${availableShares} shares available`;
+                messageDiv.style.display = 'block';
+                input.style.borderColor = 'red';
+                input.value = availableShares;
+            } else if (quantity < 1) {
+                messageDiv.textContent = 'Minimum 1 share required';
+                messageDiv.style.display = 'block';
+                input.style.borderColor = 'red';
+                input.value = 1;
+            } else {
+                messageDiv.style.display = 'none';
+                input.style.borderColor = '#d1d5db';
+            }
+            
+            calculateInvestment();
+        }
+        
+        function validatePurchaseShares(input) {
+            const quantity = parseInt(input.value) || 0;
+            const buyButton = document.getElementById('buySharesButton');
+            const formQuantity = document.getElementById('formQuantity');
+            
+            if (quantity > availableShares) {
+                alert(`Only ${availableShares} shares available for purchase`);
+                input.value = availableShares;
+            } else if (quantity < 1) {
+                input.value = 1;
+            }
+            
+            // Update form quantity
+            if (formQuantity) {
+                formQuantity.value = input.value;
+            }
+            
+            // Disable buy button if no shares available
+            if (availableShares <= 0) {
+                buyButton.disabled = true;
+                buyButton.innerHTML = '<i class="fas fa-ban mr-2"></i>Sold Out';
+                buyButton.style.backgroundColor = '#6c757d';
+                buyButton.style.cursor = 'not-allowed';
+            } else {
+                buyButton.disabled = false;
+                buyButton.innerHTML = '<i class="fas fa-shopping-cart mr-2"></i>Buy Shares';
+                buyButton.style.backgroundColor = '';
+                buyButton.style.cursor = '';
+            }
+            
+            updateInvestmentCard();
+        }
+        
+        // Sync inputs
+        function updateInvestmentCard() {
+            const shareCalc = document.getElementById('shareCalc');
+            const investShares = document.getElementById('investShares');
+            const formQuantity = document.getElementById('formQuantity');
+            
+            if (shareCalc && investShares) {
+                shareCalc.value = investShares.value;
+                if (formQuantity) {
+                    formQuantity.value = investShares.value;
+                }
+                calculateInvestment();
+            }
+        }
+        
+        // Form submission validation
+        document.getElementById('buySharesForm').addEventListener('submit', function(e) {
+            const quantity = parseInt(document.getElementById('formQuantity').value) || 0;
+            
+            if (quantity > availableShares) {
+                e.preventDefault();
+                alert(`Cannot purchase ${quantity} shares. Only ${availableShares} shares available.`);
+                return false;
+            }
+            
+            if (quantity < 1) {
+                e.preventDefault();
+                alert('Must purchase at least 1 share.');
+                return false;
+            }
+            
+            if (availableShares <= 0) {
+                e.preventDefault();
+                alert('This property is sold out.');
+                return false;
+            }
+        });
+        
+        // Initialize validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const investShares = document.getElementById('investShares');
+            if (investShares) {
+                validatePurchaseShares(investShares);
+            }
+        });
     </script>
 
     <!-- jQuery -->
