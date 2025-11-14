@@ -418,6 +418,10 @@
         .contact-topbar{
             height: 28px !important;
         }
+
+        .close-on-mobile{
+            display: none;
+        }
     }
 
 
@@ -1265,6 +1269,14 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Mobile Menu Auto-Close Fix -->
+    <script>
+        $('.nav-link').on('click', function(){
+            $('.navbar-toggler').addClass('collapsed');
+            $('#navbarNav').removeClass('show');
+        })
+    </script>
 
     <!-- Footer -->
     @if ($footer && $footer->status == 1)
