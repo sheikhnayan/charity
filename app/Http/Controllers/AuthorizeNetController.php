@@ -275,7 +275,7 @@ class AuthorizeNetController extends Controller
                     }
                 }elseif($request->type == 'ticket'){
                     $donation = TicektSell::find($request->donation_id);
-                    $donation->status = 'success'; // Changed to string status for consistency
+                    $donation->status = 1;
                     $donation->first_name = $request->first_name;
                     $donation->last_name = $request->last_name;
                     $donation->email = $request->email;
@@ -283,7 +283,7 @@ class AuthorizeNetController extends Controller
 
                     // Update all ticket sell details to success status  
                     foreach ($donation->details as $detail) {
-                        $detail->status = 'success';
+                        $detail->status = 1;
                         $detail->save();
                     }
 
@@ -339,7 +339,14 @@ class AuthorizeNetController extends Controller
                     foreach ($donation->details as $key => $value) {
                         # code...
                         $ticket = Ticket::find($value->ticket_id);
-                        $ticket->quantity -= $value->quantity;
+                        
+                        // For property type, update available_shares instead of quantity
+                        if ($ticket->type === 'property') {
+                            $ticket->available_shares -= $value->quantity;
+                        } else {
+                            $ticket->quantity -= $value->quantity;
+                        }
+                        
                         $ticket->update();
                     }
 
@@ -617,7 +624,7 @@ class AuthorizeNetController extends Controller
                     }
                 }elseif($request->type == 'ticket'){
                     $donation = TicektSell::find($request->donation_id);
-                    $donation->status = 'success'; // Changed to string status for consistency
+                    $donation->status = 1;
                     $donation->first_name = $request->first_name;
                     $donation->last_name = $request->last_name;
                     $donation->email = $request->email;
@@ -625,7 +632,7 @@ class AuthorizeNetController extends Controller
 
                     // Update all ticket sell details to success status
                     foreach ($donation->details as $detail) {
-                        $detail->status = 'success';
+                        $detail->status = 1;
                         $detail->save();
                     }
 
@@ -681,7 +688,14 @@ class AuthorizeNetController extends Controller
                     foreach ($donation->details as $key => $value) {
                         # code...
                         $ticket = Ticket::find($value->ticket_id);
-                        $ticket->quantity -= $value->quantity;
+                        
+                        // For property type, update available_shares instead of quantity
+                        if ($ticket->type === 'property') {
+                            $ticket->available_shares -= $value->quantity;
+                        } else {
+                            $ticket->quantity -= $value->quantity;
+                        }
+                        
                         $ticket->update();
                     }
 

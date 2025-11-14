@@ -6229,7 +6229,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 <div class="owl-carousel property-category-carousel" id="{{ $sliderId }}">
                                     @foreach($properties as $property)
                                     @php
-                                        $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)->sum('quantity');
+                                        $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)
+                                            ->whereHas('ticketSell', function($query) {
+                                                $query->where('status', 1);
+                                            })
+                                            ->sum('quantity');
                                 
                                         $actualAvailableShares = $property->total_shares - $totalSold;
                                     @endphp
@@ -6695,7 +6699,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         @foreach($properties as $property)
                             @php
                                 // Calculate actual available shares from sales
-                                $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)->sum('quantity');
+                                $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)
+                                    ->whereHas('ticketSell', function($query) {
+                                        $query->where('status', 1);
+                                    })
+                                    ->sum('quantity');
                                 
                                 $actualAvailableShares = $property->total_shares - $totalSold;
                                 $percentageSold = $property->total_shares > 0 ? (($property->total_shares - $actualAvailableShares) / $property->total_shares) * 100 : 0;

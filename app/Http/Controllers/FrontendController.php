@@ -33,8 +33,12 @@ class FrontendController extends Controller
         
         // Calculate actual available shares from sales for property type
         if ($ticket->type === 'property') {
-            // Get total shares sold from ticket_sell_details
-            $totalSold = TicketSellDetail::where('ticket_id', $ticket->id)->sum('quantity');
+            // Get total shares sold from ticket_sell_details (only successful sales)
+            $totalSold = TicketSellDetail::where('ticket_id', $ticket->id)
+                ->whereHas('ticketSell', function($query) {
+                    $query->where('status', 1);
+                })
+                ->sum('quantity');
             
             // Update the ticket object with calculated values
             $ticket->available_shares = $ticket->total_shares - $totalSold;
@@ -490,7 +494,7 @@ class FrontendController extends Controller
                     // Calculate current available shares
                     $totalSold = TicketSellDetail::where('ticket_id', $ticket->id)
                         ->whereHas('ticketSell', function($query) {
-                            $query->where('status', 'success');
+                            $query->where('status', 1);
                         })
                         ->sum('quantity');
                     $availableShares = $ticket->total_shares - $totalSold;
