@@ -171,7 +171,25 @@
                 {{ $value }}
             </div>
         @endsession
+        
+        @if ($errors->any())
+            <div class="alert alert-danger mt-4" role="alert">
+                <h6>Please fix the following errors:</h6>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="container mt-4">
+            <!-- Card Error Display -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div id="card-errors" class="alert alert-danger" style="display: none;"></div>
+                </div>
+            </div>
+            
             <form action="{{ route('stripe.post') }}" id="payment-form" method="post">
                 @csrf
                 <div class="row justify-content-center">
@@ -1366,7 +1384,23 @@
 @endphp --}}
 
 <script>
-        const stripe = Stripe("{{ $paymentConfig['config']['publishable_key'] ?? env('STRIPE_KEY') }}");
+        console.log('Stripe checkout page loaded');
+        console.log('Form data check:');
+        console.log('- Amount:', document.querySelector('input[name=\"amount\"]')?.value);
+        console.log('- Type:', document.querySelector('input[name=\"type\"]')?.value);
+        console.log('- Donation ID:', document.querySelector('input[name=\"donation_id\"]')?.value);
+        
+        const publishableKey = "{{ $paymentConfig['config']['publishable_key'] ?? env('STRIPE_KEY') }}";
+        console.log('- Stripe publishable key configured:', publishableKey ? 'Yes' : 'No');
+        
+        if (!publishableKey) {
+            console.error('Stripe publishable key is missing');
+            document.getElementById('card-errors').textContent = 'Payment system configuration error. Please contact support.';
+            document.getElementById('card-errors').style.display = 'block';
+            return;
+        }
+        
+        const stripe = Stripe(publishableKey);
         const elements = stripe.elements();
 
         const style = {
@@ -1385,20 +1419,68 @@
         cardCvc.mount('#cvv');
 
         const form = document.getElementById('payment-form');
+        
+        // Function to show errors
+        function showError(message) {
+            const errorDiv = document.getElementById('card-errors');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            console.error('Stripe Error:', message);
+        }
+        
+        // Function to hide errors
+        function hideError() {
+            const errorDiv = document.getElementById('card-errors');
+            errorDiv.style.display = 'none';
+        }
+        
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+            hideError();
+            
+            console.log('Form submission started...');
+            
+            // Disable submit button to prevent double submission
+            const submitButton = document.getElementById('pay-btn');
+            const originalText = submitButton ? submitButton.innerHTML : '<span data-testid=\"button-pay-button-content-wrapper\"> Pay & Submit</span>';
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class=\"spinner-border spinner-border-sm me-2\" role=\"status\" aria-hidden=\"true\"></span>Processing...';
+            }
 
-            const {token, error} = await stripe.createToken(cardNumber);
+            try {
+                const {token, error} = await stripe.createToken(cardNumber);
 
-            if (error) {
-                document.getElementById('card-errors').textContent = error.message;
-            } else {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'stripeToken');
-                hiddenInput.setAttribute('value', token.id);
-                form.appendChild(hiddenInput);
-                form.submit();
+                if (error) {
+                    showError(error.message);
+                    console.error('Stripe token creation failed:', error);
+                    
+                    // Re-enable submit button
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
+                    }
+                } else {
+                    console.log('Stripe token created successfully:', token.id);
+                    
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'stripeToken');
+                    hiddenInput.setAttribute('value', token.id);
+                    form.appendChild(hiddenInput);
+                    
+                    console.log('Submitting form to server...');
+                    form.submit();
+                }
+            } catch (err) {
+                showError('An unexpected error occurred. Please try again.');
+                console.error('Unexpected error during payment processing:', err);
+                
+                // Re-enable submit button
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                }
             }
         });
     </script>

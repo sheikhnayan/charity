@@ -472,11 +472,32 @@ class AuthorizeNetController extends Controller
 
     public function paymentStripe(Request $request)
     {
+        // Enhanced request validation
+        $request->validate([
+            'stripeToken' => 'required|string',
+            'amount' => 'required|numeric|min:0.01',
+            'type' => 'required|string',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'name_on_card' => 'required|string|max:255',
+        ]);
+        
+        // Log payment attempt for debugging
+        \Log::info('Stripe payment attempt', [
+            'domain' => request()->getHost(),
+            'amount' => $request->amount,
+            'type' => $request->type,
+            'email' => $request->email,
+            'has_token' => !empty($request->stripeToken)
+        ]);
+        
         // Get current website based on domain
         $currentDomain = request()->getHost();
         $website = Website::where('domain', $currentDomain)->first();
         
         if (!$website) {
+            \Log::error('Website not found for Stripe payment', ['domain' => $currentDomain]);
             return back()->with('error', 'Website not found');
         }
 
@@ -485,18 +506,34 @@ class AuthorizeNetController extends Controller
         $paymentData = $paymentGatewayService->getPaymentConfigForWebsite($website);
         
         if (!$paymentData || !isset($paymentData['config']['secret_key'])) {
+            \Log::error('Stripe not configured', [
+                'website_id' => $website->id,
+                'domain' => $currentDomain,
+                'has_payment_data' => !empty($paymentData)
+            ]);
             return back()->with('error', 'Stripe is not configured for this website');
         }
 
         Stripe\Stripe::setApiKey($paymentData['config']['secret_key']);
 
         try {
+            \Log::info('Creating Stripe charge', [
+                'amount' => $request->amount * 100,
+                'token' => substr($request->stripeToken, 0, 10) . '...' // Log partial token for debugging
+            ]);
+            
             // 3️⃣ Create a one‑time token from the raw card data
             $charge = Stripe\Charge::create ([
                     "amount" => $request->amount * 100,
                     "currency" => "usd",
                     "source" => $request->stripeToken,
-                    "description" => "Payment fit"
+                    "description" => "Payment for " . ($website->name ?? 'website')
+            ]);
+            
+            \Log::info('Stripe charge successful', [
+                'charge_id' => $charge->id,
+                'amount' => $charge->amount,
+                'type' => $request->type
             ]);
 
             // dd();
@@ -798,6 +835,15 @@ class AuthorizeNetController extends Controller
 
         } catch (CardException $e) {
             // Card declined or invalid
+            \Log::error('Stripe card exception', [
+                'error_message' => $e->getError()->message,
+                'error_code' => $e->getError()->code,
+                'error_type' => $e->getError()->type,
+                'amount' => $request->amount,
+                'type' => $request->type,
+                'email' => $request->email
+            ]);
+            
             // Track payment failure
             $amount = $request->input('amount', 0);
             $type = $request->input('type', 'general');
@@ -806,14 +852,23 @@ class AuthorizeNetController extends Controller
             return back()->with('error', "Payment failed: ". $e->getError()->message);
         } catch (\Exception $e) {
             // Anything else
+            \Log::error('Stripe payment exception', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'amount' => $request->amount,
+                'type' => $request->type,
+                'email' => $request->email,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             // Track payment failure
             $amount = $request->input('amount', 0);
             $type = $request->input('type', 'general');
             $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment processing error: ' . $e->getMessage());
             
             report($e);
-            return back()->with('error', "Payment failed: ". 'Payment could not be processed.');
-            // return back()->withErrors(['Payment failed: ' => 'Payment could not be processed.']);
+            return back()->with('error', "Payment failed: Payment could not be processed. Please check your card information and try again.");
         }
     }
 
