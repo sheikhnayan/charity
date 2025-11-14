@@ -1448,7 +1448,7 @@ if (isset($state['components'])) {
         
         
         {{-- Investor Exclusives Top Bar - Investment Websites Only --}}
-        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+        @if($check && $header && $header->show_investor_exclusives)
             <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
                 <div class="investor-exclusives-content">
                     <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
