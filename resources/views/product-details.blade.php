@@ -9,6 +9,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts - Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom Fonts CSS -->
+    <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <style>
     /* ---- Reset & Base ---- */
@@ -420,6 +424,140 @@
             margin-top: 8rem !important;
         }
     }
+    
+    /* Custom Fonts @font-face declarations */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
+    @foreach($customFonts as $font)
+    @font-face {
+        font-family: '{{ $font->font_family }}';
+        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    /* Apply custom font classes (for Quill editor content) */
+    .ql-font-{{ $font->font_family }} {
+        font-family: '{{ $font->font_family }}', sans-serif !important;
+    }
+    @endforeach
+    @else
+    /* DEBUG: No custom fonts available */
+    @endif
+    
+    /* System font classes (for Quill editor content) */
+    .ql-font-arial {
+        font-family: Arial, sans-serif !important;
+    }
+    .ql-font-helvetica {
+        font-family: Helvetica, sans-serif !important;
+    }
+    .ql-font-times {
+        font-family: 'Times New Roman', serif !important;
+    }
+    .ql-font-georgia {
+        font-family: Georgia, serif !important;
+    }
+    .ql-font-verdana {
+        font-family: Verdana, sans-serif !important;
+    }
+    .ql-font-courier {
+        font-family: 'Courier New', monospace !important;
+    }
+    .ql-font-outfit {
+        font-family: 'Outfit', sans-serif !important;
+    }
+    
+    /* Menu Font Family Styling */
+    @if(isset($header) && $header && $header->menu_font_family)
+    .navbar .nav-link,
+    .navbar .navbar-brand,
+    .navbar .btn {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
+    .contact-topbar,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header && $header->investor_exclusives_font_family)
+    .investor-exclusives-bar,
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Footer Font Styling - Ensure Quill editor font classes work in footer */
+    @if(isset($footer) && $footer)
+    /* Override hardcoded footer fonts and ensure custom font classes work */
+    .footer_content_wrap .ql-font-arial,
+    .footer-section .ql-font-arial,
+    .new-footer .ql-font-arial,
+    footer .ql-font-arial {
+        font-family: Arial, sans-serif !important;
+    }
+    
+    .footer_content_wrap .ql-font-helvetica,
+    .footer-section .ql-font-helvetica,
+    .new-footer .ql-font-helvetica,
+    footer .ql-font-helvetica {
+        font-family: Helvetica, sans-serif !important;
+    }
+    
+    .footer_content_wrap .ql-font-times,
+    .footer-section .ql-font-times,
+    .new-footer .ql-font-times,
+    footer .ql-font-times {
+        font-family: 'Times New Roman', serif !important;
+    }
+    
+    .footer_content_wrap .ql-font-georgia,
+    .footer-section .ql-font-georgia,
+    .new-footer .ql-font-georgia,
+    footer .ql-font-georgia {
+        font-family: Georgia, serif !important;
+    }
+    
+    .footer_content_wrap .ql-font-verdana,
+    .footer-section .ql-font-verdana,
+    .new-footer .ql-font-verdana,
+    footer .ql-font-verdana {
+        font-family: Verdana, sans-serif !important;
+    }
+    
+    .footer_content_wrap .ql-font-courier,
+    .footer-section .ql-font-courier,
+    .new-footer .ql-font-courier,
+    footer .ql-font-courier {
+        font-family: 'Courier New', monospace !important;
+    }
+    
+    .footer_content_wrap .ql-font-outfit,
+    .footer-section .ql-font-outfit,
+    .new-footer .ql-font-outfit,
+    footer .ql-font-outfit {
+        font-family: 'Outfit', sans-serif !important;
+    }
+    
+    /* Custom font classes in footer */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    @foreach($customFonts as $font)
+    .footer_content_wrap .ql-font-{{ $font->font_family }},
+    .footer-section .ql-font-{{ $font->font_family }},
+    .new-footer .ql-font-{{ $font->font_family }},
+    footer .ql-font-{{ $font->font_family }} {
+        font-family: '{{ $font->font_family }}', sans-serif !important;
+    }
+    @endforeach
+    @endif
+    @endif
   </style>
 </head>
 <body>
