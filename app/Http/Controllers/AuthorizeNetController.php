@@ -666,9 +666,18 @@ class AuthorizeNetController extends Controller
                 }elseif($request->type == 'ticket'){
                     $donation = TicektSell::find($request->donation_id);
                     $donation->status = 1;
-                    $donation->first_name = $request->first_name;
-                    $donation->last_name = $request->last_name;
-                    $donation->email = $request->email;
+                    
+                    // Only update fields if they exist in request
+                    if ($request->has('first_name') && $request->first_name) {
+                        $donation->first_name = $request->first_name;
+                    }
+                    if ($request->has('last_name') && $request->last_name) {
+                        $donation->last_name = $request->last_name;
+                    }
+                    if ($request->has('email') && $request->email) {
+                        $donation->email = $request->email;
+                    }
+                    
                     $donation->update();
 
                     // Update all ticket sell details to success status
@@ -681,22 +690,23 @@ class AuthorizeNetController extends Controller
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
                     $tran->type = 'ticket';
-                    $tran->website_id = $donation->website_id;
+                    $tran->website_id = $donation->website_id ?? $website->id;
                     $tran->transaction_id = $charge->id;
-                    $tran->name = $request->first_name;
-                    $tran->last_name = $request->last_name;
-                    $tran->email = $request->email;
-                    $tran->address = $request->address;
-                    $tran->apartment = $request->apartment;
-                    $tran->city = $request->city;
-                    $tran->state = $request->state;
-                    $tran->zip = $request->zipcode;
-                    $tran->phone = $request->phone;
-                    $tran->name_on_card = $request->name_on_card;
-                    $tran->country = $request->country;
+                    $tran->name = $request->input('first_name', '');
+                    $tran->last_name = $request->input('last_name', '');
+                    $tran->email = $request->input('email', '');
+                    $tran->address = $request->input('address', '');
+                    $tran->apartment = $request->input('apartment', '');
+                    $tran->city = $request->input('city', '');
+                    $tran->state = $request->input('state', '');
+                    $tran->zip = $request->input('postalCode', ''); // Note: form uses postalCode, not zipcode
+                    $tran->phone = $request->input('phone', '');
+                    $tran->name_on_card = $request->input('name_on_card', '');
+                    $tran->country = $request->input('country', '');
+                    $tran->ip_address = $request->ip();
                     $tran->fee = 0;
                     $tran->fee_paid = 1;
-                    $tran->status = $donation->status;
+                    $tran->status = 1; // Set to 1 instead of $donation->status
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
                     $tran->save();
 
@@ -851,7 +861,9 @@ class AuthorizeNetController extends Controller
             // Track payment failure
             $amount = $request->input('amount', 0);
             $type = $request->input('type', 'general');
-            $this->trackPaymentFunnel('failed', $type, $amount, null, 'Card declined: ' . $e->getError()->message);
+            $errorMessage = 'Card declined: ' . $e->getError()->message;
+            $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
+            $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
             
             return back()->with('error', "Payment failed: ". $e->getError()->message);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
@@ -880,7 +892,10 @@ class AuthorizeNetController extends Controller
             // Track payment failure
             $amount = $request->input('amount', 0);
             $type = $request->input('type', 'general');
-            $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment processing error: ' . $e->getMessage());
+            $errorMessage = 'Payment processing error: ' . $e->getMessage();
+            // Truncate error message to prevent database field overflow
+            $truncatedError = strlen($errorMessage) > 255 ? substr($errorMessage, 0, 252) . '...' : $errorMessage;
+            $this->trackPaymentFunnel('failed', $type, $amount, null, $truncatedError);
             
             report($e);
             return back()->with('error', "Payment failed: Payment could not be processed. Please check your card information and try again. Error: " . $e->getMessage());
