@@ -21,7 +21,6 @@ use App\Services\PaymentFunnelService;
 use App\Services\PushNotificationService;
 use App\Mail\TransactionInvoice;
 use Illuminate\Support\Facades\Mail;
-use App\Models\Font;
 use Stripe;
 
 class AuthorizeNetController extends Controller
