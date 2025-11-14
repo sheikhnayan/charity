@@ -1153,7 +1153,7 @@
         }
 
         function updateInvestmentCard() {
-            const shares = document.getElementById('investShares').value || 1;
+            const shares = document.getElementById('investShares').value;
             const total = shares * pricePerShare;
             
             document.getElementById('cardTotalInvestment').textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
