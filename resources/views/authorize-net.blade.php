@@ -10,11 +10,15 @@
         $header = \App\Models\Header::where('user_id', $user_id)->first();
         $footer = \App\Models\Footer::where('user_id', $user_id)->first();
         $website = $check;
+        
+        // Load custom fonts for dynamic font support
+        $customFonts = \App\Models\Font::where('user_id', $user_id)->get();
     } else {
         $setting = null;
         $header = null;
         $footer = null;
         $website = null;
+        $customFonts = collect();
     }
 @endphp
 
@@ -109,6 +113,75 @@
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
         }
+
+        /* Custom Fonts @font-face declarations */
+        @if(isset($customFonts) && $customFonts->count() > 0)
+        /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
+        @foreach($customFonts as $font)
+        @font-face {
+            font-family: '{{ $font->font_family }}';
+            src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        /* Apply custom font classes (for Quill editor content) */
+        .ql-font-{{ $font->font_family }} {
+            font-family: '{{ $font->font_family }}', sans-serif !important;
+        }
+        @endforeach
+        @else
+        /* DEBUG: No custom fonts available */
+        @endif
+        
+        /* System font classes (for Quill editor content) */
+        .ql-font-arial {
+            font-family: Arial, sans-serif !important;
+        }
+        .ql-font-helvetica {
+            font-family: Helvetica, sans-serif !important;
+        }
+        .ql-font-times {
+            font-family: 'Times New Roman', serif !important;
+        }
+        .ql-font-georgia {
+            font-family: Georgia, serif !important;
+        }
+        .ql-font-verdana {
+            font-family: Verdana, sans-serif !important;
+        }
+        .ql-font-courier {
+            font-family: 'Courier New', monospace !important;
+        }
+        .ql-font-outfit {
+            font-family: 'Outfit', sans-serif !important;
+        }
+        
+        /* Menu Font Family Styling */
+        @if(isset($header) && $header && $header->menu_font_family)
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .btn {
+            font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Contact Topbar Font Family Styling */
+        @if(isset($header) && $header && $header->contact_topbar_font_family)
+        .contact-topbar,
+        .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Investor Exclusives Font Family Styling */
+        @if(isset($header) && $header && $header->investor_exclusives_font_family)
+        .investor-exclusives-bar,
+        .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+        }
+        @endif
     </style>
 </head>
 <body class="body-checkout">
@@ -144,7 +217,7 @@
         
         <!-- Back Button -->
         <div class="container mt-3">
-            <div class="row justify-content-center">
+            <div class="row">
                 <div class="col-md-6">
                     <button onclick="window.history.back()" class="btn btn-outline-secondary mb-3">
                         <i class="fas fa-arrow-left me-2"></i>Back to Previous Page
