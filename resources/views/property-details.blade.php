@@ -1033,7 +1033,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Number of Shares
                         </label>
-                        <input type="number" value="1" min="1" max="{{ $ticket->available_shares }}" 
+                        <input type="number" max="{{ $ticket->available_shares }}" 
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
                                id="investShares" oninput="updateInvestmentCard(); validatePurchaseShares(this)">
                         <div class="mt-2 text-sm text-gray-500">
