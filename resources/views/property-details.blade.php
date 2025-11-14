@@ -1140,8 +1140,8 @@
                                     ->whereHas('ticketSell', function($query) {
                                         $query->where('status', 1);
                                     })
-                                    ->distinct('user_id')
-                                    ->count('user_id');
+                                    ->distinct('ticket_sell_id')
+                                    ->count('ticket_sell_id');
                             @endphp
                             <span class="text-gray-600">Join {{ number_format($uniqueInvestors) }} other investors</span>
                         </div>
