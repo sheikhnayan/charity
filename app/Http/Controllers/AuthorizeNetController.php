@@ -472,24 +472,28 @@ class AuthorizeNetController extends Controller
 
     public function paymentStripe(Request $request)
     {
-        // Enhanced request validation
+        // Log all incoming request data for debugging
+        \Log::info('Stripe payment request received', [
+            'all_data' => $request->all(),
+            'domain' => request()->getHost(),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+        
+        // Basic validation - only validate essential fields
         $request->validate([
             'stripeToken' => 'required|string',
             'amount' => 'required|numeric|min:0.01',
             'type' => 'required|string',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'name_on_card' => 'required|string|max:255',
         ]);
         
         // Log payment attempt for debugging
-        \Log::info('Stripe payment attempt', [
+        \Log::info('Stripe payment attempt validated', [
             'domain' => request()->getHost(),
             'amount' => $request->amount,
             'type' => $request->type,
-            'email' => $request->email,
-            'has_token' => !empty($request->stripeToken)
+            'has_token' => !empty($request->stripeToken),
+            'token_preview' => substr($request->stripeToken, 0, 10) . '...'
         ]);
         
         // Get current website based on domain
@@ -841,7 +845,7 @@ class AuthorizeNetController extends Controller
                 'error_type' => $e->getError()->type,
                 'amount' => $request->amount,
                 'type' => $request->type,
-                'email' => $request->email
+                'request_data' => $request->all()
             ]);
             
             // Track payment failure
@@ -850,6 +854,17 @@ class AuthorizeNetController extends Controller
             $this->trackPaymentFunnel('failed', $type, $amount, null, 'Card declined: ' . $e->getError()->message);
             
             return back()->with('error', "Payment failed: ". $e->getError()->message);
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            // Stripe API request issues
+            \Log::error('Stripe invalid request exception', [
+                'error_message' => $e->getMessage(),
+                'stripe_code' => $e->getStripeCode(),
+                'amount' => $request->amount,
+                'type' => $request->type,
+                'request_data' => $request->all()
+            ]);
+            
+            return back()->with('error', "Payment failed: Invalid request - " . $e->getMessage());
         } catch (\Exception $e) {
             // Anything else
             \Log::error('Stripe payment exception', [
@@ -858,7 +873,7 @@ class AuthorizeNetController extends Controller
                 'error_line' => $e->getLine(),
                 'amount' => $request->amount,
                 'type' => $request->type,
-                'email' => $request->email,
+                'request_data' => $request->all(),
                 'trace' => $e->getTraceAsString()
             ]);
             
@@ -868,7 +883,7 @@ class AuthorizeNetController extends Controller
             $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment processing error: ' . $e->getMessage());
             
             report($e);
-            return back()->with('error', "Payment failed: Payment could not be processed. Please check your card information and try again.");
+            return back()->with('error', "Payment failed: Payment could not be processed. Please check your card information and try again. Error: " . $e->getMessage());
         }
     }
 

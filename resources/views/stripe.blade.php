@@ -1463,6 +1463,13 @@
                 } else {
                     console.log('Stripe token created successfully:', token.id);
                     
+                    // Log form data being sent
+                    const formData = new FormData(form);
+                    console.log('Form data being sent:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`- ${key}: ${value}`);
+                    }
+                    
                     const hiddenInput = document.createElement('input');
                     hiddenInput.setAttribute('type', 'hidden');
                     hiddenInput.setAttribute('name', 'stripeToken');
