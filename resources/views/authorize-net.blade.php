@@ -12,7 +12,7 @@
         $website = $check;
         
         // Load custom fonts for dynamic font support
-        $customFonts = \App\Models\CustomFont::where('user_id', $user_id)->get();
+        $customFonts = \App\Models\CustomFont::get();
     } else {
         $setting = null;
         $header = null;
