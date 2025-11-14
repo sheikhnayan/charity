@@ -193,7 +193,7 @@
                 </div>
             </div>
             <!-- Back Button -->
-        <div class="container mt-3">
+        <div class="container" style="margin-top: 10rem !important;">
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <button onclick="window.history.back()" class="btn btn-outline-secondary mb-3">
@@ -206,7 +206,7 @@
                 @csrf
                 <div class="row justify-content-center">
                     <div class="col-md-6" style="margin-bottom: 5rem;">
-                        <div class="card" style="margin-top: 8rem;">
+                        <div class="card">
                             <div class="container p-2 svelte-bty8ba" data-testid="investor-checkout-container">
                                 <div class="py-2 section-item svelte-awum1m" id="investment_amount"
                                     data-testid="investment_amount-section">
