@@ -1397,7 +1397,7 @@
             console.error('Stripe publishable key is missing');
             document.getElementById('card-errors').textContent = 'Payment system configuration error. Please contact support.';
             document.getElementById('card-errors').style.display = 'block';
-            return;
+            throw new Error('Stripe publishable key is missing');
         }
         
         const stripe = Stripe(publishableKey);
