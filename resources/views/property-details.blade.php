@@ -918,9 +918,9 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Calculator</h3>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Number of Shares</label>
-                                    <input type="number" id="shareCalc" max="{{ $ticket->available_shares }}" 
+                                    <input type="number" id="shareCalc" max="{{ $ticket->available_shares }}" min="1" placeholder="Enter number of shares"
                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                           oninput="calculateInvestment(); validateShares(this)">
+                                           oninput="calculateInvestment(); validateShares(this)" onblur="validateSharesBlur(this)" onfocus="clearInputIfOne(this)">
                                     <div id="shareValidationMessage" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
                                 </div>
                                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -1033,9 +1033,9 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Number of Shares
                         </label>
-                        <input type="number" max="{{ $ticket->available_shares }}" 
+                        <input type="number" max="{{ $ticket->available_shares }}" min="1" placeholder="Enter number of shares"
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
-                               id="investShares" oninput="updateInvestmentCard(); validatePurchaseShares(this)">
+                               id="investShares" oninput="updateInvestmentCard(); validatePurchaseShares(this)" onblur="validatePurchaseSharesBlur(this)" onfocus="clearInputIfOne(this)">
                         <div class="mt-2 text-sm text-gray-500">
                             Min: 1 share • Max: {{ number_format($ticket->available_shares) }} shares
                         </div>
@@ -1153,7 +1153,8 @@
         }
 
         function updateInvestmentCard() {
-            const shares = document.getElementById('investShares').value;
+            const shareInput = document.getElementById('investShares');
+            const shares = shareInput.value || 1;
             const total = shares * pricePerShare;
             
             document.getElementById('cardTotalInvestment').textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -1168,6 +1169,13 @@
             }
         }
 
+        // Clear input if it contains the default value of 1 when focused
+        function clearInputIfOne(input) {
+            if (input.value === '1') {
+                input.value = '';
+            }
+        }
+
         // Initialize
         calculateInvestment();
         updateInvestmentCard();
@@ -1176,19 +1184,24 @@
         const availableShares = {{ $ticket->available_shares }};
         
         function validateShares(input) {
+            // Only show validation messages, don't force values during typing
             const quantity = parseInt(input.value) || 0;
             const messageDiv = document.getElementById('shareValidationMessage');
+            
+            if (input.value === '') {
+                messageDiv.style.display = 'none';
+                input.style.borderColor = '#d1d5db';
+                return;
+            }
             
             if (quantity > availableShares) {
                 messageDiv.textContent = `Maximum ${availableShares} shares available`;
                 messageDiv.style.display = 'block';
                 input.style.borderColor = 'red';
-                input.value = availableShares;
             } else if (quantity < 1) {
                 messageDiv.textContent = 'Minimum 1 share required';
                 messageDiv.style.display = 'block';
                 input.style.borderColor = 'red';
-                input.value = 1;
             } else {
                 messageDiv.style.display = 'none';
                 input.style.borderColor = '#d1d5db';
@@ -1197,17 +1210,55 @@
             calculateInvestment();
         }
         
+        function validateSharesBlur(input) {
+            // Force valid values only when user finishes editing (on blur)
+            const quantity = parseInt(input.value) || 0;
+            const messageDiv = document.getElementById('shareValidationMessage');
+            
+            if (input.value === '' || quantity < 1) {
+                input.value = 1;
+            } else if (quantity > availableShares) {
+                input.value = availableShares;
+            }
+            
+            messageDiv.style.display = 'none';
+            input.style.borderColor = '#d1d5db';
+            calculateInvestment();
+        }
+        
         function validatePurchaseShares(input) {
+            // Only show validation, don't force values during typing
+            const quantity = parseInt(input.value) || 0;
+            
+            if (input.value === '') {
+                // Allow empty during typing
+                return;
+            }
+            
+            if (quantity > availableShares) {
+                // Show warning but don't change value yet
+                input.style.borderColor = 'red';
+            } else {
+                input.style.borderColor = '#d1d5db';
+            }
+            
+            updateInvestmentCard();
+        }
+        
+        function validatePurchaseSharesBlur(input) {
+            // Force valid values only when user finishes editing (on blur)
             const quantity = parseInt(input.value) || 0;
             const buyButton = document.getElementById('buySharesButton');
             const formQuantity = document.getElementById('formQuantity');
             
-            if (quantity > availableShares) {
+            if (input.value === '' || quantity < 1) {
+                input.value = 1;
+            } else if (quantity > availableShares) {
                 alert(`Only ${availableShares} shares available for purchase`);
                 input.value = availableShares;
-            } else if (quantity < 1) {
-                input.value = 1;
             }
+            
+            input.style.borderColor = '#d1d5db';
             
             // Update form quantity
             if (formQuantity) {
