@@ -854,7 +854,7 @@
 
           <div class="section">
             <div class="seller-panel" style="margin-top:16px">
-              <h3 style="margin:0 0 8px">About this seller</h3>
+              /* <h3 style="margin:0 0 8px">About this seller</h3> */
               <div class="seller-box">
                 <div class="avatar"> <img src="/uploads/{{$ticket->user->website->setting->logo}}" alt="{{$ticket->user->website->name}}'s avatar"> </div>
                 <div class="seller-meta">
