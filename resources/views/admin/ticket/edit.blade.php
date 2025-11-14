@@ -110,8 +110,14 @@
                                 @if(is_array($documents))
                                     @foreach($documents as $doc)
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ basename($doc) }}</span>
-                                        <a href="{{ asset($doc) }}" class="btn btn-sm btn-primary" target="_blank">View</a>
+                                        <span>
+                                            @if(is_array($doc))
+                                                {{ $doc['name'] ?? basename($doc['path'] ?? '') }}
+                                            @else
+                                                {{ basename($doc) }}
+                                            @endif
+                                        </span>
+                                        <a href="{{ is_array($doc) ? asset($doc['path'] ?? '') : asset($doc) }}" class="btn btn-sm btn-primary" target="_blank">View</a>
                                     </div>
                                     @endforeach
                                 @endif
