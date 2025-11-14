@@ -900,6 +900,21 @@
                     </div>
                 </div>
 
+                <!-- Property Features -->
+                @if($ticket->features && $ticket->features->count() > 0)
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Property Features</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($ticket->features as $feature)
+                        <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+                            <span class="text-gray-600 font-medium">{{ $feature->name }}</span>
+                            <span class="text-gray-900 font-semibold">{{ $feature->value }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 <!-- Ownership Progress Bar -->
                 <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                     <div class="flex justify-between items-center mb-3">
