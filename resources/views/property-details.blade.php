@@ -26,13 +26,13 @@
     <style>
 
         nav a {
-  color: #9da3ab !important;
-  font-size: 17px !important;
-}
+            color: #9da3ab !important;
+            font-size: 17px !important;
+            }
 
-.collapse{
-    visibility: visible !important;
-}
+            .collapse{
+                visibility: visible !important;
+            }
         .property-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
@@ -755,6 +755,14 @@
                 </li>
             </ol>
         </nav>
+        
+        <!-- Back Button -->
+        <div class="mb-4">
+            <button onclick="window.history.back()" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Previous Page
+            </button>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
@@ -1220,21 +1228,6 @@
             }
             
             updateInvestmentCard();
-        }
-        
-        // Sync inputs
-        function updateInvestmentCard() {
-            const shareCalc = document.getElementById('shareCalc');
-            const investShares = document.getElementById('investShares');
-            const formQuantity = document.getElementById('formQuantity');
-            
-            if (shareCalc && investShares) {
-                shareCalc.value = investShares.value;
-                if (formQuantity) {
-                    formQuantity.value = investShares.value;
-                }
-                calculateInvestment();
-            }
         }
         
         // Form submission validation

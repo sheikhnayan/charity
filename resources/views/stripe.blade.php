@@ -182,6 +182,18 @@
                 </ul>
             </div>
         @endif
+        
+        <!-- Back Button -->
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <button onclick="window.history.back()" class="btn btn-outline-secondary mb-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Previous Page
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <div class="container mt-4">
             <!-- Card Error Display -->
             <div class="row justify-content-center">
