@@ -537,7 +537,7 @@ class FrontendController extends Controller
         $add = new TicektSell;
         $add->quantity = $quantity;
         $add->amount = $amount;
-        $add->status = 'pending'; // Changed from 0 to 'pending' for clarity
+        $add->status = 0;
         $add->website_id = $check->id;
         $add->save();
 
@@ -551,7 +551,6 @@ class FrontendController extends Controller
             $sell->ticket_sell_id = $add->id;
             $sell->ticket_id = $value['id'];
             $sell->quantity = $value['quantity'];
-            $sell->status = 'pending'; // Add pending status to detail record
             
             // For property type, use price_per_share instead of price
             if($ticket->type === 'property') {

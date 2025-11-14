@@ -275,11 +275,17 @@ class AuthorizeNetController extends Controller
                     }
                 }elseif($request->type == 'ticket'){
                     $donation = TicektSell::find($request->donation_id);
-                    $donation->status = 1;
+                    $donation->status = 'success'; // Changed to string status for consistency
                     $donation->first_name = $request->first_name;
                     $donation->last_name = $request->last_name;
                     $donation->email = $request->email;
                     $donation->update();
+
+                    // Update all ticket sell details to success status  
+                    foreach ($donation->details as $detail) {
+                        $detail->status = 'success';
+                        $detail->save();
+                    }
 
 
                     $tran = new Transaction;
