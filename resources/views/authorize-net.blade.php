@@ -186,7 +186,7 @@
                                 @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at {{ $item->ticket->price_per_share }}</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }}</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
@@ -486,12 +486,20 @@
                             <div class="col-md-2 col-2">
                                 <img src="{{ asset($item->ticket->image) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
-                                <span
-                                    style="position: relative; left: 50px; top: -75px; background: #666; padding: 3px 9px; border-radius: 50%; color: #fff;">{{ $item->quantity }}</span>
+                                    @if ($item->ticket->type == 'property')
+                                        
+                                    @else
+                                        <span
+                                            style="position: relative; left: 50px; top: -75px; background: #666; padding: 3px 9px; border-radius: 50%; color: #fff;">{{ $item->quantity }}</span>
+                                    @endif
                             </div>
                             <div class="col-md-6 col-6 text-start" style="padding-top: 7px; font-weight: bold;">
                                 {{ $item->ticket->name }}
+                                @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
+                                @else
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }}</p>
+                                @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
                                 ${{ $item->amount }}
