@@ -854,24 +854,19 @@
                 <div class="mb-8">
                     <div class="relative rounded-lg overflow-hidden shadow-lg">
                         <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}" 
-                             class="w-full h-96 object-cover" id="mainImage">
-                        @if($ticket->images && count($ticket->images) > 0)
-                        <button class="absolute top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-100 transition" onclick="toggleGallery()">
-                            <i class="fas fa-images mr-2"></i>View all photos
-                        </button>
-                        @endif
+                             class="w-full h-96 object-contain bg-gray-100" id="mainImage">
                     </div>
                     
                     <!-- Thumbnail Gallery -->
                     @if($ticket->images && count($ticket->images) > 0)
                     <div class="grid grid-cols-4 md:grid-cols-6 gap-2 mt-4" id="thumbnailGallery">
-                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-purple-500" onclick="changeImage('{{ asset($ticket->image) }}', this)">
-                            <img src="{{ asset($ticket->image) }}" alt="Main" class="w-full h-20 object-cover">
+                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-purple-500 bg-gray-100" onclick="changeImage('{{ asset($ticket->image) }}', this)">
+                            <img src="{{ asset($ticket->image) }}" alt="Main" class="w-full h-20 object-contain">
                         </div>
                         @foreach($ticket->images as $image)
-                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition" 
+                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition bg-gray-100" 
                              onclick="changeImage('{{ asset($image->image_path) }}', this)">
-                            <img src="{{ asset($image->image_path) }}" alt="Property image" class="w-full h-20 object-cover">
+                            <img src="{{ asset($image->image_path) }}" alt="Property image" class="w-full h-20 object-contain">
                         </div>
                         @endforeach
                     </div>
@@ -1193,14 +1188,6 @@
             if (element) {
                 element.classList.remove('border-transparent');
                 element.classList.add('border-purple-500');
-            }
-        }
-
-        function toggleGallery() {
-            // Scroll to thumbnail gallery
-            const gallery = document.getElementById('thumbnailGallery');
-            if (gallery) {
-                gallery.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
 
