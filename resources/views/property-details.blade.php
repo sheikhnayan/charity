@@ -42,6 +42,41 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
+        /* Responsive number sizing for stat cards */
+        .responsive-number {
+            font-size: 1.5rem;
+            line-height: 1.2;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        /* Adjust font size based on content length */
+        @media (min-width: 768px) {
+            .responsive-number {
+                font-size: clamp(1rem, 4vw, 1.5rem);
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .responsive-number {
+                font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+            }
+        }
+        
+        /* Container constraints for stat cards */
+        .stat-card {
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .stat-card > div {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .investment-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: all 0.3s ease;
@@ -766,25 +801,25 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Starting Price</div>
-                        <div class="text-2xl font-bold text-purple-600">${{ number_format($ticket->price_per_share, 2) }}</div>
+                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number">${{ number_format($ticket->price_per_share, 2) }}</div>
                         <div class="text-xs text-gray-500 mt-1">per share</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Shares</div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($ticket->total_shares) }}</div>
+                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number">{{ number_format($ticket->total_shares) }}</div>
                         <div class="text-xs text-gray-500 mt-1">shares total</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Available</div>
-                        <div class="text-2xl font-bold text-green-600">{{ number_format($ticket->available_shares) }}</div>
+                        <div class="text-2xl font-bold text-green-600 break-words responsive-number">{{ number_format($ticket->available_shares) }}</div>
                         <div class="text-xs text-gray-500 mt-1">shares left</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Value</div>
-                        <div class="text-2xl font-bold text-gray-900">${{ number_format($ticket->price, 2) }}</div>
+                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number">${{ number_format($ticket->price, 2) }}</div>
                         <div class="text-xs text-gray-500 mt-1">property value</div>
                     </div>
                 </div>
