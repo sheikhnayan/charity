@@ -183,7 +183,16 @@
             </div>
         @endif
         
-        <!-- Back Button -->
+        
+        
+        <div class="container mt-4">
+            <!-- Card Error Display -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div id="card-errors" class="alert alert-danger" style="display: none;"></div>
+                </div>
+            </div>
+            <!-- Back Button -->
         <div class="container mt-3">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -193,15 +202,6 @@
                 </div>
             </div>
         </div>
-        
-        <div class="container mt-4">
-            <!-- Card Error Display -->
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div id="card-errors" class="alert alert-danger" style="display: none;"></div>
-                </div>
-            </div>
-            
             <form action="{{ route('stripe.post') }}" id="payment-form" method="post">
                 @csrf
                 <div class="row justify-content-center">
