@@ -171,7 +171,7 @@
                 @elseif($type == 'ticket')
                     @foreach ($data->details as $item)
                     @php
-                        dd($item->ticket->name);
+                        dd($item->ticket);
                     @endphp
                         <div class="row">
                             <div class="col-md-2 col-2">
