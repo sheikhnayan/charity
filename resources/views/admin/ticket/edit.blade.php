@@ -161,11 +161,6 @@
                                     <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
                                 </div>
                             @endforeach
-                            
-                            <div class="feature-row flex items-center gap-2 mb-2">
-                                <input type="text" name="features[0][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
-                                <input type="text" name="features[0][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
-                            </div>
                         </div>
 
                         <button type="button" id="add-feature-btn" class="add-feature-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">

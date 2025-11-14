@@ -755,12 +755,18 @@
           </div> --}}
 
           <!-- Item specifics table matching screenshot columns -->
+          @php
+              $validFeatures = $ticket->features->filter(function($feature) {
+                  return !empty(trim($feature->name)) && !empty(trim($feature->value));
+              });
+          @endphp
+          @if($validFeatures->count() > 0)
           <div class="specs" aria-label="Item specifics">
-            @foreach ($ticket->features as $item)
+            @foreach ($validFeatures as $item)
                 <div class="spec"><strong>{{ $item->name }}</strong>{{ $item->value }}</div>
             @endforeach
-            {{-- <div class="spec"><strong>Condition</strong>New without tags</div> --}}
           </div>
+          @endif
 
           <!-- Item description (long) -->
           <div class="desc" id="desc">
