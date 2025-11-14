@@ -150,23 +150,21 @@
                     <div class="features-section mt-4" style="display: {{ (old('type', $data->type ?? '') == 'product' || old('type', $data->type ?? '') == 'property') ? 'block' : 'none' }};">
                         <h4 class="mb-2">Features</h4>
 
-                        @foreach ($data->features as $item)
-                        @php
-                            $rand = mt_rand(00123, 5462364923156);
-                        @endphp
-                            <div id="features-container">
-                                <div class="feature-row flex items-center gap-2 mb-2">
-                                <input type="text" name="features[{{ $rand }}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.name', $item->name ?? '') }}">
-                                <input type="text" name="features[{{ $rand }}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.value', $item->value ?? '') }}">
-                                <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
-                                </div>
-                            </div>
-                        @endforeach
-
                         <div id="features-container">
+                            @foreach ($data->features as $item)
+                            @php
+                                $rand = mt_rand(00123, 5462364923156);
+                            @endphp
+                                <div class="feature-row flex items-center gap-2 mb-2">
+                                    <input type="text" name="features[{{ $rand }}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.name', $item->name ?? '') }}">
+                                    <input type="text" name="features[{{ $rand }}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2" value="{{ old('features.'.$loop->index.'.value', $item->value ?? '') }}">
+                                    <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
+                                </div>
+                            @endforeach
+                            
                             <div class="feature-row flex items-center gap-2 mb-2">
-                            <input type="text" name="features[0][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
-                            <input type="text" name="features[0][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
+                                <input type="text" name="features[0][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
+                                <input type="text" name="features[0][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
                             </div>
                         </div>
 
@@ -177,6 +175,35 @@
 
                     <script>
                     let featureIndex = 1;
+
+                    // Add event listeners to existing remove buttons
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('.remove-feature').forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                this.closest('.feature-row').remove();
+                            });
+                        });
+                    });
+
+                    document.getElementById('add-feature-btn').addEventListener('click', function() {
+                        const container = document.getElementById('features-container');
+
+                        const newRow = document.createElement('div');
+                        newRow.classList.add('feature-row', 'flex', 'items-center', 'gap-2', 'mb-2');
+                        newRow.innerHTML = `
+                        <input type="text" name="features[${featureIndex}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
+                        <input type="text" name="features[${featureIndex}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
+                        <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
+                        `;
+
+                        container.appendChild(newRow);
+
+                        // Remove feature row
+                        newRow.querySelector('.remove-feature').addEventListener('click', () => newRow.remove());
+
+                        featureIndex++;
+                    });
+                    </script>
 
                     document.getElementById('add-feature-btn').addEventListener('click', function() {
                         const container = document.getElementById('features-container');
