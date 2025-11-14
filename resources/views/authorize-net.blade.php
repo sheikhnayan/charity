@@ -33,6 +33,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Fonts CSS -->
+    <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
@@ -137,6 +141,18 @@
                 {{ $value }}
             </div>
         @endsession
+        
+        <!-- Back Button -->
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <button onclick="window.history.back()" class="btn btn-outline-secondary mb-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Previous Page
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <div class="row">
             <div class="col-md-12 mobile mt-4" style="display: none;">
                 <h1 class="mt-4">Checkout</h1>
