@@ -108,48 +108,46 @@
                             <label for="size" class="form-label">Size</label>
                             <input type="text" name="size" class="form-control" id="size">
                         </div>
+                    </div>
 
-                        <div class="features-section mt-4">
-                            <h4 class="mb-2">Product Features</h4>
+                    <!-- Features section - available for both products and properties -->
+                    <div class="features-section mt-4" style="display: none;">
+                        <h4 class="mb-2">Features</h4>
 
-                            <div id="features-container">
-                                <div class="feature-row flex items-center gap-2 mb-2">
-                                <input type="text" name="features[0][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
-                                <input type="text" name="features[0][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
-                                </div>
+                        <div id="features-container">
+                            <div class="feature-row flex items-center gap-2 mb-2">
+                            <input type="text" name="features[0][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
+                            <input type="text" name="features[0][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
                             </div>
-
-                            <button type="button" id="add-feature-btn" class="add-feature-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                                + Add Feature
-                            </button>
                         </div>
 
-
-
-                        <script>
-                        let featureIndex = 1;
-
-                        document.getElementById('add-feature-btn').addEventListener('click', function() {
-                            const container = document.getElementById('features-container');
-
-                            const newRow = document.createElement('div');
-                            newRow.classList.add('feature-row', 'flex', 'items-center', 'gap-2', 'mb-2');
-                            newRow.innerHTML = `
-                            <input type="text" name="features[${featureIndex}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
-                            <input type="text" name="features[${featureIndex}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
-                            <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
-                            `;
-
-                            container.appendChild(newRow);
-
-                            // Remove feature row
-                            newRow.querySelector('.remove-feature').addEventListener('click', () => newRow.remove());
-
-                            featureIndex++;
-                        });
-                        </script>
-
+                        <button type="button" id="add-feature-btn" class="add-feature-btn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                            + Add Feature
+                        </button>
                     </div>
+
+                    <script>
+                    let featureIndex = 1;
+
+                    document.getElementById('add-feature-btn').addEventListener('click', function() {
+                        const container = document.getElementById('features-container');
+
+                        const newRow = document.createElement('div');
+                        newRow.classList.add('feature-row', 'flex', 'items-center', 'gap-2', 'mb-2');
+                        newRow.innerHTML = `
+                        <input type="text" name="features[${featureIndex}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
+                        <input type="text" name="features[${featureIndex}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
+                        <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
+                        `;
+
+                        container.appendChild(newRow);
+
+                        // Remove feature row
+                        newRow.querySelector('.remove-feature').addEventListener('click', () => newRow.remove());
+
+                        featureIndex++;
+                    });
+                    </script>
 
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a href="{{ route('admin.ticket.index') }}" class="btn btn-secondary">Cancel</a>
@@ -167,6 +165,7 @@
         var productDiv = $('.product');
         var propertyFields = $('.property-fields');
         var propertyDocuments = $('.property-documents-field');
+        var featuresSection = $('.features-section');
         var regularPriceField = $('.regular-price-field');
         var regularQuantityField = $('.regular-quantity-field');
         var categoryField = $('#category').closest('.mb-3');
@@ -175,12 +174,15 @@
         productDiv.hide();
         propertyFields.hide();
         propertyDocuments.hide();
+        featuresSection.hide();
         regularPriceField.show();
         regularQuantityField.show();
 
         if (selectedType === 'product') {
             productDiv.show();
+            featuresSection.show();
         } else if (selectedType === 'property') {
+            featuresSection.show();
             propertyFields.show();
             propertyDocuments.show();
             regularPriceField.hide();
