@@ -170,14 +170,13 @@
                     </div>
                 @elseif($type == 'ticket')
                     @foreach ($data->details as $item)
-                    @php
-                        dd($item->ticket);
-                    @endphp
                         <div class="row">
                             <div class="col-md-2 col-2">
                                 <img src="{{ asset($item->ticket->image) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
-                                    @if ($item->ticket->type != 'property')
+                                    @if ($item->ticket->type == 'property')
+                                        
+                                    @else
                                         <span
                                             style="position: relative; left: 50px; top: -75px; background: #666; padding: 3px 9px; border-radius: 50%; color: #fff;">{{ $item->quantity }}</span>
                                     @endif
