@@ -205,26 +205,6 @@
                     });
                     </script>
 
-                    document.getElementById('add-feature-btn').addEventListener('click', function() {
-                        const container = document.getElementById('features-container');
-
-                        const newRow = document.createElement('div');
-                        newRow.classList.add('feature-row', 'flex', 'items-center', 'gap-2', 'mb-2');
-                        newRow.innerHTML = `
-                        <input type="text" name="features[${featureIndex}][name]" placeholder="Feature Name" class="feature-name border p-2 rounded w-1/2">
-                        <input type="text" name="features[${featureIndex}][value]" placeholder="Feature Value" class="feature-value border p-2 rounded w-1/2">
-                        <button type="button" class="remove-feature text-red-500 hover:text-red-700">✕</button>
-                        `;
-
-                        container.appendChild(newRow);
-
-                        // Remove feature row
-                        newRow.querySelector('.remove-feature').addEventListener('click', () => newRow.remove());
-
-                        featureIndex++;
-                    });
-                    </script>
-
 
                     <button type="submit" class="btn btn-primary">Update</button>
                     <a href="{{ route('admin.ticket.index') }}" class="btn btn-secondary">Cancel</a>
