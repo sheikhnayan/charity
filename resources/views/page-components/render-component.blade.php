@@ -5686,7 +5686,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 <div class="owl-carousel ticket-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
                                         <div class="ticket-card">
-                                            <a href="{{ route('product.details', $ticket->id) }}" class="ticket-link">
+                                            <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
                                                 <div class="ticket-image">
                                                     <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
                                                     {{-- @if($ticket->quantity && $ticket->quantity < 10)
@@ -5957,7 +5957,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 <div class="owl-carousel ticket-category-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
                                         <div class="ticket-card">
-                                            <a href="{{ route('product.details', $ticket->id) }}" class="ticket-link">
+                                            <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
                                                 <div class="ticket-image">
                                                     <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
                                                     {{-- @if($ticket->quantity && $ticket->quantity < 10)
@@ -6238,7 +6238,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         $actualAvailableShares = $property->total_shares - $totalSold;
                                     @endphp
                                         <div class="property-card">
-                                            <a href="{{ route('product.details', $property->id) }}" class="property-link">
+                                            <a href="{{ route('product.details', $property->slug) }}" class="property-link">
                                                 <div class="property-image">
                                                     <img src="{{ asset($property->image) }}" alt="{{ $property->name }}">
                                                     @if($property->available_shares && $property->total_shares)
@@ -6711,7 +6711,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             
                             <div class="{{ $gridClass }} mb-4 property-item" data-category="{{ $property->category_id ?? 'uncategorized' }}">
                                 <div class="property-card {{ $cardStyleClass }}">
-                                    <a href="/product/{{ $property->id }}" class="property-link">
+                                    <a href="/product/{{ $property->slug }}" class="property-link">
                                         <!-- Property Image with Carousel -->
                                         <div class="property-image-container">
                                             @if($property->images && $property->images->count() > 0)
@@ -7214,7 +7214,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         @foreach($products as $product)
                             <div class="{{ $gridClass }} mb-4 product-item" data-category="{{ $product->category_id ?? 'uncategorized' }}">
                                 <div class="product-card {{ $cardStyleClass }}">
-                                    <a href="/product/{{ $product->id }}" class="product-link">
+                                    <a href="/product/{{ $product->slug }}" class="product-link">
                                         <!-- Product Image with Carousel -->
                                         <div class="product-image-container">
                                             @if($product->images && $product->images->count() > 0)

@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\TicketImage;
 use App\Models\TicketFeature;
 use App\Models\TicketCategory;
+use App\Models\PropertyFinancial;
 use App\Models\Website;
 
 class TicketController extends Controller
@@ -43,6 +44,17 @@ class TicketController extends Controller
 
         $add = new Ticket;
         $add->name = $request->name;
+        
+        // Generate unique slug
+        $slug = \Illuminate\Support\Str::slug($request->name);
+        $originalSlug = $slug;
+        $count = 1;
+        while (Ticket::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+        $add->slug = $slug;
+        
         $add->description = $request->description;
         $add->status = $request->status;
         $add->hide_until = $request->hide_until;
@@ -134,6 +146,12 @@ class TicketController extends Controller
             }
         }
 
+        // Handle property financials
+        if($request->type === 'property' && $request->financials){
+            $add->market = $request->market;
+            $add->financials()->create($request->financials);
+        }
+
         
 
         return redirect()->route('admin.ticket.index')->with('success', 'Ticket created successfully.');
@@ -166,6 +184,19 @@ class TicketController extends Controller
         
         $add = Ticket::findOrFail($id);
         $add->name = $request->name;
+        
+        // Update slug if name changed
+        if ($add->isDirty('name') || empty($add->slug)) {
+            $slug = \Illuminate\Support\Str::slug($request->name);
+            $originalSlug = $slug;
+            $count = 1;
+            while (Ticket::where('slug', $slug)->where('id', '!=', $id)->exists()) {
+                $slug = $originalSlug . '-' . $count;
+                $count++;
+            }
+            $add->slug = $slug;
+        }
+        
         $add->description = $request->description;
         $add->status = $request->status;
         $add->hide_until = $request->hide_until;
@@ -176,6 +207,7 @@ class TicketController extends Controller
         // Handle property type
         if ($request->type === 'property') {
             $add->price_per_share = $request->price_per_share;
+            $add->market = $request->market;
             
             // Calculate available shares difference if total shares changed
             $oldTotalShares = $add->total_shares ?? 0;
@@ -261,6 +293,15 @@ class TicketController extends Controller
                 $newFeature->name = $feature['name'];
                 $newFeature->value = $feature['value'];
                 $newFeature->save();
+            }
+        }
+
+        // Handle property financials update
+        if($request->type === 'property' && $request->financials){
+            if($add->financials){
+                $add->financials()->update($request->financials);
+            } else {
+                $add->financials()->create($request->financials);
             }
         }
 

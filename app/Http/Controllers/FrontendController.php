@@ -21,9 +21,9 @@ use Mail;
 
 class FrontendController extends Controller
 {
-    public function productDetails($id)
+    public function productDetails($slug)
     {
-        $ticket = Ticket::with('website')->findOrFail($id);
+        $ticket = Ticket::where('slug', $slug)->with('website')->firstOrFail();
         
         // Get website header/footer/settings
         $website = $ticket->website;

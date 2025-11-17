@@ -647,6 +647,44 @@
             width: 100% !important;
         }
     }
+
+    /* Custom Range Slider Styles */
+    .slider-purple::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 3px solid #667eea;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .slider-purple::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 3px solid #667eea;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .slider-purple::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+    }
+
+    .slider-purple::-moz-range-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+    }
     
     </style>
 </head>
@@ -908,7 +946,7 @@
                 @endphp
                 @if($validFeatures->count() > 0)
                 <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Property Features</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Features</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($validFeatures as $feature)
                         <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
@@ -949,6 +987,11 @@
                             <button class="tab-btn px-6 py-4 text-sm font-medium border-b-2" data-tab="financials">
                                 <i class="fas fa-chart-line mr-2"></i>Financials
                             </button>
+                            @if($ticket->type === 'property' && !empty($ticket->market))
+                            <button class="tab-btn px-6 py-4 text-sm font-medium border-b-2" data-tab="market">
+                                <i class="fas fa-chart-area mr-2"></i>Market
+                            </button>
+                            @endif
                             <button class="tab-btn px-6 py-4 text-sm font-medium border-b-2" data-tab="documents">
                                 <i class="fas fa-file-alt mr-2"></i>Documents
                             </button>
@@ -960,7 +1003,7 @@
                         <div class="tab-content active" id="overview">
                             <h2 class="text-xl font-bold text-gray-900 mb-4">About This Investment</h2>
                             <div class="markdown-content text-gray-700">
-                                {!! nl2br(e($ticket->description)) !!}
+                                {!! $ticket->description !!}
                             </div>
                         </div>
 
@@ -993,32 +1036,424 @@
                                 </div>
                             </div>
 
-                            <!-- Share Calculator -->
-                            <div class="bg-white border-2 border-purple-200 rounded-lg p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Calculator</h3>
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Number of Shares</label>
-                                    <input type="number" id="shareCalc" max="{{ $ticket->available_shares }}" min="1" placeholder="Enter number of shares"
-                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                           oninput="calculateInvestment(); validateShares(this)" onblur="validateSharesBlur(this)" onfocus="clearInputIfOne(this)">
-                                    <div id="shareValidationMessage" style="color: red; font-size: 12px; margin-top: 5px; display: none;"></div>
+                            @if($ticket->financials)
+                            @php
+                                $fin = $ticket->financials;
+                            @endphp
+
+                            <!-- Total Investment Value Section -->
+                            @if($fin->show_total_investment && $fin->total_investment_value)
+                            <div class="rounded-xl shadow-xl mt-6 border border-purple-700" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <span class="font-bold text-xl md:text-2xl">{{ $fin->total_investment_label }}</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->total_investment_value, 2) }}</span>
                                 </div>
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="text-gray-600">Total Investment:</span>
-                                        <span class="text-2xl font-bold text-purple-600" id="totalInvestment">
-                                            ${{ number_format($ticket->price_per_share, 2) }}
-                                        </span>
+                                
+                                @if($fin->show_underlying_asset && $fin->underlying_asset_price)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->underlying_asset_label }}</span>
+                                        @if($fin->show_underlying_asset_tooltip && $fin->underlying_asset_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->underlying_asset_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
                                     </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <span class="text-gray-600">Ownership Percentage:</span>
-                                        <span class="font-semibold text-gray-900" id="ownershipPercent">
-                                            {{ number_format((1 / $ticket->total_shares) * 100, 4) }}%
-                                        </span>
+                                    <span class="md:text-lg">${{ number_format($fin->underlying_asset_price, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_closing_costs && $fin->closing_costs !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->closing_costs_label }}</span>
+                                        @if($fin->show_closing_costs_tooltip && $fin->closing_costs_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->closing_costs_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
                                     </div>
+                                    <span class="md:text-lg">${{ number_format($fin->closing_costs, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_upfront_fees && $fin->upfront_fees !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->upfront_fees_label }}</span>
+                                        @if($fin->show_upfront_fees_tooltip && $fin->upfront_fees_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->upfront_fees_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->upfront_fees, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_operating_reserve && $fin->operating_reserve_value)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->operating_reserve_label }}</span>
+                                        @if($fin->show_operating_reserve_tooltip && $fin->operating_reserve_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->operating_reserve_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">{{ $fin->operating_reserve_value }}</span>
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+
+                            <!-- Projected Annual Return Section -->
+                            @if($fin->show_projected_annual_return && $fin->projected_annual_return !== null)
+                            <div class="rounded-xl shadow-xl mt-6" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <span class="font-bold text-xl md:text-2xl">{{ $fin->projected_annual_return_label }}</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">{{ number_format($fin->projected_annual_return, 2) }}%</span>
+                                </div>
+
+                                @if($fin->show_projected_rental_yield && $fin->projected_rental_yield !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->projected_rental_yield_label }}</span>
+                                        @if($fin->show_projected_rental_yield_tooltip && $fin->projected_rental_yield_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->projected_rental_yield_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">{{ number_format($fin->projected_rental_yield, 2) }}%</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_projected_appreciation && $fin->projected_appreciation !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->projected_appreciation_label }}</span>
+                                        @if($fin->show_projected_appreciation_tooltip && $fin->projected_appreciation_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->projected_appreciation_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">{{ number_format($fin->projected_appreciation, 2) }}%</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_rental_yield && $fin->rental_yield !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->rental_yield_label }}</span>
+                                        @if($fin->show_rental_yield_tooltip && $fin->rental_yield_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->rental_yield_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">{{ number_format($fin->rental_yield, 2) }}%</span>
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+
+                            <!-- Annual Details Section -->
+                            @if($fin->show_annual_gross_rents && $fin->annual_gross_rents !== null)
+                            <div class="rounded-xl shadow-xl mt-6" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <span class="font-bold text-xl md:text-2xl">{{ $fin->annual_gross_rents_label }}</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->annual_gross_rents, 2) }}</span>
+                                </div>
+
+                                @if($fin->show_property_taxes && $fin->property_taxes !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->property_taxes_label }}</span>
+                                        @if($fin->show_property_taxes_tooltip && $fin->property_taxes_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->property_taxes_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->property_taxes, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_homeowners_insurance && $fin->homeowners_insurance !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->homeowners_insurance_label }}</span>
+                                        @if($fin->show_homeowners_insurance_tooltip && $fin->homeowners_insurance_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->homeowners_insurance_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->homeowners_insurance, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_property_management && $fin->property_management !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->property_management_label }}</span>
+                                        @if($fin->show_property_management_tooltip && $fin->property_management_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->property_management_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->property_management, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_annual_llc_fees && $fin->annual_llc_fees !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->annual_llc_fees_label }}</span>
+                                        @if($fin->show_annual_llc_fees_tooltip && $fin->annual_llc_fees_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->annual_llc_fees_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->annual_llc_fees, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_annual_cash_flow && $fin->annual_cash_flow !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->annual_cash_flow_label }}</span>
+                                        @if($fin->show_annual_cash_flow_tooltip && $fin->annual_cash_flow_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->annual_cash_flow_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->annual_cash_flow, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_cap_rate && $fin->cap_rate !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->cap_rate_label }}</span>
+                                        @if($fin->show_cap_rate_tooltip && $fin->cap_rate_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->cap_rate_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">{{ number_format($fin->cap_rate, 2) }}%</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_monthly_cash_flow && $fin->monthly_cash_flow !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->monthly_cash_flow_label }}</span>
+                                        @if($fin->show_monthly_cash_flow_tooltip && $fin->monthly_cash_flow_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->monthly_cash_flow_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->monthly_cash_flow, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_projected_annual_cash_flow && $fin->projected_annual_cash_flow !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->projected_annual_cash_flow_label }}</span>
+                                        @if($fin->show_projected_annual_cash_flow_tooltip && $fin->projected_annual_cash_flow_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->projected_annual_cash_flow_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->projected_annual_cash_flow, 2) }}</span>
+                                </div>
+                                @endif
+
+                                @if($fin->show_current_loan && $fin->current_loan !== null)
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                    <div class="flex items-center">
+                                        <span class="font-bold md:text-lg">{{ $fin->current_loan_label }}</span>
+                                        @if($fin->show_current_loan_tooltip && $fin->current_loan_tooltip)
+                                        <div class="relative group ml-2">
+                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
+                                                {{ $fin->current_loan_tooltip }}
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <span class="md:text-lg">${{ number_format($fin->current_loan, 2) }}</span>
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+
+                            @endif
+
+                            <!-- Advanced Investment Calculator -->
+                            <div class="mt-10">
+                                <h3 class="text-xl font-bold text-gray-900 mb-6">Projected Returns Per Share</h3>
+                                
+                                <div class="rounded-xl border border-purple-300 p-6 mb-10" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
+                                    <!-- Shares Purchased Slider -->
+                                    <div class="mb-8">
+                                        <div class="flex justify-between items-center text-white mb-2">
+                                            <p class="text-base font-medium">Shares Purchased</p>
+                                            <p class="font-semibold"><span id="sharesValue">1</span> / $<span id="sharesCost">{{ number_format($ticket->price_per_share, 2) }}</span></p>
+                                        </div>
+                                        <div class="relative pt-1">
+                                            <input type="range" id="sharesSlider" min="1" max="{{ $ticket->available_shares }}" value="1" 
+                                                   class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider-purple"
+                                                   oninput="updateCalculations()">
+                                        </div>
+                                    </div>
+
+                                    <!-- Appreciation Rate Slider -->
+                                    <div class="mb-8">
+                                        <div class="flex justify-between items-center text-white mb-2">
+                                            <p class="text-base font-medium">Annual Appreciation Rate</p>
+                                            <p class="font-semibold"><span id="appreciationValue">{{ $ticket->financials && $ticket->financials->projected_appreciation ? number_format($ticket->financials->projected_appreciation, 1) : '3.0' }}</span>%</p>
+                                        </div>
+                                        <div class="relative pt-1">
+                                            <input type="range" id="appreciationSlider" min="0" max="15" step="0.1" value="{{ $ticket->financials && $ticket->financials->projected_appreciation ? $ticket->financials->projected_appreciation : 3 }}" 
+                                                   class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider-purple"
+                                                   oninput="updateCalculations()">
+                                        </div>
+                                    </div>
+
+                                    <!-- Cash on Cash Return Slider -->
+                                    <div class="mb-8">
+                                        <div class="flex justify-between items-center text-white mb-2">
+                                            <p class="text-base font-medium">Cash on Cash Return</p>
+                                            <p class="font-semibold"><span id="cashReturnValue">{{ $ticket->financials && $ticket->financials->rental_yield ? number_format($ticket->financials->rental_yield, 2) : '8.00' }}</span>%</p>
+                                        </div>
+                                        <div class="relative pt-1">
+                                            <input type="range" id="cashReturnSlider" min="0" max="20" step="0.1" value="{{ $ticket->financials && $ticket->financials->rental_yield ? $ticket->financials->rental_yield : 8 }}" 
+                                                   class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider-purple"
+                                                   oninput="updateCalculations()">
+                                        </div>
+                                    </div>
+
+                                    <!-- Chart Title -->
+                                    <h3 class="text-base leading-6 mb-3 border-b border-purple-300 pb-2 font-bold text-white">
+                                        Est. Investment Value Over Time Based on Above Assumptions
+                                    </h3>
+
+                                    <!-- Chart Container -->
+                                    <div class="h-96 max-w-full overflow-x-auto bg-white rounded-xl border border-purple-300 p-4">
+                                        <canvas id="investmentChart"></canvas>
+                                    </div>
+
+                                    <!-- Projection Table -->
+                                    <table class="w-full text-white mt-10 table-auto">
+                                        <thead>
+                                            <tr class="border-b border-purple-300">
+                                                <th class="text-left py-3 px-2 text-sm md:text-base font-semibold">Metric</th>
+                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 5</th>
+                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 10</th>
+                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 20</th>
+                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 30</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b border-purple-400">
+                                                <td class="font-bold text-sm md:text-base py-4 px-2">Cumulative Net Cash Flow</td>
+                                                <td class="text-center py-4 px-2" id="cashFlow5">$0</td>
+                                                <td class="text-center py-4 px-2" id="cashFlow10">$0</td>
+                                                <td class="text-center py-4 px-2" id="cashFlow20">$0</td>
+                                                <td class="text-center py-4 px-2" id="cashFlow30">$0</td>
+                                            </tr>
+                                            <tr class="border-b border-purple-400">
+                                                <td class="font-bold text-sm md:text-base py-4 px-2">Cumulative Appreciation Gain</td>
+                                                <td class="text-center py-4 px-2" id="appreciation5">$0</td>
+                                                <td class="text-center py-4 px-2" id="appreciation10">$0</td>
+                                                <td class="text-center py-4 px-2" id="appreciation20">$0</td>
+                                                <td class="text-center py-4 px-2" id="appreciation30">$0</td>
+                                            </tr>
+                                            <tr class="border-b border-purple-400">
+                                                <td class="font-bold text-sm md:text-base py-4 px-2">Your Investment</td>
+                                                <td class="text-center py-4 px-2" id="investment5">$0</td>
+                                                <td class="text-center py-4 px-2" id="investment10">$0</td>
+                                                <td class="text-center py-4 px-2" id="investment20">$0</td>
+                                                <td class="text-center py-4 px-2" id="investment30">$0</td>
+                                            </tr>
+                                            <tr class="bg-purple-700 bg-opacity-50">
+                                                <td class="font-bold text-sm md:text-base py-4 px-2">Total Investment Value</td>
+                                                <td class="text-center py-4 px-2 font-bold" id="total5">$0</td>
+                                                <td class="text-center py-4 px-2 font-bold" id="total10">$0</td>
+                                                <td class="text-center py-4 px-2 font-bold" id="total20">$0</td>
+                                                <td class="text-center py-4 px-2 font-bold" id="total30">$0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Market Tab -->
+                        @if($ticket->type === 'property' && !empty($ticket->market))
+                        <div class="tab-content hidden" id="market">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4">Market Analysis</h2>
+                            <div class="markdown-content text-gray-700">
+                                {!! $ticket->market !!}
+                            </div>
+                        </div>
+                        @endif
 
                         <!-- Documents Tab -->
                         <div class="tab-content hidden" id="documents">
@@ -1221,7 +1656,7 @@
         }
 
         // Investment Calculator
-        const pricePerShare = {{ $ticket->price_per_share }};
+        // Note: pricePerShare already defined in advanced calculator section below
         const totalShares = {{ $ticket->total_shares }};
 
         function calculateInvestment() {
@@ -1394,17 +1829,235 @@
         });
     </script>
 
-    <!-- jQuery -->
+    <!-- Advanced Investment Calculator Script -->
+    <script>
+        // Initialize variables
+        let pricePerShare = {{ $ticket->price_per_share }};
+        const totalSharesAvailable = {{ $ticket->available_shares }};
+        let investmentChart = null;
+
+        // Initialize calculator on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartElement = document.getElementById('investmentChart');
+            if (chartElement) {
+                initializeChart();
+                updateCalculations();
+            }
+        });
+
+        function updateCalculations() {
+            const sharesSlider = document.getElementById('sharesSlider');
+            const appreciationSlider = document.getElementById('appreciationSlider');
+            const cashReturnSlider = document.getElementById('cashReturnSlider');
+            
+            if (!sharesSlider || !appreciationSlider || !cashReturnSlider) return;
+            
+            const shares = parseInt(sharesSlider.value);
+            const appreciation = parseFloat(appreciationSlider.value);
+            const cashReturn = parseFloat(cashReturnSlider.value);
+
+            // Update display values
+            const sharesValue = document.getElementById('sharesValue');
+            const sharesCost = document.getElementById('sharesCost');
+            const appreciationValue = document.getElementById('appreciationValue');
+            const cashReturnValue = document.getElementById('cashReturnValue');
+            
+            if (sharesValue) sharesValue.textContent = shares;
+            if (sharesCost) sharesCost.textContent = (shares * pricePerShare).toFixed(2);
+            if (appreciationValue) appreciationValue.textContent = appreciation.toFixed(1);
+            if (cashReturnValue) cashReturnValue.textContent = cashReturn.toFixed(2);
+
+            // Calculate projections
+            const initialInvestment = shares * pricePerShare;
+            const projections = calculateProjections(initialInvestment, appreciation, cashReturn);
+
+            // Update table
+            updateTable(projections, initialInvestment);
+
+            // Update chart
+            updateChart(projections, initialInvestment);
+        }
+
+        function calculateProjections(investment, appreciationRate, cashReturnRate) {
+            const years = 30;
+            const data = {
+                cashFlow: [],
+                appreciation: [],
+                investment: [],
+                total: []
+            };
+
+            let propertyValue = investment;
+            let cumulativeCashFlow = 0;
+
+            for (let year = 1; year <= years; year++) {
+                // Calculate annual cash flow
+                const annualCashFlow = investment * (cashReturnRate / 100);
+                cumulativeCashFlow += annualCashFlow;
+
+                // Calculate appreciation
+                propertyValue *= (1 + appreciationRate / 100);
+                const totalAppreciation = propertyValue - investment;
+
+                // Store values
+                data.cashFlow.push(cumulativeCashFlow);
+                data.appreciation.push(totalAppreciation);
+                data.investment.push(investment);
+                data.total.push(investment + cumulativeCashFlow + totalAppreciation);
+            }
+
+            return data;
+        }
+
+        function updateTable(projections, investment) {
+            const years = [5, 10, 20, 30];
+            years.forEach(year => {
+                const index = year - 1;
+                const cashFlowEl = document.getElementById(`cashFlow${year}`);
+                const appreciationEl = document.getElementById(`appreciation${year}`);
+                const investmentEl = document.getElementById(`investment${year}`);
+                const totalEl = document.getElementById(`total${year}`);
+                
+                if (cashFlowEl) cashFlowEl.textContent = '$' + projections.cashFlow[index].toFixed(2);
+                if (appreciationEl) appreciationEl.textContent = '$' + projections.appreciation[index].toFixed(2);
+                if (investmentEl) investmentEl.textContent = '$' + investment.toFixed(2);
+                if (totalEl) totalEl.textContent = '$' + projections.total[index].toFixed(2);
+            });
+        }
+
+        function initializeChart() {
+            const chartElement = document.getElementById('investmentChart');
+            if (!chartElement) return;
+            
+            const ctx = chartElement.getContext('2d');
+            
+            investmentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => i + 1),
+                    datasets: [
+                        {
+                            label: 'Cumulative Net Cash Flow',
+                            data: [],
+                            backgroundColor: '#a6cee3',
+                            borderColor: '#5e7480',
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'Cumulative Appreciation',
+                            data: [],
+                            backgroundColor: '#1f78b4',
+                            borderColor: '#124466',
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'Your Investment',
+                            data: [],
+                            backgroundColor: '#b2df8a',
+                            borderColor: '#657e4e',
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Year',
+                                color: '#1e293b',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            ticks: {
+                                color: '#475569'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Value ($)',
+                                color: '#1e293b',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            ticks: {
+                                color: '#475569',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#1e293b',
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + context.parsed.y.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(projections, investment) {
+            if (investmentChart) {
+                investmentChart.data.datasets[0].data = projections.cashFlow;
+                investmentChart.data.datasets[1].data = projections.appreciation;
+                investmentChart.data.datasets[2].data = Array(30).fill(investment);
+                investmentChart.update();
+            }
+        }
+    </script>
+
+    <!-- jQuery (must load before scripts that use it) -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Mobile Menu Auto-Close Fix -->
     <script>
-        $('.nav-link').on('click', function(){
-            $('.navbar-toggler').addClass('collapsed');
-            $('#navbarNav').removeClass('show');
-        })
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarNav = document.getElementById('navbarNav');
+            
+            if (navLinks && navbarToggler && navbarNav) {
+                navLinks.forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        navbarToggler.classList.add('collapsed');
+                        navbarNav.classList.remove('show');
+                    });
+                });
+            }
+        });
     </script>
 
     <!-- Footer -->

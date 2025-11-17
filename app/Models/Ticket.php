@@ -8,6 +8,7 @@ class Ticket extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
         'quantity',
         'price',
         'price_per_share',
@@ -20,6 +21,7 @@ class Ticket extends Model
         'image',
         'documents',
         'description',
+        'market',
         'website_id',
         'category_id'
     ];
@@ -51,6 +53,11 @@ class Ticket extends Model
     public function features()
     {
         return $this->hasMany(TicketFeature::class);
+    }
+
+    public function financials()
+    {
+        return $this->hasOne(PropertyFinancial::class);
     }
 
     public function scopeInCategory($query, $categoryId)
