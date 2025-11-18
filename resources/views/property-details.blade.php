@@ -2066,5 +2066,51 @@
         @include('layouts.new-footer')
     @endif
 
+    
+    <script>
+        // Auto-fit large numbers so they never wrap or overflow
+        (function() {
+            function fitNumber(el) {
+                if (!el) return;
+                // Cache the max font size the first time we see this element
+                const computed = window.getComputedStyle(el);
+                const maxPx = parseFloat(el.dataset.maxFontPx || computed.fontSize);
+                if (!el.dataset.maxFontPx) el.dataset.maxFontPx = String(maxPx);
+
+                // Reset to max before measuring
+                el.style.fontSize = maxPx + 'px';
+
+                // Safety bounds
+                const minPx = 12; // do not go smaller than 12px for readability
+                let current = maxPx;
+
+                // Ensure measurement reflects latest layout
+                const containerWidth = el.clientWidth; // width at current font size
+
+                // If content overflows, shrink until it fits or hits min
+                // Use a simple decrement loop to avoid oscillation; guard with iteration cap
+                let guard = 40;
+                while (el.scrollWidth > el.clientWidth && current > minPx && guard-- > 0) {
+                    current -= 1;
+                    el.style.fontSize = current + 'px';
+                }
+            }
+
+            function adjustResponsiveNumbers() {
+                document.querySelectorAll('.responsive-number').forEach(fitNumber);
+            }
+
+            // Run at appropriate lifecycle points
+            window.addEventListener('load', adjustResponsiveNumbers);
+            window.addEventListener('resize', adjustResponsiveNumbers);
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(adjustResponsiveNumbers).catch(() => {});
+            }
+
+            // Expose for any dynamic updates elsewhere
+            window.adjustResponsiveNumbers = adjustResponsiveNumbers;
+        })();
+    </script>
+
 </body>
 </html>
