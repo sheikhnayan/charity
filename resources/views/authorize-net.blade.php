@@ -340,7 +340,7 @@
                                 @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }}</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
@@ -652,7 +652,7 @@
                                 @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }}</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
