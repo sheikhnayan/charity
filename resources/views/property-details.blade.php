@@ -50,9 +50,10 @@
         .responsive-number {
             font-size: 1.5rem;
             line-height: 1.2;
-            word-break: break-all;
-            overflow-wrap: break-word;
-            hyphens: auto;
+            /* Prevent large currency/number strings from wrapping to the next line */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         /* Adjust font size based on content length */
