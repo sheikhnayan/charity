@@ -916,25 +916,25 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Starting Price</div>
-                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number">${{ number_format($ticket->price_per_share, 2) }}</div>
+                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number js-metric-number">${{ number_format($ticket->price_per_share, 2) }}</div>
                         <div class="text-xs text-gray-500 mt-1">per share</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Shares</div>
-                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number">{{ number_format($ticket->total_shares) }}</div>
+                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number js-metric-number">{{ number_format($ticket->total_shares) }}</div>
                         <div class="text-xs text-gray-500 mt-1">shares total</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Available</div>
-                        <div class="text-2xl font-bold text-green-600 break-words responsive-number">{{ number_format($ticket->available_shares) }}</div>
+                        <div class="text-2xl font-bold text-green-600 break-words responsive-number js-metric-number">{{ number_format($ticket->available_shares) }}</div>
                         <div class="text-xs text-gray-500 mt-1">shares left</div>
                     </div>
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Value</div>
-                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number">${{ number_format($ticket->price, 2) }}</div>
+                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number js-metric-number js-metric-leader">${{ number_format($ticket->price, 2) }}</div>
                         <div class="text-xs text-gray-500 mt-1">of investment</div>
                     </div>
                 </div>
@@ -2097,7 +2097,25 @@
             }
 
             function adjustResponsiveNumbers() {
-                document.querySelectorAll('.responsive-number').forEach(fitNumber);
+                // First, fit all responsive numbers individually
+                const allNumbers = document.querySelectorAll('.responsive-number');
+                allNumbers.forEach(fitNumber);
+
+                // Then, sync the three peer metrics to the leader (Total Value) if present
+                const leader = document.querySelector('.js-metric-leader');
+                if (leader) {
+                    const leaderSize = parseFloat(window.getComputedStyle(leader).fontSize);
+                    const peers = document.querySelectorAll('.js-metric-number:not(.js-metric-leader)');
+                    peers.forEach(el => {
+                        const maxPx = parseFloat(el.dataset.maxFontPx || window.getComputedStyle(el).fontSize);
+                        const target = Math.min(leaderSize, maxPx);
+                        el.style.fontSize = target + 'px';
+                        // Ensure it still fits after applying target size
+                        if (el.scrollWidth > el.clientWidth) {
+                            fitNumber(el);
+                        }
+                    });
+                }
             }
 
             // Run at appropriate lifecycle points
