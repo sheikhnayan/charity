@@ -128,10 +128,35 @@
                 }
                 // Success in verify or login
                 closeAuthModal();
-                // After login/verify, try to resubmit intercepted form
+                // After login/verify, refresh the CSRF token and resubmit the form
                 if (window._ticketAuthPendingForm) {
                     const f = window._ticketAuthPendingForm;
                     window._ticketAuthPendingForm = null;
+                    
+                    // Fetch a fresh CSRF token
+                    try {
+                        const csrfResp = await fetch('/refresh-csrf', {
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        const csrfData = await csrfResp.json();
+                        
+                        // Update CSRF token in the form
+                        const tokenInput = f.querySelector('input[name="_token"]');
+                        if (tokenInput && csrfData.token) {
+                            tokenInput.value = csrfData.token;
+                        }
+                        
+                        // Update meta tag too
+                        const metaTag = document.querySelector('meta[name="csrf-token"]');
+                        if (metaTag && csrfData.token) {
+                            metaTag.setAttribute('content', csrfData.token);
+                        }
+                    } catch (err) {
+                        console.error('CSRF refresh failed:', err);
+                    }
+                    
+                    // Submit the form
                     f.submit();
                 }
             } else {

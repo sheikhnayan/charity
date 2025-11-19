@@ -987,5 +987,9 @@ Route::post('/ajax/ticket-auth/check', function(Request $request) {
         'verified' => $user ? (bool) $user->email_verified_at : false
     ]);
 });
+
+Route::get('/refresh-csrf', function() {
+    return response()->json(['token' => csrf_token()]);
+});
 // --- End Ticket Auth/Verification AJAX Endpoints ---
 
