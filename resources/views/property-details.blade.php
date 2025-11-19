@@ -598,6 +598,10 @@
             font-size: 13px;
             padding: 6px 16px;
         }
+
+        .mobile-padding{
+            padding: 0.2rem !important;
+        }
     }
     
     @media (max-width: 480px) {
@@ -656,6 +660,10 @@
 
         .ticket-mask .row .col-md-2 img{
             width: 100% !important;
+        }
+
+        .mobile-padding{
+            padding: 0.2rem !important;
         }
     }
 
@@ -1064,7 +1072,7 @@
                         </nav>
                     </div>
 
-                    <div class="p-6">
+                    <div class="mobile-padding p-6">
                         <!-- Overview Tab -->
                         <div class="tab-content active" id="overview">
                             <h2 class="text-xl font-bold text-gray-900 mb-4">About This Investment</h2>
@@ -1481,7 +1489,7 @@
                             <div class="mt-10">
                                 <h3 class="text-xl font-bold text-gray-900 mb-6">Projected Returns Per Share</h3>
                                 
-                                <div class="rounded-xl border border-purple-300 p-6 mb-10" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
+                                <div class="rounded-xl border border-purple-300 p-6 mb-10 mobile-padding" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
                                     <!-- Shares Purchased Slider -->
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center text-white mb-2">
@@ -1522,57 +1530,61 @@
                                     </div>
 
                                     <!-- Chart Title -->
-                                    <h3 class="text-base leading-6 mb-3 border-b border-purple-300 pb-2 font-bold text-white">
+                                    <h3 class="text-sm md:text-base leading-6 mb-3 border-b border-purple-300 pb-2 font-bold text-white">
                                         Est. Investment Value Over Time Based on Above Assumptions
                                     </h3>
 
                                     <!-- Chart Container -->
-                                    <div class="h-96 max-w-full overflow-x-auto bg-white rounded-xl border border-purple-300 p-4">
-                                        <canvas id="investmentChart"></canvas>
+                                    <div class="bg-white rounded-xl border border-purple-300 p-2 md:p-4">
+                                        <div class="relative w-full" style="height: 300px; min-height: 300px;">
+                                            <canvas id="investmentChart"></canvas>
+                                        </div>
                                     </div>
 
                                     <!-- Projection Table -->
-                                    <table class="w-full text-white mt-10 table-auto">
-                                        <thead>
-                                            <tr class="border-b border-purple-300">
-                                                <th class="text-left py-3 px-2 text-sm md:text-base font-semibold">Metric</th>
-                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 5</th>
-                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 10</th>
-                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 20</th>
-                                                <th class="text-center py-3 px-2 text-sm md:text-base font-semibold">Year 30</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="border-b border-purple-400">
-                                                <td class="font-bold text-sm md:text-base py-4 px-2">Cumulative Net Cash Flow</td>
-                                                <td class="text-center py-4 px-2" id="cashFlow5">$0</td>
-                                                <td class="text-center py-4 px-2" id="cashFlow10">$0</td>
-                                                <td class="text-center py-4 px-2" id="cashFlow20">$0</td>
-                                                <td class="text-center py-4 px-2" id="cashFlow30">$0</td>
-                                            </tr>
-                                            <tr class="border-b border-purple-400">
-                                                <td class="font-bold text-sm md:text-base py-4 px-2">Cumulative Appreciation Gain</td>
-                                                <td class="text-center py-4 px-2" id="appreciation5">$0</td>
-                                                <td class="text-center py-4 px-2" id="appreciation10">$0</td>
-                                                <td class="text-center py-4 px-2" id="appreciation20">$0</td>
-                                                <td class="text-center py-4 px-2" id="appreciation30">$0</td>
-                                            </tr>
-                                            <tr class="border-b border-purple-400">
-                                                <td class="font-bold text-sm md:text-base py-4 px-2">Your Investment</td>
-                                                <td class="text-center py-4 px-2" id="investment5">$0</td>
-                                                <td class="text-center py-4 px-2" id="investment10">$0</td>
-                                                <td class="text-center py-4 px-2" id="investment20">$0</td>
-                                                <td class="text-center py-4 px-2" id="investment30">$0</td>
-                                            </tr>
-                                            <tr class="bg-purple-700 bg-opacity-50">
-                                                <td class="font-bold text-sm md:text-base py-4 px-2">Total Investment Value</td>
-                                                <td class="text-center py-4 px-2 font-bold" id="total5">$0</td>
-                                                <td class="text-center py-4 px-2 font-bold" id="total10">$0</td>
-                                                <td class="text-center py-4 px-2 font-bold" id="total20">$0</td>
-                                                <td class="text-center py-4 px-2 font-bold" id="total30">$0</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="overflow-x-auto -mx-6 px-6 mt-10">
+                                        <table class="w-full text-white table-auto min-w-max">
+                                            <thead>
+                                                <tr class="border-b border-purple-300">
+                                                    <th class="text-left py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Metric</th>
+                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 5</th>
+                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 10</th>
+                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 20</th>
+                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 30</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b border-purple-400">
+                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Cumulative Net Cash Flow</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow5">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow10">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow20">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow30">$0</td>
+                                                </tr>
+                                                <tr class="border-b border-purple-400">
+                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Cumulative Appreciation Gain</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation5">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation10">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation20">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation30">$0</td>
+                                                </tr>
+                                                <tr class="border-b border-purple-400">
+                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Your Investment</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment5">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment10">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment20">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment30">$0</td>
+                                                </tr>
+                                                <tr class="bg-purple-700 bg-opacity-50">
+                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Total Investment Value</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total5">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total10">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total20">$0</td>
+                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total30">$0</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2233,30 +2245,47 @@
                         x: {
                             stacked: true,
                             title: {
-                                display: true,
+                                display: window.innerWidth > 640,
                                 text: 'Year',
                                 color: '#1e293b',
                                 font: {
-                                    size: 12
+                                    size: window.innerWidth > 640 ? 12 : 10
                                 }
                             },
                             ticks: {
-                                color: '#475569'
+                                color: '#475569',
+                                font: {
+                                    size: window.innerWidth > 640 ? 11 : 9
+                                },
+                                maxRotation: 45,
+                                minRotation: 0
                             }
                         },
                         y: {
                             stacked: true,
                             title: {
-                                display: true,
+                                display: window.innerWidth > 640,
                                 text: 'Value ($)',
                                 color: '#1e293b',
                                 font: {
-                                    size: 12
+                                    size: window.innerWidth > 640 ? 12 : 10
                                 }
                             },
                             ticks: {
                                 color: '#475569',
+                                font: {
+                                    size: window.innerWidth > 640 ? 11 : 9
+                                },
                                 callback: function(value) {
+                                    if (window.innerWidth <= 640) {
+                                        // Shorter format for mobile
+                                        if (value >= 1000000) {
+                                            return '$' + (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return '$' + (value / 1000).toFixed(0) + 'K';
+                                        }
+                                        return '$' + value;
+                                    }
                                     return '$' + value.toLocaleString();
                                 }
                             }
@@ -2268,10 +2297,12 @@
                             position: 'bottom',
                             labels: {
                                 color: '#1e293b',
-                                padding: 15,
+                                padding: window.innerWidth > 640 ? 15 : 8,
                                 font: {
-                                    size: 11
-                                }
+                                    size: window.innerWidth > 640 ? 11 : 9
+                                },
+                                boxWidth: window.innerWidth > 640 ? 40 : 20,
+                                boxHeight: window.innerWidth > 640 ? 12 : 8
                             }
                         },
                         tooltip: {
