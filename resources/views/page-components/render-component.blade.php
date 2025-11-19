@@ -129,6 +129,10 @@
 .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
 .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
 
+.category-pill .label {
+  background: transparent !important;
+}
+
 /* SEO-friendly semantic heading styles for frontend */
 h1, .ql-header-1 {
     font-size: 2.5rem !important;
@@ -2695,6 +2699,8 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                     z-index: 1;
                     transition: background-color 0.3s ease;
                 }
+
+                
                 
                 /* Desktop layout */
                 @media (min-width: 769px) {
@@ -4469,6 +4475,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
                 @endif
             </section>
+            
+            @include('partials.ticket-auth-modal')
         @break
 
         @case('newsletter')
@@ -6675,22 +6683,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     @endif
 
                     @if($showFilter && $categories->count() > 0)
-                        <!-- Category Filter Tabs -->
-                        <div class="property-filter-tabs mb-4">
-                            <ul class="nav nav-pills justify-content-center" id="propertyListingFilter-{{ $componentId }}">
-                                <li class="nav-item">
-                                    <button class="nav-link active" data-category="all" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
-                                        All Properties
-                                    </button>
-                                </li>
+                        <!-- Category Pills (icon + label) -->
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-2xN7l8W3K8m2cJpD9X7k7bGzS8n6uQjFf7G1n1b2b5n3a0q0+0S3m7qz0o4P1vWkQp8m5Q8D4R5Y+1YzZf7R2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+                        <div class="property-filter-pills mb-4" id="propertyListingFilter-{{ $componentId }}" style="--primary-color: {{ $primaryColor }};">
+                            <div class="category-pills d-flex justify-content-center flex-wrap gap-4">
+                                <button type="button" class="category-pill active" data-category="all">
+                                    <div class="icon"><i class="fa-solid fa-table-cells"></i></div>
+                                    <div class="label">All Properties</div>
+                                </button>
                                 @foreach($categories as $category)
-                                    <li class="nav-item">
-                                        <button class="nav-link" data-category="{{ $category->id }}" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
-                                            {{ $category->name }}
-                                        </button>
-                                    </li>
+                                    <button type="button" class="category-pill" data-category="{{ $category->id }}">
+                                        <div class="icon">
+                                            <i class="{{ $category->icon ?: 'fa-regular fa-tag' }}"></i>
+                                        </div>
+                                        <div class="label">{{ $category->name }}</div>
+                                    </button>
                                 @endforeach
-                            </ul>
+                            </div>
                         </div>
                     @endif
 
@@ -6795,21 +6804,57 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
             <!-- Component Styles -->
             <style>
-                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link {
-                    border: 2px solid;
+                /* Category pills */
+                .property-listing-grid-component .category-pills {
+                    gap: 28px;
+                }
+                .property-listing-grid-component .category-pill {
                     background: transparent;
-                    margin: 0 5px;
-                    padding: 8px 20px;
-                    border-radius: 25px;
-                    transition: all 0.3s ease;
-                    font-weight: 500;
+                    border: 0;
+                    padding: 6px 8px 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    cursor: pointer;
+                    color: #6b7280;
+                }
+                .property-listing-grid-component .category-pill .icon {
+                    font-size: 24px;
+                    line-height: 1;
+                    color: #6b7280;
+                    transition: color 0.2s ease;
+                }
+                .property-listing-grid-component .category-pill .label {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: #6b7280;
+                    margin-top: 6px;
+                    position: relative;
+                }
+                .property-listing-grid-component .category-pill .label::after {
+                    content: "";
+                    display: block;
+                    height: 3px;
+                    width: 0;
+                    background: var(--primary-color);
+                    border-radius: 2px;
+                    margin: 6px auto 0;
+                    transition: width 0.2s ease;
                 }
 
-                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link.active,
-                .property-listing-grid-component .property-filter-tabs .nav-pills .nav-link:hover {
-                    background: {{ $primaryColor }};
-                    color: white !important;
-                    border-color: {{ $primaryColor }};
+                .category-pill .label {
+  background: transparent !important;
+}
+                .property-listing-grid-component .category-pill.active .icon,
+                .property-listing-grid-component .category-pill:hover .icon {
+                    color: #111827;
+                }
+                .property-listing-grid-component .category-pill.active .label {
+                    color: #111827;
+                    font-weight: 700;
+                }
+                .property-listing-grid-component .category-pill.active .label::after {
+                    width: 30px;
                 }
 
                 .property-listing-grid-component .property-card {
@@ -7074,29 +7119,34 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     indicators[currentIndex].classList.add('active');
                 }
 
-                // Category filtering
+                // Category filtering (icon pills)
                 document.addEventListener('DOMContentLoaded', function() {
-                    const filterButtons = document.querySelectorAll('#propertyListingFilter-{{ $componentId }} .nav-link');
+                    const pillSelector = '#propertyListingFilter-{{ $componentId }} .category-pill';
+                    const filterButtons = document.querySelectorAll(pillSelector);
                     const propertyItems = document.querySelectorAll('#propertyGrid-{{ $componentId }} .property-item');
-                    
+                    const defaultCategory = @json($defaultCategory ?? 'all');
+
+                    function applyFilter(category) {
+                        filterButtons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-category') === category));
+                        propertyItems.forEach(item => {
+                            if (category === 'all' || item.getAttribute('data-category') === String(category)) {
+                                item.classList.remove('filtered-out');
+                            } else {
+                                item.classList.add('filtered-out');
+                            }
+                        });
+                    }
+
                     filterButtons.forEach(button => {
                         button.addEventListener('click', function() {
-                            // Update active button
-                            filterButtons.forEach(btn => btn.classList.remove('active'));
-                            this.classList.add('active');
-                            
-                            // Filter properties
-                            const category = this.getAttribute('data-category');
-                            
-                            propertyItems.forEach(item => {
-                                if (category === 'all' || item.getAttribute('data-category') === category) {
-                                    item.classList.remove('filtered-out');
-                                } else {
-                                    item.classList.add('filtered-out');
-                                }
-                            });
+                            applyFilter(this.getAttribute('data-category'));
                         });
                     });
+
+                    // Apply default category on load if provided
+                    if (defaultCategory && defaultCategory !== 'all') {
+                        applyFilter(String(defaultCategory));
+                    }
                 });
             </script>
         @break
@@ -7190,22 +7240,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     @endif
 
                     @if($showFilter && $categories->count() > 0)
-                        <!-- Category Filter Tabs -->
-                        <div class="product-filter-tabs mb-4">
-                            <ul class="nav nav-pills justify-content-center" id="productListingFilter-{{ $componentId }}">
-                                <li class="nav-item">
-                                    <button class="nav-link active" data-category="all" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
-                                        All Products
-                                    </button>
-                                </li>
+                        <!-- Category Pills (icon + label) -->
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-2xN7l8W3K8m2cJpD9X7k7bGzS8n6uQjFf7G1n1b2b5n3a0q0+0S3m7qz0o4P1vWkQp8m5Q8D4R5Y+1YzZf7R2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+                        <div class="product-filter-pills mb-4" id="productListingFilter-{{ $componentId }}" style="--primary-color: {{ $primaryColor }};">
+                            <div class="category-pills d-flex justify-content-center flex-wrap gap-4">
+                                <button type="button" class="category-pill active" data-category="all">
+                                    <div class="icon"><i class="fa-solid fa-table-cells"></i></div>
+                                    <div class="label">All Products</div>
+                                </button>
                                 @foreach($categories as $category)
-                                    <li class="nav-item">
-                                        <button class="nav-link" data-category="{{ $category->id }}" style="border-color: {{ $primaryColor }}; color: {{ $primaryColor }};">
-                                            {{ $category->name }}
-                                        </button>
-                                    </li>
+                                    <button type="button" class="category-pill" data-category="{{ $category->id }}">
+                                        <div class="icon">
+                                            <i class="{{ $category->icon ?: 'fa-regular fa-tag' }}"></i>
+                                        </div>
+                                        <div class="label">{{ $category->name }}</div>
+                                    </button>
                                 @endforeach
-                            </ul>
+                            </div>
                         </div>
                     @endif
 
@@ -7299,21 +7350,53 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
             <!-- Component Styles -->
             <style>
-                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link {
-                    border: 2px solid;
-                    background: transparent;
-                    margin: 0 5px;
-                    padding: 8px 20px;
-                    border-radius: 25px;
-                    transition: all 0.3s ease;
-                    font-weight: 500;
+                /* Category pills */
+                .product-listing-grid-component .category-pills {
+                    gap: 28px;
                 }
-
-                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link.active,
-                .product-listing-grid-component .product-filter-tabs .nav-pills .nav-link:hover {
-                    background: {{ $primaryColor }};
-                    color: white !important;
-                    border-color: {{ $primaryColor }};
+                .product-listing-grid-component .category-pill {
+                    background: transparent;
+                    border: 0;
+                    padding: 6px 8px 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    cursor: pointer;
+                    color: #6b7280;
+                }
+                .product-listing-grid-component .category-pill .icon {
+                    font-size: 24px;
+                    line-height: 1;
+                    color: #6b7280;
+                    transition: color 0.2s ease;
+                }
+                .product-listing-grid-component .category-pill .label {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: #6b7280;
+                    margin-top: 6px;
+                    position: relative;
+                }
+                .product-listing-grid-component .category-pill .label::after {
+                    content: "";
+                    display: block;
+                    height: 3px;
+                    width: 0;
+                    background: var(--primary-color);
+                    border-radius: 2px;
+                    margin: 6px auto 0;
+                    transition: width 0.2s ease;
+                }
+                .product-listing-grid-component .category-pill.active .icon,
+                .product-listing-grid-component .category-pill:hover .icon {
+                    color: #111827;
+                }
+                .product-listing-grid-component .category-pill.active .label {
+                    color: #111827;
+                    font-weight: 700;
+                }
+                .product-listing-grid-component .category-pill.active .label::after {
+                    width: 30px;
                 }
 
                 .product-listing-grid-component .product-card {
@@ -7540,29 +7623,34 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     indicators[currentIndex].classList.add('active');
                 }
 
-                // Category filtering
+                // Category filtering (icon pills)
                 document.addEventListener('DOMContentLoaded', function() {
-                    const filterButtons = document.querySelectorAll('#productListingFilter-{{ $componentId }} .nav-link');
+                    const pillSelector = '#productListingFilter-{{ $componentId }} .category-pill';
+                    const filterButtons = document.querySelectorAll(pillSelector);
                     const productItems = document.querySelectorAll('#productGrid-{{ $componentId }} .product-item');
-                    
+                    const defaultCategory = @json($defaultCategory ?? 'all');
+
+                    function applyFilter(category) {
+                        filterButtons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-category') === category));
+                        productItems.forEach(item => {
+                            if (category === 'all' || item.getAttribute('data-category') === String(category)) {
+                                item.classList.remove('filtered-out');
+                            } else {
+                                item.classList.add('filtered-out');
+                            }
+                        });
+                    }
+
                     filterButtons.forEach(button => {
                         button.addEventListener('click', function() {
-                            // Update active button
-                            filterButtons.forEach(btn => btn.classList.remove('active'));
-                            this.classList.add('active');
-                            
-                            // Filter products
-                            const category = this.getAttribute('data-category');
-                            
-                            productItems.forEach(item => {
-                                if (category === 'all' || item.getAttribute('data-category') === category) {
-                                    item.classList.remove('filtered-out');
-                                } else {
-                                    item.classList.add('filtered-out');
-                                }
-                            });
+                            applyFilter(this.getAttribute('data-category'));
                         });
                     });
+
+                    // Apply default category on load if provided
+                    if (defaultCategory && defaultCategory !== 'all') {
+                        applyFilter(String(defaultCategory));
+                    }
                 });
             </script>
         @break

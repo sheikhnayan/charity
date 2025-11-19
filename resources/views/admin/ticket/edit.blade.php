@@ -207,6 +207,11 @@
                                    value="{{ old('price_per_share', $data->price_per_share ?? '') }}" placeholder="e.g., 100.00">
                         </div>
                         <div class="mb-3">
+                            <label for="price_per_share_label" class="form-label">Custom Label (Price Per Share)</label>
+                            <input type="text" name="price_per_share_label" class="form-control" id="price_per_share_label" value="{{ old('price_per_share_label', $data->price_per_share_label ?? '') }}" placeholder="e.g., Share Price">
+                            <small class="text-muted">Overrides default 'Price Per Share' wording across property details page.</small>
+                        </div>
+                        <div class="mb-3">
                             <label for="total_shares" class="form-label">Total Shares Available <span class="text-danger">*</span></label>
                             <input type="number" name="total_shares" class="form-control" id="total_shares" 
                                    value="{{ old('total_shares', $data->total_shares ?? '') }}" placeholder="e.g., 1000">
@@ -360,6 +365,23 @@
                     });
                     </script>
 
+                    <script>
+                    function addExtraItem(containerId, fieldBase){
+                        const container = document.getElementById(containerId);
+                        if(!container) return;
+                        const index = container.querySelectorAll('.extra-item').length;
+                        const row = document.createElement('div');
+                        row.className = 'row g-2 align-items-end mb-2 extra-item';
+                        row.innerHTML = `
+                            <div class=\"col-md-3\"><input type=\"text\" name=\"${fieldBase}[${index}][label]\" class=\"form-control\" placeholder=\"Label\"></div>
+                            <div class=\"col-md-2\"><input type=\"number\" step=\"0.01\" name=\"${fieldBase}[${index}][value]\" class=\"form-control\" placeholder=\"Value\"></div>
+                            <div class=\"col-md-5\"><input type=\"text\" name=\"${fieldBase}[${index}][tooltip]\" class=\"form-control\" placeholder=\"Tooltip (optional)\"></div>
+                            <div class=\"col-md-2\"><button type=\"button\" class=\"btn btn-sm btn-outline-danger\" onclick=\"this.closest('.extra-item').remove()\">Remove</button></div>
+                        `;
+                        container.appendChild(row);
+                    }
+                    </script>
+
                     <!-- Property Financials section - only for property type -->
                     <div class="financials-section mt-4" style="display: {{ (old('type', $data->type ?? '') == 'property') ? 'block' : 'none' }};">
                         <h4 class="mb-3">Property Financials</h4>
@@ -372,6 +394,22 @@
                                 <h5>Total Investment Value Section</h5>
                             </div>
                             <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Items (Label / Value / Tooltip)</label>
+                                    <div id="totalInvestmentExtras">
+                                        @if($financials && is_array($financials->custom_total_investment_items))
+                                            @foreach($financials->custom_total_investment_items as $i => $item)
+                                                <div class="row g-2 align-items-end mb-2 extra-item">
+                                                    <div class="col-md-3"><input type="text" name="financials[custom_total_investment_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
+                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_total_investment_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-5"><input type="text" name="financials[custom_total_investment_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addExtraItem('totalInvestmentExtras','financials[custom_total_investment_items]')">Add Item</button>
+                                </div>
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label class="form-label">Field Label</label>
@@ -494,6 +532,22 @@
                                 <h5>Projected Annual Return Section</h5>
                             </div>
                             <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Items (Label / Value / Tooltip)</label>
+                                    <div id="projectedAnnualReturnExtras">
+                                        @if($financials && is_array($financials->custom_projected_annual_return_items))
+                                            @foreach($financials->custom_projected_annual_return_items as $i => $item)
+                                                <div class="row g-2 align-items-end mb-2 extra-item">
+                                                    <div class="col-md-3"><input type="text" name="financials[custom_projected_annual_return_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
+                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_projected_annual_return_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-5"><input type="text" name="financials[custom_projected_annual_return_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addExtraItem('projectedAnnualReturnExtras','financials[custom_projected_annual_return_items]')">Add Item</button>
+                                </div>
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label class="form-label">Section Title</label>
@@ -592,6 +646,22 @@
                                 <h5>Annual Details Section</h5>
                             </div>
                             <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Items (Label / Value / Tooltip)</label>
+                                    <div id="annualGrossRentsExtras">
+                                        @if($financials && is_array($financials->custom_annual_gross_rents_items))
+                                            @foreach($financials->custom_annual_gross_rents_items as $i => $item)
+                                                <div class="row g-2 align-items-end mb-2 extra-item">
+                                                    <div class="col-md-3"><input type="text" name="financials[custom_annual_gross_rents_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
+                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_annual_gross_rents_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-5"><input type="text" name="financials[custom_annual_gross_rents_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addExtraItem('annualGrossRentsExtras','financials[custom_annual_gross_rents_items]')">Add Item</button>
+                                </div>
                                 <div class="row mb-3">
                                     <div class="col-md-4">
                                         <label class="form-label">Annual Gross Rents Label</label>

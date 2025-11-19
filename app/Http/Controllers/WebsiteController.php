@@ -268,6 +268,13 @@ class WebsiteController extends Controller
         $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
         $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;
         $update->sticky_footer_bg_color = $request->sticky_footer_bg_color ?? null;
+        // Property details theming
+        $update->property_details_bg_color = $request->property_details_bg_color ?? $update->property_details_bg_color;
+        $update->property_details_text_color = $request->property_details_text_color ?? $update->property_details_text_color;
+        $update->property_details_muted_color = $request->property_details_muted_color ?? $update->property_details_muted_color;
+        $update->property_details_heading_color = $request->property_details_heading_color ?? $update->property_details_heading_color;
+        $update->property_details_price_color = $request->property_details_price_color ?? $update->property_details_price_color;
+        $update->property_details_accent_color = $request->property_details_accent_color ?? $update->property_details_accent_color;
         $update->update();
 
         // Update related user info

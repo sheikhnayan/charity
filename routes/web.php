@@ -18,6 +18,13 @@ use App\Http\Controllers\Analytics\DashboardController;
 use App\Http\Controllers\Admin\PaymentMethodAnalyticsController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Website;
 
 // Include debug routes
 include __DIR__ . '/debug.php';
@@ -329,6 +336,14 @@ Route::get('/populate-demo', function() {
 Route::get('authorize/payment/{type}/{id}', [AuthorizeNetController::class, 'index']);
 Route::post('authorize/payment', [AuthorizeNetController::class, 'paymentPost'])->name('authorize.payment');
 Route::post('authorize/stripe', [AuthorizeNetController::class, 'paymentStripe'])->name('stripe.post');
+
+// Crypto Payment Demo Route
+Route::get('/crypto-payment', function(){
+    return view('crypto-payment', [
+        'setting' => \App\Models\Setting::first()
+    ]);
+})->name('crypto.payment');
+
 Route::get('/product', function(){
     return view('thank-you');
 });
@@ -885,4 +900,92 @@ Route::post('/test-upload-video', function(Illuminate\Http\Request $request) {
         ], 400);
     }
 });
+
+// --- Ticket Auth/Verification AJAX Endpoints ---
+Route::post('/ajax/ticket-auth/register', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:6',
+        'name' => 'required|string|max:255'
+    ]);
+    $user = User::where('email', $request->email)->first();
+    if ($user) {
+        return response()->json(['success' => false, 'message' => 'Email already registered. Please login.'], 409);
+    }
+    $code = rand(100000, 999999);
+    $user = User::create([
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'name' => $request->name,
+        'role' => 'customer',
+    ]);
+    // assign website if found by domain
+    try {
+        $url = url()->current();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $check = Website::where('domain', $domain)->first();
+        if ($check) {
+            $user->website_id = $check->id;
+            $user->save();
+        }
+    } catch (\Exception $e) {
+        // ignore website assignment
+    }
+    // set verification code
+    $user->email_verification_code = $code;
+    $user->email_verified_at = null;
+    $user->save();
+    // Send code
+    Mail::raw("Your verification code is: $code", function($m) use ($user) {
+        $m->to($user->email)->subject('Your Verification Code');
+    });
+    return response()->json(['success' => true, 'message' => 'Verification code sent.']);
+});
+
+Route::post('/ajax/ticket-auth/login', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+    $user = User::where('email', $request->email)->first();
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['success' => false, 'message' => 'Invalid credentials.'], 401);
+    }
+    if (!$user->email_verified_at) {
+        $code = rand(100000, 999999);
+        $user->email_verification_code = $code;
+        $user->save();
+        Mail::raw("Your verification code is: $code", function($m) use ($user) {
+            $m->to($user->email)->subject('Your Verification Code');
+        });
+        return response()->json(['success' => false, 'message' => 'Email not verified. Verification code sent.', 'require_verification' => true]);
+    }
+    Auth::login($user);
+    return response()->json(['success' => true]);
+});
+
+Route::post('/ajax/ticket-auth/verify', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'code' => 'required',
+    ]);
+    $user = User::where('email', $request->email)->first();
+    if (!$user || $user->email_verification_code !== $request->code) {
+        return response()->json(['success' => false, 'message' => 'Invalid verification code.'], 422);
+    }
+    $user->email_verified_at = now();
+    $user->email_verification_code = null;
+    $user->save();
+    Auth::login($user);
+    return response()->json(['success' => true]);
+});
+
+Route::post('/ajax/ticket-auth/check', function(Request $request) {
+    $user = Auth::user();
+    return response()->json([
+        'authenticated' => (bool) $user,
+        'verified' => $user ? (bool) $user->email_verified_at : false
+    ]);
+});
+// --- End Ticket Auth/Verification AJAX Endpoints ---
 

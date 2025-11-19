@@ -1984,9 +1984,15 @@ if (isset($state['components'])) {
                 </div>
             @endif
             <div class="invest-button-section">
+                @auth
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important;">
+                    DASHBOARD
+                </button>
+                @else
                 <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important;">
                     {{ $header->invest_now_button_text ?? 'INVEST NOW' }}
                 </button>
+                @endauth
             </div>
         </div>
     </div>

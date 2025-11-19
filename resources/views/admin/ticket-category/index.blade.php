@@ -30,6 +30,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>Icon</th>
                                     <th>Name</th>
                                     <th>Website</th>
                                     <th>Description</th>
@@ -42,6 +43,13 @@
                             <tbody>
                                 @forelse($categories as $category)
                                     <tr>
+                                        <td>
+                                            @if($category->icon)
+                                                <i class="{{ $category->icon }} fa-2x"></i>
+                                            @else
+                                                <i class="fas fa-ticket-alt fa-2x text-muted"></i>
+                                            @endif
+                                        </td>
                                         <td>{{ $category->name }}</td>
                                         <td>{{ $category->website->name }}</td>
                                         <td>{{ Str::limit($category->description, 50) }}</td>

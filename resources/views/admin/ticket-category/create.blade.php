@@ -48,6 +48,21 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="icon" class="form-label">Icon</label>
+                        <div class="input-group">
+                            <input type="text" name="icon" id="icon" class="form-control @error('icon') is-invalid @enderror" 
+                                   value="{{ old('icon') }}" readonly placeholder="Select an icon">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#iconPickerModal">
+                                <i class="fas fa-icons"></i> Choose Icon
+                            </button>
+                        </div>
+                        <div id="icon-preview" class="mt-2" style="font-size: 2rem;"></div>
+                        @error('icon')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label for="sort_order" class="form-label">Sort Order</label>
                         <input type="number" name="sort_order" class="form-control @error('sort_order') is-invalid @enderror" 
                                id="sort_order" value="{{ old('sort_order', 0) }}" min="0">
@@ -74,4 +89,97 @@
         </div>
     </div>
 </div>
+
+<!-- Icon Picker Modal -->
+<div class="modal fade" id="iconPickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select an Icon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="iconSearch" class="form-control mb-3" placeholder="Search icons...">
+                <div id="iconGrid" class="row g-2" style="max-height: 400px; overflow-y: auto;">
+                    @php
+                    $icons = [
+                        'fas fa-ticket-alt', 'fas fa-calendar-alt', 'fas fa-music', 'fas fa-film', 'fas fa-theater-masks',
+                        'fas fa-microphone', 'fas fa-guitar', 'fas fa-drum', 'fas fa-trophy', 'fas fa-medal',
+                        'fas fa-star', 'fas fa-gift', 'fas fa-birthday-cake', 'fas fa-glass-cheers', 'fas fa-wine-glass',
+                        'fas fa-utensils', 'fas fa-pizza-slice', 'fas fa-hamburger', 'fas fa-coffee', 'fas fa-cocktail',
+                        'fas fa-beer', 'fas fa-heart', 'fas fa-graduation-cap', 'fas fa-book', 'fas fa-palette',
+                        'fas fa-paint-brush', 'fas fa-camera', 'fas fa-video', 'fas fa-gamepad', 'fas fa-basketball-ball',
+                        'fas fa-football-ball', 'fas fa-baseball-ball', 'fas fa-volleyball-ball', 'fas fa-running',
+                        'fas fa-swimmer', 'fas fa-bicycle', 'fas fa-mountain', 'fas fa-tree', 'fas fa-umbrella-beach',
+                        'fas fa-plane', 'fas fa-train', 'fas fa-bus', 'fas fa-car', 'fas fa-ship',
+                        'fas fa-rocket', 'fas fa-hotel', 'fas fa-building', 'fas fa-home', 'fas fa-shopping-bag',
+                        'fas fa-shopping-cart', 'fas fa-tag', 'fas fa-tags', 'fas fa-percent', 'fas fa-dollar-sign',
+                        'fas fa-chart-line', 'fas fa-crown', 'fas fa-gem', 'fas fa-fire', 'fas fa-bolt',
+                        'fas fa-moon', 'fas fa-sun', 'fas fa-cloud', 'fas fa-snowflake', 'fas fa-leaf',
+                        'fas fa-seedling', 'fas fa-paw', 'fas fa-dog', 'fas fa-cat', 'fas fa-horse',
+                        'fas fa-fish', 'fas fa-dove', 'fas fa-frog', 'fas fa-spider', 'fas fa-users',
+                        'fas fa-user-friends', 'fas fa-user-tie', 'fas fa-child', 'fas fa-baby', 'fas fa-hands-helping',
+                        'fas fa-handshake', 'fas fa-praying-hands', 'fas fa-hospital', 'fas fa-ambulance', 'fas fa-pills',
+                        'fas fa-briefcase', 'fas fa-laptop', 'fas fa-mobile-alt', 'fas fa-tv', 'fas fa-headphones',
+                        'fas fa-lightbulb', 'fas fa-cog', 'fas fa-tools', 'fas fa-hammer', 'fas fa-wrench',
+                        'fas fa-bell', 'fas fa-flag', 'fas fa-map-marker-alt', 'fas fa-compass', 'fas fa-globe',
+                        'fas fa-lock', 'fas fa-key', 'fas fa-envelope', 'fas fa-comment', 'fas fa-comments'
+                    ];
+                    @endphp
+                    @foreach($icons as $icon)
+                        <div class="col-2 text-center">
+                            <button type="button" class="btn btn-outline-secondary icon-option w-100 p-3" data-icon="{{ $icon }}">
+                                <i class="{{ $icon }} fa-2x"></i>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Icon picker functionality
+    const iconInput = document.getElementById('icon');
+    const iconPreview = document.getElementById('icon-preview');
+    const iconSearch = document.getElementById('iconSearch');
+    const iconOptions = document.querySelectorAll('.icon-option');
+    
+    // Display current icon if set
+    if (iconInput && iconPreview && iconInput.value) {
+        iconPreview.innerHTML = `<i class="${iconInput.value}"></i>`;
+    }
+    
+    // Icon selection
+    iconOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const iconClass = this.dataset.icon;
+            iconInput.value = iconClass;
+            if (iconPreview) {
+                iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
+            }
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('iconPickerModal'));
+            modal.hide();
+        });
+    });
+    
+    // Icon search
+    iconSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        iconOptions.forEach(option => {
+            const iconClass = option.dataset.icon.toLowerCase();
+            const parent = option.closest('.col-2');
+            if (iconClass.includes(searchTerm)) {
+                parent.style.display = 'block';
+            } else {
+                parent.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 @endsection

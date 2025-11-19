@@ -30,7 +30,14 @@ class Website extends Model
         'invest_amount_title',
         'share_price_label',
         'minimum_investment_label',
-        'custom_sticky_button_text'
+        'custom_sticky_button_text',
+        // Property details theming
+        'property_details_bg_color',
+        'property_details_text_color',
+        'property_details_muted_color',
+        'property_details_heading_color',
+        'property_details_price_color',
+        'property_details_accent_color'
     ];
 
     /**

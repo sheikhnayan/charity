@@ -26,6 +26,10 @@
 .forms-wizard li.done em {
   font-family: Linearicons-Free;
 }
+
+label{
+    color: #000 !important;
+}
 </style>
     <!-- Content wrapper -->
     <div class="content-wrapper">
@@ -324,6 +328,50 @@
                                                     </div>
                                                 </div>
                                             </div> --}}
+
+                                            <!-- Property Details Colors -->
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    <h5 class="mt-3 mb-3">Property Details Colors</h5>
+                                                    <small class="text-muted d-block mb-2">Customize the background and all text colors used on the property details page.</small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_bg_color" class="form-label">Page Background</label>
+                                                        <input type="color" name="property_details_bg_color" id="property_details_bg_color" class="form-control" value="{{ $data->property_details_bg_color ?? '#ffffff' }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_text_color" class="form-label">Primary Text Color</label>
+                                                        <input type="color" name="property_details_text_color" id="property_details_text_color" class="form-control" value="{{ $data->property_details_text_color ?? '#111827' }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_muted_color" class="form-label">Muted/Secondary Text</label>
+                                                        <input type="color" name="property_details_muted_color" id="property_details_muted_color" class="form-control" value="{{ $data->property_details_muted_color ?? '#6b7280' }}">
+                                                    </div>
+                                                </div>
+                                                {{-- <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_heading_color" class="form-label">Headings Color</label>
+                                                        <input type="color" name="property_details_heading_color" id="property_details_heading_color" class="form-control" value="{{ $data->property_details_heading_color ?? '#1e293b' }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_price_color" class="form-label">Price/Emphasis Color</label>
+                                                        <input type="color" name="property_details_price_color" id="property_details_price_color" class="form-control" value="{{ $data->property_details_price_color ?? '#111827' }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label for="property_details_accent_color" class="form-label">Links/Accent Color</label>
+                                                        <input type="color" name="property_details_accent_color" id="property_details_accent_color" class="form-control" value="{{ $data->property_details_accent_color ?? '#667eea' }}">
+                                                    </div>
+                                                </div> --}}
+                                            </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.website.index') }}" class="btn btn-danger">Cancel</a>
 

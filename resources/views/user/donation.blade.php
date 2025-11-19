@@ -96,6 +96,7 @@
                                                     <option value="sponsor">Sponsor</option>
                                                     <option value="auction">Auction</option>
                                                     <option value="ticket">Ticket</option>
+                                                    <option value="investment">Investment</option>
                                                 </select>
                                             </div>
                                         @endif
@@ -105,9 +106,12 @@
                                             <tr>
                                                 <th><input type="checkbox" id="selectAll"></th>
                                                 <th>Transaction ID</th>
-                                                <th>Donor Name</th>
-                                                <th>Individual Name</th>
-                                                <th>Team Name</th>
+                                                {{-- <th>Donor Name</th> --}}
+                                                <th>Name</th>
+                                                {{-- <th>Individual Name</th> --}}
+                                                <th>Product Name</th>
+                                                {{-- <th>Team Name</th> --}}
+                                                <th>Quantity</th>
                                                 <th>Amount Gross</th>
                                                 <th>Amount Entered</th>
                                                 <th>Amount Net</th>
@@ -129,7 +133,7 @@
                                                 @foreach ($data as $item)
                                                     <tr>
                                                         <td><input type="checkbox" class="row-check" value="{{ $item->id }}"></td>
-                                                        <td class="text-break">{{ $item->transaction_id }}</td>
+                                                        <td class="text-break"> {{ $item->transaction_id }} </td>
                                                         <td>{{ $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->name }}</td>
@@ -141,17 +145,29 @@
                                                             <td>{{ $item->auction->title }}</td>
                                                         @elseif($item->type == 'ticket')
                                                             <td>{{ $item->ticket->details[0]->ticket->name }}</td>
+                                                        @elseif ($item->type == 'investment')
+                                                            <td>{{ $item->investment->investor_name }}</td>
                                                         @endif
-                                                        @if ($item->type == 'student')
+                                                        {{-- @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->group_name }}</td>
                                                         @else
                                                             <td></td>
-                                                        @endif
+                                                        @endif --}}
+                                                        <td>
+                                                            @php
+                                                                $quantity = \App\Models\TicektSell::where('id', $item->reference_id)->first();
+                                                            @endphp
+                                                            {{ $quantity->quantity }}
+                                                        </td>
                                                         <td>${{ $item->amount + (($item->amount / 100)*$payment->fee)}}</td>
                                                         <td>${{ $item->amount }}</td>
                                                         <td>${{ $item->amount }}</td>
                                                         <td>${{ ($item->amount / 100)*$payment->fee }}</td>
-                                                        <td>{{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}</td>
+                                                        <td>
+                                                            @if ($item->type != 'sponsor')
+                                                            {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $item->website->name }}</td>
                                                         <td>{{ $item->type }}</td>
                                                         <td>
@@ -167,16 +183,41 @@
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#viewDonationModal"
                                                                 data-transaction="{{ $item->transaction_id }}"
+                                                                data-ip-address="{{ $item->ip_address ?? 'N/A' }}"
+                                                                data-first-name="{{ $item->name }}"
+                                                                data-last-name="{{ $item->last_name }}"
                                                                 data-name="{{ $item->name }} {{ $item->last_name }}"
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ $item->amount }}"
+                                                                data-gross="${{ number_format($item->amount + (($item->amount / 100)*$payment->fee), 2) }}"
                                                                 data-fee="${{ ($item->amount / 100)*$payment->fee }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
                                                                 data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}"
+                                                                @if($item->type === 'investment' && $item->investment)
+                                                                    data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
+                                                                    data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"
+                                                                    data-investor-phone="{{ $item->investment->investor_phone ?? 'N/A' }}"
+                                                                    data-investor-type="{{ $item->investment->investor_type ?? 'N/A' }}"
+                                                                    data-share-quantity="{{ $item->investment->share_quantity ?? 'N/A' }}"
+                                                                    data-investment-amount="${{ number_format($item->investment->investment_amount ?? 0, 2) }}"
+                                                                    data-investment-notes="{{ $item->investment->notes ?? 'N/A' }}"
+                                                                    data-investor-data="{{ $item->investment->investor_data ? json_encode($item->investment->investor_data) : '{}' }}"
+                                                                @endif
+                                                                data-payment-first-name="{{ $item->payment_first_name ?? $item->name }}"
+                                                                data-payment-last-name="{{ $item->payment_last_name ?? $item->last_name }}"
+                                                                data-payment-phone="{{ $item->payment_phone ?? $item->phone }}"
+                                                                data-payment-email="{{ $item->payment_email ?? $item->email }}"
+                                                                data-payment-address="{{ $item->payment_address ?? $item->address }}"
+                                                                data-payment-city="{{ $item->payment_city ?? $item->city }}"
+                                                                data-payment-state="{{ $item->payment_state ?? $item->state }}"
+                                                                data-payment-country="{{ $item->payment_country ?? $item->country }}"
+                                                                data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
+                                                                data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
+                                                                data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
+                                                                data-total-paid="${{ number_format($item->total_amount_paid ?? ($item->fee_paid ? $item->amount + (($item->amount / 100)*$payment->fee) : $item->amount), 2) }}"
                                                                 title="View">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>

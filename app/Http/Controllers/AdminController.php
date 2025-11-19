@@ -501,7 +501,12 @@ class AdminController extends Controller
             $data = Transaction::where('website_id',$websites->id)->get();
 
             return view('user.donation', compact('data', 'websites'));
-        }else{
+        }elseif($user->role == 'customer'){
+            $data = Transaction::where('email',$user->email)->get();
+
+            return view('user.donation', compact('data'));
+        }
+        else{
             $data = Donation::where('user_id',Auth::user()->id)->with('user')->get();
 
             return view('user.donation', compact('data'));

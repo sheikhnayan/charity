@@ -66,6 +66,7 @@ class TicketController extends Controller
         // Handle property type
         if ($request->type === 'property') {
             $add->price_per_share = $request->price_per_share;
+            $add->price_per_share_label = $request->price_per_share_label;
             $add->total_shares = $request->total_shares;
             $add->available_shares = $request->total_shares; // Initially all shares are available
             $add->price = $request->price_per_share * $request->total_shares; // Total value
@@ -207,6 +208,7 @@ class TicketController extends Controller
         // Handle property type
         if ($request->type === 'property') {
             $add->price_per_share = $request->price_per_share;
+            $add->price_per_share_label = $request->price_per_share_label;
             $add->market = $request->market;
             
             // Calculate available shares difference if total shares changed

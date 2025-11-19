@@ -11,6 +11,7 @@ class TicketCategory extends Model
         'name',
         'slug',
         'description',
+        'icon',
         'website_id',
         'is_active',
         'sort_order'

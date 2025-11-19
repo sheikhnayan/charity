@@ -17,6 +17,7 @@ use App\Models\Investment;
 use App\Models\CustomFont;
 use App\Models\DealmakerConfig;
 use App\Services\PaymentFunnelService;
+use Illuminate\Support\Facades\Auth;
 use Mail;
 
 class FrontendController extends Controller
@@ -480,6 +481,15 @@ class FrontendController extends Controller
     }
 
     public function tickets(Request $request){
+        // Check authentication and email verification
+        if (!Auth::check()) {
+            return redirect()->back()->withErrors(['auth' => 'You must be logged in to purchase tickets.'])->withInput();
+        }
+        
+        if (!Auth::user()->email_verified_at) {
+            return redirect()->back()->withErrors(['auth' => 'Please verify your email address before purchasing tickets.'])->withInput();
+        }
+        
         $url = url()->current();
         $doamin = parse_url($url, PHP_URL_HOST);
         $check = Website::where('domain', $doamin)->first();

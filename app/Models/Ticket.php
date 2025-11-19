@@ -12,6 +12,7 @@ class Ticket extends Model
         'quantity',
         'price',
         'price_per_share',
+        'price_per_share_label',
         'total_shares',
         'available_shares',
         'status',

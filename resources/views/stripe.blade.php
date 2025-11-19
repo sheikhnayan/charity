@@ -1191,6 +1191,18 @@
                                         class="btn btn btn-primary btn-lg btn-block submit-button svelte-1d88ver"><span
                                             data-testid="button-pay-button-content-wrapper"> Pay &amp; Submit
                                         </span></button></div>
+                                
+                                <!-- Pay with Crypto Button -->
+                                <div class="mt-3 svelte-5rmvok"> 
+                                    <a href="{{ route('crypto.payment') }}?amount={{ $data->amount }}&type={{ $data->type }}&donation_id={{ $data->id }}" 
+                                       class="btn btn-outline-warning btn-lg btn-block submit-button svelte-1d88ver" 
+                                       style="border: 2px solid #f39c12; color: #f39c12; background-color: transparent;">
+                                        <span data-testid="button-crypto-button-content-wrapper">
+                                            <i class="fas fa-bitcoin-sign me-2"></i>Pay with Crypto
+                                        </span>
+                                    </a>
+                                </div>
+                                
                                 <div class="row">
                         <div class="col-md-12">
                             <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">

@@ -26,6 +26,7 @@ class TicketCategoryController extends Controller
             'name' => 'required|string|max:255',
             'website_id' => 'required|exists:websites,id',
             'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:100',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0'
         ]);
@@ -33,6 +34,7 @@ class TicketCategoryController extends Controller
         TicketCategory::create([
             'name' => $request->name,
             'description' => $request->description,
+            'icon' => $request->icon,
             'website_id' => $request->website_id,
             'is_active' => $request->has('is_active'),
             'sort_order' => $request->sort_order ?? 0
@@ -57,6 +59,7 @@ class TicketCategoryController extends Controller
             'name' => 'required|string|max:255',
             'website_id' => 'required|exists:websites,id',
             'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:100',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0'
         ]);
@@ -64,6 +67,7 @@ class TicketCategoryController extends Controller
         $category->update([
             'name' => $request->name,
             'description' => $request->description,
+            'icon' => $request->icon,
             'website_id' => $request->website_id,
             'is_active' => $request->has('is_active'),
             'sort_order' => $request->sort_order ?? 0

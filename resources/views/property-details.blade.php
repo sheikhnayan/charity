@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $ticket->name }} | Investment Details</title>
     <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share, 2) }} per share!">
     
@@ -24,9 +25,18 @@
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
     
     <style>
+        /* Property Details Color Variables (from Website settings) */
+        :root{
+            --pd-bg: {{ json_encode($website->property_details_bg_color ?? '#ffffff') }};
+            --pd-text: {{ json_encode($website->property_details_text_color ?? '#111827') }};
+            --pd-muted: {{ json_encode($website->property_details_muted_color ?? '#6b7280') }};
+            --pd-heading: {{ json_encode($website->property_details_heading_color ?? '#1e293b') }};
+            --pd-price: {{ json_encode($website->property_details_price_color ?? '#111827') }};
+            --pd-accent: {{ json_encode($website->property_details_accent_color ?? '#667eea') }};
+        }
 
         nav a {
-            color: #9da3ab !important;
+            color: var(--pd-muted) !important;
             font-size: 17px !important;
             }
 
@@ -687,9 +697,62 @@
         border-radius: 4px;
     }
     
+    /* Tab Navigation Responsive Styles */
+    .tab-navigation {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .tab-navigation::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .tab-navigation nav {
+        display: flex;
+        flex-wrap: nowrap;
+        min-width: min-content;
+    }
+    
+    .tab-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    /* Mobile specific tab styles */
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 12px 16px !important;
+            font-size: 13px !important;
+        }
+        
+        .tab-btn i {
+            font-size: 12px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .tab-btn {
+            padding: 10px 12px !important;
+            font-size: 12px !important;
+        }
+        
+        .tab-btn i {
+            display: none; /* Hide icons on very small screens to save space */
+        }
+    }
+    
+        /* Global overrides using variables */
+        body.property-details-page{background-color: var(--pd-bg) !important; color: var(--pd-text) !important;}
+        h1,h2,h3,h4,h5,h6,.title,.markdown-content h2,.investor-exclusives-text{color: var(--pd-heading) !important;}
+        .muted,.subtitle,.condition,.small,.text-muted,.card .meta,.seller-meta,.rating-row span,.markdown-content p{color: var(--pd-muted) !important;}
+        .price,.price-value{color: var(--pd-price) !important;}
+        a,.markdown-content a,.btn.ghost{color: var(--pd-accent) !important;}
     </style>
 </head>
-<body style="background-color: {{ $data->background_color ?? '#fff'}};">
+<body class="property-details-page" style="background-color: {{ $website->property_details_bg_color ?? '#ffffff' }} !important;">
     
     @php
         $url = url()->current();
@@ -847,14 +910,14 @@
         <nav class="flex mb-6 text-sm" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-900">
+                    <a href="{{ route('home') }}" style="color:{{  $website->property_details_text_color }} !important" class="text-gray-600 hover:text-gray-900">
                         <i class="fas fa-home mr-2"></i>Home
                     </a>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-gray-900 font-medium">{{ $ticket->name }}</span>
+                        <i style="color:{{  $website->property_details_text_color }} !important" class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span style="color:{{  $website->property_details_muted_color }} !important" class="text-gray-900 font-medium">{{ $ticket->name }}</span>
                     </div>
                 </li>
             </ol>
@@ -881,12 +944,12 @@
                 </div>
 
                 <!-- Property Title -->
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{{ $ticket->name }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style="color:{{  $website->property_details_text_color }} !important">{{ $ticket->name }}</h1>
                 
                 <!-- Property Location -->
                 <div class="flex items-center text-gray-600 mb-6">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
-                    <span>{{ $ticket->website->name }}</span>
+                    <i style="color:{{  $website->property_details_text_color }} !important" class="fas fa-map-marker-alt mr-2"></i>
+                    <span style="color:{{  $website->property_details_text_color }} !important">{{ $ticket->website->name }}</span>
                 </div>
 
                 <!-- Image Gallery -->
@@ -902,11 +965,13 @@
                         <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-purple-500 bg-gray-100" onclick="changeImage('{{ asset($ticket->image) }}', this)">
                             <img src="{{ asset($ticket->image) }}" alt="Main" class="w-full h-20 object-contain">
                         </div>
-                        @foreach($ticket->images as $image)
-                        <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition bg-gray-100" 
-                             onclick="changeImage('{{ asset($image->image_path) }}', this)">
-                            <img src="{{ asset($image->image_path) }}" alt="Property image" class="w-full h-20 object-contain">
-                        </div>
+                        @foreach($ticket->images as $key => $image)
+                        @if ($key != 0)
+                            <div class="thumbnail-item cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition bg-gray-100" 
+                                onclick="changeImage('{{ asset($image->image_path) }}', this)">
+                                <img src="{{ asset($image->image_path) }}" alt="Property image" class="w-full h-20 object-contain">
+                            </div>
+                        @endif
                         @endforeach
                     </div>
                     @endif
@@ -980,7 +1045,7 @@
 
                 <!-- Tabs Section -->
                 <div class="bg-white rounded-lg shadow-md mb-8">
-                    <div class="border-b border-gray-200">
+                    <div class="border-b border-gray-200 tab-navigation">
                         <nav class="flex -mb-px">
                             <button class="tab-btn active px-6 py-4 text-sm font-medium border-b-2" data-tab="overview">
                                 <i class="fas fa-info-circle mr-2"></i>Overview
@@ -1014,7 +1079,7 @@
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div class="bg-gray-50 p-4 rounded-lg">
-                                    <div class="text-gray-600 text-sm mb-2">Price Per Share</div>
+                                    <div class="text-gray-600 text-sm mb-2">{{ $ticket->price_per_share_label ?? 'Price Per Share' }}</div>
                                     <div class="text-3xl font-bold text-purple-600">${{ number_format($ticket->price_per_share, 2) }}</div>
                                 </div>
                                 
@@ -1030,8 +1095,17 @@
                                     <div>
                                         <h4 class="font-semibold text-blue-900 mb-1">Investment Calculation</h4>
                                         <p class="text-sm text-blue-800">
-                                            To own the entire investment, you would need to purchase all {{ number_format($ticket->total_shares) }} shares 
-                                            at ${{ number_format($ticket->price_per_share, 2) }} each, totaling ${{ number_format($ticket->price, 2) }}.
+                                            @php
+                                                $remainingShares = $ticket->available_shares;
+                                                $soldShares = $ticket->total_shares - $remainingShares;
+                                                $remainingCost = $remainingShares * $ticket->price_per_share;
+                                                $fullCost = $ticket->price; // already stored total value
+                                            @endphp
+                                            @if($remainingShares > 0)
+                                                There are <strong>{{ number_format($remainingShares) }}</strong> shares remaining ({{ number_format($soldShares) }} sold). Purchasing all remaining shares would cost <strong>${{ number_format($remainingCost, 2) }}</strong>.
+                                            @else
+                                                <strong>All shares have been sold.</strong> Total investment value was <strong>${{ number_format($fullCost, 2) }}</strong>.
+                                            @endif
                                         </p>
                                     </div>
                                 </div>
@@ -1049,6 +1123,25 @@
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->total_investment_label }}</span>
                                     <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->total_investment_value, 2) }}</span>
                                 </div>
+                                @if(is_array($fin->custom_total_investment_items))
+                                    @foreach($fin->custom_total_investment_items as $ci)
+                                        @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
+                                        @if($label && $val !== null)
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                            <div class="flex items-center">
+                                                <span class="font-bold md:text-lg">{{ $label }}</span>
+                                                @if($tip)
+                                                <div class="relative group ml-2">
+                                                    <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">{{ $tip }}</div>
+                                                </div>
+                                                @endif
+                                            </div>
+                                            <span class="md:text-lg">${{ number_format($val, 2) }}</span>
+                                        </div>
+                                        @endif
+                                    @endforeach
+                                @endif
                                 
                                 @if($fin->show_underlying_asset && $fin->underlying_asset_price)
                                 <div class="flex justify-between p-6 text-white border-b border-purple-700">
@@ -1056,7 +1149,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->underlying_asset_label }}</span>
                                         @if($fin->show_underlying_asset_tooltip && $fin->underlying_asset_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->underlying_asset_tooltip }}
                                             </div>
@@ -1073,7 +1166,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->closing_costs_label }}</span>
                                         @if($fin->show_closing_costs_tooltip && $fin->closing_costs_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->closing_costs_tooltip }}
                                             </div>
@@ -1090,7 +1183,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->upfront_fees_label }}</span>
                                         @if($fin->show_upfront_fees_tooltip && $fin->upfront_fees_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->upfront_fees_tooltip }}
                                             </div>
@@ -1107,7 +1200,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->operating_reserve_label }}</span>
                                         @if($fin->show_operating_reserve_tooltip && $fin->operating_reserve_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->operating_reserve_tooltip }}
                                             </div>
@@ -1127,6 +1220,25 @@
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->projected_annual_return_label }}</span>
                                     <span class="text-purple-300 text-xl md:text-2xl">{{ number_format($fin->projected_annual_return, 2) }}%</span>
                                 </div>
+                                @if(is_array($fin->custom_projected_annual_return_items))
+                                    @foreach($fin->custom_projected_annual_return_items as $ci)
+                                        @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
+                                        @if($label && $val !== null)
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                            <div class="flex items-center">
+                                                <span class="font-bold md:text-lg">{{ $label }}</span>
+                                                @if($tip)
+                                                <div class="relative group ml-2">
+                                                    <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">{{ $tip }}</div>
+                                                </div>
+                                                @endif
+                                            </div>
+                                            <span class="md:text-lg">{{ number_format($val, 2) }}%</span>
+                                        </div>
+                                        @endif
+                                    @endforeach
+                                @endif
 
                                 @if($fin->show_projected_rental_yield && $fin->projected_rental_yield !== null)
                                 <div class="flex justify-between p-6 text-white border-b border-purple-700">
@@ -1134,7 +1246,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->projected_rental_yield_label }}</span>
                                         @if($fin->show_projected_rental_yield_tooltip && $fin->projected_rental_yield_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->projected_rental_yield_tooltip }}
                                             </div>
@@ -1151,7 +1263,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->projected_appreciation_label }}</span>
                                         @if($fin->show_projected_appreciation_tooltip && $fin->projected_appreciation_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->projected_appreciation_tooltip }}
                                             </div>
@@ -1168,7 +1280,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->rental_yield_label }}</span>
                                         @if($fin->show_rental_yield_tooltip && $fin->rental_yield_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->rental_yield_tooltip }}
                                             </div>
@@ -1188,6 +1300,25 @@
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->annual_gross_rents_label }}</span>
                                     <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->annual_gross_rents, 2) }}</span>
                                 </div>
+                                @if(is_array($fin->custom_annual_gross_rents_items))
+                                    @foreach($fin->custom_annual_gross_rents_items as $ci)
+                                        @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
+                                        @if($label && $val !== null)
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                            <div class="flex items-center">
+                                                <span class="font-bold md:text-lg">{{ $label }}</span>
+                                                @if($tip)
+                                                <div class="relative group ml-2">
+                                                    <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">{{ $tip }}</div>
+                                                </div>
+                                                @endif
+                                            </div>
+                                            <span class="md:text-lg">${{ number_format($val, 2) }}</span>
+                                        </div>
+                                        @endif
+                                    @endforeach
+                                @endif
 
                                 @if($fin->show_property_taxes && $fin->property_taxes !== null)
                                 <div class="flex justify-between p-6 text-white border-b border-purple-700">
@@ -1195,7 +1326,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->property_taxes_label }}</span>
                                         @if($fin->show_property_taxes_tooltip && $fin->property_taxes_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->property_taxes_tooltip }}
                                             </div>
@@ -1212,7 +1343,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->homeowners_insurance_label }}</span>
                                         @if($fin->show_homeowners_insurance_tooltip && $fin->homeowners_insurance_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->homeowners_insurance_tooltip }}
                                             </div>
@@ -1229,7 +1360,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->property_management_label }}</span>
                                         @if($fin->show_property_management_tooltip && $fin->property_management_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->property_management_tooltip }}
                                             </div>
@@ -1246,7 +1377,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->annual_llc_fees_label }}</span>
                                         @if($fin->show_annual_llc_fees_tooltip && $fin->annual_llc_fees_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->annual_llc_fees_tooltip }}
                                             </div>
@@ -1263,7 +1394,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->annual_cash_flow_label }}</span>
                                         @if($fin->show_annual_cash_flow_tooltip && $fin->annual_cash_flow_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->annual_cash_flow_tooltip }}
                                             </div>
@@ -1280,7 +1411,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->cap_rate_label }}</span>
                                         @if($fin->show_cap_rate_tooltip && $fin->cap_rate_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->cap_rate_tooltip }}
                                             </div>
@@ -1297,7 +1428,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->monthly_cash_flow_label }}</span>
                                         @if($fin->show_monthly_cash_flow_tooltip && $fin->monthly_cash_flow_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->monthly_cash_flow_tooltip }}
                                             </div>
@@ -1314,7 +1445,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->projected_annual_cash_flow_label }}</span>
                                         @if($fin->show_projected_annual_cash_flow_tooltip && $fin->projected_annual_cash_flow_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->projected_annual_cash_flow_tooltip }}
                                             </div>
@@ -1331,7 +1462,7 @@
                                         <span class="font-bold md:text-lg">{{ $fin->current_loan_label }}</span>
                                         @if($fin->show_current_loan_tooltip && $fin->current_loan_tooltip)
                                         <div class="relative group ml-2">
-                                            <i class="fas fa-info-circle text-sm text-center p-1 rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
+                                            <i class="fas fa-info-circle text-sm inline-flex items-center justify-center rounded-full w-5 h-5 text-purple-300 bg-purple-800 cursor-pointer"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-purple-800 text-white text-sm rounded-lg border border-purple-600 z-10">
                                                 {{ $fin->current_loan_tooltip }}
                                             </div>
@@ -1371,7 +1502,7 @@
                                             <p class="font-semibold"><span id="appreciationValue">{{ $ticket->financials && $ticket->financials->projected_appreciation ? number_format($ticket->financials->projected_appreciation, 1) : '3.0' }}</span>%</p>
                                         </div>
                                         <div class="relative pt-1">
-                                            <input type="range" id="appreciationSlider" min="0" max="15" step="0.1" value="{{ $ticket->financials && $ticket->financials->projected_appreciation ? $ticket->financials->projected_appreciation : 3 }}" 
+                                            <input type="range" id="appreciationSlider" min="0" max="100" step="1" value="{{ $ticket->financials && $ticket->financials->projected_appreciation ? $ticket->financials->projected_appreciation : 3 }}" 
                                                    class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider-purple"
                                                    oninput="updateCalculations()">
                                         </div>
@@ -1384,7 +1515,7 @@
                                             <p class="font-semibold"><span id="cashReturnValue">{{ $ticket->financials && $ticket->financials->rental_yield ? number_format($ticket->financials->rental_yield, 2) : '8.00' }}</span>%</p>
                                         </div>
                                         <div class="relative pt-1">
-                                            <input type="range" id="cashReturnSlider" min="0" max="20" step="0.1" value="{{ $ticket->financials && $ticket->financials->rental_yield ? $ticket->financials->rental_yield : 8 }}" 
+                                            <input type="range" id="cashReturnSlider" min="0" max="100" step="1" value="{{ $ticket->financials && $ticket->financials->rental_yield ? $ticket->financials->rental_yield : 8 }}" 
                                                    class="w-full h-2 bg-purple-800 rounded-lg appearance-none cursor-pointer slider-purple"
                                                    oninput="updateCalculations()">
                                         </div>
@@ -1566,15 +1697,144 @@
                     </div>
 
                     <!-- Action Buttons -->
+
+                        <!-- Modal Triggered Form -->
                         <form action="{{ route('tickets') }}" method="POST" id="buySharesForm">
                             @csrf
                             <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
                             <input type="hidden" name="ticket[{{ $ticket->id }}][quantity]" id="formQuantity" value="1">
-                            
-                            <button type="submit" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg mb-3" id="buySharesButton">
+                            <button type="button" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg mb-3" id="buySharesButton">
                                 <i class="fas fa-shopping-cart mr-2"></i>Buy Shares
                             </button>
-                        </form>                    <hr class="my-6">
+                        </form>
+
+                        @include('partials.ticket-auth-modal')
+
+                        <script>
+                        // Open modal or proceed depending on auth state
+                        document.getElementById('buySharesButton').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            // call check endpoint
+                            (async function() {
+                                try {
+                                    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                    const res = await fetch('/ajax/ticket-auth/check', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token } });
+                                    const json = await res.json();
+                                    if (json.authenticated && json.verified) {
+                                        document.getElementById('buySharesForm').submit();
+                                    } else {
+                                        window._ticketAuthPendingForm = document.getElementById('buySharesForm');
+                                        openAuthModal();
+                                        if (!json.authenticated) setAuthMode('register');
+                                        if (json.authenticated && !json.verified) setAuthMode('verify');
+                                    }
+                                } catch (e) {
+                                    // fallback
+                                    openAuthModal();
+                                }
+                            })();
+                        });
+
+                        // Auth modal state
+                        let authMode = 'login'; // or 'register' or 'verify'
+                        function setAuthMode(mode) {
+                            authMode = mode;
+                            document.getElementById('authError').textContent = '';
+                            document.getElementById('verificationField').classList.add('hidden');
+                            document.getElementById('passwordField').classList.remove('hidden');
+                            document.getElementById('confirmPasswordField').classList.remove('hidden');
+                            document.getElementById('authName').closest('div').classList.remove('hidden');
+                            document.getElementById('authSubmitBtn').textContent = (mode === 'register') ? 'Register' : (mode === 'verify' ? 'Verify' : 'Login');
+                            if (mode === 'verify') {
+                                document.getElementById('verificationField').classList.remove('hidden');
+                                document.getElementById('passwordField').classList.add('hidden');
+                                document.getElementById('confirmPasswordField').classList.add('hidden');
+                                document.getElementById('authName').closest('div').classList.add('hidden');
+                            }
+                            if (mode === 'login') {
+                                document.getElementById('confirmPasswordField').classList.add('hidden');
+                                document.getElementById('authName').closest('div').classList.add('hidden');
+                            }
+                        }
+                        document.getElementById('switchToRegister').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            setAuthMode('register');
+                        });
+                        document.getElementById('switchToLogin').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            setAuthMode('login');
+                        });
+                        setAuthMode('login');
+
+                        // AJAX logic
+                        document.getElementById('authForm').addEventListener('submit', async function(e) {
+                            e.preventDefault();
+                            const email = document.getElementById('authEmail').value.trim();
+                            const password = document.getElementById('authPassword').value;
+                            const code = document.getElementById('verificationCode').value.trim();
+                            const errorDiv = document.getElementById('authError');
+                            errorDiv.textContent = '';
+                            let url = '';
+                            let data = { email };
+                            if (authMode === 'register') {
+                                url = '/ajax/ticket-auth/register';
+                                data.password = password;
+                            } else if (authMode === 'login') {
+                                url = '/ajax/ticket-auth/login';
+                                data.password = password;
+                            } else if (authMode === 'verify') {
+                                url = '/ajax/ticket-auth/verify';
+                                data.code = code;
+                            }
+                            // Retrieve CSRF token safely
+                            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                            const csrfToken = tokenMeta ? tokenMeta.getAttribute('content') : (document.querySelector('input[name="_token"]') ? document.querySelector('input[name="_token"]').value : '');
+                            if (authMode === 'register' && data.password) {
+                                // Validate password confirmation
+                                const confirm = document.getElementById('authConfirmPassword').value;
+                                if (data.password !== confirm) {
+                                    errorDiv.textContent = 'Passwords do not match.';
+                                    return;
+                                }
+                                data.name = document.getElementById('authName').value.trim();
+                                if (!data.name) { errorDiv.textContent = 'Name is required.'; return; }
+                            }
+                            try {
+                                const resp = await fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrfToken
+                                    },
+                                    body: JSON.stringify(data)
+                                });
+                                const result = await resp.json();
+                                if (result.success) {
+                                    // If registration/login returned success for sending verification
+                                    if (authMode === 'register') {
+                                        errorDiv.textContent = 'Verification code sent to ' + email + '. Check spam folder if missing.';
+                                        setAuthMode('verify');
+                                        return;
+                                    }
+                                    if (authMode === 'register' || authMode === 'login') {
+                                        setAuthMode('verify');
+                                    } else {
+                                        // Success: close modal and submit form
+                                        closeAuthModal();
+                                        document.getElementById('buySharesForm').submit();
+                                    }
+                                } else {
+                                    if (result.require_verification) {
+                                        setAuthMode('verify');
+                                    }
+                                    errorDiv.textContent = result.message || 'An error occurred.';
+                                }
+                            } catch (err) {
+                                errorDiv.textContent = 'Server error. Please try again.';
+                            }
+                        });
+                        </script>
+                        <hr class="my-6">
 
                     <!-- Additional Info -->
                     <div class="space-y-3 text-sm">
@@ -1896,15 +2156,16 @@
                 const annualCashFlow = investment * (cashReturnRate / 100);
                 cumulativeCashFlow += annualCashFlow;
 
-                // Calculate appreciation
+                // Calculate appreciation - round propertyValue to prevent float accumulation
                 propertyValue *= (1 + appreciationRate / 100);
-                const totalAppreciation = propertyValue - investment;
+                propertyValue = Math.round(propertyValue * 100) / 100;
+                const totalAppreciation = Math.round((propertyValue - investment) * 100) / 100;
 
-                // Store values
-                data.cashFlow.push(cumulativeCashFlow);
+                // Store values - all rounded to 2 decimal places
+                data.cashFlow.push(Math.round(cumulativeCashFlow * 100) / 100);
                 data.appreciation.push(totalAppreciation);
-                data.investment.push(investment);
-                data.total.push(investment + cumulativeCashFlow + totalAppreciation);
+                data.investment.push(Math.round(investment * 100) / 100);
+                data.total.push(Math.round((investment + cumulativeCashFlow + totalAppreciation) * 100) / 100);
             }
 
             return data;
@@ -1919,10 +2180,10 @@
                 const investmentEl = document.getElementById(`investment${year}`);
                 const totalEl = document.getElementById(`total${year}`);
                 
-                if (cashFlowEl) cashFlowEl.textContent = '$' + projections.cashFlow[index].toFixed(2);
-                if (appreciationEl) appreciationEl.textContent = '$' + projections.appreciation[index].toFixed(2);
-                if (investmentEl) investmentEl.textContent = '$' + investment.toFixed(2);
-                if (totalEl) totalEl.textContent = '$' + projections.total[index].toFixed(2);
+                if (cashFlowEl) cashFlowEl.textContent = '$' + Math.round(projections.cashFlow[index]).toLocaleString();
+                if (appreciationEl) appreciationEl.textContent = '$' + Math.round(projections.appreciation[index]).toLocaleString();
+                if (investmentEl) investmentEl.textContent = '$' + Math.round(investment).toLocaleString();
+                if (totalEl) totalEl.textContent = '$' + Math.round(projections.total[index]).toLocaleString();
             });
         }
 

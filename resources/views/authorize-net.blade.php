@@ -590,6 +590,18 @@
                                 class="btn btn-primary">Pay Now</button>
                         </div>
                     </div>
+                    
+                    <!-- Pay with Crypto Button -->
+                    <div class="sc-gyZVQB fWNGEI mt-3">
+                        <div class="sc-cVAmsi cvolSU">
+                            <a href="{{ route('crypto.payment') }}?amount={{ $data->amount }}&type={{ $data->type }}&donation_id={{ $data->id }}" 
+                               class="btn btn-outline-warning" 
+                               style="width: 100%; height: 45px; font-family: Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif; font-size: 18px; border: 2px solid #f39c12; color: #f39c12; background-color: transparent; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-bitcoin-sign me-2"></i>Pay with Crypto
+                            </a>
+                        </div>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">

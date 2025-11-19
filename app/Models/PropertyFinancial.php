@@ -122,6 +122,10 @@ class PropertyFinancial extends Model
         'show_current_loan',
         'current_loan_tooltip',
         'show_current_loan_tooltip',
+            // Custom added items
+            'custom_total_investment_items',
+            'custom_projected_annual_return_items',
+            'custom_annual_gross_rents_items',
     ];
 
     protected $casts = [
@@ -160,6 +164,9 @@ class PropertyFinancial extends Model
         'show_projected_annual_cash_flow_tooltip' => 'boolean',
         'show_current_loan' => 'boolean',
         'show_current_loan_tooltip' => 'boolean',
+            'custom_total_investment_items' => 'array',
+            'custom_projected_annual_return_items' => 'array',
+            'custom_annual_gross_rents_items' => 'array',
     ];
 
     public function ticket()
