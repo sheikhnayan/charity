@@ -159,13 +159,17 @@
                     form.submit();
                 } else {
                     window._ticketAuthPendingForm = form;
+                    // Always show login first
+                    setAuthMode('login');
                     openAuthModal();
-                    if (!res.authenticated) setAuthMode('register');
-                    if (res.authenticated && !res.verified) setAuthMode('verify');
+                    // Only switch mode if user is already authenticated but not verified
+                    if (res.authenticated && !res.verified) {
+                        setTimeout(() => setAuthMode('verify'), 100);
+                    }
                 }
             }).catch(() => {
+                setAuthMode('login');
                 openAuthModal();
-                setAuthMode('register');
             });
         }
     }, true);

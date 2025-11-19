@@ -1724,12 +1724,17 @@
                                         document.getElementById('buySharesForm').submit();
                                     } else {
                                         window._ticketAuthPendingForm = document.getElementById('buySharesForm');
+                                        // Always show login first, then let the modal logic handle other states
+                                        setAuthMode('login');
                                         openAuthModal();
-                                        if (!json.authenticated) setAuthMode('register');
-                                        if (json.authenticated && !json.verified) setAuthMode('verify');
+                                        // Only switch mode if user is already authenticated but not verified
+                                        if (json.authenticated && !json.verified) {
+                                            setTimeout(() => setAuthMode('verify'), 100);
+                                        }
                                     }
                                 } catch (e) {
                                     // fallback
+                                    setAuthMode('login');
                                     openAuthModal();
                                 }
                             })();
