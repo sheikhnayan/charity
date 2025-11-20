@@ -40,9 +40,11 @@
         
         /* Menu Font Family Styling */
         @if(isset($header) && $header && $header->menu_font_family)
-        .navbar .nav-link,
-        .navbar .navbar-brand,
-        .navbar .btn {
+        nav.navbar .nav-link,
+        nav.navbar .navbar-brand,
+        nav.navbar .btn,
+        .navbar .nav-item a,
+        .navbar ul li a {
             font-family: '{{ $header->menu_font_family }}', sans-serif !important;
         }
         @endif
@@ -50,6 +52,9 @@
         /* Contact Topbar Font Family Styling */
         @if(isset($header) && $header && $header->contact_topbar_font_family)
         .contact-topbar,
+        .contact-topbar a,
+        .contact-topbar span,
+        .contact-topbar .contact-item,
         .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
             font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
         }
@@ -58,6 +63,9 @@
         /* Investor Exclusives Font Family Styling */
         @if(isset($header) && $header && $header->investor_exclusives_font_family)
         .investor-exclusives-bar,
+        .investor-exclusives-bar p,
+        .investor-exclusives-bar a,
+        .investor-exclusives-bar .investor-exclusives-text,
         .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
             font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
         }
@@ -875,7 +883,7 @@
             <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
                 <div class="investor-exclusives-content">
                     <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
-                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; text-transform: uppercase; padding-bottom: 4px;">
                         {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
                     </p>
                     </a>
