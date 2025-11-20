@@ -1459,6 +1459,7 @@ h5, .ql-header-5 {
                                 nav: true,
                                 dots: true,
                                 smartSpeed: 700,
+                                autoplayTimeout: {{ $slideSpeed + 500 }},
                                 margin: 8
                             },
                             768: { 
@@ -1466,6 +1467,7 @@ h5, .ql-header-5 {
                                 nav: true,
                                 dots: true,
                                 smartSpeed: 750,
+                                autoplayTimeout: {{ $slideSpeed + 500 }},
                                 margin: 10
                             },
                             1000: { 
@@ -1473,6 +1475,7 @@ h5, .ql-header-5 {
                                 nav: true,
                                 dots: true,
                                 smartSpeed: 800,
+                                autoplayTimeout: {{ $slideSpeed + 500 }},
                                 margin: 10
                             }
                         },
