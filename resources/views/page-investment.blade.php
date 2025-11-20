@@ -1523,11 +1523,7 @@ if (isset($state['components'])) {
         </script>
     @endif
     
-    <main style="margin-top: var(--main-content-margin-top, {{ 
-        ($header && $header->show_contact_topbar && $check && $header->show_investor_exclusives) ? '14.2rem' : 
-        (($header && $header->show_contact_topbar) ? '10.5rem' : 
-        (($check && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
-    }});" 
+    <main style="margin-top: 0; padding-top: var(--main-content-margin-top, 7rem);" 
           class="{{ 
             ($header && $header->show_contact_topbar && $check && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
             (($header && $header->show_contact_topbar) ? 'with-contact-bar' : 
