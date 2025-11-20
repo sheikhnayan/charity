@@ -290,7 +290,7 @@ class AuthorizeNetController extends Controller
 
                     $processing_fee = \App\Models\PaymentSetting::first();
 
-                    $fee = $donation->amount - (($donation->amount / 100) * ($processing_fee->fee ?? 5)); 
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
 
 
                     $tran = new Transaction;
@@ -694,7 +694,7 @@ class AuthorizeNetController extends Controller
                     // }
 
                     $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = $donation->amount - (($donation->amount / 100) * ($processing_fee->fee ?? 5)); 
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
 
 
                     $tran = new Transaction;
