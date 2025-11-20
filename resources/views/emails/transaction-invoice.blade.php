@@ -139,7 +139,8 @@
                     @foreach($ticket_sale->details as $detail)
                     <div class="detail-row">
                         <span class="detail-label">{{ $detail->ticket->name ?? 'Ticket' }}:</span>
-                        <span class="detail-value">Quantity: {{ $detail->quantity }} @ ${{ number_format($detail->ticket->price ?? 0, 2) }} each</span>
+                        <br>
+                        <span class="detail-value">Quantity: {{ $detail->quantity }} @ ${{ $detail->ticket->type == 'property' ? number_format($detail->ticket->price_per_share ?? 0, 2) : number_format($detail->ticket->price ?? 0, 2) }} each</span>
                     </div>
                     @endforeach
                 @endif
@@ -233,7 +234,10 @@
                 @if($transaction->fee_paid)
                 <div class="financial-row">
                     <span>Processing Fee:</span>
-                    <span>${{ number_format(($transaction->amount / 100) * ($website->paymentSettings->fee ?? 2.9), 2) }}</span>
+                    @php
+                        $pay = \App\Models\PaymentSetting::first();
+                    @endphp
+                    <span>${{ number_format(($transaction->amount / 100) * ($pay->fee ?? 5), 2) }}</span>
                 </div>
                 @endif
                 <div class="financial-row total">
@@ -244,7 +248,7 @@
         </div>
 
         <div class="footer">
-            @if(in_array($transaction->type, ['student', 'general']))
+            {{-- @if(in_array($transaction->type, ['student', 'general']))
                 <p>🙏 Thank you for your generous donation to {{ $website->name }}!</p>
                 <p>Your contribution makes a meaningful difference.</p>
             @elseif($transaction->type === 'ticket')
@@ -258,7 +262,7 @@
                 <p>We appreciate your confidence in our venture.</p>
             @else
                 <p>Thank you for your transaction!</p>
-            @endif
+            @endif --}}
             
             <p><strong>📎 A detailed PDF {{ in_array($transaction->type, ['student', 'general']) ? 'receipt' : 'confirmation' }} is attached to this email for your records.</strong></p>
             <p>{{ $website->name }} | {{ $website->domain }}</p>

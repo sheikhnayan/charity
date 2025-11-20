@@ -949,8 +949,8 @@ Route::post('/ajax/ticket-auth/register', function(Request $request) {
     $user->email_verified_at = null;
     $user->save();
     // Send code
-    Mail::raw("Your verification code is: $code", function($m) use ($user) {
-        $m->to($user->email)->subject('Your Verification Code');
+    Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+        $m->to($user->email)->subject('Verify Your Account - Registration Verification Code');
     });
     return response()->json(['success' => true, 'message' => 'Verification code sent.']);
 });
@@ -968,8 +968,8 @@ Route::post('/ajax/ticket-auth/login', function(Request $request) {
         $code = rand(100000, 999999);
         $user->email_verification_code = $code;
         $user->save();
-        Mail::raw("Your verification code is: $code", function($m) use ($user) {
-            $m->to($user->email)->subject('Your Verification Code');
+        Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+            $m->to($user->email)->subject('Verify Your Account - Registration Verification Code');
         });
         return response()->json(['success' => false, 'message' => 'Email not verified. Verification code sent.', 'require_verification' => true]);
     }

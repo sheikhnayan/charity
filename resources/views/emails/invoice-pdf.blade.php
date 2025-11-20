@@ -148,9 +148,9 @@
             <div class="invoice-meta">
                 Invoice #: {{ $transaction->transaction_id }}<br>
                 Date: {{ $transaction->created_at->format('M d, Y') }}<br>
-                Status: <span class="status-badge {{ $transaction->status == 1 ? 'status-approved' : 'status-pending' }}">
+                {{-- Status: <span class="status-badge {{ $transaction->status == 1 ? 'status-approved' : 'status-pending' }}">
                     {{ $transaction->status == 1 ? 'Approved' : 'Pending' }}
-                </span>
+                </span> --}}
             </div>
         </div>
 
@@ -253,7 +253,10 @@
             </div>
             @if($transaction->fee_paid)
             <div class="financial-row">
-                <div class="financial-label">Processing Fee ({{ $fee_percentage ?? 2.9 }}%):</div>
+                @php
+                    $pay = \App\Models\PaymentSetting::first();
+                @endphp
+                <div class="financial-label">Processing Fee ({{ $pay->fee ?? 5 }}%):</div>
                 <div class="financial-amount">${{ number_format(($transaction->amount / 100) * ($fee_percentage ?? 2.9), 2) }}</div>
             </div>
             @endif
@@ -264,7 +267,7 @@
         </div>
 
         <div class="footer">
-            <p><strong>Thank you for your {{ $transaction->type === 'investment' ? 'investment' : 'donation' }}!</strong></p>
+            <p><strong>For complete transaction details of your purchase please login to your customer dashboard.</strong></p>
             <p>{{ $website->name }} | {{ $website->domain }}</p>
             <p>
                 <small>

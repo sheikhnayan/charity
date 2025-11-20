@@ -164,7 +164,7 @@
 
                                     <div class="dropdown-menu-header">
                                         <div class="dropdown-menu-header-inner bg-primary">
-                                            <div class="menu-header-content">
+                                            {{-- <div class="menu-header-content">
                                                 <div class="avatar-icon-wrapper mb-3 avatar-icon-xl">
                                                     <div class="avatar-icon">
                                                         <div class="rounded-profile-picture fill" role="img"
@@ -173,7 +173,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <div>
                                                 <h5 class="menu-header-title">
                                                     <a href="{{ Auth::user()->website->domain }}/profile/139276-sheikh-nayan"
@@ -238,7 +238,7 @@
 
                                     <div class="col-6" style="order: -2;">
                                         <label for="first_name" class="form-label required">
-                                            First name
+                                            Full Name
                                         </label>
 
 
@@ -256,7 +256,7 @@
 
 
 
-                                    <div class="col-6" style="order: -1;">
+                                    {{-- <div class="col-6" style="order: -1;">
                                         <label for="last_name" class="form-label required">
                                             Last name
                                         </label>
@@ -264,7 +264,7 @@
 
                                         <input type="text" class="form-control" id="last_name" name="last_name"
                                             value="{{ Auth::user()->last_name }}">
-                                    </div>
+                                    </div> --}}
 
 
                                     @if (Auth::user()->role != 'customer')
