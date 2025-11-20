@@ -1962,6 +1962,18 @@
                                 });
                                 const result = await resp.json();
                                 if (result.success) {
+                                    // Update CSRF token if provided (after login/register)
+                                    if (result.csrf_token) {
+                                        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                                        if (csrfMeta) {
+                                            csrfMeta.setAttribute('content', result.csrf_token);
+                                        }
+                                        // Also update any hidden CSRF inputs in forms
+                                        document.querySelectorAll('input[name="_token"]').forEach(input => {
+                                            input.value = result.csrf_token;
+                                        });
+                                    }
+                                    
                                     // If registration/login returned success for sending verification
                                     if (authMode === 'register') {
                                         errorDiv.textContent = 'Verification code sent to ' + email + '. Check spam folder if missing.';
