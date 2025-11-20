@@ -675,6 +675,16 @@ h5, .ql-header-5 {
                             margin-right: -50vw !important;
                         }
                         
+                        /* Remove ALL padding for slider components to make them truly full-width */
+                        #{{ $componentId }} .row > [class*="col-"]:has(.slider-container),
+                        #{{ $componentId }} .row > [class*="col-"] .nested-component:has(.slider-container),
+                        #{{ $componentId }} .slider-container {
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                            margin-left: 0 !important;
+                            margin-right: 0 !important;
+                        }
+                        
                         /* Parallax background support - Force fixed attachment */
                         @if(isset($innerSectionData['backgroundType']) && $innerSectionData['backgroundType'] === 'image' && 
                             !empty($innerSectionData['backgroundImage']) && 
