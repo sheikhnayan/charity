@@ -412,7 +412,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="d-flex justify-content-between w-100">
-                        <div>
+                        {{-- <div>
                             <button type="button" class="btn btn-success btn-sm status-btn" data-status="completed">
                                 <i class="fas fa-check"></i> Mark Completed
                             </button>
@@ -422,7 +422,7 @@
                             <button type="button" class="btn btn-danger btn-sm status-btn" data-status="refunded">
                                 <i class="fas fa-undo"></i> Mark Refunded
                             </button>
-                        </div>
+                        </div> --}}
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
