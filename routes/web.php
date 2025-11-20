@@ -974,7 +974,8 @@ Route::post('/ajax/ticket-auth/login', function(Request $request) {
         return response()->json(['success' => false, 'message' => 'Email not verified. Verification code sent.', 'require_verification' => true]);
     }
     Auth::login($user);
-    return response()->json(['success' => true]);
+    $request->session()->regenerate(); // Regenerate session to get new CSRF token
+    return response()->json(['success' => true, 'csrf_token' => csrf_token()]);
 });
 
 Route::post('/ajax/ticket-auth/verify', function(Request $request) {
