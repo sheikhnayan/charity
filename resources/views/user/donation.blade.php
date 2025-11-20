@@ -27,6 +27,12 @@
 @php
         $payment = \App\Models\PaymentSetting::first();
     @endphp
+
+    @php
+        // Global payment settings as fallback
+        $globalPayment = \App\Models\PaymentSetting::first();
+        $defaultFee = $globalPayment ? $globalPayment->fee : 2.9;
+    @endphp
     <!-- Content wrapper -->
     <div class="content-wrapper">
         <!-- Content -->
