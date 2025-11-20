@@ -559,7 +559,7 @@ h5, .ql-header-5 {
                 
                 // Padding - always apply if set
                 if (isset($innerSectionData['padding']) && $innerSectionData['padding'] !== '') {
-                    $sectionStyle .= "padding: {$innerSectionData['padding']} !important;";
+                    $sectionStyle .= "padding: {$innerSectionData['padding']}";
                 }
                 
                 // Margin - always apply if set
