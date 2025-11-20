@@ -262,7 +262,7 @@
             @endif
             <div class="financial-row total">
                 <div class="financial-label">Total Paid:</div>
-                <div class="financial-amount">${{ number_format($transaction->fee_paid ? $total_with_fee : $transaction->amount, 2) }}</div>
+                <div class="financial-amount">${{ number_format($transaction->amount, 2) }}</div>
             </div>
         </div>
 
