@@ -685,6 +685,12 @@ h5, .ql-header-5 {
                             margin-right: 0 !important;
                         }
                         
+                        /* Override inner-section padding when it contains a slider */
+                        #{{ $componentId }}:has(.slider-container) {
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                        }
+                        
                         /* Parallax background support - Force fixed attachment */
                         @if(isset($innerSectionData['backgroundType']) && $innerSectionData['backgroundType'] === 'image' && 
                             !empty($innerSectionData['backgroundImage']) && 
