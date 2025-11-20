@@ -284,18 +284,6 @@ var customFonts = [];
 FontClass.whitelist = defaultFonts.concat(customFonts);
 Quill.register(FontClass, true);
 
-// Add custom fonts to Quill CSS
-@if(isset($customFonts) && $customFonts->count() > 0)
-var customFontStyles = '';
-@foreach($customFonts as $font)
-customFontStyles += '.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="{{ $font->font_family }}"]::before, .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="{{ $font->font_family }}"]::before { content: "{{ $font->font_name }}"; font-family: "{{ $font->font_family }}"; }\n';
-customFontStyles += '.ql-font-{{ $font->font_family }} { font-family: "{{ $font->font_family }}"; }\n';
-@endforeach
-var styleSheet = document.createElement('style');
-styleSheet.textContent = customFontStyles;
-document.head.appendChild(styleSheet);
-@endif
-
 console.log('Quill fonts loaded:', FontClass.whitelist);
 
 window.addEventListener('load', function() {
