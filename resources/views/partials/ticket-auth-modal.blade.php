@@ -1,41 +1,81 @@
-<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-8 relative">
-        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold" onclick="closeAuthModal()">&times;</button>
-        <h2 class="text-2xl font-bold mb-4 text-center" style="color: #000 !important">Login or Register to Continue</h2>
-        <form id="authForm" autocomplete="off">
-            <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
-                <input type="text" name="name" id="authName" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden">
+        <!-- Gradient Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-6 text-center">
+            <button class="absolute top-4 right-4 text-white hover:text-gray-200 text-3xl font-bold z-10" onclick="closeAuthModal()">&times;</button>
+            <i class="fas fa-user-circle text-white text-5xl mb-3"></i>
+            <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
+            <p class="text-purple-100 text-sm mt-1">Login or create your account</p>
+        </div>
+        
+        <form id="authForm" autocomplete="off" class="p-8">
+            <div class="mb-5" id="nameFieldContainer">
+                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+                    <i class="fas fa-user text-purple-600 mr-2"></i>Full Name
+                </label>
+                <input type="text" name="name" id="authName" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base">
             </div>
 
-            <div class="mb-4">
-                <label class="block text-gray-700 font-semibold mb-2">Email Address</label>
-                <input type="email" name="email" id="authEmail" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" required>
+            <div class="mb-5">
+                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+                    <i class="fas fa-envelope text-purple-600 mr-2"></i>Email Address
+                </label>
+                <input type="email" name="email" id="authEmail" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base" required>
             </div>
 
-            <div class="mb-4" id="passwordField">
-                <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                <input type="password" name="password" id="authPassword" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" required>
+            <div class="mb-5" id="passwordField">
+                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+                    <i class="fas fa-lock text-purple-600 mr-2"></i>Password
+                </label>
+                <input type="password" name="password" id="authPassword" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base" required>
             </div>
 
-            <div class="mb-4" id="confirmPasswordField">
-                <label class="block text-gray-700 font-semibold mb-2">Confirm Password</label>
-                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+            <div class="mb-5" id="confirmPasswordField">
+                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+                    <i class="fas fa-lock text-purple-600 mr-2"></i>Confirm Password
+                </label>
+                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base">
             </div>
 
-            <div class="mb-4 hidden" id="verificationField">
-                <label class="block text-gray-700 font-semibold mb-2">Verification Code</label>
-                <input type="text" name="verification_code" id="verificationCode" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" maxlength="6">
-                <p class="text-xs text-gray-500 mt-2">Check your spam folder for the verification code.</p>
+            <div class="mb-5 hidden" id="verificationField">
+                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+                    <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Verification Code
+                </label>
+                <input type="text" name="verification_code" id="verificationCode" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-2xl font-bold tracking-widest" maxlength="6" placeholder="000000">
+                <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <p class="text-xs text-blue-800">
+                        <i class="fas fa-info-circle mr-1"></i>Check your email for the verification code. Don't forget to check your spam folder!
+                    </p>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="button" id="resendCodeBtn" class="text-purple-600 hover:text-purple-800 text-sm font-semibold underline">
+                        <i class="fas fa-redo-alt mr-1"></i>Resend Verification Code
+                    </button>
+                </div>
             </div>
 
-            <div class="mb-4 text-center">
-                <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold w-full" id="authSubmitBtn">Continue</button>
+            <div class="mb-5">
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-6 py-3 rounded-lg font-bold w-full text-lg shadow-lg transition transform hover:scale-105" id="authSubmitBtn">
+                    <i class="fas fa-arrow-right mr-2"></i>Continue
+                </button>
             </div>
-            <div class="text-center text-sm text-gray-500" id="authError"></div>
-            <div class="text-center text-sm mt-2">
-                <a href="#" id="switchToRegister" class="text-purple-600 hover:underline">Register</a> |
-                <a href="#" id="switchToLogin" class="text-purple-600 hover:underline">Login</a>
+            
+            <div class="text-center mb-4">
+                <div id="authError" class="text-sm text-red-600 font-semibold mb-2"></div>
+                <div id="authSuccess" class="text-sm text-green-600 font-semibold mb-2 hidden"></div>
+            </div>
+            
+            <div class="text-center pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-2">Don't have an account yet?</p>
+                <div class="flex gap-2 justify-center">
+                    <a href="#" id="switchToRegister" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
+                        <i class="fas fa-user-plus mr-1"></i>Register
+                    </a>
+                    <span class="text-gray-400">|</span>
+                    <a href="#" id="switchToLogin" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
+                        <i class="fas fa-sign-in-alt mr-1"></i>Login
+                    </a>
+                </div>
             </div>
         </form>
     </div>
@@ -62,20 +102,35 @@
     function setAuthMode(mode) {
         authMode = mode;
         const authError = document.getElementById('authError');
+        const authSuccess = document.getElementById('authSuccess');
         if (authError) authError.textContent = '';
-        document.getElementById('verificationField').classList.add('hidden');
-        document.getElementById('passwordField').classList.remove('hidden');
-        document.getElementById('confirmPasswordField').classList.add('hidden');
-        document.getElementById('authName').closest('div').classList.add('hidden');
-        document.getElementById('authSubmitBtn').textContent = (mode === 'register') ? 'Register' : (mode === 'verify' ? 'Verify' : 'Login');
-        if (mode === 'verify') {
-            document.getElementById('verificationField').classList.remove('hidden');
-            document.getElementById('passwordField').classList.add('hidden');
-            document.getElementById('authName').closest('div').classList.add('hidden');
+        if (authSuccess) {
+            authSuccess.textContent = '';
+            authSuccess.classList.add('hidden');
         }
+        
+        const verificationField = document.getElementById('verificationField');
+        const passwordField = document.getElementById('passwordField');
+        const confirmPasswordField = document.getElementById('confirmPasswordField');
+        const nameFieldContainer = document.getElementById('nameFieldContainer');
+        const submitBtn = document.getElementById('authSubmitBtn');
+        
+        verificationField.classList.add('hidden');
+        passwordField.classList.remove('hidden');
+        confirmPasswordField.classList.add('hidden');
+        nameFieldContainer.classList.add('hidden');
+        
         if (mode === 'register') {
-            document.getElementById('confirmPasswordField').classList.remove('hidden');
-            document.getElementById('authName').closest('div').classList.remove('hidden');
+            submitBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
+            confirmPasswordField.classList.remove('hidden');
+            nameFieldContainer.classList.remove('hidden');
+        } else if (mode === 'verify') {
+            submitBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Verify Account';
+            verificationField.classList.remove('hidden');
+            passwordField.classList.add('hidden');
+            nameFieldContainer.classList.add('hidden');
+        } else {
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
         }
     }
     window.setAuthMode = setAuthMode;
@@ -83,6 +138,41 @@
 
     document.getElementById('switchToRegister').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('register'); });
     document.getElementById('switchToLogin').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('login'); });
+
+    // Resend verification code handler
+    document.getElementById('resendCodeBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value.trim();
+        const authError = document.getElementById('authError');
+        const authSuccess = document.getElementById('authSuccess');
+        const btn = e.target.closest('button');
+        
+        if (!email) {
+            authError.textContent = 'Please enter your email address';
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Sending...';
+        
+        try {
+            const res = await ajaxPost('/ajax/ticket-auth/resend-code', { email });
+            if (res.success) {
+                authSuccess.textContent = 'Verification code resent! Check your email and spam folder.';
+                authSuccess.classList.remove('hidden');
+                authError.textContent = '';
+            } else {
+                authError.textContent = res.message || 'Failed to resend code';
+                authSuccess.classList.add('hidden');
+            }
+        } catch (err) {
+            authError.textContent = 'Server error. Please try again.';
+            authSuccess.classList.add('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-redo-alt mr-1"></i>Resend Verification Code';
+        }
+    });
 
     async function ajaxPost(url, data) {
         const token = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : (document.querySelector('input[name="_token"]') ? document.querySelector('input[name="_token"]').value : '');
@@ -123,7 +213,11 @@
             const res = await ajaxPost(url, data);
             if (res.success) {
                 if (authMode === 'register') {
-                    authError.textContent = 'Verification code sent to ' + email + '. Check spam folder.';
+                    const authSuccess = document.getElementById('authSuccess');
+                    const authError = document.getElementById('authError');
+                    authSuccess.textContent = '✓ Verification code sent to ' + email + '. Check your email and spam folder.';
+                    authSuccess.classList.remove('hidden');
+                    authError.textContent = '';
                     setAuthMode('verify');
                     return;
                 }
