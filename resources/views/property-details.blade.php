@@ -1765,7 +1765,7 @@
                     <div class="bg-purple-50 rounded-lg p-4 mb-6">
                         <div class="text-sm text-gray-600 mb-1">Your Investment</div>
                         <div class="text-3xl font-bold text-purple-600" id="cardTotalInvestment">
-                            {{ number_format($ticket->price_per_share) }}
+                            ${{ number_format($ticket->price_per_share) }}
                         </div>
                     </div>
 
