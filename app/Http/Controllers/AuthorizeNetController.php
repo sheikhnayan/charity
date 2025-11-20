@@ -282,10 +282,10 @@ class AuthorizeNetController extends Controller
                     $donation->update();
 
                     // Update all ticket sell details to success status  
-                    foreach ($donation->details as $detail) {
-                        $detail->status = 1;
-                        $detail->save();
-                    }
+                    // foreach ($donation->details as $detail) {
+                    //     $detail->status = 1;
+                    //     $detail->save();
+                    // }
 
 
                     $tran = new Transaction;

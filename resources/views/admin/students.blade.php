@@ -185,7 +185,9 @@
                     $('#websiteFilter').on('change', function() {
                         let val = $(this).val();
                         if(val) {
-                            table.column(2).search('^' + val + '$', true, false).draw();
+                            // Escape special regex characters
+                            let escapedVal = val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            table.column(2).search('^' + escapedVal + '$', true, false).draw();
                         } else {
                             table.column(2).search('').draw();
                         }
