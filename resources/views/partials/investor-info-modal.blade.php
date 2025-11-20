@@ -1,28 +1,28 @@
 {{-- Investor Information Modal --}}
 <div class="modal" id="investorInfoModal" tabindex="-1" aria-labelledby="investorInfoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-2xl rounded-2xl overflow-hidden">
+        <div class="modal-content border-0 shadow-2xl rounded-2xl overflow-hidden" style="max-height: 90vh;">
             <!-- Gradient Header -->
-            <div class="modal-header bg-gradient-to-r from-purple-600 to-purple-800 border-0 text-white p-4">
+            <div class="modal-header bg-gradient-to-r from-purple-600 to-purple-800 border-0 text-white p-3">
                 <div class="w-100 text-center">
-                    <i class="fas fa-user-shield text-white text-4xl mb-2"></i>
-                    <h5 class="modal-title text-2xl font-bold mb-1" id="investorInfoModalLabel">Complete Your Investor Profile</h5>
-                    <p class="text-purple-100 text-sm mb-0">Secure your investment with verified information</p>
+                    <i class="fas fa-user-shield text-white text-3xl mb-1"></i>
+                    <h5 class="modal-title text-lg font-bold mb-0" id="investorInfoModalLabel">Complete Your Investor Profile</h5>
+                    <p class="text-purple-100 text-xs mb-0">Secure your investment</p>
                 </div>
             </div>
-            <div class="modal-body p-4">
-                <div class="alert alert-info border-l-4 border-blue-500 bg-blue-50 rounded-lg mb-4">
-                    <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                    <span class="text-sm text-blue-800">Please provide your investor information to proceed with your purchase. All information is encrypted and secure.</span>
+            <div class="modal-body p-3" style="overflow-y: auto;">
+                <div class="alert alert-info border-l-4 border-blue-500 bg-blue-50 rounded-lg mb-3 p-2">
+                    <i class="fas fa-info-circle text-blue-600 mr-1"></i>
+                    <span class="text-xs text-blue-800">Provide your investor information to proceed. All data is encrypted and secure.</span>
                 </div>
                 
                 <form id="investor-profile-form">
                     @csrf
-                    <div class="mb-4">
-                        <label for="modal_investor_type" class="form-label font-semibold text-gray-800">
-                            <i class="fas fa-user-tag text-purple-600 mr-2"></i>Pick an investor type *
+                    <div class="mb-3">
+                        <label for="modal_investor_type" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                            <i class="fas fa-user-tag text-purple-600 mr-1"></i>Pick an investor type *
                         </label>
-                        <select id="modal_investor_type" name="investor_type" class="form-select border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                        <select id="modal_investor_type" name="investor_type" class="form-select border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
                             <option value="">Select investor type</option>
                             <option value="individual">Myself/an individual</option>
                             <option value="joint">Joint (more than one individual)</option>
@@ -34,69 +34,69 @@
 
                     <!-- Individual Investor Fields -->
                     <div id="modal-individual-fields" class="modal-investor-type-fields" style="display: none;">
-                        <div class="mb-4">
-                            <label for="modal_individual_name" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-user text-purple-600 mr-2"></i>Full Name *
+                        <div class="mb-3">
+                            <label for="modal_individual_name" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-user text-purple-600 mr-1"></i>Full Name *
                             </label>
-                            <input type="text" id="modal_individual_name" name="individual_name" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modal_individual_name" name="individual_name" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_date_of_birth" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-calendar text-purple-600 mr-2"></i>Date of Birth *
+                        <div class="mb-3">
+                            <label for="modal_date_of_birth" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-calendar text-purple-600 mr-1"></i>Date of Birth *
                             </label>
-                            <input type="date" id="modal_date_of_birth" name="date_of_birth" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="date" id="modal_date_of_birth" name="date_of_birth" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_ssn" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Social Security Number *
+                        <div class="mb-3">
+                            <label for="modal_ssn" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-shield-alt text-purple-600 mr-1"></i>Social Security Number *
                             </label>
-                            <input type="text" id="modal_ssn" name="ssn" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
+                            <input type="text" id="modal_ssn" name="ssn" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
                         </div>
                     </div>
 
                     <!-- Joint Account Fields -->
                     <div id="modal-joint-fields" class="modal-investor-type-fields" style="display: none;">
-                        <div class="mb-4">
-                            <label for="modal_primary_name" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-user text-purple-600 mr-2"></i>Primary Account Holder Name *
+                        <div class="mb-3">
+                            <label for="modal_primary_name" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-user text-purple-600 mr-1"></i>Primary Account Holder Name *
                             </label>
-                            <input type="text" id="modal_primary_name" name="primary_name" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modal_primary_name" name="primary_name" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_primary_dob" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-calendar text-purple-600 mr-2"></i>Primary Holder Date of Birth *
+                        <div class="mb-3">
+                            <label for="modal_primary_dob" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-calendar text-purple-600 mr-1"></i>Primary Holder Date of Birth *
                             </label>
-                            <input type="date" id="modal_primary_dob" name="primary_dob" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="date" id="modal_primary_dob" name="primary_dob" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_primary_ssn" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Primary Holder SSN *
+                        <div class="mb-3">
+                            <label for="modal_primary_ssn" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-shield-alt text-purple-600 mr-1"></i>Primary Holder SSN *
                             </label>
-                            <input type="text" id="modal_primary_ssn" name="primary_ssn" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
+                            <input type="text" id="modal_primary_ssn" name="primary_ssn" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_secondary_name" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-user text-purple-600 mr-2"></i>Secondary Account Holder Name *
+                        <div class="mb-3">
+                            <label for="modal_secondary_name" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-user text-purple-600 mr-1"></i>Secondary Account Holder Name *
                             </label>
-                            <input type="text" id="modal_secondary_name" name="secondary_name" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modal_secondary_name" name="secondary_name" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_secondary_dob" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-calendar text-purple-600 mr-2"></i>Secondary Holder Date of Birth *
+                        <div class="mb-3">
+                            <label for="modal_secondary_dob" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-calendar text-purple-600 mr-1"></i>Secondary Holder Date of Birth *
                             </label>
-                            <input type="date" id="modal_secondary_dob" name="secondary_dob" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="date" id="modal_secondary_dob" name="secondary_dob" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_secondary_ssn" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Secondary Holder SSN *
+                        <div class="mb-3">
+                            <label for="modal_secondary_ssn" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-shield-alt text-purple-600 mr-1"></i>Secondary Holder SSN *
                             </label>
-                            <input type="text" id="modal_secondary_ssn" name="secondary_ssn" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
+                            <input type="text" id="modal_secondary_ssn" name="secondary_ssn" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XXX-XX-XXXX">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_joint_type" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-handshake text-purple-600 mr-2"></i>Joint Account Type *
+                        <div class="mb-3">
+                            <label for="modal_joint_type" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-handshake text-purple-600 mr-1"></i>Joint Account Type *
                             </label>
-                            <select id="modal_joint_type" name="joint_type" class="form-select border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select id="modal_joint_type" name="joint_type" class="form-select border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                 <option value="">Select joint type</option>
                                 <option value="jtwros">Joint Tenants with Rights of Survivorship</option>
                                 <option value="tenants_common">Tenants in Common</option>
@@ -107,35 +107,35 @@
 
                     <!-- Corporation Fields -->
                     <div id="modal-corporation-fields" class="modal-investor-type-fields" style="display: none;">
-                        <div class="mb-4">
-                            <label for="modal_corporation_name" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-building text-purple-600 mr-2"></i>Corporation Name *
+                        <div class="mb-3">
+                            <label for="modal_corporation_name" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-building text-purple-600 mr-1"></i>Corporation Name *
                             </label>
-                            <input type="text" id="modal_corporation_name" name="corporation_name" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modal_corporation_name" name="corporation_name" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_ein" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-id-card text-purple-600 mr-2"></i>Federal Tax ID (EIN) *
+                        <div class="mb-3">
+                            <label for="modal_ein" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-id-card text-purple-600 mr-1"></i>Federal Tax ID (EIN) *
                             </label>
-                            <input type="text" id="modal_ein" name="ein" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XX-XXXXXXX">
+                            <input type="text" id="modal_ein" name="ein" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="XX-XXXXXXX">
                         </div>
-                        <div class="mb-4">
-                            <label for="modal_incorporation_state" class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-map-marker-alt text-purple-600 mr-2"></i>State of Incorporation *
+                        <div class="mb-3">
+                            <label for="modal_incorporation_state" class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-map-marker-alt text-purple-600 mr-1"></i>State of Incorporation *
                             </label>
-                            <input type="text" id="modal_incorporation_state" name="incorporation_state" class="form-control border-2 border-gray-200 rounded-lg py-3 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modal_incorporation_state" name="incorporation_state" class="form-control border-2 border-gray-200 rounded-lg py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label font-semibold text-gray-800">
-                                <i class="fas fa-certificate text-purple-600 mr-2"></i>Accredited Investor Status *
+                        <div class="mb-3">
+                            <label class="form-label font-semibold text-gray-800 text-sm mb-1">
+                                <i class="fas fa-certificate text-purple-600 mr-1"></i>Accredited Investor Status *
                             </label>
-                            <div class="form-check mb-2">
+                            <div class="form-check mb-1">
                                 <input class="form-check-input" type="radio" name="accredited_investor" id="modal_accredited_yes" value="yes">
-                                <label class="form-check-label text-base" for="modal_accredited_yes">Yes, I am an accredited investor</label>
+                                <label class="form-check-label text-sm" for="modal_accredited_yes">Yes, I am an accredited investor</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="accredited_investor" id="modal_accredited_no" value="no">
-                                <label class="form-check-label text-base" for="modal_accredited_no">No</label>
+                                <label class="form-check-label text-sm" for="modal_accredited_no">No</label>
                             </div>
                         </div>
                     </div>
@@ -182,16 +182,16 @@
                         </div>
                     </div>
 
-                    <div class="alert alert-danger d-none border-l-4 border-red-500 bg-red-50 rounded-lg" id="investor-profile-error"></div>
+                    <div class="alert alert-danger d-none border-l-4 border-red-500 bg-red-50 rounded-lg p-2" id="investor-profile-error"></div>
                 </form>
             </div>
-            <div class="modal-footer bg-gray-50 border-0 p-4">
-                <div class="w-100 d-flex gap-3 justify-content-end">
-                    {{-- <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-lg" id="skip-investor-info">
-                        <i class="fas fa-forward mr-2"></i>Skip for Now
+            <div class="modal-footer bg-gray-50 border-0 p-3">
+                <div class="w-100 d-flex gap-2 justify-content-end">
+                    {{-- <button type="button" class="btn btn-outline-secondary px-3 py-2 rounded-lg text-sm" id="skip-investor-info">
+                        <i class="fas fa-forward mr-1"></i>Skip for Now
                     </button> --}}
-                    <button type="button" class="btn btn-primary bg-gradient-to-r from-purple-600 to-purple-800 border-0 px-5 py-3 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-105" id="save-investor-info">
-                        <i class="fas fa-check-circle mr-2"></i>Save & Continue to Checkout
+                    <button type="button" class="btn btn-primary bg-gradient-to-r from-purple-600 to-purple-800 border-0 px-4 py-2 rounded-lg font-bold text-base shadow-lg hover:shadow-xl transition transform hover:scale-105" id="save-investor-info">
+                        <i class="fas fa-check-circle mr-2"></i>Save & Continue
                     </button>
                 </div>
             </div>

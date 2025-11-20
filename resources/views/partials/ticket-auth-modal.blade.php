@@ -1,72 +1,72 @@
-<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden">
+<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden max-h-[90vh] flex flex-col">
         <!-- Gradient Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-6 text-center">
-            <button class="absolute top-4 right-4 text-white hover:text-gray-200 text-3xl font-bold z-10" onclick="closeAuthModal()">&times;</button>
-            <i class="fas fa-user-circle text-white text-5xl mb-3"></i>
-            <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
-            <p class="text-purple-100 text-sm mt-1">Login or create your account</p>
+        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-4 text-center flex-shrink-0">
+            <button class="absolute top-3 right-3 text-white hover:text-gray-200 text-2xl font-bold z-10" onclick="closeAuthModal()">&times;</button>
+            <i class="fas fa-user-circle text-white text-4xl mb-2"></i>
+            <h2 class="text-xl font-bold text-white">Welcome Back</h2>
+            <p class="text-purple-100 text-xs mt-1">Login or create your account</p>
         </div>
         
-        <form id="authForm" autocomplete="off" class="p-8">
-            <div class="mb-5" id="nameFieldContainer">
-                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+        <form id="authForm" autocomplete="off" class="p-6 overflow-y-auto flex-grow">
+            <div class="mb-3" id="nameFieldContainer">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-user text-purple-600 mr-2"></i>Full Name
                 </label>
-                <input type="text" name="name" id="authName" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base">
+                <input type="text" name="name" id="authName" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm">
             </div>
 
-            <div class="mb-5">
-                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+            <div class="mb-3">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-envelope text-purple-600 mr-2"></i>Email Address
                 </label>
-                <input type="email" name="email" id="authEmail" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base" required>
+                <input type="email" name="email" id="authEmail" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" required>
             </div>
 
-            <div class="mb-5" id="passwordField">
-                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+            <div class="mb-3" id="passwordField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-lock text-purple-600 mr-2"></i>Password
                 </label>
-                <input type="password" name="password" id="authPassword" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base" required>
+                <input type="password" name="password" id="authPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" required>
             </div>
 
-            <div class="mb-5" id="confirmPasswordField">
-                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+            <div class="mb-3" id="confirmPasswordField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-lock text-purple-600 mr-2"></i>Confirm Password
                 </label>
-                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-base">
+                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm">
             </div>
 
-            <div class="mb-5 hidden" id="verificationField">
-                <label class="block text-gray-800 font-semibold mb-2 text-sm">
+            <div class="mb-3 hidden" id="verificationField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Verification Code
                 </label>
-                <input type="text" name="verification_code" id="verificationCode" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-2xl font-bold tracking-widest" maxlength="6" placeholder="000000">
-                <div class="mt-3 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <input type="text" name="verification_code" id="verificationCode" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-xl font-bold tracking-widest" maxlength="6" placeholder="000000">
+                <div class="mt-2 p-2 bg-blue-50 border-l-4 border-blue-500 rounded">
                     <p class="text-xs text-blue-800">
-                        <i class="fas fa-info-circle mr-1"></i>Check your email for the verification code. Don't forget to check your spam folder!
+                        <i class="fas fa-info-circle mr-1"></i>Check your email. Don't forget spam folder!
                     </p>
                 </div>
-                <div class="text-center mt-3">
-                    <button type="button" id="resendCodeBtn" class="text-purple-600 hover:text-purple-800 text-sm font-semibold underline">
-                        <i class="fas fa-redo-alt mr-1"></i>Resend Verification Code
+                <div class="text-center mt-2">
+                    <button type="button" id="resendCodeBtn" class="text-purple-600 hover:text-purple-800 text-xs font-semibold underline">
+                        <i class="fas fa-redo-alt mr-1"></i>Resend Code
                     </button>
                 </div>
             </div>
 
-            <div class="mb-5">
-                <button type="submit" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-6 py-3 rounded-lg font-bold w-full text-lg shadow-lg transition transform hover:scale-105" id="authSubmitBtn">
+            <div class="mb-3">
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-4 py-2 rounded-lg font-bold w-full text-base shadow-lg transition transform hover:scale-105" id="authSubmitBtn">
                     <i class="fas fa-arrow-right mr-2"></i>Continue
                 </button>
             </div>
             
-            <div class="text-center mb-4">
-                <div id="authError" class="text-sm text-red-600 font-semibold mb-2"></div>
-                <div id="authSuccess" class="text-sm text-green-600 font-semibold mb-2 hidden"></div>
+            <div class="text-center mb-2">
+                <div id="authError" class="text-xs text-red-600 font-semibold mb-1"></div>
+                <div id="authSuccess" class="text-xs text-green-600 font-semibold mb-1 hidden"></div>
             </div>
             
-            <div class="text-center pt-4 border-t border-gray-200">
-                <p class="text-sm text-gray-600 mb-2">Don't have an account yet?</p>
+            <div class="text-center pt-3 border-t border-gray-200">
+                <p class="text-xs text-gray-600 mb-2">Don't have an account yet?</p>
                 <div class="flex gap-2 justify-center">
                     <a href="#" id="switchToRegister" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
                         <i class="fas fa-user-plus mr-1"></i>Register
