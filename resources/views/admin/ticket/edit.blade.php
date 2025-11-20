@@ -219,10 +219,18 @@
                         </div>
                         @if(isset($data) && $data->type === 'property')
                         @php
-                            $remainingShares = $data->available_shares;
-                            $soldShares = $data->total_shares - $remainingShares;
+                            // Calculate real-time sold shares from actual sales
+                            $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $data->id)
+                                ->whereHas('ticketSell', function($query) {
+                                    $query->where('status', 1);
+                                })
+                                ->sum('quantity');
+                            
+                            // Calculate actual available shares dynamically
+                            $remainingShares = $data->total_shares - $totalSold;
+                            $soldShares = $totalSold;
                             $remainingCost = $remainingShares * $data->price_per_share;
-                            $fullCost = $data->price; // already stored total value
+                            $fullCost = $data->price;
                         @endphp
                         <div class="alert alert-info">
                             <strong>Available Shares:</strong> {{ number_format($remainingShares) ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
