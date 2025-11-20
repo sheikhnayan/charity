@@ -849,8 +849,8 @@
                         @if($header->contact_phone)
                         <div class="col-3 col-md-auto">
                             <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
                                     {{ $header->contact_phone }}
                                 </a>
                             </div>
@@ -859,8 +859,8 @@
                         @if($header->contact_email)
                         <div class="col-6 col-md-auto" style="text-align: center;">
                             <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
                                     {{ $header->contact_email }}
                                 </a>
                             </div>
@@ -869,8 +869,8 @@
                         @if($header->contact_cta_text)
                         <div class="col-3 col-md-auto">
                             <div class="contact-item mb-1">
-                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important; text-decoration : underline !important;">
                                     {{ $header->contact_cta_text }}
                                 </span>
                             </div>
