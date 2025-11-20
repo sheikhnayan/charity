@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/heatmap/scroll',
             'api/heatmap/screenshot',
             'api/heatmap/screenshot/capture',
+            'users/investor-profile/save',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
