@@ -1482,45 +1482,55 @@ h5, .ql-header-5 {
                     } else {
                         // Regular Owl Carousel Mode
                         if (typeof $.fn.owlCarousel !== 'undefined') {
-                            $("#{{ $sliderId }}").owlCarousel({
+                            const sliderConfig = {
                                 items: {{ $slidesToShow }},
-                        loop: true,
-                        margin: 10,
-                        autoplay: true,
-                        autoplayTimeout: {{ $slideSpeed }},
-                        autoplayHoverPause: true,
-                        smartSpeed: 800,
-                        animateOut: 'fadeOut',
-                        animateIn: 'fadeIn',
-                        nav: true,
-                        dots: true,
-                        navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
-                        responsive: {
-                            0: { 
-                                items: 1,
-                                margin: 5
-                            },
-                            480: { 
-                                items: {{ min(2, $slidesToShow) }},
-                                margin: 8
-                            },
-                            768: { 
-                                items: {{ min(3, $slidesToShow) }},
-                                margin: 10
-                            },
-                            1000: { 
-                                items: {{ $slidesToShow }},
-                                margin: 10
-                            }
-                        },
-                        onInitialized: function(event) {
-                            // Add smooth CSS transitions
-                            $(event.target).find('.owl-item').css({
-                                'transition': 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                                'transform-style': 'preserve-3d'
-                            });
-                        }
-                    });
+                                loop: true,
+                                margin: 10,
+                                autoplay: true,
+                                autoplayTimeout: {{ $slideSpeed }},
+                                autoplayHoverPause: true,
+                                smartSpeed: 800,
+                                animateOut: 'fadeOut',
+                                animateIn: 'fadeIn',
+                                nav: true,
+                                dots: true,
+                                navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+                                responsive: {
+                                    0: { 
+                                        items: 1,
+                                        margin: 5
+                                    },
+                                    480: { 
+                                        items: {{ min(2, $slidesToShow) }},
+                                        margin: 8
+                                    },
+                                    768: { 
+                                        items: {{ min(3, $slidesToShow) }},
+                                        margin: 10
+                                    },
+                                    1000: { 
+                                        items: {{ $slidesToShow }},
+                                        margin: 10
+                                    }
+                                },
+                                onInitialized: function(event) {
+                                    // Add smooth CSS transitions
+                                    $(event.target).find('.owl-item').css({
+                                        'transition': 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                                        'transform-style': 'preserve-3d'
+                                    });
+                                    
+                                    // Force autoplay settings to ensure consistent speed across all devices
+                                    const owl = $(event.target).data('owl.carousel');
+                                    if (owl) {
+                                        owl.settings.autoplayTimeout = {{ $slideSpeed }};
+                                        owl.settings.smartSpeed = 800;
+                                    }
+                                }
+                            };
+                            
+                            // Initialize slider with config
+                            $("#{{ $sliderId }}").owlCarousel(sliderConfig);
 
                     // Add custom CSS for smoother animations
                     $('<style>').prop('type', 'text/css').html(`
