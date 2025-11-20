@@ -1202,7 +1202,7 @@ h5, .ql-header-5 {
             
             <div class="custom-html-component" id="{{ $componentId }}" style="{{ $styleStr }}">
                 <iframe 
-                    srcdoc="{{ htmlspecialchars($htmlContent) }}" 
+                    srcdoc="{!! htmlspecialchars($htmlContent) !!}" 
                     style="width: 100%; height: {{ $height }}px; border: none; display: block;"
                     sandbox="allow-scripts allow-same-origin"
                     scrolling="auto"
