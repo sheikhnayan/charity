@@ -1491,12 +1491,19 @@ if (isset($state['components'])) {
                     document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
                     document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
                     
+                    // Also set it directly on the main element to ensure it applies immediately
+                    const mainElement = document.querySelector('main');
+                    if (mainElement) {
+                        mainElement.style.paddingTop = `${mainContentMargin}rem`;
+                    }
+                    
                     console.log('Dynamic Heights Updated:', {
                         navbar: navbarHeight,
                         contactTopbar: contactTopbarHeight,
                         investorBar: investorBarHeight,
                         totalNavHeight: totalNavHeight,
-                        mainMargin: mainContentMargin
+                        mainMargin: mainContentMargin,
+                        appliedTo: 'main element padding-top'
                     });
                 }
             }
