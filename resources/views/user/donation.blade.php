@@ -165,10 +165,10 @@
                                                             @endphp
                                                             {{ $quantity->quantity }}
                                                         </td>
-                                                        <td>${{ $item->amount + (($item->amount / 100)*$payment->fee)}}</td>
-                                                        <td>${{ $item->amount }}</td>
-                                                        <td>${{ $item->amount }}</td>
-                                                        <td>${{ ($item->amount / 100)*$payment->fee }}</td>
+                                                        <td>${{ number_format($item->amount + (($item->amount / 100)*$payment->fee), 2) }}</td>
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        <td>${{ number_format(($item->amount / 100)*$payment->fee, 2) }}</td>
                                                         <td>
                                                             @if ($item->type != 'sponsor')
                                                             {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}

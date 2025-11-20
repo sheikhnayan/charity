@@ -30,6 +30,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Thank You!' : 'Thank You!' }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Fonts CSS -->
+    <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    
     <link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>
     <style>
         @import url(//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css);
@@ -39,15 +49,81 @@
     <script src="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/jquery-1.9.1.min.js"></script>
     <script src="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/html5shiv.js"></script>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <style>
+        /* Footer Font Styling - Ensure Quill editor font classes work in footer */
+        @if(isset($footer) && $footer)
+        /* Override hardcoded footer fonts and ensure custom font classes work */
+        .footer_content_wrap .ql-font-arial,
+        .footer-section .ql-font-arial,
+        .new-footer .ql-font-arial,
+        footer .ql-font-arial {
+            font-family: Arial, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-helvetica,
+        .footer-section .ql-font-helvetica,
+        .new-footer .ql-font-helvetica,
+        footer .ql-font-helvetica {
+            font-family: Helvetica, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-times,
+        .footer-section .ql-font-times,
+        .new-footer .ql-font-times,
+        footer .ql-font-times {
+            font-family: 'Times New Roman', serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-georgia,
+        .footer-section .ql-font-georgia,
+        .new-footer .ql-font-georgia,
+        footer .ql-font-georgia {
+            font-family: Georgia, serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-verdana,
+        .footer-section .ql-font-verdana,
+        .new-footer .ql-font-verdana,
+        footer .ql-font-verdana {
+            font-family: Verdana, sans-serif !important;
+        }
+        
+        .footer_content_wrap .ql-font-courier,
+        .footer-section .ql-font-courier,
+        .new-footer .ql-font-courier,
+        footer .ql-font-courier {
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .footer_content_wrap .ql-font-outfit,
+        .footer-section .ql-font-outfit,
+        .new-footer .ql-font-outfit,
+        footer .ql-font-outfit {
+            font-family: 'Outfit', sans-serif !important;
+        }
+        
+        /* Custom font classes in footer */
+        @php
+            $customFonts = \App\Models\CustomFont::all();
+        @endphp
+        @if(isset($customFonts) && $customFonts->count() > 0)
+        @foreach($customFonts as $font)
+        .footer_content_wrap .ql-font-{{ $font->font_family }},
+        .footer-section .ql-font-{{ $font->font_family }},
+        .new-footer .ql-font-{{ $font->font_family }},
+        footer .ql-font-{{ $font->font_family }} {
+            font-family: '{{ $font->font_family }}', sans-serif !important;
+        }
+        @endforeach
+        @endif
+        @endif
+        
         .footer-socials .nav-item {
-        margin-right: 1rem !important;
+            margin-right: 1rem !important;
         }
 
         .footer-socials .nav-item a i {
@@ -61,7 +137,7 @@
             margin-top: 2rem;
         }
 
-         .invest-button-section {
+        .invest-button-section {
             flex-shrink: 0;
         }
 
@@ -109,161 +185,16 @@
 
     <div class="main-content" style="text-align: center; padding-bottom: 4.3rem;">
         <i class="fa fa-check main-content__checkmark" id="checkmark"></i>
-        <p class="main-content__body p-4" data-lead-id="main-content-body">Your payment was successful. A confirmation email
-            with the transaction details has been sent to your provided email address. We truly appreciate your trust
-            in us.</p>
-        <p class="main-content__body p-4" data-lead-id="main-content-body">If you have any questions or need further
-            assistance, feel free to contact our support team.</p>
+        <p class="main-content__body p-4" data-lead-id="main-content-body">Your Transaction Is Complete
+Thank you for your purchase and a confirmation email with the details has been sent to you.
+Your order will appear in your dashboard shortly.
+If you need help or have any questions, our support team is always here to assist.</p>
+        <p class="main-content__body p-4" data-lead-id="main-content-body">Please check your dashboard for your purchase details.</p>
     </div>
 
-
-
+    <!-- Footer -->
     @if ($footer && $footer->status == 1)
         @include('layouts.new-footer')
-    @elseif ($footer && $footer->status == 1)
-            <footer class="standard-client-footer text-white bg-primary" data-footer="" style="
-        background-color: {{ $footer->background }} !important;
-        ">
-                <div class="container">
-
-                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
-                        {{ $footer->message }}
-                    </p>
-                    @if ($footer->menu == 1)
-                        <div class="nav justify-content-center">
-                            @foreach ($check->pages->sortBy('position') as $item)
-
-                                @if($item->status == 1)
-
-                                    <div class="nav-item">
-                                        <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}"
-                                            style="color:{{ $footer->color }} !important" aria-current="page">
-                                            {{ $item->name }}
-                                        </a>
-                                    </div>
-                                @endif
-
-                            @endforeach
-                        </div>
-                    @endif
-
-                    @if ($footer->social == 1)
-                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
-                            @if ($footer->facebook)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->facebook }}" target="_blank">
-                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">facebook</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->instagram)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->instagram }}" target="_blank">
-                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">instagram</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->linkedin)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->linkedin }}" target="_blank">
-                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">linkedin</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->pinterest)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->pinterest }}" target="_blank">
-                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">pinterest</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->x)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->x }}" target="_blank">
-                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">x</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->youtube)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->youtube }}" target="_blank">
-                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">youtube</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->blue_sky)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->blue_sky }}" target="_blank">
-                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">blue sky</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->tiktok)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->tiktok }}" target="_blank">
-                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true"
-                                            style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">tiktok</span>
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    @endif
-
-                    @if ($footer->copy_right != null)
-                        <p class="text-center" style="margin-bottom: 0px;">
-                            <small style="color: {{ $footer->color }}">
-                                {{ $footer->copy_right }}
-                            </small>
-                        </p>
-                    @endif
-                </div>
-                @if ($footer->privacy == 1)
-                    <div class="row mt-4">
-                        <div class="col-md-12 text-center">
-                            <ul
-                                style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;"
-                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund
-                                        Policy</a>
-                                </li>
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;"
-                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy
-                                        Policy</a>
-                                </li>
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;"
-                                        href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms
-                                        of service</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                @endif
-            </footer>
     @endif
 
 </body>
