@@ -32,6 +32,9 @@
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
     
     <style>
+        #authError{
+            display: none !important;
+        }
         /* Custom Fonts @font-face declarations */
         @if(isset($customFonts) && $customFonts->count() > 0)
         @foreach($customFonts as $font)
