@@ -322,18 +322,28 @@ window.loadInvestorProfile = function(profileData) {
             }
         };
         
+        // Helper function to mask SSN (show first 3 chars, rest as ****)
+        const maskSSN = (ssn) => {
+            if (!ssn) return '';
+            const cleaned = ssn.toString().replace(/\D/g, '');
+            if (cleaned.length >= 3) {
+                return cleaned.substring(0, 3) + '****';
+            }
+            return ssn;
+        };
+        
         // Individual fields
         setFieldValue('modal_individual_name', data.individual_name);
         setFieldValue('modal_date_of_birth', data.date_of_birth);
-        setFieldValue('modal_ssn', data.ssn);
+        setFieldValue('modal_ssn', maskSSN(data.ssn));
         
         // Joint fields
         setFieldValue('modal_primary_name', data.primary_name);
         setFieldValue('modal_primary_dob', data.primary_dob);
-        setFieldValue('modal_primary_ssn', data.primary_ssn);
+        setFieldValue('modal_primary_ssn', maskSSN(data.primary_ssn));
         setFieldValue('modal_secondary_name', data.secondary_name);
         setFieldValue('modal_secondary_dob', data.secondary_dob);
-        setFieldValue('modal_secondary_ssn', data.secondary_ssn);
+        setFieldValue('modal_secondary_ssn', maskSSN(data.secondary_ssn));
         setFieldValue('modal_joint_type', data.joint_type);
         
         // Corporation fields
