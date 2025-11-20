@@ -1526,14 +1526,14 @@ if (isset($state['components'])) {
     @endif
     
     <main style="margin-top: var(--main-content-margin-top, {{ 
-        ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header->show_investor_exclusives) ? '14.2rem' : 
+        ($header && $header->show_contact_topbar && $check && $header->show_investor_exclusives) ? '14.2rem' : 
         (($header && $header->show_contact_topbar) ? '10.5rem' : 
-        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
+        (($check && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
     }});" 
           class="{{ 
-            ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
+            ($header && $header->show_contact_topbar && $check && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
             (($header && $header->show_contact_topbar) ? 'with-contact-bar' : 
-            (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
+            (($check && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
         }}">
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
