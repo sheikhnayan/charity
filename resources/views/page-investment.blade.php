@@ -1482,8 +1482,8 @@ if (isset($state['components'])) {
                         const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
                         const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
                         
-                        // Main content margin should account for investor bar if present
-                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
+                        // Main content margin - only include investor bar if it's actually present
+                        const mainContentMargin = (investorBar ? totalWithInvestorBar : totalNavHeight) / 16 + 0.5;
                         
                         // Set CSS custom properties
                         document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
