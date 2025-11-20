@@ -1525,6 +1525,9 @@ if (isset($state['components'])) {
         @endif
     @endif
     
+    @if ($header && $header->show_contect_topbar == 0)
+        <main style="margin-top: 7rem !important" >
+    @else
     <main style="margin-top: var(--main-content-margin-top, {{ 
         ($header && $header->show_contact_topbar == 1 && $check && $header->show_investor_exclusives == 1) ? '14.2rem' : 
         (($header && $header->show_contact_topbar == 1) ? '10.5rem' : 
@@ -1535,6 +1538,8 @@ if (isset($state['components'])) {
             (($header && $header->show_contact_topbar == 1) ? 'with-contact-bar' : 
             (($check && $header && $header->show_investor_exclusives == 1) ? 'with-investor-bar' : ''))
         }}">
+    @endif
+
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
                 Purchase Pending
