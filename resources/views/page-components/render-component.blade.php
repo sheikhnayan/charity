@@ -552,14 +552,48 @@ h5, .ql-header-5 {
                 // Apply inner-section styling - ENABLE ALL STYLES for frontend
                 $sectionStyle = '';
                 
+                // Check if any nested component is a slider
+                $hasSlider = false;
+                foreach ($nestedComponents as $columnComponents) {
+                    if (is_array($columnComponents)) {
+                        foreach ($columnComponents as $nestedComp) {
+                            if (isset($nestedComp['type']) && $nestedComp['type'] === 'slider') {
+                                $hasSlider = true;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                
                 // Background color - always apply if set
                 if (isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== 'transparent') {
                     $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']} !important;";
                 }
                 
-                // Padding - always apply if set
+                // Padding - apply with or without !important based on whether section has slider
                 if (isset($innerSectionData['padding']) && $innerSectionData['padding'] !== '') {
-                    $sectionStyle .= "padding: {$innerSectionData['padding']}";
+                    if ($hasSlider) {
+                        // For sliders, apply padding to top/bottom only, let CSS handle left/right
+                        $paddingValue = $innerSectionData['padding'];
+                        // Extract padding values
+                        $paddingParts = explode(' ', trim($paddingValue));
+                        if (count($paddingParts) == 1) {
+                            // Single value: apply to top/bottom only
+                            $sectionStyle .= "padding-top: {$paddingParts[0]}; padding-bottom: {$paddingParts[0]};";
+                        } elseif (count($paddingParts) == 2) {
+                            // Two values: top/bottom left/right
+                            $sectionStyle .= "padding-top: {$paddingParts[0]}; padding-bottom: {$paddingParts[0]};";
+                        } elseif (count($paddingParts) == 4) {
+                            // Four values: top right bottom left
+                            $sectionStyle .= "padding-top: {$paddingParts[0]}; padding-bottom: {$paddingParts[2]};";
+                        } else {
+                            // Default to all padding without !important
+                            $sectionStyle .= "padding: {$innerSectionData['padding']};";
+                        }
+                    } else {
+                        // For non-slider sections, apply padding normally with !important
+                        $sectionStyle .= "padding: {$innerSectionData['padding']} !important;";
+                    }
                 }
                 
                 // Margin - always apply if set
@@ -1466,24 +1500,24 @@ h5, .ql-header-5 {
                                 items: 1,
                                 nav: true,
                                 dots: true,
-                                smartSpeed: 600,
-                                autoplayTimeout: {{ $slideSpeed + 500 }},
+                                smartSpeed: 800,
+                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 5
                             },
                             480: { 
                                 items: {{ min(2, $slidesToShow) }},
                                 nav: true,
                                 dots: true,
-                                smartSpeed: 700,
-                                autoplayTimeout: {{ $slideSpeed + 500 }},
+                                smartSpeed: 800,
+                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 8
                             },
                             768: { 
                                 items: {{ min(3, $slidesToShow) }},
                                 nav: true,
                                 dots: true,
-                                smartSpeed: 750,
-                                autoplayTimeout: {{ $slideSpeed + 500 }},
+                                smartSpeed: 800,
+                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 10
                             },
                             1000: { 
@@ -1491,7 +1525,7 @@ h5, .ql-header-5 {
                                 nav: true,
                                 dots: true,
                                 smartSpeed: 800,
-                                autoplayTimeout: {{ $slideSpeed + 500 }},
+                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 10
                             }
                         },
