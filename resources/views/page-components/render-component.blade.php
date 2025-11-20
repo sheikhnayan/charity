@@ -1734,6 +1734,8 @@ h5, .ql-header-5 {
                         
                         #{{ $sliderId }} .marquee-track {
                             display: flex;
+                            animation-name: ${animationName};
+                            animation-duration: ${animationDuration}s;
                             animation-timing-function: linear;
                             animation-iteration-count: infinite;
                             animation-play-state: running;
@@ -1777,6 +1779,7 @@ h5, .ql-header-5 {
                             }
                             #{{ $sliderId }} .marquee-track {
                                 height: 70px;
+                                animation-duration: ${animationDuration}s !important;
                             }
                             #{{ $sliderId }} .marquee-item {
                                 height: 70px;
@@ -1793,6 +1796,7 @@ h5, .ql-header-5 {
                             }
                             #{{ $sliderId }} .marquee-track {
                                 height: 70px;
+                                animation-duration: ${animationDuration}s !important;
                             }
                             #{{ $sliderId }} .marquee-item {
                                 height: 70px;
