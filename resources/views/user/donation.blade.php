@@ -548,18 +548,296 @@
                 </script>
 
                 <script>
+                let currentTransactionData = {};
+                
                 $(document).on('click', '.view-btn', function() {
-                    $('#modal-transaction').text($(this).data('transaction'));
-                    $('#modal-name').text($(this).data('name'));
-                    $('#modal-email').text($(this).data('email'));
-                    $('#modal-address').text($(this).data('address'));
-                    $('#modal-gross').text($(this).data('gross'));
-                    $('#modal-fee').text($(this).data('fee'));
-                    $('#modal-website').text($(this).data('website'));
-                    $('#modal-amount').text($(this).data('amount'));
-                    $('#modal-type').text($(this).data('type'));
-                    $('#modal-status').text($(this).data('status'));
-                    $('#modal-date').text($(this).data('date'));
+                    const $btn = $(this);
+                    currentTransactionData = $btn.data();
+                    
+                    // Basic transaction details
+                    $('#modal-transaction').text($btn.data('transaction') || 'N/A');
+                    $('#modal-ip-address').text($btn.data('ip-address') || 'N/A');
+                    $('#modal-first-name').text($btn.data('first-name') || 'N/A');
+                    $('#modal-last-name').text($btn.data('last-name') || 'N/A');
+                    $('#modal-email').text($btn.data('email') || 'N/A');
+                    $('#modal-phone').text($btn.data('phone') || 'N/A');
+                    $('#modal-type').text($btn.data('type') || 'N/A');
+                    $('#modal-status').text($btn.data('status') || 'N/A');
+                    $('#modal-website').text($btn.data('website') || 'N/A');
+                    $('#modal-date').text($btn.data('date') || 'N/A');
+                    
+                    // Payment information
+                    $('#modal-payment-first-name').text($btn.data('payment-first-name') || 'N/A');
+                    $('#modal-payment-last-name').text($btn.data('payment-last-name') || 'N/A');
+                    $('#modal-payment-phone').text($btn.data('payment-phone') || 'N/A');
+                    $('#modal-payment-email').text($btn.data('payment-email') || 'N/A');
+                    $('#modal-payment-address').text($btn.data('payment-address') || 'N/A');
+                    $('#modal-payment-city').text($btn.data('payment-city') || 'N/A');
+                    $('#modal-payment-state').text($btn.data('payment-state') || 'N/A');
+                    $('#modal-payment-country').text($btn.data('payment-country') || 'N/A');
+                    $('#modal-payment-zip').text($btn.data('payment-zip') || 'N/A');
+                    
+                    // Financial details
+                    $('#modal-gross').text($btn.data('gross') || '$0.00');
+                    $('#modal-fee').text($btn.data('fee') || '$0.00');
+                    $('#modal-total-amount').text($btn.data('total-amount') || '$0.00');
+                    $('#modal-total-due').text($btn.data('total-due') || '$0.00');
+                    $('#modal-total-paid').text($btn.data('total-paid') || '$0.00');
+                    
+                    // Show/hide investment section - always show payment info, only show investment details for investment type
+                    if ($btn.data('type') === 'investment') {
+                        $('#investment-section').show();
+                        $('#modal-investor-name').text($btn.data('investor-name') || 'N/A');
+                        $('#modal-investor-email').text($btn.data('investor-email') || 'N/A');
+                        $('#modal-investor-phone').text($btn.data('investor-phone') || 'N/A');
+                        $('#modal-investor-type').text($btn.data('investor-type') || 'N/A');
+                        $('#modal-share-quantity').text($btn.data('share-quantity') || 'N/A');
+                        $('#modal-investment-amount').text($btn.data('investment-amount') || '$0.00');
+                        $('#modal-investment-notes').text($btn.data('investment-notes') || 'N/A');
+                        
+                        // Parse and display investor data
+                        try {
+                            let investorData = $btn.data('investor-data');
+                            if (typeof investorData === 'string') {
+                                investorData = JSON.parse(investorData);
+                            }
+                            if (investorData && typeof investorData === 'object') {
+                                let dataHtml = '<div class="border p-2 rounded bg-light">';
+                                Object.keys(investorData).forEach(key => {
+                                    dataHtml += `<div><strong>${key}:</strong> ${investorData[key]}</div>`;
+                                });
+                                dataHtml += '</div>';
+                                $('#modal-investor-data').html(dataHtml);
+                            } else {
+                                $('#modal-investor-data').text('No additional data available');
+                            }
+                        } catch (e) {
+                            $('#modal-investor-data').text('Invalid data format');
+                        }
+                    } else {
+                        $('#investment-section').hide();
+                    }
+                });
+                
+                // PDF Download functionality
+                $('#downloadPdfBtn').on('click', function() {
+                    const transactionId = $('#modal-transaction').text();
+                    if (transactionId && transactionId !== 'N/A') {
+                        window.open(`/admins/transactions/${transactionId}/download-invoice`, '_blank');
+                    } else {
+                        alert('Transaction ID not found');
+                    }
+                });
+
+                // Resend Invoice functionality
+                $('#resendInvoiceBtn').on('click', function() {
+                    const transactionId = $('#modal-transaction').text();
+                    const email = $('#modal-email').text();
+                    
+                    if (transactionId && transactionId !== 'N/A') {
+                        if (confirm(`Are you sure you want to resend the invoice to ${email}?`)) {
+                            $.ajax({
+                                url: `/admins/transactions/${transactionId}/resend-invoice`,
+                                method: 'POST',
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    alert('Invoice email sent successfully!');
+                                },
+                                error: function(xhr) {
+                                    alert('Error sending invoice email: ' + (xhr.responseJSON?.message || xhr.responseText));
+                                }
+                            });
+                        }
+                    } else {
+                        alert('Transaction ID not found');
+                    }
+                });
+
+                // Legacy PDF generation (kept as fallback)
+                $('#downloadLegacyPdfBtn').on('click', function() {
+                    // Create comprehensive PDF content
+                    const docDefinition = {
+                        content: [
+                            {
+                                text: 'Transaction Details Report',
+                                style: 'header',
+                                alignment: 'center',
+                                margin: [0, 0, 0, 20]
+                            },
+                            {
+                                text: `Generated on: ${new Date().toLocaleDateString()}`,
+                                alignment: 'right',
+                                margin: [0, 0, 0, 20]
+                            },
+                            {
+                                text: 'Transaction Details',
+                                style: 'subheader',
+                                margin: [0, 0, 0, 10]
+                            },
+                            {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['30%', '70%'],
+                                    body: [
+                                        ['Field', 'Value'],
+                                        ['Transaction ID', $('#modal-transaction').text()],
+                                        ['IP Address', $('#modal-ip-address').text()],
+                                        ['First Name', $('#modal-first-name').text()],
+                                        ['Last Name', $('#modal-last-name').text()],
+                                        ['Email', $('#modal-email').text()],
+                                        ['Phone', $('#modal-phone').text()],
+                                        ['Type', $('#modal-type').text()],
+                                        ['Status', $('#modal-status').text()],
+                                        ['Website', $('#modal-website').text()],
+                                        ['Date', $('#modal-date').text()]
+                                    ]
+                                }
+                            },
+                            {
+                                text: 'Payment Information',
+                                style: 'subheader',
+                                margin: [0, 20, 0, 10]
+                            },
+                            {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['30%', '70%'],
+                                    body: [
+                                        ['Field', 'Value'],
+                                        ['Payment First Name', $('#modal-payment-first-name').text()],
+                                        ['Payment Last Name', $('#modal-payment-last-name').text()],
+                                        ['Payment Phone', $('#modal-payment-phone').text()],
+                                        ['Payment Email', $('#modal-payment-email').text()],
+                                        ['Payment Address', $('#modal-payment-address').text()],
+                                        ['Payment City', $('#modal-payment-city').text()],
+                                        ['Payment State', $('#modal-payment-state').text()],
+                                        ['Payment Country', $('#modal-payment-country').text()],
+                                        ['Payment Zip Code', $('#modal-payment-zip').text()]
+                                    ]
+                                }
+                            },
+                            {
+                                text: 'Financial Details',
+                                style: 'subheader',
+                                margin: [0, 20, 0, 10]
+                            },
+                            {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['30%', '70%'],
+                                    body: [
+                                        ['Field', 'Value'],
+                                        ['Gross Amount', $('#modal-gross').text()],
+                                        ['Processing Fee', $('#modal-fee').text()],
+                                        ['Total Amount', $('#modal-total-amount').text()],
+                                        ['Total Paid', $('#modal-total-paid').text()],
+                                        ['Total Due', $('#modal-total-due').text()]
+                                    ]
+                                }
+                            }
+                        ],
+                        styles: {
+                            header: {
+                                fontSize: 18,
+                                bold: true
+                            },
+                            subheader: {
+                                fontSize: 14,
+                                bold: true,
+                                color: '#333'
+                            }
+                        }
+                    };
+                    
+                    // Add investment details if applicable
+                    if ($('#investment-section').is(':visible')) {
+                        docDefinition.content.push(
+                            {
+                                text: 'Investment Details',
+                                style: 'subheader',
+                                margin: [0, 20, 0, 10]
+                            },
+                            {
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['30%', '70%'],
+                                    body: [
+                                        ['Field', 'Value'],
+                                        ['Investor Name', $('#modal-investor-name').text()],
+                                        ['Investor Email', $('#modal-investor-email').text()],
+                                        ['Investor Phone', $('#modal-investor-phone').text()],
+                                        ['Investor Type', $('#modal-investor-type').text()],
+                                        ['Share Quantity', $('#modal-share-quantity').text()],
+                                        ['Investment Amount', $('#modal-investment-amount').text()],
+                                        ['Investment Notes', $('#modal-investment-notes').text()]
+                                    ]
+                                }
+                            }
+                        );
+                        
+                        // Add investor data dynamically
+                        try {
+                            let investorDataText = $('#modal-investor-data').text();
+                            if (investorDataText && investorDataText !== 'No additional data available' && investorDataText !== 'Invalid data format') {
+                                let investorData = currentTransactionData['investor-data'];
+                                if (typeof investorData === 'string') {
+                                    investorData = JSON.parse(investorData);
+                                }
+                                if (investorData && typeof investorData === 'object') {
+                                    let investorDataBody = [['Field', 'Value']];
+                                    Object.keys(investorData).forEach(key => {
+                                        investorDataBody.push([key, investorData[key]]);
+                                    });
+                                    
+                                    docDefinition.content.push(
+                                        {
+                                            text: 'Additional Investor Data',
+                                            style: 'subheader',
+                                            margin: [0, 20, 0, 10]
+                                        },
+                                        {
+                                            table: {
+                                                headerRows: 1,
+                                                widths: ['30%', '70%'],
+                                                body: investorDataBody
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        } catch (e) {
+                            console.log('Error processing investor data for PDF:', e);
+                        }
+                    }
+                    
+                    pdfMake.createPdf(docDefinition).download(`transaction-${$('#modal-transaction').text()}.pdf`);
+                });
+                
+                // Status change functionality
+                $('.status-btn').on('click', function() {
+                    const newStatus = $(this).data('status');
+                    const transactionId = $('#modal-transaction').text();
+                    
+                    if (confirm(`Are you sure you want to mark this transaction as ${newStatus}?`)) {
+                        $.ajax({
+                            url: '/admin/transactions/update-status',
+                            method: 'POST',
+                            data: {
+                                transaction_id: transactionId,
+                                status: newStatus,
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                alert('Status updated successfully');
+                                location.reload();
+                            },
+                            error: function(xhr) {
+                                alert('Error updating status: ' + xhr.responseText);
+                            }
+                        });
+                    }
                 });
                 </script>
         @endsection
