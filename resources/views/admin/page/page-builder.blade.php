@@ -5219,7 +5219,7 @@ break;
                         <iframe 
                             srcdoc="${d.htmlContent.replace(/"/g, '&quot;')}" 
                             style="width: 100%; height: ${d.height}px; border: none; background: white;"
-                            sandbox="allow-same-origin"
+                            sandbox="allow-scripts allow-same-origin"
                             scrolling="auto">
                         </iframe>
                     </div>
@@ -15080,6 +15080,10 @@ function applyResponsiveStyles() {
                 console.log('Serialized shareData:', data.shareData);
                 break;
 
+            case 'custom-html':
+                data.customHtmlData = content.customHtmlData;
+                break;
+
           case 'section-title':
             const sectionTitleEl = content.querySelector('[id^="section-title-content-"]');
             data.text = sectionTitleEl ? sectionTitleEl.innerHTML : content.textContent;
@@ -15349,6 +15353,11 @@ function applyResponsiveStyles() {
                       if (compContent._pressCardData) {
                         compData.pressCardData = compContent._pressCardData;
                         console.log('Nested pressCardData saved:', compData.pressCardData);
+                      }
+                      break;
+                    case 'custom-html':
+                      if (compContent.customHtmlData) {
+                        compData.customHtmlData = compContent.customHtmlData;
                       }
                       break;
                     case 'video':
@@ -16300,6 +16309,18 @@ function applyResponsiveStyles() {
                 if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
                 break;
 
+            case 'custom-html':
+                if (data.customHtmlData) {
+                    actualContent.customHtmlData = data.customHtmlData;
+                    if (actualContent.renderCustomHtml) {
+                        actualContent.renderCustomHtml();
+                    }
+                }
+                if (data.style) Object.assign(actualContent.style, data.style);
+                if (data.wrapperStyle) Object.assign(actualComponent.style, data.wrapperStyle);
+                if (data.responsiveStyles) actualContent._responsiveStyles = data.responsiveStyles;
+                break;
+
             default:
                 actualContent.innerHTML = data.html;
                 if (data.style) {
@@ -16421,6 +16442,18 @@ function applyResponsiveStyles() {
                 if (data.pressCardData) {
                     content._pressCardData = data.pressCardData;
                     content.renderPressCard();
+                }
+                if (data.style) Object.assign(content.style, data.style);
+                if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
+                if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
+                break;
+
+            case 'custom-html':
+                if (data.customHtmlData) {
+                    content.customHtmlData = data.customHtmlData;
+                    if (content.renderCustomHtml) {
+                        content.renderCustomHtml();
+                    }
                 }
                 if (data.style) Object.assign(content.style, data.style);
                 if (data.wrapperStyle) Object.assign(component.style, data.wrapperStyle);
@@ -16951,6 +16984,14 @@ function applyResponsiveStyles() {
                         if (compData.pressCardData) {
                           nestedContent._pressCardData = compData.pressCardData;
                           nestedContent.renderPressCard();
+                        }
+                        break;
+                      case 'custom-html':
+                        if (compData.customHtmlData) {
+                          nestedContent.customHtmlData = compData.customHtmlData;
+                          if (nestedContent.renderCustomHtml) {
+                            nestedContent.renderCustomHtml();
+                          }
                         }
                         break;
                       case 'video':
