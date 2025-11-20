@@ -1475,15 +1475,14 @@ if (isset($state['components'])) {
                         const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
                         const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
                         const totalNavHeight = navbarHeight + contactTopbarHeight;
-                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
                         
                         // Convert to rem (assuming 16px base font size)
                         const totalHeightRem = totalNavHeight / 16;
                         const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
                         const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
                         
-                        // Main content margin should account for investor bar if present
-                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
+                        // Main content margin should account for all visible bars
+                        const mainContentMargin = (navbarHeight + contactTopbarHeight + investorBarHeight) / 16 + 0.5; // Extra space for clean separation
                         
                         // Set CSS custom properties
                         document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
@@ -1496,7 +1495,6 @@ if (isset($state['components'])) {
                             contactTopbar: contactTopbarHeight,
                             investorBar: investorBarHeight,
                             totalNavHeight: totalNavHeight,
-                            totalWithInvestor: totalWithInvestorBar,
                             mainMargin: mainContentMargin
                         });
                     }
