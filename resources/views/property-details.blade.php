@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $ticket->name }} | Investment Details</title>
-    <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share) }} per share!">
+    <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share, 2) }} per share!">
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -1053,7 +1053,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Starting Price</div>
-                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number js-metric-number">${{ number_format($ticket->price_per_share) }}</div>
+                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number js-metric-number">${{ number_format($ticket->price_per_share, 2) }}</div>
                         <div class="text-xs text-gray-500 mt-1">per share</div>
                     </div>
                     
@@ -1152,7 +1152,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <div class="text-gray-600 text-sm mb-2">{{ $ticket->price_per_share_label ?? 'Price Per Share' }}</div>
-                                    <div class="text-3xl font-bold text-purple-600">${{ number_format($ticket->price_per_share) }}</div>
+                                    <div class="text-3xl font-bold text-purple-600">${{ number_format($ticket->price_per_share, 2) }}</div>
                                 </div>
                                 
                                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -1558,7 +1558,7 @@
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center text-white mb-2">
                                             <p class="text-base font-medium">Shares Purchased</p>
-                                            <p class="font-semibold"><span id="sharesValue">1</span> / $<span id="sharesCost">{{ number_format($ticket->price_per_share) }}</span></p>
+                                            <p class="font-semibold"><span id="sharesValue">1</span> / $<span id="sharesCost">{{ number_format($ticket->price_per_share, 2) }}</span></p>
                                         </div>
                                         <div class="relative pt-1">
                                             <input type="range" id="sharesSlider" min="1" max="{{ $ticket->available_shares }}" value="1" 
@@ -1724,7 +1724,7 @@
                     <div class="mb-6">
                         <div class="text-sm text-gray-600 mb-2">Starting Price</div>
                         <div class="text-4xl font-bold text-purple-600 mb-1">
-                            ${{ number_format($ticket->price_per_share) }}
+                            ${{ number_format($ticket->price_per_share, 2) }}
                         </div>
                         <div class="text-sm text-gray-500">per share</div>
                     </div>
@@ -1768,7 +1768,7 @@
                     <div class="bg-purple-50 rounded-lg p-4 mb-6">
                         <div class="text-sm text-gray-600 mb-1">Your Investment</div>
                         <div class="text-3xl font-bold text-purple-600" id="cardTotalInvestment">
-                            ${{ number_format($ticket->price_per_share) }}
+                            ${{ number_format($ticket->price_per_share, 2) }}
                         </div>
                     </div>
 
