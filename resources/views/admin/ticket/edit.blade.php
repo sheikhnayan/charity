@@ -313,6 +313,11 @@
 
                     <!-- Features section - available for both products and properties -->
                     <div class="features-section mt-4" style="display: {{ (old('type', $data->type ?? '') == 'product' || old('type', $data->type ?? '') == 'property') ? 'block' : 'none' }};">
+                        <div class="mb-4">
+                            <label for="features_heading" class="block mb-2 font-semibold">Features Section Heading</label>
+                            <input type="text" id="features_heading" name="features_heading" value="{{ old('features_heading', $data->features_heading ?? 'Investment Features') }}" placeholder="e.g., Investment Features, Property Features" class="border p-2 rounded w-full">
+                        </div>
+
                         <h4 class="mb-2">Features</h4>
 
                         <div id="features-container">
@@ -374,7 +379,7 @@
                         row.className = 'row g-2 align-items-end mb-2 extra-item';
                         row.innerHTML = `
                             <div class=\"col-md-3\"><input type=\"text\" name=\"${fieldBase}[${index}][label]\" class=\"form-control\" placeholder=\"Label\"></div>
-                            <div class=\"col-md-2\"><input type=\"number\" step=\"0.01\" name=\"${fieldBase}[${index}][value]\" class=\"form-control\" placeholder=\"Value\"></div>
+                            <div class=\"col-md-2\"><input type=\"text\" name=\"${fieldBase}[${index}][value]\" class=\"form-control\" placeholder=\"Value (text)\"></div>
                             <div class=\"col-md-5\"><input type=\"text\" name=\"${fieldBase}[${index}][tooltip]\" class=\"form-control\" placeholder=\"Tooltip (optional)\"></div>
                             <div class=\"col-md-2\"><button type=\"button\" class=\"btn btn-sm btn-outline-danger\" onclick=\"this.closest('.extra-item').remove()\">Remove</button></div>
                         `;
@@ -401,7 +406,7 @@
                                             @foreach($financials->custom_total_investment_items as $i => $item)
                                                 <div class="row g-2 align-items-end mb-2 extra-item">
                                                     <div class="col-md-3"><input type="text" name="financials[custom_total_investment_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
-                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_total_investment_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-2"><input type="text" name="financials[custom_total_investment_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value (text)"></div>
                                                     <div class="col-md-5"><input type="text" name="financials[custom_total_investment_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
                                                     <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
                                                 </div>
@@ -416,8 +421,8 @@
                                         <input type="text" name="financials[total_investment_label]" class="form-control" placeholder="Total Investment Value" value="{{ old('financials.total_investment_label', $financials->total_investment_label ?? 'Total Investment Value') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[total_investment_value]" class="form-control" value="{{ old('financials.total_investment_value', $financials->total_investment_value ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[total_investment_value]" class="form-control" value="{{ old('financials.total_investment_value', $financials->total_investment_value ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -435,8 +440,8 @@
                                         <input type="text" name="financials[underlying_asset_label]" class="form-control" placeholder="Underlying asset price" value="{{ old('financials.underlying_asset_label', $financials->underlying_asset_label ?? 'Underlying asset price') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[underlying_asset_price]" class="form-control" value="{{ old('financials.underlying_asset_price', $financials->underlying_asset_price ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[underlying_asset_price]" class="form-control" value="{{ old('financials.underlying_asset_price', $financials->underlying_asset_price ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -459,8 +464,8 @@
                                         <input type="text" name="financials[closing_costs_label]" class="form-control" placeholder="Closing costs" value="{{ old('financials.closing_costs_label', $financials->closing_costs_label ?? 'Closing costs') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[closing_costs]" class="form-control" value="{{ old('financials.closing_costs', $financials->closing_costs ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[closing_costs]" class="form-control" value="{{ old('financials.closing_costs', $financials->closing_costs ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -483,8 +488,8 @@
                                         <input type="text" name="financials[upfront_fees_label]" class="form-control" placeholder="Upfront DAO LLC fees" value="{{ old('financials.upfront_fees_label', $financials->upfront_fees_label ?? 'Upfront DAO LLC fees') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[upfront_fees]" class="form-control" value="{{ old('financials.upfront_fees', $financials->upfront_fees ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[upfront_fees]" class="form-control" value="{{ old('financials.upfront_fees', $financials->upfront_fees ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -539,7 +544,7 @@
                                             @foreach($financials->custom_projected_annual_return_items as $i => $item)
                                                 <div class="row g-2 align-items-end mb-2 extra-item">
                                                     <div class="col-md-3"><input type="text" name="financials[custom_projected_annual_return_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
-                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_projected_annual_return_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-2"><input type="text" name="financials[custom_projected_annual_return_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value (text)"></div>
                                                     <div class="col-md-5"><input type="text" name="financials[custom_projected_annual_return_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
                                                     <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
                                                 </div>
@@ -554,8 +559,8 @@
                                         <input type="text" name="financials[projected_annual_return_label]" class="form-control" placeholder="Projected Annual Return" value="{{ old('financials.projected_annual_return_label', $financials->projected_annual_return_label ?? 'Projected Annual Return') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_annual_return]" class="form-control" value="{{ old('financials.projected_annual_return', $financials->projected_annual_return ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_annual_return]" class="form-control" value="{{ old('financials.projected_annual_return', $financials->projected_annual_return ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -573,8 +578,8 @@
                                         <input type="text" name="financials[projected_rental_yield_label]" class="form-control" placeholder="Projected Rental Yield" value="{{ old('financials.projected_rental_yield_label', $financials->projected_rental_yield_label ?? 'Projected Rental Yield') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_rental_yield]" class="form-control" value="{{ old('financials.projected_rental_yield', $financials->projected_rental_yield ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_rental_yield]" class="form-control" value="{{ old('financials.projected_rental_yield', $financials->projected_rental_yield ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -597,8 +602,8 @@
                                         <input type="text" name="financials[projected_appreciation_label]" class="form-control" placeholder="Projected Appreciation" value="{{ old('financials.projected_appreciation_label', $financials->projected_appreciation_label ?? 'Projected Appreciation') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_appreciation]" class="form-control" value="{{ old('financials.projected_appreciation', $financials->projected_appreciation ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_appreciation]" class="form-control" value="{{ old('financials.projected_appreciation', $financials->projected_appreciation ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -621,8 +626,8 @@
                                         <input type="text" name="financials[rental_yield_label]" class="form-control" placeholder="Rental Yield" value="{{ old('financials.rental_yield_label', $financials->rental_yield_label ?? 'Rental Yield') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[rental_yield]" class="form-control" value="{{ old('financials.rental_yield', $financials->rental_yield ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[rental_yield]" class="form-control" value="{{ old('financials.rental_yield', $financials->rental_yield ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -653,7 +658,7 @@
                                             @foreach($financials->custom_annual_gross_rents_items as $i => $item)
                                                 <div class="row g-2 align-items-end mb-2 extra-item">
                                                     <div class="col-md-3"><input type="text" name="financials[custom_annual_gross_rents_items][{{ $i }}][label]" class="form-control" value="{{ $item['label'] ?? '' }}" placeholder="Label"></div>
-                                                    <div class="col-md-2"><input type="number" step="0.01" name="financials[custom_annual_gross_rents_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value"></div>
+                                                    <div class="col-md-2"><input type="text" name="financials[custom_annual_gross_rents_items][{{ $i }}][value]" class="form-control" value="{{ $item['value'] ?? '' }}" placeholder="Value (text)"></div>
                                                     <div class="col-md-5"><input type="text" name="financials[custom_annual_gross_rents_items][{{ $i }}][tooltip]" class="form-control" value="{{ $item['tooltip'] ?? '' }}" placeholder="Tooltip (optional)"></div>
                                                     <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
                                                 </div>
@@ -668,8 +673,8 @@
                                         <input type="text" name="financials[annual_gross_rents_label]" class="form-control" placeholder="Annual gross rents" value="{{ old('financials.annual_gross_rents_label', $financials->annual_gross_rents_label ?? 'Annual gross rents') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_gross_rents]" class="form-control" value="{{ old('financials.annual_gross_rents', $financials->annual_gross_rents ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_gross_rents]" class="form-control" value="{{ old('financials.annual_gross_rents', $financials->annual_gross_rents ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -687,8 +692,8 @@
                                         <input type="text" name="financials[property_taxes_label]" class="form-control" placeholder="Property taxes" value="{{ old('financials.property_taxes_label', $financials->property_taxes_label ?? 'Property taxes') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[property_taxes]" class="form-control" value="{{ old('financials.property_taxes', $financials->property_taxes ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[property_taxes]" class="form-control" value="{{ old('financials.property_taxes', $financials->property_taxes ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -711,8 +716,8 @@
                                         <input type="text" name="financials[homeowners_insurance_label]" class="form-control" placeholder="Homeowners insurance" value="{{ old('financials.homeowners_insurance_label', $financials->homeowners_insurance_label ?? 'Homeowners insurance') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[homeowners_insurance]" class="form-control" value="{{ old('financials.homeowners_insurance', $financials->homeowners_insurance ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[homeowners_insurance]" class="form-control" value="{{ old('financials.homeowners_insurance', $financials->homeowners_insurance ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -735,8 +740,8 @@
                                         <input type="text" name="financials[property_management_label]" class="form-control" placeholder="Property management" value="{{ old('financials.property_management_label', $financials->property_management_label ?? 'Property management') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[property_management]" class="form-control" value="{{ old('financials.property_management', $financials->property_management ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[property_management]" class="form-control" value="{{ old('financials.property_management', $financials->property_management ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -759,8 +764,8 @@
                                         <input type="text" name="financials[annual_llc_fees_label]" class="form-control" placeholder="Annual DAO LLC fees" value="{{ old('financials.annual_llc_fees_label', $financials->annual_llc_fees_label ?? 'Annual DAO LLC administration and filing fees') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_llc_fees]" class="form-control" value="{{ old('financials.annual_llc_fees', $financials->annual_llc_fees ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_llc_fees]" class="form-control" value="{{ old('financials.annual_llc_fees', $financials->annual_llc_fees ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -783,8 +788,8 @@
                                         <input type="text" name="financials[annual_cash_flow_label]" class="form-control" placeholder="Annual cash flow" value="{{ old('financials.annual_cash_flow_label', $financials->annual_cash_flow_label ?? 'Annual cash flow') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_cash_flow]" class="form-control" value="{{ old('financials.annual_cash_flow', $financials->annual_cash_flow ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_cash_flow]" class="form-control" value="{{ old('financials.annual_cash_flow', $financials->annual_cash_flow ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -807,8 +812,8 @@
                                         <input type="text" name="financials[cap_rate_label]" class="form-control" placeholder="Cap rate" value="{{ old('financials.cap_rate_label', $financials->cap_rate_label ?? 'Cap rate') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[cap_rate]" class="form-control" value="{{ old('financials.cap_rate', $financials->cap_rate ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[cap_rate]" class="form-control" value="{{ old('financials.cap_rate', $financials->cap_rate ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -831,8 +836,8 @@
                                         <input type="text" name="financials[monthly_cash_flow_label]" class="form-control" placeholder="Monthly cash flow" value="{{ old('financials.monthly_cash_flow_label', $financials->monthly_cash_flow_label ?? 'Monthly cash flow') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[monthly_cash_flow]" class="form-control" value="{{ old('financials.monthly_cash_flow', $financials->monthly_cash_flow ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[monthly_cash_flow]" class="form-control" value="{{ old('financials.monthly_cash_flow', $financials->monthly_cash_flow ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -855,8 +860,8 @@
                                         <input type="text" name="financials[projected_annual_cash_flow_label]" class="form-control" placeholder="Projected Annual Cash Flow" value="{{ old('financials.projected_annual_cash_flow_label', $financials->projected_annual_cash_flow_label ?? 'Projected Annual Cash Flow') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[projected_annual_cash_flow]" class="form-control" value="{{ old('financials.projected_annual_cash_flow', $financials->projected_annual_cash_flow ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_annual_cash_flow]" class="form-control" value="{{ old('financials.projected_annual_cash_flow', $financials->projected_annual_cash_flow ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -879,8 +884,8 @@
                                         <input type="text" name="financials[current_loan_label]" class="form-control" placeholder="Current loan" value="{{ old('financials.current_loan_label', $financials->current_loan_label ?? 'Current loan') }}">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[current_loan]" class="form-control" value="{{ old('financials.current_loan', $financials->current_loan ?? '') }}">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[current_loan]" class="form-control" value="{{ old('financials.current_loan', $financials->current_loan ?? '') }}" placeholder="Raw value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>

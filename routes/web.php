@@ -505,6 +505,10 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 
+    // Investor Profile Routes
+    Route::post('/investor-profile/save', [AuthController::class, 'saveInvestorProfile'])->name('investor-profile.save');
+    Route::get('/investor-profile', [AuthController::class, 'getInvestorProfile'])->name('investor-profile.get');
+
     Route::get('/donation', [AdminController::class, 'donation']);
 
     Route::get('/student',[
@@ -903,11 +907,20 @@ Route::post('/test-upload-video', function(Illuminate\Http\Request $request) {
 
 // --- Ticket Auth/Verification AJAX Endpoints ---
 Route::post('/ajax/ticket-auth/register', function(Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6',
-        'name' => 'required|string|max:255'
-    ]);
+    try {
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'name' => 'required|string|max:255'
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        $errors = $e->validator->errors()->all();
+        return response()->json([
+            'success' => false, 
+            'message' => implode(' ', $errors)
+        ], 422);
+    }
+    
     $user = User::where('email', $request->email)->first();
     if ($user) {
         return response()->json(['success' => false, 'message' => 'Email already registered. Please login.'], 409);

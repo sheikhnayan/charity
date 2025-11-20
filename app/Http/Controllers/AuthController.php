@@ -103,6 +103,129 @@ class AuthController extends Controller
 
         $user->save();
 
+        // Handle investor profile for customers
+        if ($user->role === 'customer' && $request->has('investor_type')) {
+            $investorType = $request->input('investor_type');
+            $investorData = $request->input('investor_data', []);
+            
+            if ($investorType) {
+                \App\Models\UserInvestorProfile::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'investor_type' => $investorType,
+                        'investor_data' => $investorData,
+                    ]
+                );
+            }
+        }
+
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
+
+    public function saveInvestorProfile(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $investorType = $request->input('investor_type');
+            
+            if (!$investorType) {
+                return response()->json(['success' => false, 'message' => 'Investor type is required'], 422);
+            }
+
+            // Collect all investor data
+            $investorData = [];
+            
+            // Individual fields
+            if ($investorType === 'individual') {
+                $investorData = [
+                    'individual_name' => $request->input('individual_name'),
+                    'date_of_birth' => $request->input('date_of_birth'),
+                    'ssn' => $request->input('ssn'),
+                ];
+            }
+            // Joint fields
+            elseif ($investorType === 'joint') {
+                $investorData = [
+                    'primary_name' => $request->input('primary_name'),
+                    'primary_dob' => $request->input('primary_dob'),
+                    'primary_ssn' => $request->input('primary_ssn'),
+                    'secondary_name' => $request->input('secondary_name'),
+                    'secondary_dob' => $request->input('secondary_dob'),
+                    'secondary_ssn' => $request->input('secondary_ssn'),
+                    'joint_type' => $request->input('joint_type'),
+                ];
+            }
+            // Corporation fields
+            elseif ($investorType === 'corporation') {
+                $investorData = [
+                    'corporation_name' => $request->input('corporation_name'),
+                    'ein' => $request->input('ein'),
+                    'incorporation_state' => $request->input('incorporation_state'),
+                    'accredited_investor' => $request->input('accredited_investor'),
+                ];
+            }
+            // Trust fields
+            elseif ($investorType === 'trust') {
+                $investorData = [
+                    'trust_name' => $request->input('trust_name'),
+                    'trust_ein' => $request->input('trust_ein'),
+                    'trust_type' => $request->input('trust_type'),
+                ];
+            }
+            // IRA fields
+            elseif ($investorType === 'ira') {
+                $investorData = [
+                    'ira_holder_name' => $request->input('ira_holder_name'),
+                    'ira_type' => $request->input('ira_type'),
+                    'custodian' => $request->input('custodian'),
+                ];
+            }
+
+            // Update or create investor profile
+            $profile = \App\Models\UserInvestorProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'investor_type' => $investorType,
+                    'investor_data' => $investorData,
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Investor profile saved successfully',
+                'profile' => $profile
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Save investor profile error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred'], 500);
+        }
+    }
+
+    public function getInvestorProfile(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $profile = \App\Models\UserInvestorProfile::where('user_id', $user->id)->first();
+
+            return response()->json([
+                'success' => true,
+                'profile' => $profile
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred'], 500);
+        }
+    }
 }
+

@@ -62,6 +62,7 @@ class TicketController extends Controller
         $add->type = $request->type;
         $add->website_id = $request->website_id;
         $add->category_id = $request->category_id;
+        $add->features_heading = $request->features_heading;
         
         // Handle property type
         if ($request->type === 'property') {
@@ -204,7 +205,7 @@ class TicketController extends Controller
         $add->hide_after = $request->hide_after;
         $add->type = $request->type;
         $add->category_id = $request->category_id;
-        
+        $add->features_heading = $request->features_heading;
         // Handle property type
         if ($request->type === 'property') {
             $add->price_per_share = $request->price_per_share;

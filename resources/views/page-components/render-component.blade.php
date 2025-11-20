@@ -4477,6 +4477,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             </section>
             
             @include('partials.ticket-auth-modal')
+            @include('partials.investor-info-modal')
         @break
 
         @case('newsletter')

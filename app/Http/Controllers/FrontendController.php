@@ -155,6 +155,36 @@ class FrontendController extends Controller
             // Store all form data collected from the page
             $allFormData = $request->input('form_data', []);
             
+            // Collect investor data
+            $investorData = array_merge([
+                'address' => $request->input('address'),
+                'city' => $request->input('city'),
+                'state' => $request->input('state'),
+                'zip' => $request->input('postalCode') ?: $request->input('zip'),
+                'country' => $request->input('country'),
+                'accredited_investor' => $request->input('accredited_investor'),
+                'incorporation_state' => $request->input('incorporation_state'),
+                'ein' => $request->input('ein'),
+                'trust_type' => $request->input('trust_type'),
+                'custodian' => $request->input('custodian'),
+                'ira_type' => $request->input('ira_type'),
+                'phone' => $request->input('phone'),
+                'individual_name' => $request->input('individual_name'),
+                'date_of_birth' => $request->input('date_of_birth'),
+                'ssn' => $request->input('ssn') ?: $request->input('taxpayer_id'),
+                'primary_ssn' => $request->input('primary_ssn') ?: $request->input('joint.joint_holder_taxpayer_id'),
+                'secondary_ssn' => $request->input('secondary_ssn'),
+                'taxpayer_id' => $request->input('taxpayer_id'),
+                'joint_holder_taxpayer_id' => $request->input('joint.joint_holder_taxpayer_id'),
+                'primary_dob' => $request->input('primary_dob'),
+                'secondary_dob' => $request->input('secondary_dob'),
+                'primary_name' => $request->input('primary_name'),
+                'secondary_name' => $request->input('secondary_name'),
+                'corporation_name' => $request->input('corporation_name'),
+                'trust_name' => $request->input('trust_name'),
+                'ira_holder_name' => $request->input('ira_holder_name'),
+            ], $allFormData ?: []);
+            
             $investment = Investment::create([
                 'website_id' => $website->id,
                 'investor_name' => $request->investor_name,
@@ -164,42 +194,27 @@ class FrontendController extends Controller
                 'investor_type' => $request->investor_type,
                 'share_quantity' => $shareQuantity,
                 'deal_id' => $setting && $setting->deal_id ? $setting->deal_id : null,
-                'status' => 'pending', // Set to pending for payment processing
-                'investor_data' => array_merge([
-                    'address' => $request->input('address'),
-                    'city' => $request->input('city'),
-                    'state' => $request->input('state'),
-                    'zip' => $request->input('postalCode') ?: $request->input('zip'), // Handle both field names
-                    'country' => $request->input('country'),
-                    'accredited_investor' => $request->input('accredited_investor'),
-                    'incorporation_state' => $request->input('incorporation_state'),
-                    'ein' => $request->input('ein'),
-                    'trust_type' => $request->input('trust_type'),
-                    'custodian' => $request->input('custodian'),
-                    'ira_type' => $request->input('ira_type'),
-                    'phone' => $request->input('phone'),
-                    // Investor type specific data
-                    'individual_name' => $request->input('individual_name'),
-                    'date_of_birth' => $request->input('date_of_birth'),
-                    // SSN and Tax ID fields
-                    'ssn' => $request->input('ssn') ?: $request->input('taxpayer_id'),
-                    'primary_ssn' => $request->input('primary_ssn') ?: $request->input('joint.joint_holder_taxpayer_id'),
-                    'secondary_ssn' => $request->input('secondary_ssn'),
-                    'taxpayer_id' => $request->input('taxpayer_id'),
-                    'joint_holder_taxpayer_id' => $request->input('joint.joint_holder_taxpayer_id'),
-                    
-                    // Date of Birth fields
-                    'primary_dob' => $request->input('primary_dob'),
-                    'secondary_dob' => $request->input('secondary_dob'),
-                    
-                    // Name fields
-                    'primary_name' => $request->input('primary_name'),
-                    'secondary_name' => $request->input('secondary_name'),
-                    'corporation_name' => $request->input('corporation_name'),
-                    'trust_name' => $request->input('trust_name'),
-                    'ira_holder_name' => $request->input('ira_holder_name'),
-                ], $allFormData ?: [])
+                'status' => 'pending',
+                'investor_data' => $investorData
             ]);
+
+            // If user is authenticated, save their investor profile
+            if (\Auth::check()) {
+                $user = \Auth::user();
+                
+                // Only save investor profile if user is a customer
+                if ($user->role === 'customer' && $request->investor_type) {
+                    \App\Models\UserInvestorProfile::updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'investor_type' => $request->investor_type,
+                            'investor_data' => $investorData,
+                        ]
+                    );
+                    
+                    \Log::info('Investor profile saved for user: ' . $user->id);
+                }
+            }
 
             // Debug: Log what was actually saved
             \Log::info('=== INVESTMENT CREATED ===');
@@ -229,7 +244,7 @@ class FrontendController extends Controller
                         'share_quantity' => $shareQuantity,
                         'investor_data' => $investment->investor_data
                     ],
-                    null // investments don't have user_id
+                    \Auth::id() // Pass user_id if authenticated
                 );
             } catch (\Exception $e) {
                 \Log::error('Payment funnel tracking error in investment: ' . $e->getMessage());

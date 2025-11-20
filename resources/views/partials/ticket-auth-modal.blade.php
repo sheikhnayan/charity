@@ -1,7 +1,7 @@
 <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-8 relative">
         <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold" onclick="closeAuthModal()">&times;</button>
-        <h2 class="text-2xl font-bold mb-4 text-center">Login or Register to Continue</h2>
+        <h2 class="text-2xl font-bold mb-4 text-center" style="color: #000 !important">Login or Register to Continue</h2>
         <form id="authForm" autocomplete="off">
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
@@ -78,6 +78,7 @@
             document.getElementById('authName').closest('div').classList.remove('hidden');
         }
     }
+    window.setAuthMode = setAuthMode;
     setAuthMode('login');
 
     document.getElementById('switchToRegister').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('register'); });
@@ -128,36 +129,88 @@
                 }
                 // Success in verify or login
                 closeAuthModal();
-                // After login/verify, refresh the CSRF token and resubmit the form
-                if (window._ticketAuthPendingForm) {
-                    const f = window._ticketAuthPendingForm;
-                    window._ticketAuthPendingForm = null;
+                
+                // Check if this is from invest page (data already filled)
+                if (window._investmentFormData) {
+                    // For invest page, skip investor modal since they already filled the form
+                    // Just trigger the submission
+                    window.dispatchEvent(new CustomEvent('investorProfileSkipped'));
+                    return;
+                }
+                
+                // Check if user has investor profile (only for customer role)
+                try {
+                    const profileResp = await fetch('/users/investor-profile', {
+                        headers: { 
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                    const profileData = await profileResp.json();
                     
-                    // Fetch a fresh CSRF token
-                    try {
-                        const csrfResp = await fetch('/refresh-csrf', {
-                            method: 'GET',
-                            headers: { 'Accept': 'application/json' }
-                        });
-                        const csrfData = await csrfResp.json();
-                        
-                        // Update CSRF token in the form
-                        const tokenInput = f.querySelector('input[name="_token"]');
-                        if (tokenInput && csrfData.token) {
-                            tokenInput.value = csrfData.token;
+                    console.log('Profile data received:', profileData);
+                    
+                    // Wait a bit to ensure modal is ready
+                    setTimeout(() => {
+                        // If profile exists, load it into modal; otherwise modal starts empty
+                        if (profileData.success && profileData.profile) {
+                            if (typeof window.loadInvestorProfile === 'function') {
+                                window.loadInvestorProfile(profileData.profile);
+                            }
                         }
                         
-                        // Update meta tag too
-                        const metaTag = document.querySelector('meta[name="csrf-token"]');
-                        if (metaTag && csrfData.token) {
-                            metaTag.setAttribute('content', csrfData.token);
+                        // Show investor info modal for review/edit
+                        const modalElement = document.getElementById('investorInfoModal');
+                        if (modalElement) {
+                            const investorModal = new bootstrap.Modal(modalElement);
+                            investorModal.show();
+                            console.log('Investor modal displayed successfully');
+                        } else {
+                            console.error('Investor modal element not found!');
+                            // If modal not found, proceed with form submission
+                            if (window._ticketAuthPendingForm) {
+                                window._ticketAuthPendingForm.submit();
+                            }
                         }
-                    } catch (err) {
-                        console.error('CSRF refresh failed:', err);
+                        
+                        // Store pending form for later submission
+                        window._investorProfilePendingForm = window._ticketAuthPendingForm;
+                        window._ticketAuthPendingForm = null;
+                    }, 300);
+                    
+                } catch (profileErr) {
+                    console.error('Failed to load investor profile:', profileErr);
+                    // If profile check fails, proceed with form submission anyway
+                    if (window._ticketAuthPendingForm) {
+                        const f = window._ticketAuthPendingForm;
+                        window._ticketAuthPendingForm = null;
+                        
+                        // Fetch a fresh CSRF token
+                        try {
+                            const csrfResp = await fetch('/refresh-csrf', {
+                                method: 'GET',
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            const csrfData = await csrfResp.json();
+                            
+                            // Update CSRF token in the form
+                            const tokenInput = f.querySelector('input[name="_token"]');
+                            if (tokenInput && csrfData.token) {
+                                tokenInput.value = csrfData.token;
+                            }
+                            
+                            // Update meta tag too
+                            const metaTag = document.querySelector('meta[name="csrf-token"]');
+                            if (metaTag && csrfData.token) {
+                                metaTag.setAttribute('content', csrfData.token);
+                            }
+                        } catch (err) {
+                            console.error('CSRF refresh failed:', err);
+                        }
+                        
+                        // Submit the form
+                        f.submit();
                     }
-                    
-                    // Submit the form
-                    f.submit();
                 }
             } else {
                 if (res.require_verification) {
@@ -198,5 +251,73 @@
             });
         }
     }, true);
+
+    // Handle investor profile saved event
+    window.addEventListener('investorProfileSaved', async function() {
+        if (window._investorProfilePendingForm) {
+            const f = window._investorProfilePendingForm;
+            window._investorProfilePendingForm = null;
+            
+            // Fetch a fresh CSRF token
+            try {
+                const csrfResp = await fetch('/refresh-csrf', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const csrfData = await csrfResp.json();
+                
+                // Update CSRF token in the form
+                const tokenInput = f.querySelector('input[name="_token"]');
+                if (tokenInput && csrfData.token) {
+                    tokenInput.value = csrfData.token;
+                }
+                
+                // Update meta tag too
+                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                if (metaTag && csrfData.token) {
+                    metaTag.setAttribute('content', csrfData.token);
+                }
+            } catch (err) {
+                console.error('CSRF refresh failed:', err);
+            }
+            
+            // Submit the form
+            f.submit();
+        }
+    });
+
+    // Handle investor profile skipped event
+    window.addEventListener('investorProfileSkipped', async function() {
+        if (window._investorProfilePendingForm) {
+            const f = window._investorProfilePendingForm;
+            window._investorProfilePendingForm = null;
+            
+            // Fetch a fresh CSRF token
+            try {
+                const csrfResp = await fetch('/refresh-csrf', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const csrfData = await csrfResp.json();
+                
+                // Update CSRF token in the form
+                const tokenInput = f.querySelector('input[name="_token"]');
+                if (tokenInput && csrfData.token) {
+                    tokenInput.value = csrfData.token;
+                }
+                
+                // Update meta tag too
+                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                if (metaTag && csrfData.token) {
+                    metaTag.setAttribute('content', csrfData.token);
+                }
+            } catch (err) {
+                console.error('CSRF refresh failed:', err);
+            }
+            
+            // Submit the form
+            f.submit();
+        }
+    });
 })();
 </script>

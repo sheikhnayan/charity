@@ -277,6 +277,11 @@
 
                     <!-- Features section - available for both products and properties -->
                     <div class="features-section mt-4" style="display: none;">
+                        <div class="mb-4">
+                            <label for="features_heading" class="block mb-2 font-semibold">Features Section Heading</label>
+                            <input type="text" id="features_heading" name="features_heading" value="Investment Features" placeholder="e.g., Investment Features, Property Features" class="border p-2 rounded w-full">
+                        </div>
+
                         <h4 class="mb-2">Features</h4>
 
                         <div id="features-container">
@@ -323,7 +328,7 @@
                         row.className = 'row g-2 align-items-end mb-2 extra-item';
                         row.innerHTML = `
                             <div class="col-md-3"><input type="text" name="${fieldBase}[${index}][label]" class="form-control" placeholder="Label"></div>
-                            <div class="col-md-2"><input type="number" step="0.01" name="${fieldBase}[${index}][value]" class="form-control" placeholder="Value"></div>
+                            <div class="col-md-2"><input type="text" name="${fieldBase}[${index}][value]" class="form-control" placeholder="Value (text)"></div>
                             <div class="col-md-5"><input type="text" name="${fieldBase}[${index}][tooltip]" class="form-control" placeholder="Tooltip (optional)"></div>
                             <div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.extra-item').remove()">Remove</button></div>
                         `;
@@ -351,8 +356,8 @@
                                         <input type="text" name="financials[total_investment_label]" class="form-control" placeholder="Total Investment Value">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[total_investment_value]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[total_investment_value]" class="form-control" placeholder="Enter value exactly as you want shown">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -370,8 +375,8 @@
                                         <input type="text" name="financials[underlying_asset_label]" class="form-control" placeholder="Underlying asset price">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[underlying_asset_price]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[underlying_asset_price]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -394,8 +399,8 @@
                                         <input type="text" name="financials[closing_costs_label]" class="form-control" placeholder="Closing costs">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[closing_costs]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[closing_costs]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -418,8 +423,8 @@
                                         <input type="text" name="financials[upfront_fees_label]" class="form-control" placeholder="Upfront DAO LLC fees">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[upfront_fees]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[upfront_fees]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -478,8 +483,8 @@
                                         <input type="text" name="financials[projected_annual_return_label]" class="form-control" placeholder="Projected Annual Return">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_annual_return]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_annual_return]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -497,8 +502,8 @@
                                         <input type="text" name="financials[projected_rental_yield_label]" class="form-control" placeholder="Projected Rental Yield">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_rental_yield]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_rental_yield]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -521,8 +526,8 @@
                                         <input type="text" name="financials[projected_appreciation_label]" class="form-control" placeholder="Projected Appreciation">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[projected_appreciation]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_appreciation]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -545,8 +550,8 @@
                                         <input type="text" name="financials[rental_yield_label]" class="form-control" placeholder="Rental Yield">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[rental_yield]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[rental_yield]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -581,8 +586,8 @@
                                         <input type="text" name="financials[annual_gross_rents_label]" class="form-control" placeholder="Annual gross rents">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_gross_rents]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_gross_rents]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -600,8 +605,8 @@
                                         <input type="text" name="financials[property_taxes_label]" class="form-control" placeholder="Property taxes">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[property_taxes]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[property_taxes]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -624,8 +629,8 @@
                                         <input type="text" name="financials[homeowners_insurance_label]" class="form-control" placeholder="Homeowners insurance">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[homeowners_insurance]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[homeowners_insurance]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -648,8 +653,8 @@
                                         <input type="text" name="financials[property_management_label]" class="form-control" placeholder="Property management">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[property_management]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[property_management]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -672,8 +677,8 @@
                                         <input type="text" name="financials[annual_llc_fees_label]" class="form-control" placeholder="Annual DAO LLC fees">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_llc_fees]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_llc_fees]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -696,8 +701,8 @@
                                         <input type="text" name="financials[annual_cash_flow_label]" class="form-control" placeholder="Annual cash flow">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[annual_cash_flow]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[annual_cash_flow]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -720,8 +725,8 @@
                                         <input type="text" name="financials[cap_rate_label]" class="form-control" placeholder="Cap rate">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value (%)</label>
-                                        <input type="number" step="0.01" name="financials[cap_rate]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[cap_rate]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -744,8 +749,8 @@
                                         <input type="text" name="financials[monthly_cash_flow_label]" class="form-control" placeholder="Monthly cash flow">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[monthly_cash_flow]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[monthly_cash_flow]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -768,8 +773,8 @@
                                         <input type="text" name="financials[projected_annual_cash_flow_label]" class="form-control" placeholder="Projected Annual Cash Flow">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[projected_annual_cash_flow]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[projected_annual_cash_flow]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>
@@ -792,8 +797,8 @@
                                         <input type="text" name="financials[current_loan_label]" class="form-control" placeholder="Current loan">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Value ($)</label>
-                                        <input type="number" step="0.01" name="financials[current_loan]" class="form-control">
+                                        <label class="form-label">Value (text)</label>
+                                        <input type="text" name="financials[current_loan]" class="form-control" placeholder="Enter value">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Show Field</label>

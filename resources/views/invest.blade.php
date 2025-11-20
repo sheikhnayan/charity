@@ -27,6 +27,8 @@
         {{ $setting && $setting->company_name ? $setting->company_name . ' | Investment Checkout' : 'Investment Checkout' }}
     </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- Tailwind CSS for modals -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             background: #f9fafb;
@@ -109,89 +111,95 @@
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
 
-    
+
     <!-- Keep this css code to improve the font quality-->
     <style>
         /* Custom Fonts @font-face declarations */
-        @if(isset($customFonts) && $customFonts->count() > 0)
-        /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
-        @foreach($customFonts as $font)
-        @font-face {
-            font-family: '{{ $font->font_family }}';
-            src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        
-        /* Apply custom font classes (for Quill editor content) */
-        .ql-font-{{ $font->font_family }} {
-            font-family: '{{ $font->font_family }}', sans-serif !important;
-        }
-        @endforeach
+        @if (isset($customFonts) && $customFonts->count() > 0)
+            /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
+            @foreach ($customFonts as $font)
+                @font-face {
+                    font-family: '{{ $font->font_family }}';
+                    src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+                    font-weight: normal;
+                    font-style: normal;
+                    font-display: swap;
+                }
+
+                /* Apply custom font classes (for Quill editor content) */
+                .ql-font-{{ $font->font_family }} {
+                    font-family: '{{ $font->font_family }}', sans-serif !important;
+                }
+            @endforeach
         @else
-        /* DEBUG: No custom fonts available */
+            /* DEBUG: No custom fonts available */
         @endif
-        
+
         /* System font classes (for Quill editor content) */
         .ql-font-arial {
             font-family: Arial, sans-serif !important;
         }
+
         .ql-font-helvetica {
             font-family: Helvetica, sans-serif !important;
         }
+
         .ql-font-times {
             font-family: 'Times New Roman', serif !important;
         }
+
         .ql-font-georgia {
             font-family: Georgia, serif !important;
         }
+
         .ql-font-verdana {
             font-family: Verdana, sans-serif !important;
         }
+
         .ql-font-courier {
             font-family: 'Courier New', monospace !important;
         }
+
         .ql-font-outfit {
             font-family: 'Outfit', sans-serif !important;
         }
-        
+
         /* Menu Font Family Styling */
-        @if(isset($header) && $header && $header->menu_font_family)
-        .navbar .nav-link,
-        .navbar .navbar-brand,
-        .navbar .btn {
-            font-family: '{{ $header->menu_font_family }}', sans-serif !important;
-        }
+        @if (isset($header) && $header && $header->menu_font_family)
+            .navbar .nav-link,
+            .navbar .navbar-brand,
+            .navbar .btn {
+                font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+            }
         @endif
-        
+
         /* Contact Topbar Font Family Styling */
-        @if(isset($header) && $header && $header->contact_topbar_font_family)
-        .contact-topbar,
-        .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
-            font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
-        }
+        @if (isset($header) && $header && $header->contact_topbar_font_family)
+            .contact-topbar,
+            .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+                font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+            }
         @endif
-        
+
         /* Investor Exclusives Font Family Styling */
-        @if(isset($header) && $header && $header->investor_exclusives_font_family)
-        .investor-exclusives-bar,
-        .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
-            font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
-        }
+        @if (isset($header) && $header && $header->investor_exclusives_font_family)
+            .investor-exclusives-bar,
+            .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+                font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+            }
         @endif
-        
+
         * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             -o-font-smoothing: antialiased;
         }
 
-        .modal-content{
+        .modal-content {
             top: 100px !important;
         }
 
-        .dmr-checkout-wrapper{
+        .dmr-checkout-wrapper {
             padding-top: 0px !important;
         }
 
@@ -220,6 +228,33 @@
 
         .investment-step.hidden {
             display: none;
+        }
+
+        /* Ensure modals are hidden by default and positioned correctly */
+        #authModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999 !important;
+        }
+
+        #authModal.hidden {
+            display: none;
+        }
+
+        #authModal:not(.hidden) {
+            display: flex;
+        }
+
+        /* Ensure Bootstrap modal appears on top */
+        .modal-backdrop {
+            z-index: 99998 !important;
+        }
+
+        .modal {
+            z-index: 99999 !important;
         }
 
         .investment-step h3 {
@@ -288,12 +323,12 @@
                 min-width: 114.6px;
                 padding: clamp(6px, 1.8vw, 16px) clamp(4px, 1.2vw, 12px);
             }
-            
+
             .tier-amount {
                 font-size: clamp(0.7rem, 3vw, 1.2rem);
                 line-height: 1.1;
             }
-            
+
             .amount-tiers {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
@@ -305,14 +340,15 @@
             .tier-option {
                 padding: clamp(4px, 1.5vw, 12px) clamp(3px, 1vw, 8px);
             }
-            
+
             .tier-amount {
                 font-size: clamp(0.6rem, 3.5vw, 1rem);
             }
-            
+
             .tier-shares {
                 font-size: clamp(8px, 2vw, 12px);
             }
+
             .navbar-brand {
                 margin-left: 1rem !important;
                 margin-top: 0.3rem !important;
@@ -444,7 +480,7 @@
             margin-right: 15px;
         }
 
-        nav{
+        nav {
             box-shadow: unset !important;
         }
 
@@ -640,7 +676,7 @@
             background: {{ $website && $website->sticky_footer_bg_color ? $website->sticky_footer_bg_color : '#f8f9fa' }};
             border-top: 2px solid #e9ecef;
             padding: 15px 20px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             display: flex;
             justify-content: center;
@@ -681,12 +717,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .sticky-footer-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             opacity: 0.9;
         }
 
@@ -699,22 +735,22 @@
             .sticky-footer-invest {
                 padding: 12px 15px;
             }
-            
+
             .sticky-footer-content {
                 flex-direction: column;
                 gap: 10px;
                 text-align: center;
             }
-            
+
             .sticky-footer-button {
                 width: 100%;
                 padding: 15px 20px;
             }
-            
+
             .investment-call {
                 font-size: 16px;
             }
-            
+
             .investment-subtext {
                 font-size: 13px;
             }
@@ -727,48 +763,49 @@
             left: 0;
             right: 0;
             width: 100%;
-            z-index: 1030; /* Above navbar but below modals */
+            z-index: 1030;
+            /* Above navbar but below modals */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .contact-topbar .contact-info {
             gap: 0;
         }
-        
+
         .contact-topbar .contact-item {
             font-size: 14px;
             font-weight: 400;
         }
-        
+
         .contact-topbar .contact-item a {
             transition: all 0.3s ease;
-            font-family: Outfit,sans-serif;
+            font-family: Outfit, sans-serif;
             text-decoration: underline !important;
         }
-        
+
         .contact-topbar .contact-item a:hover {
             opacity: 0.8;
             text-decoration: none !important;
         }
-        
+
         .contact-topbar .contact-item i {
             font-size: 12px;
             opacity: 0.9;
         }
-        
+
         .contact-topbar .btn:hover {
             opacity: 0.9;
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        
+
         /* Responsive design for contact top bar */
         @media (max-width: 768px) {
             .contact-topbar {
                 padding: 8px 0 !important;
                 font-size: 12px !important;
             }
-            
+
             .contact-topbar .contact-item {
                 font-size: 11px;
                 margin-right: 8px !important;
@@ -778,27 +815,27 @@
                 align-items: center;
                 white-space: nowrap;
             }
-            
+
             .contact-topbar .contact-item:last-child {
                 margin-right: 0 !important;
             }
-            
+
             .contact-topbar .btn {
                 font-size: 11px;
                 padding: 4px 12px !important;
                 margin-top: 2px;
             }
 
-            .contact-topbar{
+            .contact-topbar {
                 height: 28px !important;
             }
         }
-        
+
         @media (max-width: 576px) {
             .contact-topbar {
                 padding: 6px 0 !important;
             }
-            
+
             .contact-topbar .contact-item {
                 margin-right: 6px !important;
                 margin-bottom: 0 !important;
@@ -808,27 +845,29 @@
                 font-size: 10px;
                 white-space: nowrap;
             }
-            
+
             .contact-topbar .contact-item:last-child {
                 margin-right: 0 !important;
             }
-            
+
             .contact-topbar .btn {
                 font-size: 10px;
                 padding: 3px 10px !important;
                 margin-top: 2px;
             }
         }
-        
+
         /* Adjust navbar when contact top bar is present */
-        .contact-topbar + nav.navbar.fixed-top {
-            top: 34px !important; /* Position navbar directly below contact bar - no gap */
+        .contact-topbar+nav.navbar.fixed-top {
+            top: 34px !important;
+            /* Position navbar directly below contact bar - no gap */
             z-index: 1020;
         }
-        
+
         @media (max-width: 768px) {
-            .contact-topbar + nav.navbar.fixed-top {
-                top: 27px !important; /* Adjust for mobile - no gap */
+            .contact-topbar+nav.navbar.fixed-top {
+                top: 27px !important;
+                /* Adjust for mobile - no gap */
             }
         }
 
@@ -837,15 +876,17 @@
             padding: 0px 0px;
             text-align: center;
             position: fixed;
-            top: calc(var(--navbar-total-height, 6rem) - 0.23rem); /* Dynamic position minus gap adjustment */
+            top: calc(var(--navbar-total-height, 6rem) - 0.23rem);
+            /* Dynamic position minus gap adjustment */
             left: 0;
             right: 0;
             width: 100%;
-            z-index: 999; /* Just below navbar but above content */
+            z-index: 999;
+            /* Just below navbar but above content */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .investor-exclusives-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -855,7 +896,7 @@
             justify-content: center;
             gap: 20px;
         }
-        
+
         .investor-exclusives-text {
             font-size: 16px;
             font-weight: 600;
@@ -863,7 +904,7 @@
             letter-spacing: 0.5px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
-        
+
         .investor-exclusives-link {
             background: rgba(255, 255, 255, 0.15);
             text-decoration: none;
@@ -877,7 +918,7 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        
+
         .investor-exclusives-link:hover {
             background: rgba(255, 255, 255, 0.25);
             text-decoration: none;
@@ -885,56 +926,58 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             border-color: rgba(255, 255, 255, 0.5);
         }
-        
+
         /* Icon styling */
         .investor-exclusives-link i {
             margin-left: 8px;
         }
-        
+
         /* Responsive design */
         @media (max-width: 768px) {
-            .contact-topbar + nav.navbar.fixed-top {
+            .contact-topbar+nav.navbar.fixed-top {
                 top: 27px !important;
             }
-            
+
             .investor-exclusives-bar {
                 position: fixed;
-                top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem); /* Dynamic mobile position minus gap adjustment */
+                top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem);
+                /* Dynamic mobile position minus gap adjustment */
                 padding-bottom: 0px;
             }
-            
+
             .investor-exclusives-content {
                 flex-direction: row;
                 gap: 12px;
             }
-            
+
             .investor-exclusives-text {
                 font-size: 14px;
                 text-align: center;
             }
-            
+
             .investor-exclusives-link {
                 font-size: 13px;
                 padding: 6px 16px;
             }
         }
-        
+
         @media (max-width: 480px) {
             .investor-exclusives-bar {
                 padding: 10px 0;
-                top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem); /* Dynamic small mobile position minus gap adjustment */
+                top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem);
+                /* Dynamic small mobile position minus gap adjustment */
                 padding-bottom: 0px;
             }
 
-            .close-on-mobile{
+            .close-on-mobile {
                 display: none;
             }
 
-            .invest-mobile{
+            .invest-mobile {
                 padding: 0px !important;
             }
 
-            .section_header3{
+            .section_header3 {
                 padding: 0px !important;
             }
         }
@@ -946,94 +989,163 @@
             padding-bottom: 0px !important;
         }
 
-        .text-style-eyebrow{
-        font-family: Outfit,sans-serif !important;
-    }
+        .text-style-eyebrow {
+            font-family: Outfit, sans-serif !important;
+        }
 
-    .link_wrap div{
-        font-family: Outfit,sans-serif !important;
-    }
+        .link_wrap div {
+            font-family: Outfit, sans-serif !important;
+        }
 
-    .footer_content_wrap div h1 strong {
-        font-family: Outfit,sans-serif !important;
-    }
+        .footer_content_wrap div h1 strong {
+            font-family: Outfit, sans-serif !important;
+        }
 
-    .footer_content_wrap div p {
-        font-family: Outfit,sans-serif !important;
-    }
-    
-    .investor-exclusives-link:hover {
-        background: rgba(255, 255, 255, 0.25);
-        text-decoration: none;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        border-color: rgba(255, 255, 255, 0.5);
-    }
+        .footer_content_wrap div p {
+            font-family: Outfit, sans-serif !important;
+        }
 
-    /* Quill.js Class-based Font Styles for Frontend */
-    .ql-size-10px { font-size: 10px !important; }
-    .ql-size-12px { font-size: 12px !important; }
-    .ql-size-14px { font-size: 14px !important; }
-    .ql-size-16px { font-size: 16px !important; }
-    .ql-size-18px { font-size: 18px !important; }
-    .ql-size-20px { font-size: 20px !important; }
-    .ql-size-24px { font-size: 24px !important; }
-    .ql-size-28px { font-size: 28px !important; }
-    .ql-size-32px { font-size: 32px !important; }
-    .ql-size-36px { font-size: 36px !important; }
-    .ql-size-40px { font-size: 40px !important; }
-    .ql-size-48px { font-size: 48px !important; }
+        .investor-exclusives-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
 
-    .ql-font-arial { font-family: Arial, sans-serif !important; }
-    .ql-font-helvetica { font-family: 'Helvetica Neue', Helvetica, sans-serif !important; }
-    .ql-font-times { font-family: 'Times New Roman', Times, serif !important; }
-    .ql-font-georgia { font-family: Georgia, serif !important; }
-    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
-    .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
-    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+        /* Quill.js Class-based Font Styles for Frontend */
+        .ql-size-10px {
+            font-size: 10px !important;
+        }
 
-    /* SEO-friendly semantic heading styles for frontend */
-    h1, .ql-header-1 {
-        font-size: 2.5rem !important;
-        font-weight: bold !important;
-        line-height: 1.2 !important;
-        margin: 1rem 0 0.5rem 0 !important;
-    }
-    h2, .ql-header-2 {
-        font-size: 2rem !important;
-        font-weight: bold !important;
-        line-height: 1.3 !important;
-        margin: 0.8rem 0 0.4rem 0 !important;
-    }
-    h3, .ql-header-3 {
-        font-size: 1.75rem !important;
-        font-weight: bold !important;
-        line-height: 1.4 !important;
-        margin: 0.6rem 0 0.3rem 0 !important;
-    }
-    h4, .ql-header-4 {
-        font-size: 1.5rem !important;
-        font-weight: bold !important;
-        line-height: 1.4 !important;
-        margin: 0.5rem 0 0.25rem 0 !important;
-    }
-    h5, .ql-header-5 {
-        font-size: 1.25rem !important;
-        font-weight: bold !important;
-        line-height: 1.5 !important;
-        margin: 0.4rem 0 0.2rem 0 !important;
-    }
+        .ql-size-12px {
+            font-size: 12px !important;
+        }
+
+        .ql-size-14px {
+            font-size: 14px !important;
+        }
+
+        .ql-size-16px {
+            font-size: 16px !important;
+        }
+
+        .ql-size-18px {
+            font-size: 18px !important;
+        }
+
+        .ql-size-20px {
+            font-size: 20px !important;
+        }
+
+        .ql-size-24px {
+            font-size: 24px !important;
+        }
+
+        .ql-size-28px {
+            font-size: 28px !important;
+        }
+
+        .ql-size-32px {
+            font-size: 32px !important;
+        }
+
+        .ql-size-36px {
+            font-size: 36px !important;
+        }
+
+        .ql-size-40px {
+            font-size: 40px !important;
+        }
+
+        .ql-size-48px {
+            font-size: 48px !important;
+        }
+
+        .ql-font-arial {
+            font-family: Arial, sans-serif !important;
+        }
+
+        .ql-font-helvetica {
+            font-family: 'Helvetica Neue', Helvetica, sans-serif !important;
+        }
+
+        .ql-font-times {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+
+        .ql-font-georgia {
+            font-family: Georgia, serif !important;
+        }
+
+        .ql-font-verdana {
+            font-family: Verdana, sans-serif !important;
+        }
+
+        .ql-font-courier {
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .ql-font-outfit {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* SEO-friendly semantic heading styles for frontend */
+        h1,
+        .ql-header-1 {
+            font-size: 2.5rem !important;
+            font-weight: bold !important;
+            line-height: 1.2 !important;
+            margin: 1rem 0 0.5rem 0 !important;
+        }
+
+        h2,
+        .ql-header-2 {
+            font-size: 2rem !important;
+            font-weight: bold !important;
+            line-height: 1.3 !important;
+            margin: 0.8rem 0 0.4rem 0 !important;
+        }
+
+        h3,
+        .ql-header-3 {
+            font-size: 1.75rem !important;
+            font-weight: bold !important;
+            line-height: 1.4 !important;
+            margin: 0.6rem 0 0.3rem 0 !important;
+        }
+
+        h4,
+        .ql-header-4 {
+            font-size: 1.5rem !important;
+            font-weight: bold !important;
+            line-height: 1.4 !important;
+            margin: 0.5rem 0 0.25rem 0 !important;
+        }
+
+        h5,
+        .ql-header-5 {
+            font-size: 1.25rem !important;
+            font-weight: bold !important;
+            line-height: 1.5 !important;
+            margin: 0.4rem 0 0.2rem 0 !important;
+        }
 
         @media (min-width: 1400px) {
-        .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
-            max-width: 1320px !important;
-        }
+
+            .container,
+            .container-lg,
+            .container-md,
+            .container-sm,
+            .container-xl,
+            .container-xxl {
+                max-width: 1320px !important;
+            }
         }
 
-        .investor-exclusives-bar{
+        .investor-exclusives-bar {
             padding: 0px !important;
         }
-        
     </style>
 
     <!-- Google Search Console -->
@@ -1052,76 +1164,82 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
     </style>
 
     <style>
-    /* body{background:#f9fafb;} */
-    
-    /* Custom Fonts @font-face declarations */
-    @if(isset($customFonts) && $customFonts->count() > 0)
-    /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
-    @foreach($customFonts as $font)
-    @font-face {
-        font-family: '{{ $font->font_family }}';
-        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-    }
-    
-    /* Apply custom font classes (for Quill editor content) */
-    .ql-font-{{ $font->font_family }} {
-        font-family: '{{ $font->font_family }}', sans-serif !important;
-    }
-    @endforeach
-    @else
-    /* DEBUG: No custom fonts available */
-    @endif
-    
-    /* System font classes (for Quill editor content) */
-    .ql-font-arial {
-        font-family: Arial, sans-serif !important;
-    }
-    .ql-font-helvetica {
-        font-family: Helvetica, sans-serif !important;
-    }
-    .ql-font-times {
-        font-family: 'Times New Roman', serif !important;
-    }
-    .ql-font-georgia {
-        font-family: Georgia, serif !important;
-    }
-    .ql-font-verdana {
-        font-family: Verdana, sans-serif !important;
-    }
-    .ql-font-courier {
-        font-family: 'Courier New', monospace !important;
-    }
-    .ql-font-outfit {
-        font-family: 'Outfit', sans-serif !important;
-    }
-    
-    /* Menu Font Family Styling */
-    @if(isset($header) && $header && $header->menu_font_family)
-    .navbar .nav-link,
-    .navbar .navbar-brand,
-    .navbar .btn {
-        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
-    }
-    @endif
-    
-    /* Contact Topbar Font Family Styling */
-    @if(isset($header) && $header && $header->contact_topbar_font_family)
-    .contact-topbar,
-    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
-        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
-    }
-    @endif
-    
-    /* Investor Exclusives Font Family Styling */
-    @if(isset($header) && $header && $header->investor_exclusives_font_family)
-    .investor-exclusives-bar,
-    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
-        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
-    }
-    @endif
+        /* body{background:#f9fafb;} */
+
+        /* Custom Fonts @font-face declarations */
+        @if (isset($customFonts) && $customFonts->count() > 0)
+            /* DEBUG: {{ $customFonts->count() }} custom fonts loaded */
+            @foreach ($customFonts as $font)
+                @font-face {
+                    font-family: '{{ $font->font_family }}';
+                    src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+                    font-weight: normal;
+                    font-style: normal;
+                    font-display: swap;
+                }
+
+                /* Apply custom font classes (for Quill editor content) */
+                .ql-font-{{ $font->font_family }} {
+                    font-family: '{{ $font->font_family }}', sans-serif !important;
+                }
+            @endforeach
+        @else
+            /* DEBUG: No custom fonts available */
+        @endif
+
+        /* System font classes (for Quill editor content) */
+        .ql-font-arial {
+            font-family: Arial, sans-serif !important;
+        }
+
+        .ql-font-helvetica {
+            font-family: Helvetica, sans-serif !important;
+        }
+
+        .ql-font-times {
+            font-family: 'Times New Roman', serif !important;
+        }
+
+        .ql-font-georgia {
+            font-family: Georgia, serif !important;
+        }
+
+        .ql-font-verdana {
+            font-family: Verdana, sans-serif !important;
+        }
+
+        .ql-font-courier {
+            font-family: 'Courier New', monospace !important;
+        }
+
+        .ql-font-outfit {
+            font-family: 'Outfit', sans-serif !important;
+        }
+
+        /* Menu Font Family Styling */
+        @if (isset($header) && $header && $header->menu_font_family)
+            .navbar .nav-link,
+            .navbar .navbar-brand,
+            .navbar .btn {
+                font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+            }
+        @endif
+
+        /* Contact Topbar Font Family Styling */
+        @if (isset($header) && $header && $header->contact_topbar_font_family)
+            .contact-topbar,
+            .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+                font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+            }
+        @endif
+
+        /* Investor Exclusives Font Family Styling */
+        @if (isset($header) && $header && $header->investor_exclusives_font_family)
+            .investor-exclusives-bar,
+            .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+                font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+            }
+        @endif
     </style>
 
 </head>
@@ -1156,39 +1274,46 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
 
     @if ($header && $header->status == 1)
         {{-- Contact Information Top Bar - Only for Investment Websites --}}
-        @if($header && $header->show_contact_topbar)
-            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
+        @if ($header && $header->show_contact_topbar)
+            <div class="contact-topbar"
+                style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
                 <div class="container">
                     <div class="row align-items-center justify-content-center">
-                        @if($header->contact_phone)
-                        <div class="col-3 col-md-auto">
-                            <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
-                                    {{ $header->contact_phone }}
-                                </a>
+                        @if ($header->contact_phone)
+                            <div class="col-3 col-md-auto">
+                                <div class="contact-item me-4 mb-1">
+                                    <i class="fas fa-phone me-2"
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                    <a href="tel:{{ $header->contact_phone }}"
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                        {{ $header->contact_phone }}
+                                    </a>
+                                </div>
                             </div>
-                        </div>
                         @endif
-                        @if($header->contact_email)
-                        <div class="col-6 col-md-auto">
-                            <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
-                                    {{ $header->contact_email }}
-                                </a>
+                        @if ($header->contact_email)
+                            <div class="col-6 col-md-auto">
+                                <div class="contact-item me-4 mb-1">
+                                    <i class="fas fa-envelope me-2"
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                    <a href="mailto:{{ $header->contact_email }}"
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                        {{ $header->contact_email }}
+                                    </a>
+                                </div>
                             </div>
-                        </div>
                         @endif
-                        @if($header->contact_address)
-                        <div class="col-3 col-md-auto">
-                            <div class="contact-item mb-1">
-                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
-                                    {{ $header->contact_address }}
-                                </span>
+                        @if ($header->contact_address)
+                            <div class="col-3 col-md-auto">
+                                <div class="contact-item mb-1">
+                                    <i class="fas fa-map-marker-alt me-2"
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                    <span
+                                        style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                        {{ $header->contact_address }}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                 </div>
@@ -1196,15 +1321,17 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
         @endif
 
         @include('layouts.nav')
-        
+
         {{-- Investor Exclusives Top Bar - Only for Investment Websites --}}
-        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
-            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+        @if ($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar"
+                style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
                 <div class="investor-exclusives-content">
                     <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
-                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
-                        {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
-                    </p>
+                        <p class="investor-exclusives-text"
+                            style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
+                            {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                        </p>
                     </a>
                 </div>
             </div>
@@ -1215,29 +1342,29 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
                     const navbar = document.querySelector('.navbar');
                     const contactTopbar = document.querySelector('.contact-topbar');
                     const investorBar = document.querySelector('.investor-exclusives-bar');
-                    
+
                     if (navbar) {
                         const navbarHeight = navbar.offsetHeight;
                         const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
                         const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
                         const totalNavHeight = navbarHeight + contactTopbarHeight;
                         const totalWithInvestorBar = totalNavHeight + investorBarHeight;
-                        
+
                         // Convert to rem (assuming 16px base font size)
                         const totalHeightRem = totalNavHeight / 16;
                         // For mobile, use the same base calculation but account for responsive changes
                         const totalHeightRemMobile = totalNavHeight / 16;
                         const totalHeightRemSmall = totalNavHeight / 16;
-                        
+
                         // Main content margin should account for investor bar if present
                         const mainContentMargin = totalWithInvestorBar / 16 - 0.3; // Extra space for clean separation
-                        
+
                         // Set CSS custom properties
                         document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
                         document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
                         document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
                         document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
-                        
+
                         console.log('Dynamic Heights Updated:', {
                             navbar: navbarHeight,
                             contactTopbar: contactTopbarHeight,
@@ -1252,21 +1379,21 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
                         });
                     }
                 }
-                
+
                 // Run on load
                 document.addEventListener('DOMContentLoaded', function() {
                     // Wait a bit for all elements to render
                     setTimeout(updateNavbarHeights, 50);
                 });
-                
+
                 // Run on resize
                 window.addEventListener('resize', updateNavbarHeights);
-                
+
                 // Run after fonts load (as this can affect navbar height)
                 if (document.fonts) {
                     document.fonts.ready.then(updateNavbarHeights);
                 }
-                
+
                 // Fallback: run after delays to catch any dynamic changes
                 setTimeout(updateNavbarHeights, 100);
                 setTimeout(updateNavbarHeights, 300);
@@ -1276,18 +1403,34 @@ end Convert Experiences code --><!-- Checkout Security Measure -->
         @endif
     @endif
 
-    <main style="margin-top: var(--main-content-margin-top, {{ 
-        ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header->show_investor_exclusives) ? '14.2rem' : 
-        (($header && $header->show_contact_topbar) ? '10.5rem' : 
-        (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))
-    }}); background-color: {{ $pageBackgroundColor }};" 
-          class="{{ 
-            ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
-            (($header && $header->show_contact_topbar) ? 'with-contact-bar' : 
-            (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? 'with-investor-bar' : ''))
-        }}">
+    <main
+        style="margin-top: var(--main-content-margin-top, {{ $header &&
+        $header->show_contact_topbar &&
+        $check &&
+        $check->isInvestment() &&
+        $header->show_investor_exclusives
+            ? '14.2rem'
+            : ($header && $header->show_contact_topbar
+                ? '10.5rem'
+                : ($check && $check->isInvestment() && $header && $header->show_investor_exclusives
+                    ? '10.6rem'
+                    : '6.9rem')) }}); background-color: {{ $pageBackgroundColor }};"
+        class="{{ $header &&
+        $header->show_contact_topbar &&
+        $check &&
+        $check->isInvestment() &&
+        $header &&
+        $header->show_investor_exclusives
+            ? 'with-contact-and-investor-bars'
+            : ($header && $header->show_contact_topbar
+                ? 'with-contact-bar'
+                : ($check && $check->isInvestment() && $header && $header->show_investor_exclusives
+                    ? 'with-investor-bar'
+                    : '')) }}">
         <div class="container-fluid" style="background-color: {{ $pageBackgroundColor }};">
             <div class="row justify-content-center">
+                @include('partials.ticket-auth-modal')
+                @include('partials.investor-info-modal')
                 <div class="col-12" style="padding-left: 0px !important; padding-right: 0px !important;">
                     <!-- Investment Form Container -->
                     <div class="investment-form-wrapper"
@@ -1444,7 +1587,13 @@ a,
                                                 <div class="hero-text-2 _2">
                                                     <h1 class="heading-style-h1 is-checkout"
                                                         style="color: #fff !important">
-                                                        {!! $website && $website->investment_title ? $website->investment_title : ($setting && $setting->investment_title ? $setting->investment_title : '<strong style="color: #fff !important">' . ($setting && $setting->company_name ? $setting->company_name : 'Investment') . '</strong> Investment Opportunity') !!}<br />
+                                                        {!! $website && $website->investment_title
+                                                            ? $website->investment_title
+                                                            : ($setting && $setting->investment_title
+                                                                ? $setting->investment_title
+                                                                : '<strong style="color: #fff !important">' .
+                                                                    ($setting && $setting->company_name ? $setting->company_name : 'Investment') .
+                                                                    '</strong> Investment Opportunity') !!}<br />
                                                     </h1>
                                                     <div class="spacer-small"></div>
                                                     <div class="dmr-details-mobile-show">
@@ -1457,7 +1606,8 @@ a,
                                                                         class="dmr-common-stock dmr-larger-t text-color-white">
                                                                         <strong
                                                                             style="color: #fff !important">Investment
-                                                                            Details</strong></div>
+                                                                            Details</strong>
+                                                                    </div>
                                                                     <div class="div-block-132">
                                                                         <div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5"
                                                                             class="w-layout-layout quick-stack-5 wf-layout-layout">
@@ -1468,12 +1618,14 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}</div>
+                                                                                            {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}
+                                                                                        </div>
                                                                                         <div
                                                                                             class="dmr-common-stock-2 fixed-height">
                                                                                             <strong
                                                                                                 style="color: #fff !important">${{ $website && $website->share_price ? number_format($website->share_price, 2) : ($setting && $setting->share_price ? number_format($setting->share_price, 2) : '1.00') }}
-                                                                                                USD</strong></div>
+                                                                                                USD</strong>
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div
                                                                                         class="dmr-details-padding no-l">
@@ -1484,7 +1636,8 @@ a,
                                                                                             class="dmr-common-stock-2 fixed-height">
                                                                                             <strong
                                                                                                 style="color: #fff !important">${{ $website && $website->min_investment ? number_format($website->min_investment, 2) : ($setting && $setting->min_investment ? number_format($setting->min_investment, 2) : '1000.00') }}
-                                                                                                USD</strong></div>
+                                                                                                USD</strong>
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div class="div-block-46 _3"><a
                                                                                             href="#"
@@ -1504,7 +1657,8 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}</div>
+                                                                                            {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}
+                                                                                        </div>
                                                                                         <div
                                                                                             class="dmr-common-stock-2 fixed-height">
                                                                                             <strong
@@ -1515,11 +1669,13 @@ a,
                                                                                         class="dmr-details-padding no-l">
                                                                                         <div class="dmr-common-stock-2 small"
                                                                                             style="color: #fff !important">
-                                                                                            
-                                                                                            {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}</div>
+
+                                                                                            {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}
+                                                                                        </div>
                                                                                         <div class="dmr-common-stock-2 fixed-height"
                                                                                             style="color: #fff !important">
-                                                                                            <strong style="color: #fff !important">{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong>
+                                                                                            <strong
+                                                                                                style="color: #fff !important">{{ $website && $website->asset_type ? $website->asset_type : ($setting && $setting->asset_type ? $setting->asset_type : 'Common Stock') }}</strong>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1601,39 +1757,107 @@ a,
                                                         class="investment-form-container w-node-d76ce5db-1098-4f05-302a-51e614ef19a6-4eda2ff4">
                                                         <div class="investment-form-wrapper">
                                                             <h2 class="investment-form-title"
-                                                                style="color: #000 !important;">{{ $website && $website->invest_page_title ? $website->invest_page_title : ($setting && $setting->invest_page_title ? $setting->invest_page_title : 'Complete Your Investment') }}</h2>
+                                                                style="color: #000 !important;">
+                                                                {{ $website && $website->invest_page_title ? $website->invest_page_title : ($setting && $setting->invest_page_title ? $setting->invest_page_title : 'Complete Your Investment') }}
+                                                            </h2>
 
                                                             <!-- SSN/EIN Explanation Modal -->
-                                                            <div class="modal" id="ssnExplanationModal" tabindex="-1" aria-labelledby="ssnExplanationModalLabel" aria-hidden="true" data-bs-backdrop="false">
+                                                            <div class="modal" id="ssnExplanationModal"
+                                                                tabindex="-1"
+                                                                aria-labelledby="ssnExplanationModalLabel"
+                                                                aria-hidden="true" data-bs-backdrop="false">
                                                                 <div class="modal-dialog modal-lg">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">
-                                                                            <h5 class="modal-title" id="ssnExplanationModalLabel" style="color: #000 !important;">
-                                                                                Government-required identity & anti-fraud checks secure all transactions. Why Do We Need This?
+                                                                            <h5 class="modal-title"
+                                                                                id="ssnExplanationModalLabel"
+                                                                                style="color: #000 !important;">
+                                                                                Government-required identity &
+                                                                                anti-fraud checks secure all
+                                                                                transactions. Why Do We Need This?
                                                                             </h5>
-                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
                                                                         </div>
-                                                                        <div class="modal-body" style="color: #000 !important; line-height: 1.6;">
-                                                                            <p>Since this is a financial transaction we are required by regulators like the SEC & US Department of Treasury to perform AML (Anti Money Laundering) & KYC (Know Your Customer) verification in order to avoid money laundering, fraud, and identity theft.</p>
-                                                                            
-                                                                            <p>Our broker-dealer, DealMaker Securities, LLC uses a Taxpayer Identification Number (TIN), for example Social Security Number (SSN), Employment Identification Number (EIN), Individual Tax Identification Number (ITIN) to fulfill its responsibilities with its Anti-Money Laundering (AML) Program as required by the Bank Secrecy Act (BSA) and its implementing regulations and FINRA Rule 3310 (AML Compliance Program) by requesting, reviewing, and verifying data and documentation provided during securities transactions, prior to acceptance.</p>
-                                                                            
-                                                                            <p><strong>Here's why they are required for startup investments:</strong></p>
-                                                                            
+                                                                        <div class="modal-body"
+                                                                            style="color: #000 !important; line-height: 1.6;">
+                                                                            <p>Since this is a financial transaction we
+                                                                                are required by regulators like the SEC
+                                                                                & US Department of Treasury to perform
+                                                                                AML (Anti Money Laundering) & KYC (Know
+                                                                                Your Customer) verification in order to
+                                                                                avoid money laundering, fraud, and
+                                                                                identity theft.</p>
+
+                                                                            <p>Our broker-dealer, DealMaker Securities,
+                                                                                LLC uses a Taxpayer Identification
+                                                                                Number (TIN), for example Social
+                                                                                Security Number (SSN), Employment
+                                                                                Identification Number (EIN), Individual
+                                                                                Tax Identification Number (ITIN) to
+                                                                                fulfill its responsibilities with its
+                                                                                Anti-Money Laundering (AML) Program as
+                                                                                required by the Bank Secrecy Act (BSA)
+                                                                                and its implementing regulations and
+                                                                                FINRA Rule 3310 (AML Compliance Program)
+                                                                                by requesting, reviewing, and verifying
+                                                                                data and documentation provided during
+                                                                                securities transactions, prior to
+                                                                                acceptance.</p>
+
+                                                                            <p><strong>Here's why they are required for
+                                                                                    startup investments:</strong></p>
+
                                                                             <div class="mb-3">
-                                                                                <strong>1. Preventing Illegal Activities:</strong> Money laundering involves the concealment or disguise of money derived from criminal origins by processing it through a single or series of transactions to make it appear as if it comes from a legal, legitimate source or constitute legitimate assets. Having a verification process, whereby investors are reviewed, checked against governmental databases, and all investment funds are evaluated, startups can feel confident they are protecting themselves from civil and criminal penalties and preventing terrorist financing, drug trafficking, tax evasion, corruption, fraud, and other financial crimes.
+                                                                                <strong>1. Preventing Illegal
+                                                                                    Activities:</strong> Money
+                                                                                laundering involves the concealment or
+                                                                                disguise of money derived from criminal
+                                                                                origins by processing it through a
+                                                                                single or series of transactions to make
+                                                                                it appear as if it comes from a legal,
+                                                                                legitimate source or constitute
+                                                                                legitimate assets. Having a verification
+                                                                                process, whereby investors are reviewed,
+                                                                                checked against governmental databases,
+                                                                                and all investment funds are evaluated,
+                                                                                startups can feel confident they are
+                                                                                protecting themselves from civil and
+                                                                                criminal penalties and preventing
+                                                                                terrorist financing, drug trafficking,
+                                                                                tax evasion, corruption, fraud, and
+                                                                                other financial crimes.
                                                                             </div>
-                                                                            
+
                                                                             <div class="mb-3">
-                                                                                <strong>2. Identity Verification/Data:</strong> KYC processes help collect essential pieces of data and verify the identity and authority of the investors, ensuring that they are indeed who they claim to be and are authorized to process the transaction they seek to make. This protects against identity theft and fraud.
+                                                                                <strong>2. Identity
+                                                                                    Verification/Data:</strong> KYC
+                                                                                processes help collect essential pieces
+                                                                                of data and verify the identity and
+                                                                                authority of the investors, ensuring
+                                                                                that they are indeed who they claim to
+                                                                                be and are authorized to process the
+                                                                                transaction they seek to make. This
+                                                                                protects against identity theft and
+                                                                                fraud.
                                                                             </div>
-                                                                            
+
                                                                             <div class="mb-3">
-                                                                                <strong>3. Regulatory Compliance:</strong> Compliance with AML and KYC requirements is mandatory in many jurisdictions. Failure to comply can lead to severe civil penalties, including heavy fines, and even criminal penalties.
+                                                                                <strong>3. Regulatory
+                                                                                    Compliance:</strong> Compliance with
+                                                                                AML and KYC requirements is mandatory in
+                                                                                many jurisdictions. Failure to comply
+                                                                                can lead to severe civil penalties,
+                                                                                including heavy fines, and even criminal
+                                                                                penalties.
                                                                             </div>
                                                                         </div>
                                                                         <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+                                                                            <button type="button"
+                                                                                class="btn btn-primary"
+                                                                                data-bs-dismiss="modal">I
+                                                                                Understand</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1641,7 +1865,8 @@ a,
 
                                                             <!-- Investment Amount Selection -->
                                                             <div class="investment-step" id="amount-step">
-                                                                <h3>{{ $website && $website->invest_amount_title ? $website->invest_amount_title : ($setting && $setting->invest_amount_title ? $setting->invest_amount_title : 'Select Investment Amount') }}</h3>
+                                                                <h3>{{ $website && $website->invest_amount_title ? $website->invest_amount_title : ($setting && $setting->invest_amount_title ? $setting->invest_amount_title : 'Select Investment Amount') }}
+                                                                </h3>
                                                                 <div class="amount-tiers">
                                                                     @php
                                                                         // Handle JSON format for investment tiers
@@ -1741,8 +1966,8 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 {{ number_format($tier / $sharePrice) }}
                                                                                 shares</div>
                                                                             <div class="tier-shares">
-                                                                            ${{ $tier }}
-                                                                                </div>
+                                                                                ${{ $tier }}
+                                                                            </div>
                                                                         </div>
                                                                     @endforeach
 
@@ -1801,8 +2026,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <div class="form-group">
-                                                                            <label for="ssn">Social Security Number *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                            <label for="ssn">Social Security
+                                                                                Number *
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="ssn"
                                                                                 name="ssn"
@@ -1829,8 +2060,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <div class="form-group">
-                                                                            <label for="primary_ssn">Primary Holder SSN *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                            <label for="primary_ssn">Primary Holder SSN
+                                                                                *
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="primary_ssn"
                                                                                 name="primary_ssn"
@@ -1852,8 +2089,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <div class="form-group">
-                                                                            <label for="secondary_ssn">Secondary Holder SSN *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                            <label for="secondary_ssn">Secondary Holder
+                                                                                SSN *
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="secondary_ssn"
                                                                                 name="secondary_ssn"
@@ -1889,8 +2132,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <div class="form-group">
-                                                                            <label for="ein">Federal Tax ID (EIN) *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                            <label for="ein">Federal Tax ID (EIN)
+                                                                                *
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="ein"
                                                                                 name="ein"
@@ -1950,7 +2199,12 @@ if ($tiersData && is_array($tiersData)) {
 
                                                                         <div class="form-group">
                                                                             <label for="trustee_ssn">Trustee SSN/EIN *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="trustee_ssn"
                                                                                 name="trustee_ssn"
@@ -1992,8 +2246,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <div class="form-group">
-                                                                            <label for="ira_holder_ssn">Account Holder SSN *
-                                                                                <a href="#" class="ssn-help-link" data-bs-toggle="modal" data-bs-target="#ssnExplanationModal" style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why do we need this?</a>
+                                                                            <label for="ira_holder_ssn">Account Holder
+                                                                                SSN *
+                                                                                <a href="#"
+                                                                                    class="ssn-help-link"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#ssnExplanationModal"
+                                                                                    style="font-size: 12px; color: #007bff; text-decoration: none; float: right;">Why
+                                                                                    do we need this?</a>
                                                                             </label>
                                                                             <input type="text" id="ira_holder_ssn"
                                                                                 name="ira_holder_ssn"
@@ -2060,70 +2320,98 @@ if ($tiersData && is_array($tiersData)) {
                                                                         </div>
 
                                                                         <!-- Complete Address Fields with Country/State Logic -->
-                                                                        <div data-testid="address-inputs" class="address-fields-container">
+                                                                        <div data-testid="address-inputs"
+                                                                            class="address-fields-container">
                                                                             <div class="form-group">
-                                                                                <label for="addressLine1">Address Line 1 *</label>
-                                                                                <input id="addressLine1" name="address"
+                                                                                <label for="addressLine1">Address Line
+                                                                                    1 *</label>
+                                                                                <input id="addressLine1"
+                                                                                    name="address"
                                                                                     class="form-control"
                                                                                     placeholder="Address"
                                                                                     data-testid="input-addressLine1"
-                                                                                    autocomplete="off" inputmode="text"
-                                                                                    type="text" required>
+                                                                                    autocomplete="off"
+                                                                                    inputmode="text" type="text"
+                                                                                    required>
                                                                             </div>
-                                                                            
+
                                                                             <div class="form-group">
-                                                                                <label for="addressLine2">Address Line 2</label>
-                                                                                <input id="addressLine2" name="apartment"
+                                                                                <label for="addressLine2">Address Line
+                                                                                    2</label>
+                                                                                <input id="addressLine2"
+                                                                                    name="apartment"
                                                                                     class="form-control"
-                                                                                    placeholder="Apartment, suite, etc. (optional)" 
+                                                                                    placeholder="Apartment, suite, etc. (optional)"
                                                                                     data-testid="input-addressLine2"
                                                                                     autocomplete="address-line2"
                                                                                     inputmode="text" type="text">
                                                                             </div>
-                                                                            
+
                                                                             <div class="row">
                                                                                 <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label for="country">Country/Region *</label>
-                                                                                        <select class="form-control" name="country" id="country" required aria-label="Country/Region">
-                                                                                            <option value="" disabled selected hidden>Select Country</option>
+                                                                                        <label
+                                                                                            for="country">Country/Region
+                                                                                            *</label>
+                                                                                        <select class="form-control"
+                                                                                            name="country"
+                                                                                            id="country" required
+                                                                                            aria-label="Country/Region">
+                                                                                            <option value=""
+                                                                                                disabled selected
+                                                                                                hidden>Select Country
+                                                                                            </option>
                                                                                         </select>
                                                                                     </div>
                                                                                 </div>
-                                                                                
+
                                                                                 <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label for="state" id="state-label">State *</label>
-                                                                                        <select class="form-control" name="state" id="state" required aria-label="State">
-                                                                                            <option value="" disabled selected hidden>Select State</option>
+                                                                                        <label for="state"
+                                                                                            id="state-label">State
+                                                                                            *</label>
+                                                                                        <select class="form-control"
+                                                                                            name="state"
+                                                                                            id="state" required
+                                                                                            aria-label="State">
+                                                                                            <option value=""
+                                                                                                disabled selected
+                                                                                                hidden>Select State
+                                                                                            </option>
                                                                                         </select>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            
+
                                                                             <div class="row">
                                                                                 <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label for="city">City *</label>
-                                                                                        <input id="city" name="city" 
-                                                                                            class="form-control" 
-                                                                                            placeholder="City" 
-                                                                                            data-testid="input-city" 
-                                                                                            autocomplete="address-level2" 
+                                                                                        <label for="city">City
+                                                                                            *</label>
+                                                                                        <input id="city"
+                                                                                            name="city"
+                                                                                            class="form-control"
+                                                                                            placeholder="City"
+                                                                                            data-testid="input-city"
+                                                                                            autocomplete="address-level2"
                                                                                             inputmode="text"
                                                                                             type="text" required>
                                                                                     </div>
                                                                                 </div>
-                                                                                
+
                                                                                 <div class="col-md-6">
                                                                                     <div class="form-group">
-                                                                                        <label for="zipcode" id="zipcode-label">ZIP Code *</label>
-                                                                                        <input id="zipcode" name="postalCode" 
-                                                                                            class="form-control" 
-                                                                                            placeholder="ZIP code" 
-                                                                                            data-testid="input-postalCode" 
+                                                                                        <label for="zipcode"
+                                                                                            id="zipcode-label">ZIP Code
+                                                                                            *</label>
+                                                                                        <input id="zipcode"
+                                                                                            name="postalCode"
+                                                                                            class="form-control"
+                                                                                            placeholder="ZIP code"
+                                                                                            data-testid="input-postalCode"
                                                                                             autocomplete="postal-code"
-                                                                                            inputmode="text" type="text" required>
+                                                                                            inputmode="text"
+                                                                                            type="text" required>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -2187,7 +2475,8 @@ if ($tiersData && is_array($tiersData)) {
                                                                 <div
                                                                     class="dmr-common-stock dmr-larger-t text-color-white">
                                                                     <strong style="color: #fff !important">Investment
-                                                                        Details</strong></div>
+                                                                        Details</strong>
+                                                                </div>
                                                                 <div class="div-block-132">
                                                                     <div id="w-node-f2ed6c7b-d6cb-dd1d-1486-c534a22a22d9-a22a22d5"
                                                                         class="w-layout-layout quick-stack-5 wf-layout-layout">
@@ -2197,12 +2486,14 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}</div>
+                                                                                        {{ $website && $website->share_price_label ? $website->share_price_label : ($setting && $setting->share_price_label ? $setting->share_price_label : 'SHARE PRICE') }}
+                                                                                    </div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
                                                                                             style="color: #fff !important">${{ $website && $website->share_price ? number_format($website->share_price, 2) : ($setting && $setting->share_price ? number_format($setting->share_price, 2) : '1.00') }}
-                                                                                            USD</strong></div>
+                                                                                            USD</strong>
+                                                                                    </div>
                                                                                 </div>
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
@@ -2212,7 +2503,8 @@ if ($tiersData && is_array($tiersData)) {
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
                                                                                             style="color: #fff !important">${{ $website && $website->min_investment ? number_format($website->min_investment, 2) : ($setting && $setting->min_investment ? number_format($setting->min_investment, 2) : '1000.00') }}
-                                                                                            USD</strong></div>
+                                                                                            USD</strong>
+                                                                                    </div>
                                                                                 </div>
                                                                                 <div class="div-block-46 _3"><a
                                                                                         href="#"
@@ -2231,7 +2523,8 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}</div>
+                                                                                        {{ $website && $website->offering_type_label ? $website->offering_type_label : ($setting && $setting->offering_type_label ? $setting->offering_type_label : 'OFFERING TYPE') }}
+                                                                                    </div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
@@ -2241,7 +2534,8 @@ if ($tiersData && is_array($tiersData)) {
                                                                                 <div class="dmr-details-padding no-l">
                                                                                     <div class="dmr-common-stock-2 small"
                                                                                         style="color: #fff !important">
-                                                                                        {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}</div>
+                                                                                        {{ $website && $website->asset_type_label ? $website->asset_type_label : ($setting && $setting->asset_type_label ? $setting->asset_type_label : 'ASSET TYPE') }}
+                                                                                    </div>
                                                                                     <div
                                                                                         class="dmr-common-stock-2 fixed-height">
                                                                                         <strong
@@ -2322,7 +2616,11 @@ if ($tiersData && is_array($tiersData)) {
                                                                 <ul role="list" class="list-3"></ul>
                                                                 <div class="disclaimer-dmr"
                                                                     style="color: #fff !important">
-                                                                    {!! $website && $website->additional_information ? $website->additional_information : ($setting && $setting->additional_information ? $setting->additional_information : 'Investment details and disclosures are available in the offering documents.') !!}
+                                                                    {!! $website && $website->additional_information
+                                                                        ? $website->additional_information
+                                                                        : ($setting && $setting->additional_information
+                                                                            ? $setting->additional_information
+                                                                            : 'Investment details and disclosures are available in the offering documents.') !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2342,8 +2640,7 @@ if ($tiersData && is_array($tiersData)) {
                                 style="background-color: {{ $footer->background }} !important; ">
                                 <div class="container">
 
-                                    <p class="lead text-center pt-4"
-                                        style="color: {{ $footer->color }} !important">
+                                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
                                         {{ $footer->message }}
                                     </p>
                                     @if ($footer->menu == 1)
@@ -2866,17 +3163,15 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                     }
                 }
 
-                function submitInvestment() {
+                async function submitInvestment() {
                     // Make sure investor name field is properly populated before submission
                     const selectedType = investorTypeSelect.value;
                     if (selectedType) {
                         updateInvestorNameField(selectedType);
                     }
-                    
+
                     const formData = new FormData(investorForm);
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-
 
                     // Add CSRF token
                     formData.append('_token', csrfToken);
@@ -2884,27 +3179,118 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                     // Show loading state
                     const submitBtn = investorForm.querySelector('button[type="submit"]');
                     const originalText = submitBtn.textContent;
-                    submitBtn.textContent = 'Processing...';
+                    submitBtn.textContent = 'Checking authentication...';
                     submitBtn.disabled = true;
 
-                    // Create a regular form and submit it (like donations do)
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '/invest/save-info';
-                    form.style.display = 'none';
+                    try {
+                        // Check if user is authenticated
+                        const authCheck = await fetch('/ajax/ticket-auth/check', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({})
+                        });
+                        const authStatus = await authCheck.json();
 
-                    // Add all form data as hidden inputs
-                    for (let [key, value] of formData.entries()) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = value;
-                        form.appendChild(input);
+                        if (!authStatus.authenticated || !authStatus.verified) {
+                            // User not authenticated - show auth modal
+                            submitBtn.textContent = originalText;
+                            submitBtn.disabled = false;
+
+                            // Store form data in global variable for later submission
+                            window._investmentFormData = formData;
+                            window._investmentOriginalBtn = {
+                                submitBtn,
+                                originalText
+                            };
+
+                            // Open auth modal
+                            if (typeof setAuthMode === 'function') {
+                                setAuthMode('login');
+                            }
+                            if (typeof openAuthModal === 'function') {
+                                openAuthModal();
+                            }
+                            return;
+                        }
+
+                        // User is authenticated - proceed with investment submission
+                        submitBtn.textContent = 'Processing...';
+
+                        // Create a regular form and submit it
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/invest/save-info';
+                        form.style.display = 'none';
+
+                        // Add all form data as hidden inputs
+                        for (let [key, value] of formData.entries()) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = value;
+                            form.appendChild(input);
+                        }
+
+                        // Submit the form
+                        document.body.appendChild(form);
+                        form.submit();
+
+                    } catch (error) {
+                        console.error('Authentication check failed:', error);
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        alert('An error occurred. Please try again.');
                     }
+                }
 
-                    // Submit the form
-                    document.body.appendChild(form);
-                    form.submit();
+                // Handle auth completion for invest page
+                window.addEventListener('investorProfileSaved', function() {
+                    proceedWithInvestmentSubmission();
+                });
+
+                window.addEventListener('investorProfileSkipped', function() {
+                    proceedWithInvestmentSubmission();
+                });
+
+                function proceedWithInvestmentSubmission() {
+                    if (window._investmentFormData) {
+                        const formData = window._investmentFormData;
+                        const {
+                            submitBtn,
+                            originalText
+                        } = window._investmentOriginalBtn || {};
+
+                        if (submitBtn) {
+                            submitBtn.textContent = 'Processing...';
+                            submitBtn.disabled = true;
+                        }
+
+                        // Create a regular form and submit it
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/invest/save-info';
+                        form.style.display = 'none';
+
+                        // Add all form data as hidden inputs
+                        for (let [key, value] of formData.entries()) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = value;
+                            form.appendChild(input);
+                        }
+
+                        // Submit the form
+                        document.body.appendChild(form);
+                        form.submit();
+
+                        // Clear stored data
+                        window._investmentFormData = null;
+                        window._investmentOriginalBtn = null;
+                    }
                 }
 
                 function showSuccessStep(data) {
@@ -2916,37 +3302,61 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                 // Address Fields Logic - Country and State Dropdowns
                 const countryStateData = {
                     "United States": [
-                        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+                        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+                        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+                        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+                        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+                        "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+                        "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+                        "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
+                        "Washington", "West Virginia", "Wisconsin", "Wyoming"
                     ].sort(),
                     "Canada": [
-                        "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"
+                        "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador",
+                        "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island",
+                        "Quebec", "Saskatchewan", "Yukon"
                     ].sort(),
                     "Australia": [
-                        "Australian Capital Territory", "New South Wales", "Northern Territory", "Queensland", "South Australia", "Tasmania", "Victoria", "Western Australia"
+                        "Australian Capital Territory", "New South Wales", "Northern Territory", "Queensland",
+                        "South Australia", "Tasmania", "Victoria", "Western Australia"
                     ].sort(),
                     "India": [
-                        "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+                        "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
+                        "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi",
+                        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand",
+                        "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra",
+                        "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab",
+                        "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
+                        "Uttarakhand", "West Bengal"
                     ].sort(),
                     "Spain": [
-                        "A Coruna", "Álava", "Ávila", "Albacete", "Alicante", "Almería", "Asturias", "Badajoz", "Balearic Islands", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Guipúzcoa", "Huelva", "Huesca", "Jaén", "La Coruña", "La Rioja", "Las Palmas", "León", "Lérida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Santa Cruz de Tenerife", "Segovia", "Seville", "Soria", "Tarragona", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza"
+                        "A Coruna", "Álava", "Ávila", "Albacete", "Alicante", "Almería", "Asturias", "Badajoz",
+                        "Balearic Islands", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón",
+                        "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Guipúzcoa",
+                        "Huelva", "Huesca", "Jaén", "La Coruña", "La Rioja", "Las Palmas", "León", "Lérida",
+                        "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra",
+                        "Salamanca", "Santa Cruz de Tenerife", "Segovia", "Seville", "Soria", "Tarragona",
+                        "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza"
                     ]
                 };
-                
-                const countryList = Object.keys(countryStateData).concat(["United Kingdom", "Germany", "France", "Spain", "Other"]).filter((v, i, a) => a.indexOf(v) === i);
-                
+
+                const countryList = Object.keys(countryStateData).concat(["United Kingdom", "Germany", "France",
+                    "Spain", "Other"
+                ]).filter((v, i, a) => a.indexOf(v) === i);
+
                 function setCountryValue() {
                     const detected = detectCountry();
                     const countrySelect = document.getElementById('country');
                     if (!countrySelect) return;
-                    
+
                     countrySelect.innerHTML = '<option value="" disabled selected hidden>Select Country</option>';
-                    countryList.forEach(function (country) {
+                    countryList.forEach(function(country) {
                         const option = document.createElement('option');
                         option.value = country;
                         option.text = country;
                         countrySelect.appendChild(option);
                     });
-                    
+
                     // Try to auto-detect country from browser or fallback
                     if (detected && countryList.includes(detected)) {
                         countrySelect.value = detected;
@@ -2962,18 +3372,18 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                     const stateLabel = document.getElementById('state-label');
                     const zipcodeInput = document.getElementById('zipcode');
                     const zipcodeLabel = document.getElementById('zipcode-label');
-                    
+
                     if (!countrySelect || !stateSelect) return;
-                    
+
                     const country = countrySelect.value;
                     const stateWrapper = stateSelect.closest('.col-md-6');
-                    
+
                     // State/Province/Region logic
                     stateSelect.innerHTML = '<option value="" disabled selected hidden>Select State</option>';
-                    
+
                     if (country === 'United States') {
                         // US: State
-                        countryStateData[country].forEach(function (state) {
+                        countryStateData[country].forEach(function(state) {
                             const option = document.createElement('option');
                             option.value = state;
                             option.text = state;
@@ -2984,7 +3394,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         if (stateLabel) stateLabel.textContent = 'State *';
                     } else if (country === 'Canada') {
                         // Canada: Province
-                        countryStateData[country].forEach(function (province) {
+                        countryStateData[country].forEach(function(province) {
                             const option = document.createElement('option');
                             option.value = province;
                             option.text = province;
@@ -2995,7 +3405,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         if (stateLabel) stateLabel.textContent = 'Province *';
                     } else if (country === 'Australia') {
                         // Australia: State/Territory
-                        countryStateData[country].forEach(function (region) {
+                        countryStateData[country].forEach(function(region) {
                             const option = document.createElement('option');
                             option.value = region;
                             option.text = region;
@@ -3006,7 +3416,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         if (stateLabel) stateLabel.textContent = 'State/Territory *';
                     } else if (country === 'India') {
                         // India: State (dropdown)
-                        countryStateData[country].forEach(function (state) {
+                        countryStateData[country].forEach(function(state) {
                             const option = document.createElement('option');
                             option.value = state;
                             option.text = state;
@@ -3019,7 +3429,9 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         // Spain: Province (dropdown)
                         let provinces = countryStateData[country].slice();
                         let aCoruna = provinces.splice(provinces.findIndex(p => p === 'A Coruna'), 1)[0];
-                        provinces = provinces.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+                        provinces = provinces.sort((a, b) => a.localeCompare(b, 'es', {
+                            sensitivity: 'base'
+                        }));
                         if (provinces.length > 1) {
                             let last = provinces[provinces.length - 1];
                             let secondLast = provinces[provinces.length - 2];
@@ -3029,7 +3441,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                             }
                         }
                         provinces.unshift(aCoruna);
-                        provinces.forEach(function (province) {
+                        provinces.forEach(function(province) {
                             const option = document.createElement('option');
                             option.value = province;
                             option.text = province;
@@ -3042,17 +3454,18 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         // Hide state/province/region field if not needed
                         stateSelect.disabled = true;
                     }
-                    
+
                     // Zip/Postal code logic and field order
                     if (zipcodeInput && zipcodeLabel) {
                         const cityInput = document.getElementById('city');
                         const zipcodeInputDiv = zipcodeInput.closest('.col-md-6');
                         const cityInputDiv = cityInput ? cityInput.closest('.col-md-6') : null;
-                        
+
                         // Germany, France, Spain: Postal Code - City
                         if (country === 'Germany' || country === 'France' || country === 'Spain') {
                             // Move Postal Code before City
-                            if (zipcodeInputDiv && cityInputDiv && zipcodeInputDiv !== cityInputDiv.previousElementSibling) {
+                            if (zipcodeInputDiv && cityInputDiv && zipcodeInputDiv !== cityInputDiv
+                                .previousElementSibling) {
                                 cityInputDiv.parentNode.insertBefore(zipcodeInputDiv, cityInputDiv);
                             }
                             zipcodeInput.placeholder = 'Postal code';
@@ -3063,7 +3476,8 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                             if (zipcodeInputDiv) zipcodeInputDiv.style.display = '';
                         } else if (country === 'Other') {
                             // For Other: Postcode beside City
-                            if (zipcodeInputDiv && cityInputDiv && zipcodeInputDiv !== cityInputDiv.nextElementSibling) {
+                            if (zipcodeInputDiv && cityInputDiv && zipcodeInputDiv !== cityInputDiv
+                                .nextElementSibling) {
                                 cityInputDiv.parentNode.insertBefore(zipcodeInputDiv, cityInputDiv.nextElementSibling);
                             }
                             zipcodeInput.placeholder = 'Postcode';
@@ -3117,7 +3531,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                         }
                     }
                 }
-                
+
                 function detectCountry() {
                     // Try to detect country using browser locale or IP (simple fallback)
                     let country = "United States";
@@ -3132,7 +3546,7 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                     }
                     return country;
                 }
-                
+
                 // Initialize address fields when info step is shown
                 const infoStepElement = document.getElementById('info-step');
                 if (infoStepElement) {
@@ -3143,18 +3557,22 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                                     setTimeout(() => {
                                         setCountryValue();
                                         populateStatesAndFields();
-                                        const countrySelect = document.getElementById('country');
+                                        const countrySelect = document.getElementById(
+                                        'country');
                                         if (countrySelect) {
-                                            countrySelect.addEventListener('change', populateStatesAndFields);
+                                            countrySelect.addEventListener('change',
+                                                populateStatesAndFields);
                                         }
                                     }, 100);
                                 }
                             }
                         });
                     });
-                    observer.observe(infoStepElement, { attributes: true });
+                    observer.observe(infoStepElement, {
+                        attributes: true
+                    });
                 }
-                
+
                 // Also initialize immediately if info step is already visible
                 setTimeout(() => {
                     if (infoStepElement && infoStepElement.style.display !== 'none') {
@@ -3167,23 +3585,127 @@ base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f2009
                     }
                 }, 500);
 
-            // SSN/EIN Help Modal Event Listeners
-            document.addEventListener('click', function(e) {
-                if (e.target && e.target.classList.contains('ssn-help-link')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Bootstrap 5 modal trigger - the data-bs-toggle and data-bs-target attributes handle the modal
-                }
-            });
-
-            // Prevent form submission when clicking help links
-            const ssnHelpLinks = document.querySelectorAll('.ssn-help-link');
-            ssnHelpLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                // SSN/EIN Help Modal Event Listeners
+                document.addEventListener('click', function(e) {
+                    if (e.target && e.target.classList.contains('ssn-help-link')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Bootstrap 5 modal trigger - the data-bs-toggle and data-bs-target attributes handle the modal
+                    }
                 });
-            });
+
+                // Prevent form submission when clicking help links
+                const ssnHelpLinks = document.querySelectorAll('.ssn-help-link');
+                ssnHelpLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                });
+
+                // Auto-fill investor data if user is logged in
+                (async function loadExistingInvestorProfile() {
+                    try {
+                        const authCheck = await fetch('/ajax/ticket-auth/check', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            }
+                        });
+                        const authStatus = await authCheck.json();
+
+                        if (authStatus.authenticated && authStatus.verified) {
+                            // User is logged in, try to load their investor profile
+                            const profileResp = await fetch('/users/investor-profile', {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                }
+                            });
+                            const profileData = await profileResp.json();
+
+                            console.log('Invest page - Profile data received:', profileData);
+
+                            if (profileData.success && profileData.profile) {
+                                // Load profile data into the form
+                                const profile = profileData.profile;
+                                const data = profile.investor_data || {};
+
+                                // Set investor type
+                                if (profile.investor_type) {
+                                    investorTypeSelect.value = profile.investor_type;
+                                    investorTypeSelect.dispatchEvent(new Event('change'));
+                                }
+
+                                // Helper to set field value
+                                const setField = (id, value) => {
+                                    const field = document.getElementById(id);
+                                    if (field && value) {
+                                        field.value = value;
+                                    }
+                                };
+
+                                // Fill in the fields based on investor type
+                                setTimeout(() => {
+                                    // Individual fields
+                                    setField('individual_name', data.individual_name);
+                                    setField('date_of_birth', data.date_of_birth);
+                                    setField('ssn', data.ssn);
+
+                                    // Joint fields
+                                    setField('primary_name', data.primary_name);
+                                    setField('primary_ssn', data.primary_ssn);
+                                    setField('secondary_name', data.secondary_name);
+                                    setField('secondary_ssn', data.secondary_ssn);
+
+                                    // Corporation fields
+                                    setField('company_name', data.company_name);
+                                    setField('ein', data.ein);
+                                    setField('authorized_person', data.authorized_person);
+
+                                    // Trust fields
+                                    setField('trust_name', data.trust_name);
+                                    setField('trust_ein', data.trust_ein);
+                                    setField('trustee_name', data.trustee_name);
+
+                                    // IRA fields
+                                    setField('ira_holder_name', data.ira_holder_name);
+                                    setField('ira_account_number', data.ira_account_number);
+                                    setField('ira_custodian', data.ira_custodian);
+
+                                    // Address fields
+                                    setField('address', data.address);
+                                    setField('city', data.city);
+                                    setField('zipcode', data.zipcode);
+
+                                    // Country and state need special handling
+                                    const countryField = document.getElementById('country');
+                                    if (countryField && data.country) {
+                                        countryField.value = data.country;
+                                        countryField.dispatchEvent(new Event('change'));
+
+                                        // Set state after country change populates states
+                                        setTimeout(() => {
+                                            setField('state', data.state);
+                                        }, 100);
+                                    }
+
+                                    // Contact fields
+                                    setField('email', data.email);
+                                    setField('phone', data.phone);
+
+                                    console.log('Investor profile auto-filled successfully');
+                                }, 200);
+                            }
+                        }
+                    } catch (error) {
+                        console.log('Could not load investor profile:', error);
+                        // Not a critical error, user can still fill form manually
+                    }
+                })();
 
             });
         </script>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $ticket->name }} | Investment Details</title>
-    <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share, 2) }} per share!">
+    <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share) }} per share!">
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -33,6 +33,14 @@
             --pd-heading: {{ json_encode($website->property_details_heading_color ?? '#1e293b') }};
             --pd-price: {{ json_encode($website->property_details_price_color ?? '#111827') }};
             --pd-accent: {{ json_encode($website->property_details_accent_color ?? '#667eea') }};
+        }
+
+        .modal-backdrop.show {
+            display: none !important;
+        }
+
+        p a {
+            color: {{  $website->property_details_muted_color }} !important;
         }
 
         nav a {
@@ -757,7 +765,7 @@
         h1,h2,h3,h4,h5,h6,.title,.markdown-content h2,.investor-exclusives-text{color: var(--pd-heading) !important;}
         .muted,.subtitle,.condition,.small,.text-muted,.card .meta,.seller-meta,.rating-row span,.markdown-content p{color: var(--pd-muted) !important;}
         .price,.price-value{color: var(--pd-price) !important;}
-        a,.markdown-content a,.btn.ghost{color: var(--pd-accent) !important;}
+        a,.markdown-content a,.btn.ghost{color: {{ $website->property_details_muted_color }} !important;}
     </style>
 </head>
 <body class="property-details-page" style="background-color: {{ $website->property_details_bg_color ?? '#ffffff' }} !important;">
@@ -989,7 +997,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Starting Price</div>
-                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number js-metric-number">${{ number_format($ticket->price_per_share, 2) }}</div>
+                        <div class="text-2xl font-bold text-purple-600 break-words responsive-number js-metric-number">${{ number_format($ticket->price_per_share) }}</div>
                         <div class="text-xs text-gray-500 mt-1">per share</div>
                     </div>
                     
@@ -1007,7 +1015,7 @@
                     
                     <div class="stat-card bg-white p-4 rounded-lg shadow-md">
                         <div class="text-gray-600 text-sm mb-1">Total Value</div>
-                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number js-metric-number js-metric-leader">${{ number_format($ticket->price, 2) }}</div>
+                        <div class="text-2xl font-bold text-gray-900 break-words responsive-number js-metric-number js-metric-leader">${{ number_format($ticket->price) }}</div>
                         <div class="text-xs text-gray-500 mt-1">of investment</div>
                     </div>
                 </div>
@@ -1020,10 +1028,10 @@
                 @endphp
                 @if($validFeatures->count() > 0)
                 <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Features</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ $ticket->features_heading ?? 'Investment Features' }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($validFeatures as $feature)
-                        <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-100">
                             <span class="text-gray-600 font-medium">{{ $feature->name }}</span>
                             <span class="text-gray-900 font-semibold">{{ $feature->value }}</span>
                         </div>
@@ -1088,12 +1096,12 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <div class="text-gray-600 text-sm mb-2">{{ $ticket->price_per_share_label ?? 'Price Per Share' }}</div>
-                                    <div class="text-3xl font-bold text-purple-600">${{ number_format($ticket->price_per_share, 2) }}</div>
+                                    <div class="text-3xl font-bold text-purple-600">${{ number_format($ticket->price_per_share) }}</div>
                                 </div>
                                 
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <div class="text-gray-600 text-sm mb-2">Total Investment Value</div>
-                                    <div class="text-3xl font-bold text-gray-900">${{ number_format($ticket->price, 2) }}</div>
+                                    <div class="text-3xl font-bold text-gray-900">${{ number_format($ticket->price) }}</div>
                                 </div>
                             </div>
 
@@ -1110,9 +1118,9 @@
                                                 $fullCost = $ticket->price; // already stored total value
                                             @endphp
                                             @if($remainingShares > 0)
-                                                There are <strong>{{ number_format($remainingShares) }}</strong> shares remaining ({{ number_format($soldShares) }} sold). Purchasing all remaining shares would cost <strong>${{ number_format($remainingCost, 2) }}</strong>.
+                                                There are <strong>{{ number_format($remainingShares) }}</strong> shares remaining ({{ number_format($soldShares) }} sold). Purchasing all remaining shares would cost <strong>${{ number_format($remainingCost) }}</strong>.
                                             @else
-                                                <strong>All shares have been sold.</strong> Total investment value was <strong>${{ number_format($fullCost, 2) }}</strong>.
+                                                <strong>All shares have been sold.</strong> Total investment value was <strong>${{ number_format($fullCost) }}</strong>.
                                             @endif
                                         </p>
                                     </div>
@@ -1127,15 +1135,15 @@
                             <!-- Total Investment Value Section -->
                             @if($fin->show_total_investment && $fin->total_investment_value)
                             <div class="rounded-xl shadow-xl mt-6 border border-purple-700" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->total_investment_label }}</span>
-                                    <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->total_investment_value, 2) }}</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">{{ $fin->total_investment_value }}</span>
                                 </div>
                                 @if(is_array($fin->custom_total_investment_items))
                                     @foreach($fin->custom_total_investment_items as $ci)
                                         @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
                                         @if($label && $val !== null)
-                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                             <div class="flex items-center">
                                                 <span class="font-bold md:text-lg">{{ $label }}</span>
                                                 @if($tip)
@@ -1145,14 +1153,14 @@
                                                 </div>
                                                 @endif
                                             </div>
-                                            <span class="md:text-lg">${{ number_format($val, 2) }}</span>
+                                            <span class="md:text-lg">{{ $val }}</span>
                                         </div>
                                         @endif
                                     @endforeach
                                 @endif
                                 
                                 @if($fin->show_underlying_asset && $fin->underlying_asset_price)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->underlying_asset_label }}</span>
                                         @if($fin->show_underlying_asset_tooltip && $fin->underlying_asset_tooltip)
@@ -1164,12 +1172,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->underlying_asset_price, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->underlying_asset_price }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_closing_costs && $fin->closing_costs !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->closing_costs_label }}</span>
                                         @if($fin->show_closing_costs_tooltip && $fin->closing_costs_tooltip)
@@ -1181,12 +1189,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->closing_costs, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->closing_costs }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_upfront_fees && $fin->upfront_fees !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->upfront_fees_label }}</span>
                                         @if($fin->show_upfront_fees_tooltip && $fin->upfront_fees_tooltip)
@@ -1198,12 +1206,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->upfront_fees, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->upfront_fees }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_operating_reserve && $fin->operating_reserve_value)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->operating_reserve_label }}</span>
                                         @if($fin->show_operating_reserve_tooltip && $fin->operating_reserve_tooltip)
@@ -1224,15 +1232,15 @@
                             <!-- Projected Annual Return Section -->
                             @if($fin->show_projected_annual_return && $fin->projected_annual_return !== null)
                             <div class="rounded-xl shadow-xl mt-6" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->projected_annual_return_label }}</span>
-                                    <span class="text-purple-300 text-xl md:text-2xl">{{ number_format($fin->projected_annual_return, 2) }}%</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">{{ $fin->projected_annual_return }}</span>
                                 </div>
                                 @if(is_array($fin->custom_projected_annual_return_items))
                                     @foreach($fin->custom_projected_annual_return_items as $ci)
                                         @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
                                         @if($label && $val !== null)
-                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                             <div class="flex items-center">
                                                 <span class="font-bold md:text-lg">{{ $label }}</span>
                                                 @if($tip)
@@ -1242,14 +1250,14 @@
                                                 </div>
                                                 @endif
                                             </div>
-                                            <span class="md:text-lg">{{ number_format($val, 2) }}%</span>
+                                            <span class="md:text-lg">{{ $val }}</span>
                                         </div>
                                         @endif
                                     @endforeach
                                 @endif
 
                                 @if($fin->show_projected_rental_yield && $fin->projected_rental_yield !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->projected_rental_yield_label }}</span>
                                         @if($fin->show_projected_rental_yield_tooltip && $fin->projected_rental_yield_tooltip)
@@ -1261,12 +1269,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">{{ number_format($fin->projected_rental_yield, 2) }}%</span>
+                                    <span class="md:text-lg">{{ $fin->projected_rental_yield }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_projected_appreciation && $fin->projected_appreciation !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->projected_appreciation_label }}</span>
                                         @if($fin->show_projected_appreciation_tooltip && $fin->projected_appreciation_tooltip)
@@ -1278,12 +1286,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">{{ number_format($fin->projected_appreciation, 2) }}%</span>
+                                    <span class="md:text-lg">{{ $fin->projected_appreciation }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_rental_yield && $fin->rental_yield !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->rental_yield_label }}</span>
                                         @if($fin->show_rental_yield_tooltip && $fin->rental_yield_tooltip)
@@ -1295,7 +1303,7 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">{{ number_format($fin->rental_yield, 2) }}%</span>
+                                    <span class="md:text-lg">{{ $fin->rental_yield }}</span>
                                 </div>
                                 @endif
                             </div>
@@ -1304,15 +1312,15 @@
                             <!-- Annual Details Section -->
                             @if($fin->show_annual_gross_rents && $fin->annual_gross_rents !== null)
                             <div class="rounded-xl shadow-xl mt-6" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%)">
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <span class="font-bold text-xl md:text-2xl">{{ $fin->annual_gross_rents_label }}</span>
-                                    <span class="text-purple-300 text-xl md:text-2xl">${{ number_format($fin->annual_gross_rents, 2) }}</span>
+                                    <span class="text-purple-300 text-xl md:text-2xl">{{ $fin->annual_gross_rents }}</span>
                                 </div>
                                 @if(is_array($fin->custom_annual_gross_rents_items))
                                     @foreach($fin->custom_annual_gross_rents_items as $ci)
                                         @php $label = $ci['label'] ?? null; $val = $ci['value'] ?? null; $tip = $ci['tooltip'] ?? null; @endphp
                                         @if($label && $val !== null)
-                                        <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                        <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                             <div class="flex items-center">
                                                 <span class="font-bold md:text-lg">{{ $label }}</span>
                                                 @if($tip)
@@ -1322,14 +1330,14 @@
                                                 </div>
                                                 @endif
                                             </div>
-                                            <span class="md:text-lg">${{ number_format($val, 2) }}</span>
+                                            <span class="md:text-lg">{{ $val }}</span>
                                         </div>
                                         @endif
                                     @endforeach
                                 @endif
 
                                 @if($fin->show_property_taxes && $fin->property_taxes !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->property_taxes_label }}</span>
                                         @if($fin->show_property_taxes_tooltip && $fin->property_taxes_tooltip)
@@ -1341,12 +1349,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->property_taxes, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->property_taxes }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_homeowners_insurance && $fin->homeowners_insurance !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->homeowners_insurance_label }}</span>
                                         @if($fin->show_homeowners_insurance_tooltip && $fin->homeowners_insurance_tooltip)
@@ -1358,12 +1366,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->homeowners_insurance, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->homeowners_insurance }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_property_management && $fin->property_management !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->property_management_label }}</span>
                                         @if($fin->show_property_management_tooltip && $fin->property_management_tooltip)
@@ -1375,12 +1383,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->property_management, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->property_management }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_annual_llc_fees && $fin->annual_llc_fees !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->annual_llc_fees_label }}</span>
                                         @if($fin->show_annual_llc_fees_tooltip && $fin->annual_llc_fees_tooltip)
@@ -1392,12 +1400,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->annual_llc_fees, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->annual_llc_fees }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_annual_cash_flow && $fin->annual_cash_flow !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->annual_cash_flow_label }}</span>
                                         @if($fin->show_annual_cash_flow_tooltip && $fin->annual_cash_flow_tooltip)
@@ -1409,12 +1417,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->annual_cash_flow, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->annual_cash_flow }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_cap_rate && $fin->cap_rate !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->cap_rate_label }}</span>
                                         @if($fin->show_cap_rate_tooltip && $fin->cap_rate_tooltip)
@@ -1426,12 +1434,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">{{ number_format($fin->cap_rate, 2) }}%</span>
+                                    <span class="md:text-lg">{{ $fin->cap_rate }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_monthly_cash_flow && $fin->monthly_cash_flow !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->monthly_cash_flow_label }}</span>
                                         @if($fin->show_monthly_cash_flow_tooltip && $fin->monthly_cash_flow_tooltip)
@@ -1443,12 +1451,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->monthly_cash_flow, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->monthly_cash_flow }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_projected_annual_cash_flow && $fin->projected_annual_cash_flow !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->projected_annual_cash_flow_label }}</span>
                                         @if($fin->show_projected_annual_cash_flow_tooltip && $fin->projected_annual_cash_flow_tooltip)
@@ -1460,12 +1468,12 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->projected_annual_cash_flow, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->projected_annual_cash_flow }}</span>
                                 </div>
                                 @endif
 
                                 @if($fin->show_current_loan && $fin->current_loan !== null)
-                                <div class="flex justify-between p-6 text-white border-b border-purple-700">
+                                <div class="flex justify-between p-6 text-white border-b border-purple-700 last:border-b-0">
                                     <div class="flex items-center">
                                         <span class="font-bold md:text-lg">{{ $fin->current_loan_label }}</span>
                                         @if($fin->show_current_loan_tooltip && $fin->current_loan_tooltip)
@@ -1477,7 +1485,7 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <span class="md:text-lg">${{ number_format($fin->current_loan, 2) }}</span>
+                                    <span class="md:text-lg">{{ $fin->current_loan }}</span>
                                 </div>
                                 @endif
                             </div>
@@ -1494,7 +1502,7 @@
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center text-white mb-2">
                                             <p class="text-base font-medium">Shares Purchased</p>
-                                            <p class="font-semibold"><span id="sharesValue">1</span> / $<span id="sharesCost">{{ number_format($ticket->price_per_share, 2) }}</span></p>
+                                            <p class="font-semibold"><span id="sharesValue">1</span> / $<span id="sharesCost">{{ number_format($ticket->price_per_share) }}</span></p>
                                         </div>
                                         <div class="relative pt-1">
                                             <input type="range" id="sharesSlider" min="1" max="{{ $ticket->available_shares }}" value="1" 
@@ -1507,7 +1515,7 @@
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center text-white mb-2">
                                             <p class="text-base font-medium">Annual Appreciation Rate</p>
-                                            <p class="font-semibold"><span id="appreciationValue">{{ $ticket->financials && $ticket->financials->projected_appreciation ? number_format($ticket->financials->projected_appreciation, 1) : '3.0' }}</span>%</p>
+                                            <p class="font-semibold"><span id="appreciationValue">{{ $ticket->financials && $ticket->financials->projected_appreciation ? $ticket->financials->projected_appreciation : '3.0' }}</span></p>
                                         </div>
                                         <div class="relative pt-1">
                                             <input type="range" id="appreciationSlider" min="0" max="100" step="1" value="{{ $ticket->financials && $ticket->financials->projected_appreciation ? $ticket->financials->projected_appreciation : 3 }}" 
@@ -1520,7 +1528,7 @@
                                     <div class="mb-8">
                                         <div class="flex justify-between items-center text-white mb-2">
                                             <p class="text-base font-medium">Cash on Cash Return</p>
-                                            <p class="font-semibold"><span id="cashReturnValue">{{ $ticket->financials && $ticket->financials->rental_yield ? number_format($ticket->financials->rental_yield, 2) : '8.00' }}</span>%</p>
+                                            <p class="font-semibold"><span id="cashReturnValue">{{ $ticket->financials && $ticket->financials->rental_yield ? $ticket->financials->rental_yield : '8.00' }}</span></p>
                                         </div>
                                         <div class="relative pt-1">
                                             <input type="range" id="cashReturnSlider" min="0" max="100" step="1" value="{{ $ticket->financials && $ticket->financials->rental_yield ? $ticket->financials->rental_yield : 8 }}" 
@@ -1542,45 +1550,45 @@
                                     </div>
 
                                     <!-- Projection Table -->
-                                    <div class="overflow-x-auto -mx-6 px-6 mt-10">
-                                        <table class="w-full text-white table-auto min-w-max">
+                                    <div class="mt-10">
+                                        <table class="w-full text-white table-auto">
                                             <thead>
                                                 <tr class="border-b border-purple-300">
-                                                    <th class="text-left py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Metric</th>
-                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 5</th>
-                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 10</th>
-                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 20</th>
-                                                    <th class="text-center py-3 px-2 text-xs md:text-sm lg:text-base font-semibold whitespace-nowrap">Year 30</th>
+                                                    <th class="text-left py-2 md:py-3 px-1 md:px-2 text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Metric</th>
+                                                    <th class="text-center py-2 md:py-3 px-1 md:px-2 text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Year 5</th>
+                                                    <th class="text-center py-2 md:py-3 px-1 md:px-2 text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Year 10</th>
+                                                    <th class="text-center py-2 md:py-3 px-1 md:px-2 text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Year 20</th>
+                                                    <th class="text-center py-2 md:py-3 px-1 md:px-2 text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold">Year 30</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr class="border-b border-purple-400">
-                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Cumulative Net Cash Flow</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow5">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow10">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow20">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="cashFlow30">$0</td>
+                                                    <td class="font-bold text-[9px] sm:text-xs md:text-sm lg:text-base py-2 md:py-4 px-1 md:px-2">Cumulative Net Cash Flow</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="cashFlow5">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="cashFlow10">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="cashFlow20">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="cashFlow30">$0</td>
                                                 </tr>
                                                 <tr class="border-b border-purple-400">
-                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Cumulative Appreciation Gain</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation5">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation10">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation20">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="appreciation30">$0</td>
+                                                    <td class="font-bold text-[9px] sm:text-xs md:text-sm lg:text-base py-2 md:py-4 px-1 md:px-2">Cumulative Appreciation Gain</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="appreciation5">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="appreciation10">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="appreciation20">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="appreciation30">$0</td>
                                                 </tr>
                                                 <tr class="border-b border-purple-400">
-                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Your Investment</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment5">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment10">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment20">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base whitespace-nowrap" id="investment30">$0</td>
+                                                    <td class="font-bold text-[9px] sm:text-xs md:text-sm lg:text-base py-2 md:py-4 px-1 md:px-2">Your Investment</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="investment5">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="investment10">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="investment20">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base" id="investment30">$0</td>
                                                 </tr>
                                                 <tr class="bg-purple-700 bg-opacity-50">
-                                                    <td class="font-bold text-xs md:text-sm lg:text-base py-4 px-2 whitespace-nowrap">Total Investment Value</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total5">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total10">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total20">$0</td>
-                                                    <td class="text-center py-4 px-2 text-xs md:text-sm lg:text-base font-bold whitespace-nowrap" id="total30">$0</td>
+                                                    <td class="font-bold text-[9px] sm:text-xs md:text-sm lg:text-base py-2 md:py-4 px-1 md:px-2">Total Investment Value</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base font-bold" id="total5">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base font-bold" id="total10">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base font-bold" id="total20">$0</td>
+                                                    <td class="text-center py-2 md:py-4 px-1 md:px-2 text-[9px] sm:text-xs md:text-sm lg:text-base font-bold" id="total30">$0</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1660,7 +1668,7 @@
                     <div class="mb-6">
                         <div class="text-sm text-gray-600 mb-2">Starting Price</div>
                         <div class="text-4xl font-bold text-purple-600 mb-1">
-                            ${{ number_format($ticket->price_per_share, 2) }}
+                            {{ number_format($ticket->price_per_share) }}
                         </div>
                         <div class="text-sm text-gray-500">per share</div>
                     </div>
@@ -1681,7 +1689,7 @@
                         
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Investment Value</span>
-                            <span class="font-semibold text-gray-900">${{ number_format($ticket->price, 2) }}</span>
+                            <span class="font-semibold text-gray-900">{{ $ticket->price }}</span>
                         </div>
                     </div>
 
@@ -1704,7 +1712,7 @@
                     <div class="bg-purple-50 rounded-lg p-4 mb-6">
                         <div class="text-sm text-gray-600 mb-1">Your Investment</div>
                         <div class="text-3xl font-bold text-purple-600" id="cardTotalInvestment">
-                            ${{ number_format($ticket->price_per_share, 2) }}
+                            {{ number_format($ticket->price_per_share) }}
                         </div>
                     </div>
 
@@ -1721,6 +1729,7 @@
                         </form>
 
                         @include('partials.ticket-auth-modal')
+                        @include('partials.investor-info-modal')
 
                         <script>
                         // Open modal or proceed depending on auth state
@@ -1732,10 +1741,15 @@
                                     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                                     const res = await fetch('/ajax/ticket-auth/check', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token } });
                                     const json = await res.json();
+                                    
+                                    // Store the form for later submission
+                                    window._ticketAuthPendingForm = document.getElementById('buySharesForm');
+                                    
                                     if (json.authenticated && json.verified) {
-                                        document.getElementById('buySharesForm').submit();
+                                        // User is logged in - show investor modal directly
+                                        showInvestorModalForLoggedInUser();
                                     } else {
-                                        window._ticketAuthPendingForm = document.getElementById('buySharesForm');
+                                        // Not logged in - show auth modal first
                                         // Always show login first, then let the modal logic handle other states
                                         setAuthMode('login');
                                         openAuthModal();
@@ -1750,6 +1764,71 @@
                                     openAuthModal();
                                 }
                             })();
+                        });
+
+                        // Function to show investor modal for logged-in users
+                        async function showInvestorModalForLoggedInUser() {
+                            try {
+                                // Fetch existing profile if any
+                                const profileResp = await fetch('/users/investor-profile', {
+                                    headers: { 
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    }
+                                });
+                                const profileData = await profileResp.json();
+                                
+                                console.log('Profile data received:', profileData);
+                                
+                                // Wait a bit to ensure modal is ready
+                                setTimeout(() => {
+                                    // If profile exists, load it into modal
+                                    if (profileData.success && profileData.profile) {
+                                        if (typeof window.loadInvestorProfile === 'function') {
+                                            window.loadInvestorProfile(profileData.profile);
+                                        }
+                                    }
+                                    
+                                    // Show investor info modal
+                                    const modalElement = document.getElementById('investorInfoModal');
+                                    if (modalElement) {
+                                        const investorModal = new bootstrap.Modal(modalElement);
+                                        investorModal.show();
+                                        console.log('Investor modal displayed for logged-in user');
+                                    } else {
+                                        console.error('Investor modal element not found!');
+                                        // If modal not found, proceed with form submission
+                                        if (window._ticketAuthPendingForm) {
+                                            window._ticketAuthPendingForm.submit();
+                                        }
+                                    }
+                                    
+                                    // Store pending form for later submission
+                                    window._investorProfilePendingForm = window._ticketAuthPendingForm;
+                                }, 300);
+                                
+                            } catch (error) {
+                                console.error('Failed to load investor profile:', error);
+                                // If profile check fails, proceed with form submission anyway
+                                if (window._ticketAuthPendingForm) {
+                                    window._ticketAuthPendingForm.submit();
+                                }
+                            }
+                        }
+
+                        // Listen for investor profile completion events
+                        window.addEventListener('investorProfileSaved', function() {
+                            console.log('Investor profile saved, proceeding to checkout');
+                            if (window._investorProfilePendingForm) {
+                                window._investorProfilePendingForm.submit();
+                            }
+                        });
+
+                        window.addEventListener('investorProfileSkipped', function() {
+                            console.log('Investor profile skipped, proceeding to checkout');
+                            if (window._investorProfilePendingForm) {
+                                window._investorProfilePendingForm.submit();
+                            }
                         });
 
                         // Auth modal state
@@ -2110,7 +2189,7 @@
     <!-- Advanced Investment Calculator Script -->
     <script>
         // Initialize variables
-        let pricePerShare = {{ $ticket->price_per_share }};
+        let pricePerShare = parseFloat({{ $ticket->price_per_share }}) || 0;
         const totalSharesAvailable = {{ $ticket->available_shares }};
         let investmentChart = null;
 
@@ -2142,8 +2221,8 @@
             
             if (sharesValue) sharesValue.textContent = shares;
             if (sharesCost) sharesCost.textContent = (shares * pricePerShare).toFixed(2);
-            if (appreciationValue) appreciationValue.textContent = appreciation.toFixed(1);
-            if (cashReturnValue) cashReturnValue.textContent = cashReturn.toFixed(2);
+            if (appreciationValue) appreciationValue.textContent = appreciation.toFixed(1) + '%';
+            if (cashReturnValue) cashReturnValue.textContent = cashReturn.toFixed(2) + '%';
 
             // Calculate projections
             const initialInvestment = shares * pricePerShare;
@@ -2165,22 +2244,20 @@
                 total: []
             };
 
-            let propertyValue = investment;
             let cumulativeCashFlow = 0;
 
             for (let year = 1; year <= years; year++) {
-                // Calculate annual cash flow
+                // Calculate annual cash flow (simple interest each year)
                 const annualCashFlow = investment * (cashReturnRate / 100);
                 cumulativeCashFlow += annualCashFlow;
 
-                // Calculate appreciation - round propertyValue to prevent float accumulation
-                propertyValue *= (1 + appreciationRate / 100);
-                propertyValue = Math.round(propertyValue * 100) / 100;
-                const totalAppreciation = Math.round((propertyValue - investment) * 100) / 100;
+                // Calculate appreciation using SIMPLE interest (not compound)
+                // Total appreciation = investment × rate × years
+                const totalAppreciation = investment * (appreciationRate / 100) * year;
 
                 // Store values - all rounded to 2 decimal places
                 data.cashFlow.push(Math.round(cumulativeCashFlow * 100) / 100);
-                data.appreciation.push(totalAppreciation);
+                data.appreciation.push(Math.round(totalAppreciation * 100) / 100);
                 data.investment.push(Math.round(investment * 100) / 100);
                 data.total.push(Math.round((investment + cumulativeCashFlow + totalAppreciation) * 100) / 100);
             }
@@ -2429,3 +2506,4 @@
 
 </body>
 </html>
+

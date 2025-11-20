@@ -154,7 +154,14 @@
                                                         @elseif($item->type == 'auction')
                                                             <td>{{ $item->auction->title }}</td>
                                                         @elseif($item->type == 'ticket')
-                                                            <td>{{ $item->ticket->details[0]->ticket->name }}</td>
+                                                            <td>@if ($item->ticket->details[0]->ticket)
+                                                                {{ $item->ticket->details[0]->ticket->name }}
+                                                                @else
+                                                                N/A
+                                                            @endif
+
+                                                            </td>
+                                                            {{-- <td>{{ $item->ticket->details[0]->ticket->name }}</td> --}}
                                                         @elseif ($item->type == 'investment')
                                                             <td>{{ $item->investment->investor_name }}</td>
                                                         @endif

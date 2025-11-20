@@ -928,5 +928,6 @@
   </script>
   
   @include('partials.ticket-auth-modal')
+  @include('partials.investor-info-modal')
 </body>
 </html>

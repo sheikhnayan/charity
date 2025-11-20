@@ -281,7 +281,176 @@
                                         </div>
                                         
                                     @else
+                                        {{-- Investor Profile Section for Customers --}}
+                                        @php
+                                            $investorProfile = Auth::user()->investorProfile;
+                                        @endphp
                                         
+                                        <div class="col-12">
+                                            <h5 class="text-primary mt-4 mb-3">
+                                                <i class="fas fa-user-tie me-2"></i>Investor Information
+                                            </h5>
+                                            <p class="text-muted small">This information is used for investment and property purchases. Keep it up to date for faster checkout.</p>
+                                        </div>
+                                        
+                                        <div class="col-12">
+                                            <label for="investor_type" class="form-label">Investor Type</label>
+                                            <select id="investor_type" name="investor_type" class="form-select">
+                                                <option value="">Select investor type</option>
+                                                <option value="individual" {{ $investorProfile && $investorProfile->investor_type == 'individual' ? 'selected' : '' }}>Myself/an individual</option>
+                                                <option value="joint" {{ $investorProfile && $investorProfile->investor_type == 'joint' ? 'selected' : '' }}>Joint (more than one individual)</option>
+                                                <option value="corporation" {{ $investorProfile && $investorProfile->investor_type == 'corporation' ? 'selected' : '' }}>Corporation</option>
+                                                <option value="trust" {{ $investorProfile && $investorProfile->investor_type == 'trust' ? 'selected' : '' }}>Trust</option>
+                                                <option value="ira" {{ $investorProfile && $investorProfile->investor_type == 'ira' ? 'selected' : '' }}>IRA</option>
+                                            </select>
+                                        </div>
+                                        
+                                        {{-- Individual Fields --}}
+                                        <div id="profile-individual-fields" class="profile-investor-fields" style="display: {{ $investorProfile && $investorProfile->investor_type == 'individual' ? 'contents' : 'none' }};">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Full Name</label>
+                                                <input type="text" name="investor_data[individual_name]" class="form-control" value="{{ $investorProfile->investor_data['individual_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Date of Birth</label>
+                                                <input type="date" name="investor_data[date_of_birth]" class="form-control" value="{{ $investorProfile->investor_data['date_of_birth'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Social Security Number</label>
+                                                <input type="text" name="investor_data[ssn]" class="form-control" placeholder="XXX-XX-XXXX" value="{{ $investorProfile->investor_data['ssn'] ?? '' }}">
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- Joint Fields --}}
+                                        <div id="profile-joint-fields" class="profile-investor-fields" style="display: {{ $investorProfile && $investorProfile->investor_type == 'joint' ? 'contents' : 'none' }};">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Primary Account Holder Name</label>
+                                                <input type="text" name="investor_data[primary_name]" class="form-control" value="{{ $investorProfile->investor_data['primary_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Primary Holder Date of Birth</label>
+                                                <input type="date" name="investor_data[primary_dob]" class="form-control" value="{{ $investorProfile->investor_data['primary_dob'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Primary Holder SSN</label>
+                                                <input type="text" name="investor_data[primary_ssn]" class="form-control" placeholder="XXX-XX-XXXX" value="{{ $investorProfile->investor_data['primary_ssn'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Secondary Account Holder Name</label>
+                                                <input type="text" name="investor_data[secondary_name]" class="form-control" value="{{ $investorProfile->investor_data['secondary_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Secondary Holder Date of Birth</label>
+                                                <input type="date" name="investor_data[secondary_dob]" class="form-control" value="{{ $investorProfile->investor_data['secondary_dob'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Secondary Holder SSN</label>
+                                                <input type="text" name="investor_data[secondary_ssn]" class="form-control" placeholder="XXX-XX-XXXX" value="{{ $investorProfile->investor_data['secondary_ssn'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Joint Account Type</label>
+                                                <select name="investor_data[joint_type]" class="form-select">
+                                                    <option value="">Select joint type</option>
+                                                    <option value="jtwros" {{ isset($investorProfile->investor_data['joint_type']) && $investorProfile->investor_data['joint_type'] == 'jtwros' ? 'selected' : '' }}>Joint Tenants with Rights of Survivorship</option>
+                                                    <option value="tenants_common" {{ isset($investorProfile->investor_data['joint_type']) && $investorProfile->investor_data['joint_type'] == 'tenants_common' ? 'selected' : '' }}>Tenants in Common</option>
+                                                    <option value="community_property" {{ isset($investorProfile->investor_data['joint_type']) && $investorProfile->investor_data['joint_type'] == 'community_property' ? 'selected' : '' }}>Community Property</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- Corporation Fields --}}
+                                        <div id="profile-corporation-fields" class="profile-investor-fields" style="display: {{ $investorProfile && $investorProfile->investor_type == 'corporation' ? 'contents' : 'none' }};">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Corporation Name</label>
+                                                <input type="text" name="investor_data[corporation_name]" class="form-control" value="{{ $investorProfile->investor_data['corporation_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Federal Tax ID (EIN)</label>
+                                                <input type="text" name="investor_data[ein]" class="form-control" placeholder="XX-XXXXXXX" value="{{ $investorProfile->investor_data['ein'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">State of Incorporation</label>
+                                                <input type="text" name="investor_data[incorporation_state]" class="form-control" value="{{ $investorProfile->investor_data['incorporation_state'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Accredited Investor Status</label>
+                                                <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="investor_data[accredited_investor]" value="yes" {{ isset($investorProfile->investor_data['accredited_investor']) && $investorProfile->investor_data['accredited_investor'] == 'yes' ? 'checked' : '' }}>
+                                                        <label class="form-check-label">Yes</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="investor_data[accredited_investor]" value="no" {{ isset($investorProfile->investor_data['accredited_investor']) && $investorProfile->investor_data['accredited_investor'] == 'no' ? 'checked' : '' }}>
+                                                        <label class="form-check-label">No</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- Trust Fields --}}
+                                        <div id="profile-trust-fields" class="profile-investor-fields" style="display: {{ $investorProfile && $investorProfile->investor_type == 'trust' ? 'contents' : 'none' }};">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Trust Name</label>
+                                                <input type="text" name="investor_data[trust_name]" class="form-control" value="{{ $investorProfile->investor_data['trust_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Trust Tax ID (EIN)</label>
+                                                <input type="text" name="investor_data[trust_ein]" class="form-control" placeholder="XX-XXXXXXX" value="{{ $investorProfile->investor_data['trust_ein'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Trust Type</label>
+                                                <select name="investor_data[trust_type]" class="form-select">
+                                                    <option value="">Select trust type</option>
+                                                    <option value="revocable" {{ isset($investorProfile->investor_data['trust_type']) && $investorProfile->investor_data['trust_type'] == 'revocable' ? 'selected' : '' }}>Revocable Trust</option>
+                                                    <option value="irrevocable" {{ isset($investorProfile->investor_data['trust_type']) && $investorProfile->investor_data['trust_type'] == 'irrevocable' ? 'selected' : '' }}>Irrevocable Trust</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- IRA Fields --}}
+                                        <div id="profile-ira-fields" class="profile-investor-fields" style="display: {{ $investorProfile && $investorProfile->investor_type == 'ira' ? 'contents' : 'none' }};">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Account Holder Name</label>
+                                                <input type="text" name="investor_data[ira_holder_name]" class="form-control" value="{{ $investorProfile->investor_data['ira_holder_name'] ?? '' }}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">IRA Type</label>
+                                                <select name="investor_data[ira_type]" class="form-select">
+                                                    <option value="">Select IRA type</option>
+                                                    <option value="traditional" {{ isset($investorProfile->investor_data['ira_type']) && $investorProfile->investor_data['ira_type'] == 'traditional' ? 'selected' : '' }}>Traditional IRA</option>
+                                                    <option value="roth" {{ isset($investorProfile->investor_data['ira_type']) && $investorProfile->investor_data['ira_type'] == 'roth' ? 'selected' : '' }}>Roth IRA</option>
+                                                    <option value="sep" {{ isset($investorProfile->investor_data['ira_type']) && $investorProfile->investor_data['ira_type'] == 'sep' ? 'selected' : '' }}>SEP IRA</option>
+                                                    <option value="simple" {{ isset($investorProfile->investor_data['ira_type']) && $investorProfile->investor_data['ira_type'] == 'simple' ? 'selected' : '' }}>SIMPLE IRA</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">IRA Custodian</label>
+                                                <input type="text" name="investor_data[custodian]" class="form-control" value="{{ $investorProfile->investor_data['custodian'] ?? '' }}">
+                                            </div>
+                                        </div>
+                                        
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const investorTypeSelect = document.getElementById('investor_type');
+                                            if (investorTypeSelect) {
+                                                investorTypeSelect.addEventListener('change', function() {
+                                                    // Hide all investor fields
+                                                    document.querySelectorAll('.profile-investor-fields').forEach(el => {
+                                                        el.style.display = 'none';
+                                                    });
+                                                    
+                                                    // Show selected type fields
+                                                    const selectedType = this.value;
+                                                    if (selectedType) {
+                                                        const fieldsEl = document.getElementById('profile-' + selectedType + '-fields');
+                                                        if (fieldsEl) {
+                                                            fieldsEl.style.display = 'contents';
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                        </script>
                                     @endif
 
 
