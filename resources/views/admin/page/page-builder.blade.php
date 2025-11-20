@@ -18839,6 +18839,15 @@ function applyResponsiveStyles() {
                         updateContent(content);
                     }
                 });
+                
+                // Listen for selection changes to update toolbar formatting display
+                quill.on('selection-change', function(range, oldRange, source) {
+                    if (range) {
+                        // Force toolbar to update by getting format at current selection
+                        const format = quill.getFormat(range);
+                        // This triggers the toolbar to refresh and show current formatting
+                    }
+                });
             }
         }
         
@@ -18904,6 +18913,17 @@ function applyResponsiveStyles() {
                 if (textEditor.value && textEditor.value.trim() !== '') {
                     // Directly set innerHTML to preserve all formatting including custom fonts
                     quill.root.innerHTML = textEditor.value;
+                    
+                    // Force Quill to update toolbar state by triggering a selection change
+                    setTimeout(() => {
+                        const selection = quill.getSelection();
+                        if (selection) {
+                            quill.setSelection(selection.index, selection.length);
+                        } else {
+                            // If no selection, set cursor at start to trigger toolbar update
+                            quill.setSelection(0, 0);
+                        }
+                    }, 50);
                 }
                 
                 // Listen for Quill changes and update textarea and preview
@@ -18914,6 +18934,15 @@ function applyResponsiveStyles() {
                     // Call updateContent for general updates
                     if (typeof updateContent === 'function') {
                         updateContent(content);
+                    }
+                });
+                
+                // Listen for selection changes to update toolbar formatting display
+                quill.on('selection-change', function(range, oldRange, source) {
+                    if (range) {
+                        // Force toolbar to update by getting format at current selection
+                        const format = quill.getFormat(range);
+                        // This triggers the toolbar to refresh and show current formatting
                     }
                 });
             }
