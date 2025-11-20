@@ -1721,7 +1721,7 @@
                     <div class="mb-6">
                         <div class="text-sm text-gray-600 mb-2">Starting Price</div>
                         <div class="text-4xl font-bold text-purple-600 mb-1">
-                            {{ number_format($ticket->price_per_share) }}
+                            ${{ number_format($ticket->price_per_share) }}
                         </div>
                         <div class="text-sm text-gray-500">per share</div>
                     </div>
@@ -1742,7 +1742,7 @@
                         
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Investment Value</span>
-                            <span class="font-semibold text-gray-900">{{ $ticket->price }}</span>
+                            <span class="font-semibold text-gray-900">${{ number_format($ticket->price) }}</span>
                         </div>
                     </div>
 
