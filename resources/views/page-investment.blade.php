@@ -1462,65 +1462,65 @@ if (isset($state['components'])) {
                     </a> --}}
                 </div>
             </div>
-
-            {{-- Dynamic Navbar Height Calculator Script --}}
-            <script>
-                function updateNavbarHeights() {
-                    const navbar = document.querySelector('.navbar');
-                    const contactTopbar = document.querySelector('.contact-topbar');
-                    const investorBar = document.querySelector('.investor-exclusives-bar');
-                    
-                    if (navbar) {
-                        const navbarHeight = navbar.offsetHeight;
-                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
-                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
-                        const totalNavHeight = navbarHeight + contactTopbarHeight;
-                        
-                        // Convert to rem (assuming 16px base font size)
-                        const totalHeightRem = totalNavHeight / 16;
-                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
-                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
-                        
-                        // Main content margin should account for all visible bars
-                        const mainContentMargin = (navbarHeight + contactTopbarHeight + investorBarHeight) / 16 + 0.5; // Extra space for clean separation
-                        
-                        // Set CSS custom properties
-                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
-                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
-                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
-                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
-                        
-                        console.log('Dynamic Heights Updated:', {
-                            navbar: navbarHeight,
-                            contactTopbar: contactTopbarHeight,
-                            investorBar: investorBarHeight,
-                            totalNavHeight: totalNavHeight,
-                            mainMargin: mainContentMargin
-                        });
-                    }
-                }
-                
-                // Run on load
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Wait a bit for all elements to render
-                    setTimeout(updateNavbarHeights, 50);
-                });
-                
-                // Run on resize
-                window.addEventListener('resize', updateNavbarHeights);
-                
-                // Run after fonts load (as this can affect navbar height)
-                if (document.fonts) {
-                    document.fonts.ready.then(updateNavbarHeights);
-                }
-                
-                // Fallback: run after delays to catch any dynamic changes
-                setTimeout(updateNavbarHeights, 100);
-                setTimeout(updateNavbarHeights, 300);
-                setTimeout(updateNavbarHeights, 500);
-                setTimeout(updateNavbarHeights, 1000);
-            </script>
         @endif
+        
+        {{-- Dynamic Navbar Height Calculator Script - Always runs regardless of bars --}}
+        <script>
+            function updateNavbarHeights() {
+                const navbar = document.querySelector('.navbar');
+                const contactTopbar = document.querySelector('.contact-topbar');
+                const investorBar = document.querySelector('.investor-exclusives-bar');
+                
+                if (navbar) {
+                    const navbarHeight = navbar.offsetHeight;
+                    const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                    const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                    const totalNavHeight = navbarHeight + contactTopbarHeight;
+                    
+                    // Convert to rem (assuming 16px base font size)
+                    const totalHeightRem = totalNavHeight / 16;
+                    const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
+                    const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                    
+                    // Main content margin should account for all visible bars
+                    const mainContentMargin = (navbarHeight + contactTopbarHeight + investorBarHeight) / 16 + 0.5; // Extra space for clean separation
+                    
+                    // Set CSS custom properties
+                    document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                    document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
+                    document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
+                    document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                    
+                    console.log('Dynamic Heights Updated:', {
+                        navbar: navbarHeight,
+                        contactTopbar: contactTopbarHeight,
+                        investorBar: investorBarHeight,
+                        totalNavHeight: totalNavHeight,
+                        mainMargin: mainContentMargin
+                    });
+                }
+            }
+            
+            // Run on load
+            document.addEventListener('DOMContentLoaded', function() {
+                // Wait a bit for all elements to render
+                setTimeout(updateNavbarHeights, 50);
+            });
+            
+            // Run on resize
+            window.addEventListener('resize', updateNavbarHeights);
+            
+            // Run after fonts load (as this can affect navbar height)
+            if (document.fonts) {
+                document.fonts.ready.then(updateNavbarHeights);
+            }
+            
+            // Fallback: run after delays to catch any dynamic changes
+            setTimeout(updateNavbarHeights, 100);
+            setTimeout(updateNavbarHeights, 300);
+            setTimeout(updateNavbarHeights, 500);
+            setTimeout(updateNavbarHeights, 1000);
+        </script>
     @endif
     
     <main style="margin-top: var(--main-content-margin-top, {{ 
