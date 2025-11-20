@@ -532,25 +532,28 @@
 
 
 
+                                    @if (Auth::user()->role != 'customer')
+                                        
+                                        <div class="col-12">
+                                            <h5 class="text-primary">
+                                                Image(s)
+                                            </h5>
+                                            <img src="{{ asset(Auth::user()->photo) }}" width="150px">
+                                        </div>
 
-                                    <div class="col-12">
-                                        <h5 class="text-primary">
-                                            Image(s)
-                                        </h5>
-                                        <img src="{{ asset(Auth::user()->photo) }}" width="150px">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label for="photo" class="form-label ">
-                                            Profile Photo
-                                        </label>
+                                        <div class="col-12">
+                                            <label for="photo" class="form-label ">
+                                                Profile Photo
+                                            </label>
 
 
-                                        <input class="form-control" type="file" id="photo-image-file" name="photo"
-                                            accept="image/png, image/gif, image/jpeg, image/jpg">
-                                        <div class="form-text">The recommended format for the profile picture should be
-                                            a square.</div>
-                                    </div>
+                                            <input class="form-control" type="file" id="photo-image-file" name="photo"
+                                                accept="image/png, image/gif, image/jpeg, image/jpg">
+                                            <div class="form-text">The recommended format for the profile picture should be
+                                                a square.</div>
+                                        </div>
+                                    @endif
+
 
                                 </div>
 
