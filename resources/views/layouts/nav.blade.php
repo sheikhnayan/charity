@@ -18,12 +18,12 @@
                         @if(isset($menuSections) && is_array($menuSections))
                             @foreach ($menuSections as $section)
                                 <li class="nav-item">
-                                    <a class="nav-link active scroll-to-section" aria-current="page" href="#{{ $section['sectionId'] }}" style="color:{{ $header->color }} !important; font-family: Outfit,sans-serif;text-transform: uppercase; text-decoration: none;" data-section="{{ $section['sectionId'] }}">{{ $section['title'] }}</a>
+                                    <a class="nav-link active scroll-to-section" aria-current="page" href="#{{ $section['sectionId'] }}" style="color:{{ $header->color }} !important; text-transform: uppercase; text-decoration: none;" data-section="{{ $section['sectionId'] }}">{{ $section['title'] }}</a>
                                 </li>
                             @endforeach
                         @else
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="/" style="color:{{ $header->color }} !important; font-family: Outfit,sans-serif;text-transform: uppercase; text-decoration: none;">Home</a>
+                                    <a class="nav-link active" href="/" style="color:{{ $header->color }} !important; text-transform: uppercase; text-decoration: none;">Home</a>
                                 </li>
                         @endif
                     @else

@@ -238,7 +238,7 @@
                     @php
                         $pay = \App\Models\PaymentSetting::first();
                     @endphp
-                    <span>${{ number_format(($transaction->amount / 100) * ($pay->fee ?? 5), 2) }}</span>
+                    <span>${{ number_format($transaction->fee, 2) }}</span>
                 </div>
                 @endif
                 <div class="financial-row total">

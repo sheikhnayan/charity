@@ -56,7 +56,7 @@
     <style>
         /* Custom Fonts @font-face declarations */
         @php
-            $customFonts = \App\Models\CustomFont::all();
+            $customFonts = \App\Models\CustomFont::active()->get();
         @endphp
         @if(isset($customFonts) && $customFonts->count() > 0)
         @foreach($customFonts as $font)

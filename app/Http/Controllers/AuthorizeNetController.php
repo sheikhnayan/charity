@@ -288,6 +288,10 @@ class AuthorizeNetController extends Controller
                     //     $detail->save();
                     // }
 
+                    $processing_fee = \App\Models\PaymentSetting::first();
+
+                    $fee = $donation->amount - (($donation->amount / 100) * ($processing_fee->fee ?? 5)); 
+
 
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
@@ -306,7 +310,7 @@ class AuthorizeNetController extends Controller
                     $tran->phone = $request->phone;
                     $tran->name_on_card = $request->name_on_card;
                     $tran->country = $request->country;
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
@@ -689,6 +693,9 @@ class AuthorizeNetController extends Controller
                     //     $detail->save();
                     // }
 
+                    $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = $donation->amount - (($donation->amount / 100) * ($processing_fee->fee ?? 5)); 
+
 
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
@@ -707,7 +714,7 @@ class AuthorizeNetController extends Controller
                     $tran->name_on_card = $request->input('name_on_card', '');
                     $tran->country = $request->input('country', '');
                     $tran->ip_address = $request->ip();
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = 1; // Set to 1 instead of $donation->status
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request

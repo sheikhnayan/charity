@@ -257,7 +257,7 @@
                     $pay = \App\Models\PaymentSetting::first();
                 @endphp
                 <div class="financial-label">Processing Fee ({{ $pay->fee ?? 5 }}%):</div>
-                <div class="financial-amount">${{ number_format(($transaction->amount / 100) * ($pay->fee ?? 5), 2) }}</div>
+                <div class="financial-amount">${{ number_format($transaction->fee, 2) }}</div>
             </div>
             @endif
             <div class="financial-row total">

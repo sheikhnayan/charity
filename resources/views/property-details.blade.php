@@ -26,9 +26,6 @@
     
     <style>
         /* Custom Fonts @font-face declarations */
-        @php
-            $customFonts = \App\Models\CustomFont::all();
-        @endphp
         @if(isset($customFonts) && $customFonts->count() > 0)
         @foreach($customFonts as $font)
         @font-face {
