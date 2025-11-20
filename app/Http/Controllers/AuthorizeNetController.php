@@ -22,6 +22,7 @@ use App\Services\PushNotificationService;
 use App\Mail\TransactionInvoice;
 use Illuminate\Support\Facades\Mail;
 use Stripe;
+use Auth;
 
 class AuthorizeNetController extends Controller
 {
@@ -294,9 +295,9 @@ class AuthorizeNetController extends Controller
                     $tran->website_id = $donation->website_id;
                     $tran->transaction_id = $tresponse->getTransId();
                     $tran->name = $request->first_name;
-                    // $tran->email = Auth::user()->email;
+                    $tran->email = Auth::user()->email;
                     $tran->last_name = $request->last_name;
-                    $tran->email = $request->email;
+                    // $tran->email = $request->email;
                     $tran->address = $request->address;
                     $tran->apartment = $request->apartment;
                     $tran->city = $request->city;
@@ -406,7 +407,7 @@ class AuthorizeNetController extends Controller
                     $tran->transaction_id = $tresponse->getTransId();
                     $tran->name = $request->first_name;
                     $tran->last_name = $request->last_name;
-                    $tran->email = $request->email;
+                    $tran->email = Auth::user()->email;
                     $tran->address = $request->address;
                     $tran->apartment = $request->apartment;
                     $tran->city = $request->city;
@@ -696,7 +697,7 @@ class AuthorizeNetController extends Controller
                     $tran->transaction_id = $charge->id;
                     $tran->name = $request->input('first_name', '');
                     $tran->last_name = $request->input('last_name', '');
-                    $tran->email = $request->input('email', '');
+                    $tran->email = Auth::user()->email;
                     $tran->address = $request->input('address', '');
                     $tran->apartment = $request->input('apartment', '');
                     $tran->city = $request->input('city', '');
@@ -807,7 +808,7 @@ class AuthorizeNetController extends Controller
                     $tran->transaction_id = $charge->id;
                     $tran->name = $request->first_name;
                     $tran->last_name = $request->last_name;
-                    $tran->email = $request->email;
+                    $tran->email = Auth::user()->email;
                     $tran->address = $request->address;
                     $tran->apartment = $request->apartment;
                     $tran->city = $request->city;
