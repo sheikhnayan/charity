@@ -1196,15 +1196,15 @@ h5, .ql-header-5 {
 
         @case('custom-html')
             @php
-                $htmlContent = $component['properties']['htmlContent'] ?? '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the page builder</p></div>';
-                $height = $component['properties']['height'] ?? '300';
+                $htmlContent = $component['customHtmlData']['htmlContent'] ?? $component['properties']['htmlContent'] ?? '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the page builder</p></div>';
+                $height = $component['customHtmlData']['height'] ?? $component['properties']['height'] ?? '300';
             @endphp
             
             <div class="custom-html-component" id="{{ $componentId }}" style="{{ $styleStr }}">
                 <iframe 
                     srcdoc="{{ htmlspecialchars($htmlContent) }}" 
                     style="width: 100%; height: {{ $height }}px; border: none; display: block;"
-                    sandbox="allow-same-origin allow-scripts"
+                    sandbox="allow-scripts allow-same-origin"
                     scrolling="auto"
                     loading="lazy">
                 </iframe>
