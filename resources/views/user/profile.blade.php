@@ -236,7 +236,7 @@
                                         @endif
 
 
-                                    <div class="col-6" style="order: -2;">
+                                    <div class="col-12" style="order: -2;">
                                         <label for="first_name" class="form-label required">
                                             Full Name
                                         </label>
@@ -244,6 +244,17 @@
 
                                         <input type="text" class="form-control" id="first_name" name="name"
                                             value="{{ Auth::user()->name }}">
+                                    </div>
+
+
+                                    <div class="col-12" style="order: -2;">
+                                        <label for="first_name" class="form-label required">
+                                            Email
+                                        </label>
+
+
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            value="{{ Auth::user()->email }}" readonly>
                                     </div>
 
 
