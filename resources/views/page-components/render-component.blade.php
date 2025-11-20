@@ -1552,6 +1552,27 @@ h5, .ql-header-5 {
                             background: #007bff;
                             transform: scale(1.2);
                         }
+                        /* Remove mobile padding for full-width sliders */
+                        @media (max-width: 767px) {
+                            .slider-container {
+                                padding-left: 0 !important;
+                                padding-right: 0 !important;
+                                margin-left: 0 !important;
+                                margin-right: 0 !important;
+                            }
+                            #{{ $sliderId }} .owl-stage-outer,
+                            #{{ $sliderId }} .owl-stage,
+                            #{{ $sliderId }} .owl-item {
+                                padding-left: 0 !important;
+                                padding-right: 0 !important;
+                            }
+                            #{{ $sliderId }} .item {
+                                margin: 0 !important;
+                            }
+                            #{{ $sliderId }} .item img {
+                                border-radius: 0 !important;
+                            }
+                        }
                     `).appendTo('head');
                         } else {
                             // Retry after a short delay if Owl Carousel is not loaded yet
