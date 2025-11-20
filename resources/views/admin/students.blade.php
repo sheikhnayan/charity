@@ -185,9 +185,9 @@
                     $('#websiteFilter').on('change', function() {
                         let val = $(this).val();
                         if(val) {
-                            table.column(2).search('^' + val + '$', true, false).draw();
+                            table.column(3).search('^' + val + '$', true, false).draw();
                         } else {
-                            table.column(2).search('').draw();
+                            table.column(3).search('').draw();
                         }
                     });
                 });
