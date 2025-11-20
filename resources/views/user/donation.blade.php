@@ -186,12 +186,11 @@
                                                                 data-ip-address="{{ $item->ip_address ?? 'N/A' }}"
                                                                 data-first-name="{{ $item->name }}"
                                                                 data-last-name="{{ $item->last_name }}"
-                                                                data-name="{{ $item->name }} {{ $item->last_name }}"
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ number_format($item->amount + (($item->amount / 100)*$payment->fee), 2) }}"
-                                                                data-fee="${{ ($item->amount / 100)*$payment->fee }}"
+                                                                data-gross="${{ number_format($item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)), 2) }}"
+                                                                data-fee="${{ ($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
@@ -217,7 +216,9 @@
                                                                 data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
                                                                 data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
                                                                 data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
-                                                                data-total-paid="${{ number_format($item->total_amount_paid ?? ($item->fee_paid ? $item->amount + (($item->amount / 100)*$payment->fee) : $item->amount), 2) }}"
+                                                                data-total-paid="${{ number_format($item->total_amount_paid ?? ($item->fee_paid ? $item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)) : $item->amount), 2) }}"
+                
+                
                                                                 title="View">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
