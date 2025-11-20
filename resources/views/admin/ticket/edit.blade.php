@@ -225,8 +225,8 @@
                             $fullCost = $data->price; // already stored total value
                         @endphp
                         <div class="alert alert-info">
-                            <strong>Available Shares:</strong> {{ $remainingShares ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
-                            <strong>Sold Shares:</strong> {{ $soldShares ?? 0 }}
+                            <strong>Available Shares:</strong> {{ number_format($remainingShares) ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
+                            <strong>Sold Shares:</strong> {{ number_format($soldShares) ?? 0 }}
                         </div>
                         @endif
                     </div>
