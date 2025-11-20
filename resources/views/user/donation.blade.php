@@ -242,28 +242,182 @@
             </div>
             <!-- / Content -->
 
-            <!-- View Donation Modal -->
+            <!-- View Transaction Modal -->
             <div class="modal fade" id="viewDonationModal" tabindex="-1" aria-labelledby="viewDonationModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="viewDonationModalLabel">Donation Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="viewDonationModalLabel">Transaction Details</h5>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success btn-sm" id="downloadPdfBtn">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm" id="resendInvoiceBtn">
+                            <i class="fas fa-envelope"></i> Resend Invoice
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <ul class="list-group">
-                    <li class="list-group-item"><strong>Transaction ID:</strong> <span id="modal-transaction"></span></li>
-                    <li class="list-group-item"><strong>Name:</strong> <span id="modal-name"></span></li>
-                    <li class="list-group-item"><strong>Email:</strong> <span id="modal-email"></span></li>
-                    <li class="list-group-item"><strong>Phone:</strong> <span id="modal-phone"></span></li>
-                    <li class="list-group-item"><strong>Billing Address:</strong> <span id="modal-address"></span></li>
-                    <li class="list-group-item"><strong>Gross:</strong> <span id="modal-gross"></span></li>
-                    <li class="list-group-item"><strong>Fee:</strong> <span id="modal-fee"></span></li>
-                    <li class="list-group-item"><strong>Website:</strong> <span id="modal-website"></span></li>
-                    <li class="list-group-item"><strong>Type:</strong> <span id="modal-type"></span></li>
-                    <li class="list-group-item"><strong>Status:</strong> <span id="modal-status"></span></li>
-                    <li class="list-group-item"><strong>Date:</strong> <span id="modal-date"></span></li>
-                    </ul>
+                <div class="modal-body" id="modalContent">
+                    <div class="row">
+                        <!-- Transaction Details Column -->
+                        <div class="col-md-6">
+                            <h6 class="mb-3 text-primary">Transaction Details</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Transaction ID:</strong> <span id="modal-transaction"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>IP Address:</strong> <span id="modal-ip-address"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>First Name:</strong> <span id="modal-first-name"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Last Name:</strong> <span id="modal-last-name"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Email:</strong> <span id="modal-email"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Phone:</strong> <span id="modal-phone"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Type:</strong> <span id="modal-type"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Status:</strong> <span id="modal-status"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Website ID:</strong> <span id="modal-website"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Date:</strong> <span id="modal-date"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Payment Information Column -->
+                        <div class="col-md-6">
+                            <h6 class="mb-3 text-success">Payment Information</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment First Name:</strong> <span id="modal-payment-first-name"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Last Name:</strong> <span id="modal-payment-last-name"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Phone:</strong> <span id="modal-payment-phone"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Email:</strong> <span id="modal-payment-email"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Address:</strong> <span id="modal-payment-address"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment City:</strong> <span id="modal-payment-city"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment State:</strong> <span id="modal-payment-state"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Country:</strong> <span id="modal-payment-country"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Payment Zip Code:</strong> <span id="modal-payment-zip"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Total Amount:</strong> <span id="modal-total-amount"></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Total Due:</strong> <span id="modal-total-due"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Investment Information (Only shown for investment type) -->
+                    <div class="row mt-4" id="investment-section" style="display: none;">
+                        <div class="col-12">
+                            <h6 class="mb-3 text-warning">Investment Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Investor Name:</strong> <span id="modal-investor-name"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Investor Email:</strong> <span id="modal-investor-email"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Investor Phone:</strong> <span id="modal-investor-phone"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Investor Type:</strong> <span id="modal-investor-type"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Share Quantity:</strong> <span id="modal-share-quantity"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Investment Amount:</strong> <span id="modal-investment-amount"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Notes:</strong>
+                                            <div id="modal-investment-notes" class="mt-2"></div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Investor Data:</strong>
+                                            <div id="modal-investor-data" class="mt-2 small"></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Financial Details -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="mb-3 text-info">Financial Breakdown</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Gross Amount:</strong> <span id="modal-gross"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Processing Fee:</strong> <span id="modal-fee"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Total Amount Paid:</strong> <span id="modal-total-paid"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <div>
+                            <button type="button" class="btn btn-success btn-sm status-btn" data-status="completed">
+                                <i class="fas fa-check"></i> Mark Completed
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm status-btn" data-status="cancelled">
+                                <i class="fas fa-times"></i> Mark Cancelled
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm status-btn" data-status="refunded">
+                                <i class="fas fa-undo"></i> Mark Refunded
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
                 </div>
             </div>
