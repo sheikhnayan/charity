@@ -218,9 +218,15 @@
                             <small class="text-muted">Total number of shares for this property</small>
                         </div>
                         @if(isset($data) && $data->type === 'property')
+                        @php
+                            $remainingShares = $data->available_shares;
+                            $soldShares = $data->total_shares - $remainingShares;
+                            $remainingCost = $remainingShares * $data->price_per_share;
+                            $fullCost = $data->price; // already stored total value
+                        @endphp
                         <div class="alert alert-info">
-                            <strong>Available Shares:</strong> {{ $data->available_shares ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
-                            <strong>Sold Shares:</strong> {{ ($data->total_shares ?? 0) - ($data->available_shares ?? 0) }}
+                            <strong>Available Shares:</strong> {{ $remainingShares ?? 0 }} out of {{ $data->total_shares ?? 0 }}<br>
+                            <strong>Sold Shares:</strong> {{ $soldShares ?? 0 }}
                         </div>
                         @endif
                     </div>
