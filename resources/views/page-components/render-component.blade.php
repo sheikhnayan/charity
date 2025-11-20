@@ -1498,34 +1498,18 @@ h5, .ql-header-5 {
                         responsive: {
                             0: { 
                                 items: 1,
-                                nav: true,
-                                dots: true,
-                                smartSpeed: 800,
-                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 5
                             },
                             480: { 
                                 items: {{ min(2, $slidesToShow) }},
-                                nav: true,
-                                dots: true,
-                                smartSpeed: 800,
-                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 8
                             },
                             768: { 
                                 items: {{ min(3, $slidesToShow) }},
-                                nav: true,
-                                dots: true,
-                                smartSpeed: 800,
-                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 10
                             },
                             1000: { 
                                 items: {{ $slidesToShow }},
-                                nav: true,
-                                dots: true,
-                                smartSpeed: 800,
-                                autoplayTimeout: {{ $slideSpeed }},
                                 margin: 10
                             }
                         },
