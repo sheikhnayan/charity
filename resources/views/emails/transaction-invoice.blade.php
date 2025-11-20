@@ -139,7 +139,8 @@
                     @foreach($ticket_sale->details as $detail)
                     <div class="detail-row">
                         <span class="detail-label">{{ $detail->ticket->name ?? 'Ticket' }}:</span>
-                        <br>
+                    </div>
+                    <div class="detail-row">
                         <span class="detail-value">Quantity: {{ $detail->quantity }} @ ${{ $detail->ticket->type == 'property' ? number_format($detail->ticket->price_per_share ?? 0, 2) : number_format($detail->ticket->price ?? 0, 2) }} each</span>
                     </div>
                     @endforeach

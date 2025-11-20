@@ -54,6 +54,47 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <style>
+        /* Custom Fonts @font-face declarations */
+        @php
+            $customFonts = \App\Models\CustomFont::all();
+        @endphp
+        @if(isset($customFonts) && $customFonts->count() > 0)
+        @foreach($customFonts as $font)
+        @font-face {
+            font-family: '{{ $font->font_family }}';
+            src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @endforeach
+        @endif
+        
+        /* Menu Font Family Styling */
+        @if(isset($header) && $header && $header->menu_font_family)
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .btn {
+            font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Contact Topbar Font Family Styling */
+        @if(isset($header) && $header && $header->contact_topbar_font_family)
+        .contact-topbar,
+        .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Investor Exclusives Font Family Styling */
+        @if(isset($header) && $header && $header->investor_exclusives_font_family)
+        .investor-exclusives-bar,
+        .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+        }
+        @endif
+        
         /* Footer Font Styling - Ensure Quill editor font classes work in footer */
         @if(isset($footer) && $footer)
         /* Override hardcoded footer fonts and ensure custom font classes work */
@@ -107,9 +148,6 @@
         }
         
         /* Custom font classes in footer */
-        @php
-            $customFonts = \App\Models\CustomFont::all();
-        @endphp
         @if(isset($customFonts) && $customFonts->count() > 0)
         @foreach($customFonts as $font)
         .footer_content_wrap .ql-font-{{ $font->font_family }},
@@ -185,9 +223,9 @@
 
     <div class="main-content" style="text-align: center; padding-bottom: 4.3rem;">
         <i class="fa fa-check main-content__checkmark" id="checkmark"></i>
-        <p class="main-content__body p-4" data-lead-id="main-content-body">Your Transaction Is Complete
+        <p class="main-content__body p-4" data-lead-id="main-content-body">Your Transaction Is Complete. <br>
 Thank you for your purchase and a confirmation email with the details has been sent to you.
-Your order will appear in your dashboard shortly.
+Your order will appear in your dashboard shortly. <br>
 If you need help or have any questions, our support team is always here to assist.</p>
         <p class="main-content__body p-4" data-lead-id="main-content-body">Please check your dashboard for your purchase details.</p>
     </div>

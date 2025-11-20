@@ -25,6 +25,47 @@
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
     
     <style>
+        /* Custom Fonts @font-face declarations */
+        @php
+            $customFonts = \App\Models\CustomFont::all();
+        @endphp
+        @if(isset($customFonts) && $customFonts->count() > 0)
+        @foreach($customFonts as $font)
+        @font-face {
+            font-family: '{{ $font->font_family }}';
+            src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @endforeach
+        @endif
+        
+        /* Menu Font Family Styling */
+        @if(isset($header) && $header && $header->menu_font_family)
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .btn {
+            font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Contact Topbar Font Family Styling */
+        @if(isset($header) && $header && $header->contact_topbar_font_family)
+        .contact-topbar,
+        .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+        }
+        @endif
+        
+        /* Investor Exclusives Font Family Styling */
+        @if(isset($header) && $header && $header->investor_exclusives_font_family)
+        .investor-exclusives-bar,
+        .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+            font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+        }
+        @endif
+        
         /* Property Details Color Variables (from Website settings) */
         :root{
             --pd-bg: {{ json_encode($website->property_details_bg_color ?? '#ffffff') }};
