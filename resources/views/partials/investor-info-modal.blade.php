@@ -207,10 +207,14 @@ document.addEventListener('DOMContentLoaded', function() {
             saveBtn.textContent = 'Saving...';
             
             try {
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || 
+                                 document.querySelector('input[name="_token"]')?.value;
+                
                 const response = await fetch('/users/investor-profile/save', {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken,
                         'Accept': 'application/json'
                     },
                     body: formData

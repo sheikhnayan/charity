@@ -2882,6 +2882,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="image"><i class="fas fa-image me-2"></i>Image</div>
                 <div class="component-item" draggable="true" data-type="numbered-timeline"><i class="fas fa-list-ol me-2"></i>Numbered Timeline</div>
                 <div class="component-item" draggable="true" data-type="video-background"><i class="fas fa-video me-2"></i>Video Background</div>
+                <div class="component-item" draggable="true" data-type="custom-html"><i class="fas fa-code me-2"></i>Custom HTML</div>
                 </div>
             </div>
 
@@ -5208,6 +5209,36 @@ break;
             };
             
             content.renderVideoBackground();
+        break;
+
+        case 'custom-html':
+            content = document.createElement('div');
+            content.className = 'custom-html-component';
+            content.customHtmlData = {
+                htmlContent: '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the properties panel</p></div>',
+                height: '300'
+            };
+            
+            content.renderCustomHtml = function() {
+                const d = content.customHtmlData;
+                if (!d) return;
+                
+                content.innerHTML = `
+                    <div class="custom-html-preview" style="border: 2px dashed #ccc; padding: 10px; background: #f9f9f9;">
+                        <div style="background: #667eea; color: white; padding: 5px 10px; margin-bottom: 10px; font-size: 12px; border-radius: 4px;">
+                            <i class="fas fa-code"></i> Custom HTML Component (Preview)
+                        </div>
+                        <iframe 
+                            srcdoc="${d.htmlContent.replace(/"/g, '&quot;')}" 
+                            style="width: 100%; height: ${d.height}px; border: none; background: white;"
+                            sandbox="allow-same-origin"
+                            scrolling="auto">
+                        </iframe>
+                    </div>
+                `;
+            };
+            
+            content.renderCustomHtml();
         break;
 
         case 'auction-list':
@@ -7965,6 +7996,34 @@ break;
                     ${itemsHtml}
                 </div>
                 <button type="button" onclick="addTimelineItem()" style="background: #22c55e; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Add New Item</button>
+            `;
+        break;
+
+            case 'custom-html':
+            const customHtmlData = content.customHtmlData || {
+                htmlContent: '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the properties panel</p></div>',
+                height: '300'
+            };
+            
+            specificControls = `
+                <div class="form-group">
+                    <label style="font-weight: 600;">Custom HTML Code</label>
+                    <textarea 
+                        id="customHtmlCode" 
+                        rows="15" 
+                        oninput="updateCustomHtmlField(this.value, 'htmlContent')" 
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 13px;"
+                    >${customHtmlData.htmlContent}</textarea>
+                    <small class="text-muted">Enter your custom HTML code. It will be rendered in an isolated iframe for safety.</small>
+                </div>
+                <div class="form-group">
+                    <label>Height (px)</label>
+                    <input type="number" value="${customHtmlData.height}" min="100" max="2000" oninput="updateCustomHtmlField(this.value, 'height')">
+                    <small class="text-muted">Set the height of the iframe container</small>
+                </div>
+                <div class="alert alert-info" style="background: #e3f2fd; border: 1px solid #2196f3; padding: 10px; border-radius: 4px; margin-top: 15px;">
+                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Your HTML will be displayed in an isolated iframe. External scripts and certain features may be restricted for security.
+                </div>
             `;
         break;
 
@@ -11901,6 +11960,21 @@ function removeTimelineItem(index) {
     if (selectedComponent && selectedComponent.classList.contains('selected')) {
         refreshTimelineSettings();
     }
+}
+
+function updateCustomHtmlField(value, field) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    
+    if (!content.customHtmlData) {
+        content.customHtmlData = {
+            htmlContent: '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the properties panel</p></div>',
+            height: '300'
+        };
+    }
+    
+    content.customHtmlData[field] = value;
+    content.renderCustomHtml();
 }
 
 function updateInvestCtaField(value, field) {
