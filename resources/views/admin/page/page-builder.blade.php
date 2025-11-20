@@ -5211,19 +5211,56 @@ break;
                 const d = content.customHtmlData;
                 if (!d) return;
                 
+                const iframeId = 'custom-html-iframe-' + Date.now() + Math.random().toString(36).substr(2, 9);
+                
                 content.innerHTML = `
                     <div class="custom-html-preview" style="border: 2px dashed #ccc; padding: 10px; background: #f9f9f9;">
                         <div style="background: #667eea; color: white; padding: 5px 10px; margin-bottom: 10px; font-size: 12px; border-radius: 4px;">
                             <i class="fas fa-code"></i> Custom HTML Component (Preview)
                         </div>
                         <iframe 
+                            id="${iframeId}"
                             srcdoc="${d.htmlContent.replace(/"/g, '&quot;')}" 
-                            style="width: 100%; height: ${d.height}px; border: none; background: white;"
+                            style="width: 100%; border: none; background: white; display: block; min-height: ${d.height}px;"
                             sandbox="allow-scripts allow-same-origin"
-                            scrolling="auto">
+                            scrolling="no">
                         </iframe>
                     </div>
                 `;
+                
+                // Auto-resize iframe to fit content
+                setTimeout(() => {
+                    const iframe = document.getElementById(iframeId);
+                    if (iframe) {
+                        try {
+                            const resizeIframe = () => {
+                                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                                if (iframeDoc && iframeDoc.body) {
+                                    const height = Math.max(
+                                        iframeDoc.body.scrollHeight,
+                                        iframeDoc.documentElement.scrollHeight,
+                                        parseInt(d.height) || 300
+                                    );
+                                    iframe.style.height = height + 'px';
+                                }
+                            };
+                            
+                            iframe.addEventListener('load', resizeIframe);
+                            resizeIframe();
+                            
+                            // Periodic resize for dynamic content
+                            const resizeInterval = setInterval(() => {
+                                if (!document.body.contains(iframe)) {
+                                    clearInterval(resizeInterval);
+                                    return;
+                                }
+                                resizeIframe();
+                            }, 500);
+                        } catch (e) {
+                            console.warn('Could not auto-resize iframe:', e);
+                        }
+                    }
+                }, 100);
             };
             
             content.renderCustomHtml();

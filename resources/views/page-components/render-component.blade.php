@@ -1198,15 +1198,36 @@ h5, .ql-header-5 {
             @php
                 $htmlContent = $component['customHtmlData']['htmlContent'] ?? $component['properties']['htmlContent'] ?? '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the page builder</p></div>';
                 $height = $component['customHtmlData']['height'] ?? $component['properties']['height'] ?? '300';
+                $iframeId = 'custom-html-' . uniqid();
             @endphp
             
             <div class="custom-html-component" id="{{ $componentId }}" style="{{ $styleStr }}">
                 <iframe 
+                    id="{{ $iframeId }}"
                     srcdoc="{!! htmlspecialchars($htmlContent) !!}" 
-                    style="width: 100%; height: {{ $height }}px; border: none; display: block;"
+                    style="width: 100%; border: none; display: block; min-height: {{ $height }}px;"
                     sandbox="allow-scripts allow-same-origin"
-                    scrolling="auto"
-                    loading="lazy">
+                    scrolling="no"
+                    loading="lazy"
+                    onload="(function(iframe){
+                        try {
+                            var resizeIframe = function() {
+                                var doc = iframe.contentDocument || iframe.contentWindow.document;
+                                if (doc && doc.body) {
+                                    var height = Math.max(
+                                        doc.body.scrollHeight,
+                                        doc.documentElement.scrollHeight,
+                                        {{ $height }}
+                                    );
+                                    iframe.style.height = height + 'px';
+                                }
+                            };
+                            resizeIframe();
+                            setTimeout(resizeIframe, 100);
+                            setTimeout(resizeIframe, 500);
+                            setTimeout(resizeIframe, 1000);
+                        } catch(e) { console.warn('Auto-resize failed:', e); }
+                    })(this);">
                 </iframe>
             </div>
         @break
