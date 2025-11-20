@@ -61,7 +61,7 @@
             </div>
             
             <div class="text-center mb-2">
-                <div id="authError" class="text-xs text-red-600 font-semibold mb-1"></div>
+                {{-- <div id="authError" class="text-xs text-red-600 font-semibold mb-1"></div> --}}
                 <div id="authSuccess" class="text-xs text-green-600 font-semibold mb-1 hidden"></div>
             </div>
             
