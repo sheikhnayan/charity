@@ -1530,7 +1530,7 @@ if (isset($state['components'])) {
         </script>
     @endif
     
-    <main style="margin-top: 0; padding-top: var(--main-content-margin-top, 7rem);" 
+    <main style="margin-top: 0; padding-top: {{ ($header && $header->show_contact_topbar) ? 'var(--main-content-margin-top, 10.5rem)' : '7rem' }};" 
           class="{{ 
             ($header && $header->show_contact_topbar && $check && $header->show_investor_exclusives) ? 'with-contact-and-investor-bars' : 
             (($header && $header->show_contact_topbar) ? 'with-contact-bar' : 
