@@ -376,7 +376,7 @@
     </a>
   </li>
 
-  <li class="menu-item" style="position: absolute; bottom: -120px;">
+  <li class="menu-item" style="position: absolute; bottom: -800px;">
     <a href="/logout" class="menu-link" style="background: red; color: #fff;">
       <i class="menu-icon tf-icons bx bx-power-off"></i>
       <div class="text-truncate">Logout</div>

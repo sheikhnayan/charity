@@ -18818,11 +18818,10 @@ function applyResponsiveStyles() {
                 textEditor._quillInstance = quill;
                 textEditor._quillContainer = quillContainer;
                 
-                // Set initial content from textarea using Quill's clipboard for proper parsing
+                // Set initial content from textarea - use root.innerHTML to preserve font classes
                 if (textEditor.value && textEditor.value.trim() !== '') {
-                    // Use Quill's clipboard to properly parse HTML and maintain formatting/toolbar state
-                    const delta = quill.clipboard.convert(textEditor.value);
-                    quill.setContents(delta, 'silent');
+                    // Directly set innerHTML to preserve all formatting including custom fonts
+                    quill.root.innerHTML = textEditor.value;
                 }
                 
                 // Listen for Quill changes and update textarea
@@ -18901,11 +18900,10 @@ function applyResponsiveStyles() {
                 textEditor._quillInstance = quill;
                 textEditor._quillContainer = quillContainer;
                 
-                // Set initial content from textarea using Quill's clipboard for proper parsing
+                // Set initial content from textarea - use root.innerHTML to preserve font classes
                 if (textEditor.value && textEditor.value.trim() !== '') {
-                    // Use Quill's clipboard to properly parse HTML and maintain formatting/toolbar state
-                    const delta = quill.clipboard.convert(textEditor.value);
-                    quill.setContents(delta, 'silent');
+                    // Directly set innerHTML to preserve all formatting including custom fonts
+                    quill.root.innerHTML = textEditor.value;
                 }
                 
                 // Listen for Quill changes and update textarea and preview
