@@ -24,12 +24,12 @@
       --pd-bg: {{ json_encode($ticket->user->website->property_details_bg_color ?? '#f5f6f7') }};
       --pd-text: {{ json_encode($ticket->user->website->property_details_text_color ?? '#111827') }};
       --pd-muted: {{ json_encode($ticket->user->website->property_details_muted_color ?? '#6b7280') }};
-      --pd-heading: {{ json_encode($ticket->user->website->property_details_heading_color ?? '#1e293b') }};
+      /* --pd-heading: {{ json_encode($ticket->user->website->property_details_heading_color ?? '#1e293b') }}; */
       --pd-price: {{ json_encode($ticket->user->website->property_details_price_color ?? '#111827') }};
-      --pd-accent: {{ json_encode($ticket->user->website->property_details_accent_color ?? '#0066cc') }};
+      /* --pd-accent: {{ json_encode($ticket->user->website->property_details_accent_color ?? '#0066cc') }}; */
       
-      --accent:var(--pd-accent);
-      --muted:var(--pd-muted);
+      /* --accent:var(--pd-accent);
+      --muted:var(--pd-muted); */
       --bg:var(--pd-bg);
       --card:#ffffff;
       --radius:12px;
