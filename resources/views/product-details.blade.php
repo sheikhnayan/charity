@@ -613,7 +613,12 @@
     }
   </style>
 </head>
-<body class="product-details-page" style="background-color: {{ $ticket->user->website->property_details_bg_color ?? '#f5f6f7' }} !important;">
+@php
+     $url = url()->current();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $check = \App\Models\Website::where('domain', $domain)->first();
+@endphp
+<body class="product-details-page" style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
   <!-- Topbar replicating eBay-like header (no logos) -->
   @php
         $url = url()->current();
