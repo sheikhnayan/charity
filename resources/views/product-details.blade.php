@@ -673,7 +673,7 @@
         $header = \App\Models\Header::where('user_id', $user_id)->first();
         $footer = \App\Models\Footer::where('user_id', $user_id)->first();
         $setting = \App\Models\Setting::where('user_id', $user_id)->first();
-        $customFonts = \App\Models\CustomFont::where('user_id', $user_id)->get();
+        $customFonts = \App\Models\CustomFont::get();
         $menuSections = [];
     @endphp
     
