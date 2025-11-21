@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/heatmap/screenshot',
             'api/heatmap/screenshot/capture',
             'users/investor-profile/save',
+            'invest/save-info',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
