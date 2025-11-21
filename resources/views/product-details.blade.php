@@ -19,10 +19,25 @@
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <style>
     /* ---- Reset & Base ---- */
-    :root{--accent:#0066cc;--muted:#6b7280;--bg:#f5f6f7;--card:#ffffff;--radius:12px;--page-max:1180px}
+    /* Product Details Color Variables (from Website settings) */
+    :root{
+      --pd-bg: {{ json_encode($ticket->user->website->property_details_bg_color ?? '#f5f6f7') }};
+      --pd-text: {{ json_encode($ticket->user->website->property_details_text_color ?? '#111827') }};
+      --pd-muted: {{ json_encode($ticket->user->website->property_details_muted_color ?? '#6b7280') }};
+      --pd-heading: {{ json_encode($ticket->user->website->property_details_heading_color ?? '#1e293b') }};
+      --pd-price: {{ json_encode($ticket->user->website->property_details_price_color ?? '#111827') }};
+      --pd-accent: {{ json_encode($ticket->user->website->property_details_accent_color ?? '#0066cc') }};
+      
+      --accent:var(--pd-accent);
+      --muted:var(--pd-muted);
+      --bg:var(--pd-bg);
+      --card:#ffffff;
+      --radius:12px;
+      --page-max:1180px
+    }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#111;margin:0;-webkit-font-smoothing:antialiased}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--pd-text);margin:0;-webkit-font-smoothing:antialiased}
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%}
 
@@ -135,6 +150,14 @@
     .small{font-size:13px;color:var(--muted)}
 
     @media (max-width:520px){.thumbs{display:none}.main-media img{max-height:320px}}
+    
+    /* Global overrides using dynamic color variables */
+    body.product-details-page{background-color: var(--pd-bg) !important; color: var(--pd-text) !important;}
+    h1,h2,h3,h4,h5,h6,.title{color: var(--pd-heading) !important;}
+    .muted,.subtitle,.condition,.small,.text-muted,.card .meta,.seller-meta{color: var(--pd-muted) !important;}
+    .price{color: var(--pd-price) !important;}
+    a,.btn.ghost{color: var(--pd-accent) !important;}
+    .btn.primary{background: var(--pd-accent) !important;}
     
     /* Mobile responsive adjustments */
     @media (max-width: 991.98px) {
@@ -590,7 +613,7 @@
     }
   </style>
 </head>
-<body>
+<body class="product-details-page" style="background-color: {{ $ticket->user->website->property_details_bg_color ?? '#f5f6f7' }} !important;">
   <!-- Topbar replicating eBay-like header (no logos) -->
   @php
         $url = url()->current();
