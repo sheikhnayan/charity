@@ -232,7 +232,7 @@
     @if ($header->status == 1)
         @include('layouts.nav')
     @endif
-    <header class="site-header" id="header" style="padding-top: 6rem;">
+    <header class="site-header" id="header" style="padding-top: 8rem;">
         <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">THANK YOU!</h1>
     </header>
 

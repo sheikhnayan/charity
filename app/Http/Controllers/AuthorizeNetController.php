@@ -198,6 +198,10 @@ class AuthorizeNetController extends Controller
 
                     if ($donation->type == 'student') {
                         # code...
+
+                         $processing_fee = \App\Models\PaymentSetting::first();
+                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
                         $tran->type = $donation->type;
@@ -215,7 +219,7 @@ class AuthorizeNetController extends Controller
                         $tran->name_on_card = $request->name_on_card;
                         $tran->country = $request->country;
                         $tran->ip_address = $request->ip();
-                        $tran->fee = 0;
+                        $tran->fee = $fee;
                         $tran->fee_paid = 1;
                         
                         // Add tip information
@@ -237,6 +241,10 @@ class AuthorizeNetController extends Controller
                         return view('thank-you', compact('type'));
                     }elseif ($donation->type == 'general') {
                         # code...
+
+                         $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
                         $tran->type = $donation->type;
@@ -253,7 +261,7 @@ class AuthorizeNetController extends Controller
                         $tran->phone = $request->phone;
                         $tran->name_on_card = $request->name_on_card;
                         $tran->country = $request->country;
-                        $tran->fee = 0;
+                        $tran->fee = $fee;
                         $tran->fee_paid = 1;
                         
                         // Add tip information
@@ -368,6 +376,9 @@ class AuthorizeNetController extends Controller
                     $del = Transaction::where('type','auction')->where('reference_id',$donation->id)->delete();
 
 
+                     $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
                     $tran->type = 'auction';
@@ -384,7 +395,7 @@ class AuthorizeNetController extends Controller
                     $tran->phone = $request->phone;
                     $tran->name_on_card = $request->name_on_card;
                     $tran->country = $request->country;
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
@@ -404,6 +415,9 @@ class AuthorizeNetController extends Controller
                     $investment->transaction_id = $tresponse->getTransId();
                     $investment->update();
 
+                     $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                     $tran = new Transaction;
                     $tran->amount = $investment->investment_amount;
                     $tran->type = 'investment';
@@ -420,7 +434,7 @@ class AuthorizeNetController extends Controller
                     $tran->phone = $request->phone;
                     $tran->name_on_card = $request->name_on_card;
                     $tran->country = $request->country;
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = 1; // Completed status
                     $tran->reference_id = $investment->id;
@@ -566,6 +580,10 @@ class AuthorizeNetController extends Controller
 
                     if ($donation->type == 'student') {
                         # code...
+
+                         $processing_fee = \App\Models\PaymentSetting::first();
+                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
                         $tran->type = $donation->type;
@@ -582,7 +600,7 @@ class AuthorizeNetController extends Controller
                         $tran->phone = $request->phone;
                         $tran->name_on_card = $request->name_on_card;
                         $tran->ip_address = $request->ip();
-                        $tran->fee = 0;
+                        $tran->fee = $fee;
                         $tran->fee_paid = 1;
                         
                         // Add tip information (Stripe)
@@ -618,6 +636,10 @@ class AuthorizeNetController extends Controller
                         return view('thank-you', compact('type'));
                     }elseif ($donation->type == 'general') {
                         # code...
+
+                        $processing_fee = \App\Models\PaymentSetting::first();
+                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
                         $tran->type = $donation->type;
@@ -634,7 +656,7 @@ class AuthorizeNetController extends Controller
                         $tran->phone = $request->phone;
                         $tran->name_on_card = $request->name_on_card;
                         $tran->country = $request->country;
-                        $tran->fee = 0;
+                        $tran->fee = $fee;
                         $tran->fee_paid = 1;
                         
                         // Add tip information (Stripe)
@@ -771,6 +793,8 @@ class AuthorizeNetController extends Controller
 
                     $del = Transaction::where('type','auction')->where('reference_id',$donation->id)->delete();
 
+                    $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
 
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
@@ -788,7 +812,7 @@ class AuthorizeNetController extends Controller
                     $tran->phone = $request->phone;
                     $tran->name_on_card = $request->name_on_card;
                     $tran->country = $request->country;
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = $donation->status;
                     $tran->reference_id = $donation->id; // Assuming reference_id is not provided in the request
@@ -808,6 +832,9 @@ class AuthorizeNetController extends Controller
                     $investment->transaction_id = $charge->id;
                     $investment->update();
 
+                     $processing_fee = \App\Models\PaymentSetting::first();
+                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+
                     $tran = new Transaction;
                     $tran->amount = $investment->investment_amount;
                     $tran->type = 'investment';
@@ -824,7 +851,7 @@ class AuthorizeNetController extends Controller
                     $tran->phone = $request->phone;
                     $tran->name_on_card = $request->name_on_card;
                     $tran->country = $request->country;
-                    $tran->fee = 0;
+                    $tran->fee = $fee;
                     $tran->fee_paid = 1;
                     $tran->status = 1; // Completed status
                     $tran->reference_id = $investment->id;

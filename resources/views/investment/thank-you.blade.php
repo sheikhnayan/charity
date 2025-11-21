@@ -8,7 +8,7 @@
     <style>
         .thank-you-container {
             max-width: 600px;
-            margin: 50px auto;
+            margin: 200px auto;
             padding: 40px;
             text-align: center;
             background: #f8f9fa;
