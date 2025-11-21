@@ -122,9 +122,9 @@
                                                 <th>Donor Name</th>
                                                 <th>Individual Name</th>
                                                 <th>Team Name</th>
-                                                <th>Amount Gross</th>
+                                                <th>Total Amount</th>
                                                 <th>Amount Entered</th>
-                                                <th>Amount Net</th>
+                                                {{-- <th>Amount Net</th> --}}
                                                 <th>Processing Fee</th>
                                                 <th>Payment Method</th>
                                                 <th>Website</th>
@@ -172,7 +172,7 @@
                                                         @endif
                                                         <td>${{ number_format($item->amount, 2) }}</td>
                                                         <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>${{ number_format($item->fee, 2) }}</td>
                                                         <td>
                                                             @if ($item->type != 'sponsor')
@@ -200,7 +200,7 @@
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ number_format($item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)), 2) }}"
+                                                                data-gross="${{ number_format($item->amount, 2) }}"
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
@@ -401,7 +401,7 @@
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item d-flex justify-content-between">
-                                            <strong>Gross Amount:</strong> <span id="modal-gross"></span>
+                                            <strong>Purchase Amount:</strong> <span id="modal-gross"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <strong>Processing Fee:</strong> <span id="modal-fee"></span>
