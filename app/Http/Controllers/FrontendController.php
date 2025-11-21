@@ -53,9 +53,15 @@ class FrontendController extends Controller
             $ticket->available_shares = $ticket->total_shares - $totalSold;
             
             return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts', 'menuSections'));
+        }elseif($ticket->type === 'product'){
+
+            $data = Page::where('user_id', $user_id)->where('default', 1)->first();
+            $menuSections = $this->extractMenuSections($data);
+
+            return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts', 'menuSections'));
         }
-        
         return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts', 'menuSections'));
+        
     }
 
     public function index()
