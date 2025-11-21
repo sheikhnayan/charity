@@ -252,9 +252,9 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="5" class="text-end">Total:</th>
+                                                <th colspan="7" class="text-end">Total:</th>
                                                 <th id="amount-total"></th>
-                                                <th colspan="8"></th>
+                                                <th colspan="6"></th>
                                             </tr>
                                         </tfoot>
                                     </table>
