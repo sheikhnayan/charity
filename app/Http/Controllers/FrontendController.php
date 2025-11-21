@@ -36,12 +36,9 @@ class FrontendController extends Controller
         // Load custom fonts for dynamic font support
         $customFonts = \App\Models\CustomFont::active()->get();
         
-        // Extract menu sections from homepage for navigation (investment websites)
+        // Menu sections only for investment websites (page builder sections)
+        // Fundraiser websites use standard page navigation from layouts.nav
         $menuSections = [];
-        if ($website->type == 'investment') {
-            $homePage = Page::where('website_id', $website->id)->where('type', 'home')->first();
-            $menuSections = $this->extractMenuSections($homePage);
-        }
         
         // Calculate actual available shares from sales for property type
         if ($ticket->type === 'property') {
