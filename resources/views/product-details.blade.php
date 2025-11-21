@@ -18,6 +18,52 @@
     
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <style>
+    /* Custom Fonts @font-face declarations */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    @foreach($customFonts as $font)
+    @font-face {
+        font-family: '{{ $font->font_family }}';
+        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    @endforeach
+    @endif
+    
+    /* Menu Font Family Styling */
+    @if(isset($header) && $header && $header->menu_font_family)
+    nav.navbar .nav-link,
+    nav.navbar .navbar-brand,
+    nav.navbar .btn,
+    .navbar .nav-item a,
+    .navbar ul li a {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
+    .contact-topbar,
+    .contact-topbar a,
+    .contact-topbar span,
+    .contact-topbar .contact-item,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header->investor_exclusives_font_family)
+    .investor-exclusives-bar,
+    .investor-exclusives-bar p,
+    .investor-exclusives-bar a,
+    .investor-exclusives-bar .investor-exclusives-text,
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+    }
+    @endif
+    
     /* ---- Reset & Base ---- */
     /* Product Details Color Variables (from Website settings) */
     :root{
@@ -613,23 +659,25 @@
     }
   </style>
 </head>
-@php
-     $url = url()->current();
-        $domain = parse_url($url, PHP_URL_HOST);
-        $check = \App\Models\Website::where('domain', $domain)->first();
-@endphp
-<body class="product-details-page" style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
-  <!-- Topbar replicating eBay-like header (no logos) -->
-  @php
+<body class="product-details-page" style="background-color: {{ $ticket->user->website->property_details_bg_color ?? '#f5f6f7' }} !important;">
+    
+    @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
         $check = \App\Models\Website::where('domain', $domain)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
-
-        $header = \App\Models\Header::where('website_id', $check->id)->first();
-        $footer = \App\Models\Footer::where('website_id', $check->id)->first();
+        
+        // Use user_id to fetch header, footer, setting to match property-details
+        $user_id = $check->user_id;
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $customFonts = \App\Models\CustomFont::where('user_id', $user_id)->get();
+        $menuSections = [];
     @endphp
+    
+    <!-- Header -->
     
     @if ($header && $header->status == 1)
         {{-- Contact Information Top Bar --}}
@@ -640,18 +688,18 @@
                         @if($header->contact_phone)
                         <div class="col-3 col-md-auto">
                             <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
                                     {{ $header->contact_phone }}
                                 </a>
                             </div>
                         </div>
                         @endif
                         @if($header->contact_email)
-                        <div class="col-6 col-md-auto">
+                        <div class="col-6 col-md-auto" style="text-align: center;">
                             <div class="contact-item me-4 mb-1">
-                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
                                     {{ $header->contact_email }}
                                 </a>
                             </div>
@@ -660,8 +708,8 @@
                         @if($header->contact_cta_text)
                         <div class="col-3 col-md-auto">
                             <div class="contact-item mb-1">
-                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
-                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important; text-decoration : underline !important;">
                                     {{ $header->contact_cta_text }}
                                 </span>
                             </div>
@@ -682,7 +730,7 @@
             <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
                 <div class="investor-exclusives-content">
                     <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
-                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; text-transform: uppercase; padding-bottom: 4px;">
                         {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
                     </p>
                     </a>
