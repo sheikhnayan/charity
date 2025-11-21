@@ -392,14 +392,14 @@
                         Processing Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ ($data->amount / 100) * $payment->fee }}
+                        ${{ number_format((($data->amount / 100) * $payment->fee), 2) }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-4">
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;">${{ (($data->amount / 100) * $payment->fee) + $data->amount }}
+                        <h5 style="font-weight: bold;">${{ number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2) }}
                         </h5>
                     </div>
                 </div>

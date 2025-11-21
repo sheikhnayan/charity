@@ -6,6 +6,8 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{$ticket->name}}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Tailwind CSS for modals -->
+  <script src="https://cdn.tailwindcss.com"></script>
 <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts - Outfit -->
@@ -559,6 +561,33 @@
     @endforeach
     @endif
     @endif
+    
+    /* Ensure modals are hidden by default and positioned correctly */
+    #authModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 99999 !important;
+    }
+
+    #authModal.hidden {
+        display: none;
+    }
+
+    #authModal:not(.hidden) {
+        display: flex;
+    }
+
+    /* Ensure Bootstrap modal appears on top */
+    .modal-backdrop {
+        z-index: 99998 !important;
+    }
+
+    .modal {
+        z-index: 99999 !important;
+    }
   </style>
 </head>
 <body>
@@ -790,7 +819,7 @@
             <div class="subtitle">Sold by <strong>{{$ticket->user->website->name}}</strong></div>
             <div class="price">US ${{ number_format($ticket->price, 2) }}</div>
 
-            <form action="/tickets" method="post">
+            <form action="/tickets" method="post" id="ticketPurchaseForm">
               @csrf
               <div style="height:8px"></div>
               <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
@@ -823,7 +852,7 @@
               </div>
               
               <div style="display:flex;gap:8px;margin-bottom:10px">
-                <button class="btn primary">Buy It Now</button>
+                <button type="submit" class="btn primary">Buy It Now</button>
                 {{-- <button class="btn ghost">Add to cart</button> --}}
               </div>
             </form>
@@ -923,6 +952,66 @@
         if(!sc) return;
         if(e.key === 'ArrowLeft') sc.scrollBy({left:-220,behavior:'smooth'});
         if(e.key === 'ArrowRight') sc.scrollBy({left:220,behavior:'smooth'});
+      });
+    })();
+
+    // --- Ticket Purchase Authentication Flow ---
+    (function(){
+      const form = document.getElementById('ticketPurchaseForm');
+      if (!form) return;
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        try {
+          submitBtn.textContent = 'Checking...';
+          submitBtn.disabled = true;
+
+          // Check if user is authenticated
+          const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          const authCheck = await fetch('/ajax/ticket-auth/check', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({})
+          });
+          const authStatus = await authCheck.json();
+
+          if (!authStatus.authenticated || !authStatus.verified) {
+            // User not authenticated - show auth modal
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+
+            // Store form reference for later submission (use the variable name the modal expects)
+            window._ticketAuthPendingForm = form;
+            // Mark this as a simple ticket purchase (not investment) to skip investor modal
+            window._isSimpleTicketPurchase = true;
+
+            // Open auth modal
+            if (typeof setAuthMode === 'function') {
+              setAuthMode('login');
+            }
+            if (typeof openAuthModal === 'function') {
+              openAuthModal();
+            }
+            return;
+          }
+
+          // User is authenticated - submit the form
+          submitBtn.textContent = 'Processing...';
+          form.submit();
+
+        } catch (error) {
+          console.error('Authentication check failed:', error);
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          /* alert('An error occurred. Please try again.'); */
+        }
       });
     })();
   </script>

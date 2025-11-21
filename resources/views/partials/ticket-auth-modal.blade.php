@@ -232,6 +232,42 @@
                     return;
                 }
                 
+                // Check if this is a simple ticket purchase (skip investor modal)
+                if (window._isSimpleTicketPurchase) {
+                    window._isSimpleTicketPurchase = false; // Reset flag
+                    if (window._ticketAuthPendingForm) {
+                        const f = window._ticketAuthPendingForm;
+                        window._ticketAuthPendingForm = null;
+                        
+                        // Refresh CSRF token before submission
+                        try {
+                            const csrfResp = await fetch('/refresh-csrf', {
+                                method: 'GET',
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            const csrfData = await csrfResp.json();
+                            
+                            // Update CSRF token in the form
+                            const tokenInput = f.querySelector('input[name="_token"]');
+                            if (tokenInput && csrfData.token) {
+                                tokenInput.value = csrfData.token;
+                            }
+                            
+                            // Update meta tag too
+                            const metaTag = document.querySelector('meta[name="csrf-token"]');
+                            if (metaTag && csrfData.token) {
+                                metaTag.setAttribute('content', csrfData.token);
+                            }
+                        } catch (csrfErr) {
+                            console.warn('Could not refresh CSRF token:', csrfErr);
+                        }
+                        
+                        // Submit the form
+                        f.submit();
+                    }
+                    return;
+                }
+                
                 // Check if user has investor profile (only for customer role)
                 try {
                     const profileResp = await fetch('/users/investor-profile', {
