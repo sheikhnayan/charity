@@ -200,7 +200,7 @@
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ number_format($item->amount, 2) }}"
+                                                                data-gross="${{ number_format($item->amount - $item->fee, 2) }}"
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
@@ -227,7 +227,7 @@
                                                                 data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
                                                                 data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
                                                                 data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
-                                                                data-total-paid="${{ number_format($item->total_amount_paid ?? ($item->fee_paid ? $item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)) : $item->amount), 2) }}"
+                                                                data-total-paid="${{ number_format($item->amount, 2) }}"
                 
                 
                                                                 title="View">
@@ -401,7 +401,7 @@
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item d-flex justify-content-between">
-                                            <strong>Purchase Amount:</strong> <span id="modal-gross"></span>
+                                            <strong>Amount Entered:</strong> <span id="modal-gross"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <strong>Processing Fee:</strong> <span id="modal-fee"></span>
