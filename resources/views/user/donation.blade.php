@@ -163,7 +163,13 @@
                                                         @else
                                                             <td></td>
                                                         @endif
+                                                        @if ($item->type == 'investment')
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                            
+                                                        @else
                                                         <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
+                                                            
+                                                        @endif
                                                         <td>${{ number_format($item->fee, 2) }}</td>
                                                         <td>${{ number_format($item->amount, 2) }}</td>
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
@@ -193,7 +199,11 @@
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ number_format($item->amount - $item->fee, 2) }}"
+                                                                @if ($item->type == 'investment')
+                                                                data-gross="${{ number_format($item->amount, 2) }}"                                                                    
+                                                                @else
+                                                                    
+                                                                @endif
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
