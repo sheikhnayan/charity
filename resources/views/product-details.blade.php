@@ -157,7 +157,7 @@
     .muted,.subtitle,.condition,.small,.text-muted,.card .meta,.seller-meta{color: var(--pd-muted) !important;}
     .price{color: var(--pd-price) !important;}
     a,.btn.ghost{color: var(--pd-accent) !important;}
-    .btn.primary{background: var(--pd-accent) !important;}
+    /* .btn.primary{background: var(--pd-accent) !important;} */
     
     /* Mobile responsive adjustments */
     @media (max-width: 991.98px) {
