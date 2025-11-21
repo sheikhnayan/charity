@@ -544,7 +544,7 @@
                         let total = 0;
                         table.rows({ search: 'applied' }).every(function () {
                             let data = this.data();
-                            let amountCell = data[6]; // Column 6 is "Amount Entered" (index 6: checkbox, txn, name, product, qty, gross, entered)
+                            let amountCell = data[5]; // Column 6 is "Amount Entered" (index 6: checkbox, txn, name, product, qty, gross, entered)
                             // Remove HTML tags if present
                             let tempDiv = document.createElement('div');
                             tempDiv.innerHTML = amountCell;
