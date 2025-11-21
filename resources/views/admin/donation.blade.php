@@ -170,10 +170,10 @@
                                                         @else
                                                             <td></td>
                                                         @endif
-                                                        <td>${{ number_format($item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)), 2) }}</td>
                                                         <td>${{ number_format($item->amount, 2) }}</td>
+                                                        <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
                                                         <td>${{ number_format($item->amount, 2) }}</td>
-                                                        <td>${{ number_format(($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee), 2) }}</td>
+                                                        <td>${{ number_format($item->fee, 2) }}</td>
                                                         <td>
                                                             @if ($item->type != 'sponsor')
                                                             {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
@@ -201,7 +201,7 @@
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
                                                                 data-gross="${{ number_format($item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)), 2) }}"
-                                                                data-fee="${{ number_format(($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee), 2) }}"
+                                                                data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
