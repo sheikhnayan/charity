@@ -170,9 +170,18 @@
                                                         @else
                                                             <td></td>
                                                         @endif
-                                                        <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
-                                                        <td>${{ number_format($item->fee, 2) }}</td>
+                                                        @if ($item->type == 'investment')
                                                         <td>${{ number_format($item->amount, 2) }}</td>
+                                                        @else
+                                                        <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
+                                                            
+                                                        @endif
+                                                        <td>${{ number_format($item->fee, 2) }}</td>
+                                                        @if ($item->type == 'investment')
+                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
+                                                        @else
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        @endif
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
                                                             @if ($item->type != 'sponsor')
@@ -200,7 +209,12 @@
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
+                                                                @if ($item->type == 'investment')
+                                                                data-gross="${{ number_format($item->amount, 2) }}"
+                                                                @else
                                                                 data-gross="${{ number_format($item->amount - $item->fee, 2) }}"
+                                                                    
+                                                                @endif
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
@@ -227,7 +241,11 @@
                                                                 data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
                                                                 data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
                                                                 data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
+                                                                @if ($item->type == 'investment')
+                                                                data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
+                                                                @else
                                                                 data-total-paid="${{ number_format($item->amount, 2) }}"
+                                                                @endif
                 
                 
                                                                 title="View">
