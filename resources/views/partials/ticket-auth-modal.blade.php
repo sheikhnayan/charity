@@ -13,35 +13,35 @@
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-user text-purple-600 mr-2"></i>Full Name
                 </label>
-                <input type="text" name="name" id="authName" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm">
+                <input type="text" name="name" id="authName" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;">
             </div>
 
             <div class="mb-3">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-envelope text-purple-600 mr-2"></i>Email Address
                 </label>
-                <input type="email" name="email" id="authEmail" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" required>
+                <input type="email" name="email" id="authEmail" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;" required>
             </div>
 
             <div class="mb-3" id="passwordField">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-lock text-purple-600 mr-2"></i>Password
                 </label>
-                <input type="password" name="password" id="authPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" required>
+                <input type="password" name="password" id="authPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;" required>
             </div>
 
             <div class="mb-3" id="confirmPasswordField">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-lock text-purple-600 mr-2"></i>Confirm Password
                 </label>
-                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm">
+                <input type="password" name="confirm_password" id="authConfirmPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;">
             </div>
 
             <div class="mb-3 hidden" id="verificationField">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Verification Code
                 </label>
-                <input type="text" name="verification_code" id="verificationCode" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-xl font-bold tracking-widest" maxlength="6" placeholder="000000">
+                <input type="text" name="verification_code" id="verificationCode" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-xl font-bold tracking-widest" maxlength="6" placeholder="000000" style="color: #000 !important;">
                 <div class="mt-2 p-2 bg-blue-50 border-l-4 border-blue-500 rounded">
                     <p class="text-xs text-blue-800">
                         <i class="fas fa-info-circle mr-1"></i>Check your email. Don't forget spam folder!

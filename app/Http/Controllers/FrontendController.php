@@ -36,6 +36,13 @@ class FrontendController extends Controller
         // Load custom fonts for dynamic font support
         $customFonts = \App\Models\CustomFont::active()->get();
         
+        // Extract menu sections from homepage for navigation (investment websites)
+        $menuSections = [];
+        if ($website->type == 'investment') {
+            $homePage = Page::where('website_id', $website->id)->where('type', 'home')->first();
+            $menuSections = $this->extractMenuSections($homePage);
+        }
+        
         // Calculate actual available shares from sales for property type
         if ($ticket->type === 'property') {
             // Get total shares sold from ticket_sell_details (only successful sales)
@@ -48,10 +55,10 @@ class FrontendController extends Controller
             // Update the ticket object with calculated values
             $ticket->available_shares = $ticket->total_shares - $totalSold;
             
-            return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts'));
+            return view('property-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts', 'menuSections'));
         }
         
-        return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts'));
+        return view('product-details', compact('ticket', 'setting', 'header', 'footer', 'website', 'customFonts', 'menuSections'));
     }
 
     public function index()
