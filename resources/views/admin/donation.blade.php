@@ -122,10 +122,10 @@
                                                 <th>Donor Name</th>
                                                 <th>Individual Name</th>
                                                 <th>Team Name</th>
-                                                <th>Total Amount</th>
                                                 <th>Amount Entered</th>
-                                                {{-- <th>Amount Net</th> --}}
                                                 <th>Processing Fee</th>
+                                                <th>Total Amount</th>
+                                                {{-- <th>Amount Net</th> --}}
                                                 <th>Payment Method</th>
                                                 <th>Website</th>
                                                 <th>Type</th>
@@ -170,10 +170,10 @@
                                                         @else
                                                             <td></td>
                                                         @endif
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
                                                         <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
-                                                        {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>${{ number_format($item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
                                                             @if ($item->type != 'sponsor')
                                                             {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}

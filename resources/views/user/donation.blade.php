@@ -112,16 +112,13 @@
                                             <tr>
                                                 <th><input type="checkbox" id="selectAll"></th>
                                                 <th>Transaction ID</th>
-                                                {{-- <th>Donor Name</th> --}}
-                                                <th>Name</th>
-                                                {{-- <th>Individual Name</th> --}}
-                                                <th>Product Name</th>
-                                                {{-- <th>Team Name</th> --}}
-                                                <th>Quantity</th>
-                                                <th>Amount Gross</th>
+                                                <th>Donor Name</th>
+                                                <th>Individual Name</th>
+                                                <th>Team Name</th>
                                                 <th>Amount Entered</th>
-                                                <th>Amount Net</th>
                                                 <th>Processing Fee</th>
+                                                <th>Total Amount</th>
+                                                {{-- <th>Amount Net</th> --}}
                                                 <th>Payment Method</th>
                                                 <th>Website</th>
                                                 <th>Type</th>
@@ -150,25 +147,26 @@
                                                         @elseif($item->type == 'auction')
                                                             <td>{{ $item->auction->title }}</td>
                                                         @elseif($item->type == 'ticket')
-                                                            <td>{{ $item->ticket->details[0]->ticket->name }}</td>
+                                                            <td>@if ($item->ticket->details[0]->ticket)
+                                                                {{ $item->ticket->details[0]->ticket->name }}
+                                                                @else
+                                                                N/A
+                                                            @endif
+
+                                                            </td>
+                                                            {{-- <td>{{ $item->ticket->details[0]->ticket->name }}</td> --}}
                                                         @elseif ($item->type == 'investment')
                                                             <td>{{ $item->investment->investor_name }}</td>
                                                         @endif
-                                                        {{-- @if ($item->type == 'student')
+                                                        @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->group_name }}</td>
                                                         @else
                                                             <td></td>
-                                                        @endif --}}
-                                                        <td>
-                                                            @php
-                                                                $quantity = \App\Models\TicektSell::where('id', $item->reference_id)->first();
-                                                            @endphp
-                                                            {{ $quantity->quantity }}
-                                                        </td>
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        @endif
                                                         <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
                                                         <td>${{ number_format($item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
                                                             @if ($item->type != 'sponsor')
                                                             {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
@@ -195,7 +193,7 @@
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
                                                                 data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                data-gross="${{ number_format($item->amount + (($item->amount / 100)*(($item->website->paymentSettings && $item->website->paymentSettings->fee) ? $item->website->paymentSettings->fee : $defaultFee)), 2) }}"
+                                                                data-gross="${{ number_format($item->amount, 2) }}"
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
