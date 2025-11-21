@@ -98,7 +98,7 @@
     .qty-row input{width:72px;padding:8px;border-radius:8px;border:1px solid #e6e6e8;text-align:center}
 
     .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:10px;font-weight:700;cursor:pointer}
-    .btn.primary{background:var(--accent);color:#fff;border:0}
+    /* .btn.primary{background:var(--accent);color:#fff;border:0} */
     .btn.ghost{background:#fff;border:1px solid #d9d9db;color:var(--accent)}
 
     .panel .small{font-size:13px;color:var(--muted);margin-top:10px}
