@@ -553,6 +553,9 @@
                 return;
             }
 
+            // Additional wait for dynamic content (page builder components, images, etc.)
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
             try {
                 // For dynamic page-builder content, check if screenshot is recent (last 24 hours)
                 const pagePath = window.location.pathname;
@@ -595,12 +598,21 @@
             } catch (error) {
                 console.log('Hotjar Tracker: Screenshot check failed:', error);
                 // If check fails, try to capture anyway
-                this.doScreenshotCapture();
+                if (typeof html2canvas !== 'undefined') {
+                    this.doScreenshotCapture();
+                }
             }
         }
 
         async doScreenshotCapture() {
             try {
+                // Wait for any dynamic content to load
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds for content
+                
+                // Scroll to top before capturing
+                window.scrollTo(0, 0);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait for scroll
+                
                 const canvas = await html2canvas(document.body, {
                     allowTaint: true,
                     useCORS: true,
@@ -609,9 +621,22 @@
                     height: document.documentElement.scrollHeight,
                     windowWidth: window.innerWidth,
                     windowHeight: document.documentElement.scrollHeight,
+                    scale: 1, // Use 1:1 scale for accuracy
+                    backgroundColor: '#ffffff', // White background
+                    removeContainer: true, // Clean up after capture
+                    imageTimeout: 15000, // 15 second timeout for images
+                    onclone: function(clonedDoc) {
+                        // Ensure all images are loaded in cloned document
+                        const images = clonedDoc.getElementsByTagName('img');
+                        for (let img of images) {
+                            if (!img.complete) {
+                                img.style.display = 'none'; // Hide incomplete images
+                            }
+                        }
+                    }
                 });
 
-                const screenshotData = canvas.toDataURL('image/png');
+                const screenshotData = canvas.toDataURL('image/png', 0.8); // 80% quality to reduce size
                 
                 // Get CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
