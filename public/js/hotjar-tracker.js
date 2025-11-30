@@ -122,9 +122,9 @@
                     
                     // CRITICAL: Capture all styles and CSS properly
                     inlineStylesheet: true,
-                    inlineImages: true, // Capture images to show them in replay
-                    recordCanvas: true,
-                    collectFonts: true,
+                    inlineImages: false, // Disable to avoid CORS errors with external images
+                    recordCanvas: false, // Disable to avoid cross-origin canvas errors
+                    collectFonts: false, // Disable to avoid font loading issues
                     
                     // Don't block any CSS or assets
                     blockClass: 'rr-block',
@@ -614,8 +614,8 @@
                 await new Promise(resolve => setTimeout(resolve, 500)); // Wait for scroll
                 
                 const canvas = await html2canvas(document.body, {
-                    allowTaint: true,
-                    useCORS: true,
+                    useCORS: true, // Try to use CORS for images that support it
+                    allowTaint: false, // Don't taint canvas with cross-origin images
                     logging: false,
                     width: window.innerWidth,
                     height: document.documentElement.scrollHeight,
@@ -625,13 +625,22 @@
                     backgroundColor: '#ffffff', // White background
                     removeContainer: true, // Clean up after capture
                     imageTimeout: 15000, // 15 second timeout for images
+                    foreignObjectRendering: true, // Use foreignObject rendering for better cross-origin handling
                     onclone: function(clonedDoc) {
-                        // Ensure all images are loaded in cloned document
+                        // Remove or replace cross-origin images that might cause issues
                         const images = clonedDoc.getElementsByTagName('img');
                         for (let img of images) {
                             if (!img.complete) {
                                 img.style.display = 'none'; // Hide incomplete images
                             }
+                            // Remove crossOrigin attribute to avoid CORS issues
+                            img.removeAttribute('crossorigin');
+                        }
+                        
+                        // Remove any iframes that might cause security issues
+                        const iframes = clonedDoc.getElementsByTagName('iframe');
+                        for (let iframe of iframes) {
+                            iframe.style.display = 'none';
                         }
                     }
                 });
