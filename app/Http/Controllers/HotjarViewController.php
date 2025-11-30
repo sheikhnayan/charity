@@ -539,20 +539,21 @@ class HotjarViewController extends Controller
                 ->orderBy('timestamp', 'asc')
                 ->get()
                 ->map(function($event) {
-                    // Parse the stored JSON data back into event structure
-                    $data = json_decode($event->data, true);
-                    return [
-                        'timestamp' => $event->timestamp,
-                        'type' => $event->event_type,
-                        'data' => $data
-                    ];
+                    // The 'data' field contains the full rrweb event as JSON
+                    // So we just need to parse it and return it directly
+                    $fullEvent = json_decode($event->data, true);
+                    
+                    // Return the full rrweb event structure with the stored timestamp
+                    return $fullEvent;
                 });
             
             \Log::info('Fetched recording events', [
                 'recording_id' => $recordingId,
                 'event_count' => $events->count(),
-                'first_event' => $events->first(),
-                'last_event' => $events->last()
+                'first_event_type' => $events->first()['type'] ?? null,
+                'last_event_type' => $events->last()['type'] ?? null,
+                'first_timestamp' => $events->first()['timestamp'] ?? null,
+                'last_timestamp' => $events->last()['timestamp'] ?? null,
             ]);
             
             return response()->json([
