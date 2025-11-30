@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/heatmap/screenshot/capture',
             'users/investor-profile/save',
             'invest/save-info',
+            'webhook/coinbase', // Coinbase Commerce webhooks
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

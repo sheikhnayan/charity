@@ -9,6 +9,7 @@ use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\WebsitePaymentController;
 use App\Http\Controllers\Api\PageBuilderController;
 use App\Http\Controllers\AuthorizeNetController;
+use App\Http\Controllers\CoinbaseController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\Admin\PropertyCategoryController;
@@ -340,12 +341,11 @@ Route::get('authorize/payment/{type}/{id}', [AuthorizeNetController::class, 'ind
 Route::post('authorize/payment', [AuthorizeNetController::class, 'paymentPost'])->name('authorize.payment');
 Route::post('authorize/stripe', [AuthorizeNetController::class, 'paymentStripe'])->name('stripe.post');
 
-// Crypto Payment Demo Route
-Route::get('/crypto-payment', function(){
-    return view('crypto-payment', [
-        'setting' => \App\Models\Setting::first()
-    ]);
-})->name('crypto.payment');
+// Crypto Payment Routes (Coinbase Commerce)
+Route::get('/crypto-payment', [CoinbaseController::class, 'showPaymentPage'])->name('crypto.payment');
+Route::post('/coinbase/create-charge', [CoinbaseController::class, 'createCharge'])->name('coinbase.create');
+Route::post('/webhook/coinbase', [CoinbaseController::class, 'webhook'])->name('coinbase.webhook');
+Route::get('/coinbase/status/{chargeCode}', [CoinbaseController::class, 'checkStatus'])->name('coinbase.status');
 
 Route::get('/product', function(){
     return view('thank-you');

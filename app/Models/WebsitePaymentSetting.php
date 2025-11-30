@@ -16,6 +16,8 @@ class WebsitePaymentSetting extends Model
         'authorize_login_id',
         'authorize_transaction_key',
         'authorize_sandbox',
+        'coinbase_api_key',
+        'coinbase_webhook_secret',
         'is_active',
         'settings'
     ];
@@ -27,6 +29,8 @@ class WebsitePaymentSetting extends Model
         'authorize_login_id' => 'encrypted',
         'authorize_transaction_key' => 'encrypted',
         'authorize_sandbox' => 'boolean',
+        'coinbase_api_key' => 'encrypted',
+        'coinbase_webhook_secret' => 'encrypted',
         'is_active' => 'boolean',
         'settings' => 'array'
     ];
@@ -62,6 +66,16 @@ class WebsitePaymentSetting extends Model
     }
 
     /**
+     * Check if Coinbase Commerce is configured and active
+     */
+    public function isCoinbaseConfigured(): bool
+    {
+        return $this->payment_method === 'coinbase' 
+            && !empty($this->coinbase_api_key)
+            && $this->is_active;
+    }
+
+    /**
      * Get Stripe configuration array
      */
     public function getStripeConfig(): array
@@ -86,12 +100,25 @@ class WebsitePaymentSetting extends Model
     }
 
     /**
+     * Get Coinbase Commerce configuration array
+     */
+    public function getCoinbaseConfig(): array
+    {
+        return [
+            'api_key' => $this->coinbase_api_key,
+            'webhook_secret' => $this->coinbase_webhook_secret,
+        ];
+    }
+
+    /**
      * Get the appropriate payment configuration based on payment method
      */
     public function getPaymentConfig(): array
     {
         if ($this->payment_method === 'stripe') {
             return $this->getStripeConfig();
+        } elseif ($this->payment_method === 'coinbase') {
+            return $this->getCoinbaseConfig();
         } else {
             return $this->getAuthorizeConfig();
         }

@@ -12,10 +12,12 @@ class PaymentFunnelService
 {
     protected $website;
     protected $agent;
+    protected $geolocationService;
     
     public function __construct()
     {
         $this->agent = new Agent();
+        $this->geolocationService = new GeolocationService();
         
         // Try multiple methods to find the website
         $host = request()->getHost();
@@ -76,6 +78,10 @@ class PaymentFunnelService
         // Get visitor ID from cookie (Shopify approach)
         $visitorId = request()->cookie('_charity_visitor_id');
         
+        // Get geolocation data from IP
+        $ipAddress = request()->ip();
+        $locationData = $this->geolocationService->getLocationFromIP($ipAddress);
+        
         $eventData = [
             'website_id' => $this->website->id,
             'session_id' => $sessionId,
@@ -89,7 +95,11 @@ class PaymentFunnelService
             'utm_campaign' => request()->get('utm_campaign'),
             'device_type' => $this->getDeviceType(),
             'browser' => $this->agent->browser(),
-            'ip_address' => request()->ip()
+            'ip_address' => $ipAddress,
+            'country_code' => $locationData['country_code'],
+            'country' => $locationData['country'],
+            'state' => $locationData['state'],
+            'city' => $locationData['city']
         ];
 
         // Add specific data based on step

@@ -123,6 +123,12 @@ class AnalyticsTrackingMiddleware
             $event->user_id = auth()->check() ? auth()->id() : null;
             $event->method = $request->method();
             
+            // Geolocation lookup
+            $geolocationService = new \App\Services\GeolocationService();
+            $locationData = $geolocationService->getLocationFromIP($request->ip());
+            $event->country = $locationData['country'];
+            $event->city = $locationData['city'];
+            
             // Referrer tracking
             $event->referrer = $request->header('referer');
             $event->referrer_url = $request->header('referer'); // Both fields for compatibility
