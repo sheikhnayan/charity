@@ -101,7 +101,24 @@
 
         async function loadRecording() {
             try {
-                const response = await fetch(`/api/session-recording/${recordingId}`);
+                console.log('Fetching recording:', recordingId);
+                
+                // Bypass service worker by adding cache control headers
+                const response = await fetch(`/api/session-recording/${recordingId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate'
+                    },
+                    credentials: 'same-origin',
+                    cache: 'no-store' // Bypass service worker cache
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
                 console.log('Raw API response:', data);
@@ -134,6 +151,7 @@
                     updateTimeDisplay(0);
                 } else {
                     console.error('No events found!');
+                    alert('No events found in this recording. The recording may be corrupted.');
                 }
                 
                 // Wait for iframe to load
@@ -143,6 +161,7 @@
                 });
             } catch (error) {
                 console.error('Failed to load recording:', error);
+                alert('Failed to load recording: ' + error.message + '\n\nTry refreshing the page or unregistering the service worker.');
             }
         }
 
