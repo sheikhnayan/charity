@@ -275,16 +275,16 @@
             
             // Create container with screenshot as background and canvas on top
             display.innerHTML = `
-                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 1440px;">
+                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 1440px; display: inline-block;">
                     ${screenshotUrl ? `
-                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto;" onload="window.initHeatmapAfterImageLoad();" />
-                        <div id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto; position: relative; z-index: 1;" onload="window.initHeatmapAfterImageLoad();" />
+                        <div id="heatmapCanvas" style="background:url("${screenshotUrl}"); background-size:contain; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 2;"></div>
                     ` : `
                         <div id="heatmapCanvas" style="width: 100%; height: 2400px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available. <a href="#" onclick="captureScreenshot(); return false;">Capture now</a></p>
                         </div>
                     `}
-                    <div class="heatmap-legend" style="position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000;">
+                    <div class="heatmap-legend" style="position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000; pointer-events: auto;">
                         <div class="legend-item">
                             <div class="legend-color" style="background: rgba(255, 0, 0, 0.8); width: 30px; height: 20px; border-radius: 4px; display: inline-block;"></div>
                             <span style="margin-left: 10px;">High</span>
@@ -323,29 +323,42 @@
 
                 const canvasEl = document.getElementById('heatmapCanvas');
                 const screenshotImg = document.getElementById('screenshotImg');
+                const wrapper = document.querySelector('.heatmap-wrapper');
+                
                 console.log('Canvas element:', canvasEl);
                 console.log('Screenshot element:', screenshotImg);
+                console.log('Wrapper element:', wrapper);
 
                 // Get actual canvas dimensions based on screenshot
-                let canvasWidth, canvasHeight;
+                let canvasWidth, canvasHeight, displayWidth, displayHeight;
+                
                 if (screenshotImg && screenshotImg.complete) {
-                    // Use screenshot's actual display dimensions
+                    // Get the actual rendered dimensions of the screenshot
+                    const imgRect = screenshotImg.getBoundingClientRect();
+                    displayWidth = imgRect.width;
+                    displayHeight = imgRect.height;
+                    
+                    // Use natural dimensions for scaling calculations
                     canvasWidth = screenshotImg.naturalWidth;
                     canvasHeight = screenshotImg.naturalHeight;
                     
-                    // Set canvas to match screenshot display size exactly
-                    const imgRect = screenshotImg.getBoundingClientRect();
-                    canvasEl.style.width = imgRect.width + 'px';
-                    canvasEl.style.height = imgRect.height + 'px';
+                    // Ensure canvas exactly matches the image dimensions
+                    canvasEl.style.width = displayWidth + 'px';
+                    canvasEl.style.height = displayHeight + 'px';
                     
                     console.log('Screenshot natural size:', canvasWidth, 'x', canvasHeight);
-                    console.log('Screenshot display size:', imgRect.width, 'x', imgRect.height);
+                    console.log('Screenshot display size:', displayWidth, 'x', displayHeight);
+                    console.log('Canvas positioned at:', canvasEl.style.top, canvasEl.style.left);
                 } else {
-                    canvasWidth = canvasEl.offsetWidth || 1440;
-                    canvasHeight = canvasEl.offsetHeight || 2400;
+                    displayWidth = canvasEl.offsetWidth || 1440;
+                    displayHeight = canvasEl.offsetHeight || 2400;
+                    canvasWidth = displayWidth;
+                    canvasHeight = displayHeight;
                 }
-                console.log('Canvas dimensions:', canvasWidth, 'x', canvasHeight);
+                
+                console.log('Canvas dimensions:', displayWidth, 'x', displayHeight);
 
+                // Create heatmap instance
                 heatmapInstance = h337.create({
                     container: canvasEl,
                     radius: currentType === 'click' ? 30 : 50,
@@ -369,10 +382,7 @@
                 const originalViewportHeight = data[0].viewport_height;
                 console.log('Original viewport:', originalViewportWidth, 'x', originalViewportHeight);
 
-                // Calculate scale factors based on screenshot display size
-                const displayWidth = screenshotImg ? screenshotImg.getBoundingClientRect().width : canvasEl.offsetWidth;
-                const displayHeight = screenshotImg ? screenshotImg.getBoundingClientRect().height : canvasEl.offsetHeight;
-                
+                // Calculate scale factors based on display size
                 const scaleX = displayWidth / originalViewportWidth;
                 const scaleY = displayHeight / originalViewportHeight;
                 console.log('Display size:', displayWidth, 'x', displayHeight);
@@ -397,7 +407,7 @@
                     data: points
                 });
 
-                console.log('Heatmap data set complete');
+                console.log('Heatmap data set complete. Canvas should now show overlay.');
 
                 // Show stats
                 displayStats(data);
