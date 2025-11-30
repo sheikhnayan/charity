@@ -313,6 +313,7 @@
             // Define init function globally so image onload can call it
             window.initHeatmapAfterImageLoad = () => {
                 initHeatmap();
+                document.getElementById('screenshotImg').style.display = 'none';
             };
 
             const initHeatmap = () => {
