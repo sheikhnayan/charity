@@ -324,17 +324,22 @@
                 const canvasEl = document.getElementById('heatmapCanvas');
                 const screenshotImg = document.getElementById('screenshotImg');
                 console.log('Canvas element:', canvasEl);
+                console.log('Screenshot element:', screenshotImg);
 
-                // Get actual canvas dimensions
+                // Get actual canvas dimensions based on screenshot
                 let canvasWidth, canvasHeight;
                 if (screenshotImg && screenshotImg.complete) {
-                    // Use natural dimensions of the screenshot image
+                    // Use screenshot's actual display dimensions
                     canvasWidth = screenshotImg.naturalWidth;
                     canvasHeight = screenshotImg.naturalHeight;
-                    // Set canvas height to match screenshot aspect ratio
-                    const aspectRatio = canvasHeight / canvasWidth;
-                    const displayWidth = canvasEl.offsetWidth;
-                    canvasEl.style.height = (displayWidth * aspectRatio) + 'px';
+                    
+                    // Set canvas to match screenshot display size exactly
+                    const imgRect = screenshotImg.getBoundingClientRect();
+                    canvasEl.style.width = imgRect.width + 'px';
+                    canvasEl.style.height = imgRect.height + 'px';
+                    
+                    console.log('Screenshot natural size:', canvasWidth, 'x', canvasHeight);
+                    console.log('Screenshot display size:', imgRect.width, 'x', imgRect.height);
                 } else {
                     canvasWidth = canvasEl.offsetWidth || 1440;
                     canvasHeight = canvasEl.offsetHeight || 2400;
@@ -364,9 +369,13 @@
                 const originalViewportHeight = data[0].viewport_height;
                 console.log('Original viewport:', originalViewportWidth, 'x', originalViewportHeight);
 
-                // Calculate scale factors
-                const scaleX = canvasWidth / originalViewportWidth;
-                const scaleY = canvasHeight / originalViewportHeight;
+                // Calculate scale factors based on screenshot display size
+                const displayWidth = screenshotImg ? screenshotImg.getBoundingClientRect().width : canvasEl.offsetWidth;
+                const displayHeight = screenshotImg ? screenshotImg.getBoundingClientRect().height : canvasEl.offsetHeight;
+                
+                const scaleX = displayWidth / originalViewportWidth;
+                const scaleY = displayHeight / originalViewportHeight;
+                console.log('Display size:', displayWidth, 'x', displayHeight);
                 console.log('Scale factors:', scaleX, scaleY);
 
                 // Convert data to heatmap.js format - scale coordinates to current canvas size
@@ -374,11 +383,11 @@
                     const x = Math.round(point.x * scaleX);
                     const y = Math.round(point.y * scaleY);
                     const value = point.click_count || point.move_count || 1;
-                    console.log('Point:', { x, y, value, original: { x: point.x, y: point.y } });
                     return { x, y, value };
                 });
 
-                console.log('Converted points:', points);
+                console.log('Converted points:', points.length, 'points');
+                console.log('First few points:', points.slice(0, 3));
 
                 const maxValue = Math.max(...points.map(p => p.value), 1);
                 console.log('Max value:', maxValue);
