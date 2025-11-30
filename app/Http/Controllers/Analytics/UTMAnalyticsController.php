@@ -57,7 +57,8 @@ class UTMAnalyticsController extends Controller
      */
     protected function getUTMStats($websiteId, $startDate, $endDate)
     {
-        $query = PaymentFunnelEvent::query();
+        // Query AnalyticsEvent table instead of PaymentFunnelEvent
+        $query = AnalyticsEvent::query();
         
         if ($websiteId) {
             $query->where('website_id', $websiteId);
@@ -76,14 +77,18 @@ class UTMAnalyticsController extends Controller
             ->distinct('session_id')
             ->count('session_id');
 
-        // UTM-attributed conversions
-        $utmConversions = (clone $query)
+        // UTM-attributed conversions (from both analytics and payment funnel)
+        $utmConversions = PaymentFunnelEvent::query()
+            ->when($websiteId, fn($q) => $q->where('website_id', $websiteId))
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->where('funnel_step', 'payment_completed')
             ->whereNotNull('utm_source')
             ->count();
 
-        // UTM-attributed revenue
-        $utmRevenue = (clone $query)
+        // UTM-attributed revenue (from payment funnel)
+        $utmRevenue = PaymentFunnelEvent::query()
+            ->when($websiteId, fn($q) => $q->where('website_id', $websiteId))
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->where('funnel_step', 'payment_completed')
             ->whereNotNull('utm_source')
             ->sum('amount') ?? 0;
@@ -117,7 +122,8 @@ class UTMAnalyticsController extends Controller
      */
     protected function getCampaignPerformance($websiteId, $startDate, $endDate)
     {
-        $query = PaymentFunnelEvent::query();
+        // Query AnalyticsEvent for UTM sessions and visitors
+        $query = AnalyticsEvent::query();
         
         if ($websiteId) {
             $query->where('website_id', $websiteId);
@@ -131,7 +137,7 @@ class UTMAnalyticsController extends Controller
                 utm_source,
                 utm_medium,
                 COUNT(DISTINCT session_id) as sessions,
-                COUNT(DISTINCT visitor_id) as visitors
+                COUNT(DISTINCT ip_address) as visitors
             ')
             ->groupBy('utm_campaign', 'utm_source', 'utm_medium')
             ->get()
@@ -182,7 +188,7 @@ class UTMAnalyticsController extends Controller
      */
     protected function getSourceMediumBreakdown($websiteId, $startDate, $endDate)
     {
-        $query = PaymentFunnelEvent::query();
+        $query = AnalyticsEvent::query();
         
         if ($websiteId) {
             $query->where('website_id', $websiteId);
@@ -194,7 +200,7 @@ class UTMAnalyticsController extends Controller
             ->selectRaw('
                 utm_source as source,
                 COUNT(DISTINCT session_id) as sessions,
-                COUNT(DISTINCT visitor_id) as visitors
+                COUNT(DISTINCT ip_address) as visitors
             ')
             ->groupBy('utm_source')
             ->orderByDesc('sessions')
