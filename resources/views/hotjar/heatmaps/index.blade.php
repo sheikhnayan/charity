@@ -277,8 +277,8 @@
             display.innerHTML = `
                 <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 1440px;">
                     ${screenshotUrl ? `
-                        <img id="screenshotImg" src="${screenshotUrl}" style="display: none;" onload="window.initHeatmapAfterImageLoad();" />
-                        <div id="heatmapCanvas" style="background-image: url('${screenshotUrl}'); background-size: contain; background-repeat: no-repeat; background-position: top center; width: 100%; min-height: 800px;"></div>
+                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto;" onload="window.initHeatmapAfterImageLoad();" />
+                        <div id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
                     ` : `
                         <div id="heatmapCanvas" style="width: 100%; height: 2400px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available. <a href="#" onclick="captureScreenshot(); return false;">Capture now</a></p>

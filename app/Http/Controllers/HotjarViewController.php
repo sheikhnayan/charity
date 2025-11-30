@@ -400,7 +400,7 @@ class HotjarViewController extends Controller
     public function saveEvents(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'session_id' => 'required|string',
                 'website_id' => 'required|integer',
                 'events' => 'required|array',
@@ -412,6 +412,10 @@ class HotjarViewController extends Controller
                 ->first();
 
             if (!$recording) {
+                \Log::warning('Recording not found for saveEvents', [
+                    'session_id' => $request->session_id,
+                    'website_id' => $request->website_id
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Recording not found'
@@ -451,12 +455,27 @@ class HotjarViewController extends Controller
                 'events_inserted' => $eventsInserted
             ]);
 
-        } catch (\Exception $e) {
-            \Log::error('Failed to save events: ' . $e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed for saveEvents', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save events'
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Failed to save events', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save events: ' . $e->getMessage()
             ], 500);
         }
     }
