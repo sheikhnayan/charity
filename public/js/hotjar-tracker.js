@@ -554,7 +554,7 @@
             }
 
             // Additional wait for dynamic content (page builder components, images, etc.)
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 15000));
 
             try {
                 // For dynamic page-builder content, check if screenshot is recent (last 24 hours)
@@ -607,7 +607,7 @@
         async doScreenshotCapture() {
             try {
                 // Wait for any dynamic content to load
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds for content
+                await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds for content
                 
                 // Scroll to top before capturing
                 window.scrollTo(0, 0);
