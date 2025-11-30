@@ -82,10 +82,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.screenshot_url) {
+                if (data.screenshot_path) {
                     document.getElementById('status').innerHTML = 
-                        'Screenshot saved! URL: ' + data.screenshot_url + 
-                        '<br><img src="' + data.screenshot_url + '" style="max-width:300px;margin-top:10px;">';
+                        'Screenshot saved! URL: ' + data.screenshot_path + 
+                        '<br><img src="' + data.screenshot_path + '" style="max-width:300px;margin-top:10px;">';
                 } else {
                     document.getElementById('status').innerHTML = 'No screenshot found. The tracker will auto-capture on load.';
                 }

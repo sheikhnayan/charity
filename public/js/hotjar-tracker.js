@@ -518,7 +518,7 @@
             }
 
             try {
-                // Check if screenshot exists
+                // For dynamic page-builder content, check if screenshot is recent (last 24 hours)
                 const pagePath = window.location.pathname;
                 const checkResponse = await fetch(`${this.config.apiBaseUrl}/heatmap/screenshot?website_id=${this.config.websiteId}&page_path=${encodeURIComponent(pagePath)}`, {
                     credentials: 'same-origin',
@@ -529,8 +529,19 @@
                 });
 
                 if (checkResponse.ok) {
-                    console.log('Hotjar Tracker: Screenshot already exists');
-                    return;
+                    const data = await checkResponse.json();
+                    // Check if screenshot is recent (within last 24 hours for dynamic content)
+                    const screenshotAge = Date.now() - new Date(data.created_at).getTime();
+                    const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+                    
+                    if (screenshotAge < maxAge) {
+                        console.log('Hotjar Tracker: Recent screenshot exists (age: ' + Math.round(screenshotAge / 1000 / 60) + ' minutes)');
+                        return;
+                    } else {
+                        console.log('Hotjar Tracker: Screenshot outdated, capturing new one...');
+                    }
+                } else {
+                    console.log('Hotjar Tracker: No screenshot found, capturing new one...');
                 }
 
                 // Capture screenshot using html2canvas
@@ -547,6 +558,8 @@
                 }
             } catch (error) {
                 console.log('Hotjar Tracker: Screenshot check failed:', error);
+                // If check fails, try to capture anyway
+                this.doScreenshotCapture();
             }
         }
 

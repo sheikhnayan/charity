@@ -20,6 +20,7 @@ class SessionRecordingController extends Controller
      */
     public function start(Request $request): JsonResponse
     {
+
         $validated = $request->validate([
             'session_id' => 'required|string',
             'website_id' => 'required|integer',
@@ -39,6 +40,8 @@ class SessionRecordingController extends Controller
         ]);
 
         $recording = $this->service->startSession($validated);
+
+        dd($recording);
 
         return response()->json([
             'success' => true,

@@ -242,14 +242,15 @@ class HotjarViewController extends Controller
             ->first();
 
         // If no screenshot found, return 404 so JavaScript knows to capture one
-        if (!$screenshot || !$screenshot->screenshot_url) {
+        if (!$screenshot || !$screenshot->screenshot_path) {
             return response()->json([
                 'message' => 'No screenshot found'
             ], 404);
         }
 
         return response()->json([
-            'screenshot_url' => $screenshot->screenshot_url
+            'screenshot_path' => $screenshot->screenshot_path,
+            'created_at' => $screenshot->created_at
         ]);
     }
 
@@ -303,7 +304,7 @@ class HotjarViewController extends Controller
             \DB::table('page_screenshots')->insert([
                 'website_id' => $request->website_id,
                 'page_path' => $request->page_path,
-                'screenshot_url' => $screenshotUrl,
+                'screenshot_path' => $screenshotUrl,
                 'viewport_width' => $request->viewport_width ?? 1920,
                 'viewport_height' => $request->viewport_height ?? 1080,
                 'created_at' => now(),
@@ -313,12 +314,12 @@ class HotjarViewController extends Controller
             \Log::info('Screenshot captured successfully', [
                 'website_id' => $request->website_id,
                 'page_path' => $request->page_path,
-                'screenshot_url' => $screenshotUrl
+                'screenshot_path' => $screenshotUrl
             ]);
 
             return response()->json([
                 'success' => true,
-                'screenshot_url' => $screenshotUrl,
+                'screenshot_path' => $screenshotUrl,
                 'message' => 'Screenshot captured successfully'
             ]);
 
@@ -346,21 +347,32 @@ class HotjarViewController extends Controller
             $request->validate([
                 'session_id' => 'required|string',
                 'website_id' => 'required|integer',
-                'page_url' => 'required|string',
-                'user_agent' => 'nullable|string',
+                'url' => 'required|string',
+                'visitor_id' => 'nullable|string',
+                'page_title' => 'nullable|string',
                 'viewport_width' => 'nullable|integer',
                 'viewport_height' => 'nullable|integer',
+                'device_type' => 'nullable|string',
+                'browser' => 'nullable|string',
+                'os' => 'nullable|string',
             ]);
 
             $recording = SessionRecording::create([
                 'website_id' => $request->website_id,
                 'session_id' => $request->session_id,
-                'page_url' => $request->page_url,
-                'user_agent' => $request->user_agent,
+                'visitor_id' => $request->visitor_id,
+                'page_url' => $request->url,
+                'page_title' => $request->page_title,
+                'user_agent' => $request->header('User-Agent'),
+                'ip_address' => $request->ip(),
                 'viewport_width' => $request->viewport_width ?? 1920,
                 'viewport_height' => $request->viewport_height ?? 1080,
+                'device_type' => $request->device_type ?? 'desktop',
+                'browser' => $request->browser,
+                'os' => $request->os,
                 'started_at' => now(),
                 'events' => json_encode([]),
+                'status' => 'recording',
             ]);
 
             return response()->json([
@@ -370,11 +382,15 @@ class HotjarViewController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Failed to start recording: ' . $e->getMessage());
+            \Log::error('Failed to start recording: ' . $e->getMessage(), [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to start recording'
+                'message' => 'Failed to start recording: ' . $e->getMessage()
             ], 500);
         }
     }

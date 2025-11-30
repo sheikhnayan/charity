@@ -267,7 +267,7 @@
                 });
                 if (response.ok) {
                     const result = await response.json();
-                    screenshotUrl = result.screenshot_url;
+                    screenshotUrl = result.screenshot_path;
                 }
             } catch (e) {
                 console.log('No screenshot available:', e);

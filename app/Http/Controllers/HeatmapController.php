@@ -238,7 +238,7 @@ class HeatmapController extends Controller
 
         return response()->json([
             'success' => true,
-            'screenshot_url' => asset('storage/' . $screenshot->screenshot_path),
+            'screenshot_path' => asset('storage/' . $screenshot->screenshot_path),
             'viewport_width' => $screenshot->viewport_width,
             'viewport_height' => $screenshot->viewport_height,
         ]);
@@ -308,12 +308,14 @@ class HeatmapController extends Controller
                 ]
             );
 
+            // dd($screenshot);
+
             \Log::info('Screenshot record saved', ['id' => $screenshot->id]);
 
             return response()->json([
                 'success' => true,
                 'screenshot' => $screenshot,
-                'screenshot_url' => asset('storage/' . $filename),
+                'screenshot_path' => asset('storage/' . $filename),
             ]);
         } catch (\Exception $e) {
             \Log::error('Screenshot capture failed', [
