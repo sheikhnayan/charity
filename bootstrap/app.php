@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/session-recording/start',
             'api/session-recording/events',
+            'api/session-recording/complete',
+            'api/heatmap/track',
             'api/heatmap/click',
             'api/heatmap/move',
             'api/heatmap/scroll',

@@ -217,6 +217,7 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
 Route::prefix('api')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
     Route::post('/session-recording/start', [HotjarViewController::class, 'startRecording']);
     Route::post('/session-recording/events', [HotjarViewController::class, 'saveEvents']);
+    Route::post('/session-recording/complete', [HotjarViewController::class, 'completeRecording']);
     Route::post('/heatmap/track', [HotjarViewController::class, 'trackHeatmapEvent']); // Unified tracking endpoint
     Route::post('/heatmap/click', [HotjarViewController::class, 'trackClick']);
     Route::post('/heatmap/move', [HotjarViewController::class, 'trackMouseMove']);

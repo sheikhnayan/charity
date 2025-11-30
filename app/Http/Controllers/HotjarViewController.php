@@ -303,6 +303,7 @@ class HotjarViewController extends Controller
             
             \DB::table('page_screenshots')->insert([
                 'website_id' => $request->website_id,
+                'page_url' => $request->page_url, // Add page_url field
                 'page_path' => $request->page_path,
                 'screenshot_path' => $screenshotUrl,
                 'viewport_width' => $request->viewport_width ?? 1920,
@@ -361,17 +362,15 @@ class HotjarViewController extends Controller
                 'website_id' => $request->website_id,
                 'session_id' => $request->session_id,
                 'visitor_id' => $request->visitor_id,
-                'page_url' => $request->url,
+                'url' => $request->url, // Using 'url' field from model
                 'page_title' => $request->page_title,
-                'user_agent' => $request->header('User-Agent'),
-                'ip_address' => $request->ip(),
                 'viewport_width' => $request->viewport_width ?? 1920,
                 'viewport_height' => $request->viewport_height ?? 1080,
                 'device_type' => $request->device_type ?? 'desktop',
                 'browser' => $request->browser,
                 'os' => $request->os,
+                'ip_address' => $request->ip(),
                 'started_at' => now(),
-                'events' => json_encode([]),
                 'status' => 'recording',
             ]);
 
@@ -419,14 +418,22 @@ class HotjarViewController extends Controller
                 ], 404);
             }
 
-            // Append new events to existing events
-            $existingEvents = json_decode($recording->events, true) ?? [];
-            $newEvents = array_merge($existingEvents, $request->events);
+            // Save events to session_events table
+            foreach ($request->events as $event) {
+                \DB::table('session_events')->insert([
+                    'session_recording_id' => $recording->id,
+                    'timestamp' => $event['timestamp'] ?? 0,
+                    'type' => $event['type'] ?? 0,
+                    'data' => json_encode($event['data'] ?? []),
+                    'created_at' => now(),
+                ]);
+            }
             
+            // Update recording metadata
             $recording->update([
-                'events' => json_encode($newEvents),
                 'ended_at' => now(),
-                'duration' => now()->diffInSeconds($recording->started_at),
+                'duration_ms' => now()->diffInMilliseconds($recording->started_at),
+                'event_count' => ($recording->event_count ?? 0) + count($request->events),
             ]);
 
             return response()->json([
@@ -440,6 +447,51 @@ class HotjarViewController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to save events'
+            ], 500);
+        }
+    }
+
+    /**
+     * Complete a session recording
+     */
+    public function completeRecording(Request $request)
+    {
+        try {
+            $request->validate([
+                'session_id' => 'required|string',
+                'website_id' => 'required|integer',
+                'duration_ms' => 'nullable|integer',
+            ]);
+
+            $recording = SessionRecording::where('session_id', $request->session_id)
+                ->where('website_id', $request->website_id)
+                ->latest()
+                ->first();
+
+            if (!$recording) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recording not found'
+                ], 404);
+            }
+
+            $recording->update([
+                'ended_at' => now(),
+                'duration_ms' => $request->duration_ms ?? now()->diffInMilliseconds($recording->started_at),
+                'status' => 'completed',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Recording completed'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to complete recording: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to complete recording'
             ], 500);
         }
     }
