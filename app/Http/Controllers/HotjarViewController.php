@@ -538,4 +538,82 @@ class HotjarViewController extends Controller
             return response()->json(['success' => false], 500);
         }
     }
+
+    /**
+     * Unified heatmap event tracking (all types)
+     */
+    public function trackHeatmapEvent(Request $request)
+    {
+        try {
+            $request->validate([
+                'website_id' => 'required|integer',
+                'page_url' => 'required|string',
+                'page_path' => 'nullable|string',
+                'event_type' => 'required|in:click,move,scroll,attention',
+                'x' => 'nullable|integer',
+                'y' => 'nullable|integer',
+                'viewport_width' => 'nullable|integer',
+                'viewport_height' => 'nullable|integer',
+                'element_selector' => 'nullable|string',
+                'element_text' => 'nullable|string',
+                'element_class' => 'nullable|string',
+                'element_id' => 'nullable|string',
+                'scroll_depth' => 'nullable|integer',
+                'max_scroll' => 'nullable|integer',
+                'duration_ms' => 'nullable|integer',
+                'device_type' => 'nullable|string',
+                'session_id' => 'nullable|string',
+                'visitor_id' => 'nullable|string',
+            ]);
+
+            // Extract page path from URL if not provided
+            $pagePath = $request->page_path ?? parse_url($request->page_url, PHP_URL_PATH) ?? '/';
+
+            // Insert into heatmap_data table
+            \DB::table('heatmap_data')->insert([
+                'website_id' => $request->website_id,
+                'page_url' => $request->page_url,
+                'page_path' => $pagePath,
+                'event_type' => $request->event_type,
+                'x' => $request->x,
+                'y' => $request->y,
+                'viewport_width' => $request->viewport_width ?? 1920,
+                'viewport_height' => $request->viewport_height ?? 1080,
+                'element_selector' => $request->element_selector,
+                'element_text' => $request->element_text,
+                'element_class' => $request->element_class,
+                'element_id' => $request->element_id,
+                'scroll_depth' => $request->scroll_depth,
+                'max_scroll' => $request->max_scroll,
+                'duration_ms' => $request->duration_ms,
+                'device_type' => $request->device_type ?? 'desktop',
+                'session_id' => $request->session_id,
+                'visitor_id' => $request->visitor_id,
+                'created_at' => now(),
+            ]);
+
+            return response()->json(['success' => true]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Heatmap validation failed', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Failed to track heatmap event: ' . $e->getMessage(), [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to track heatmap event'
+            ], 500);
+        }
+    }
 }

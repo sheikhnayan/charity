@@ -372,12 +372,17 @@
             window.addEventListener('scroll', () => {
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    const scrollDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+                    const scrollY = window.scrollY || 0;
+                    const scrollHeight = document.body.scrollHeight || document.documentElement.scrollHeight || 1;
+                    const innerHeight = window.innerHeight || 1;
+                    const maxScroll = scrollHeight - innerHeight;
+                    const scrollDepth = maxScroll > 0 ? Math.round((scrollY / maxScroll) * 100) : 0;
+                    
                     this.trackHeatmapEvent({
                         event_type: 'scroll',
-                        scroll_depth: scrollDepth,
-                        max_scroll: document.body.scrollHeight,
-                        y: window.scrollY,
+                        scroll_depth: Math.min(100, Math.max(0, scrollDepth)), // Clamp between 0-100
+                        max_scroll: scrollHeight,
+                        y: Math.round(scrollY),
                     });
                 }, 250);
             });
@@ -385,6 +390,36 @@
 
         async trackHeatmapEvent(eventData) {
             try {
+                // Validate and clean coordinates
+                const cleanedData = { ...eventData };
+                
+                // Ensure x and y are valid integers or null
+                if (cleanedData.x !== undefined && cleanedData.x !== null) {
+                    cleanedData.x = Math.round(Number(cleanedData.x));
+                    if (isNaN(cleanedData.x)) cleanedData.x = null;
+                }
+                if (cleanedData.y !== undefined && cleanedData.y !== null) {
+                    cleanedData.y = Math.round(Number(cleanedData.y));
+                    if (isNaN(cleanedData.y)) cleanedData.y = null;
+                }
+                
+                // Ensure numeric fields are valid
+                if (cleanedData.scroll_depth !== undefined) {
+                    cleanedData.scroll_depth = Math.round(Number(cleanedData.scroll_depth));
+                    if (isNaN(cleanedData.scroll_depth)) cleanedData.scroll_depth = null;
+                }
+                if (cleanedData.max_scroll !== undefined) {
+                    cleanedData.max_scroll = Math.round(Number(cleanedData.max_scroll));
+                    if (isNaN(cleanedData.max_scroll)) cleanedData.max_scroll = null;
+                }
+                if (cleanedData.duration_ms !== undefined) {
+                    cleanedData.duration_ms = Math.round(Number(cleanedData.duration_ms));
+                    if (isNaN(cleanedData.duration_ms)) cleanedData.duration_ms = null;
+                }
+                
+                // Get page path from URL
+                const pagePath = window.location.pathname || '/';
+                
                 await fetch(`${this.config.apiBaseUrl}/heatmap/track`, {
                     method: 'POST',
                     headers: { 
@@ -396,12 +431,13 @@
                     body: JSON.stringify({
                         website_id: this.config.websiteId,
                         page_url: window.location.href,
+                        page_path: pagePath,
                         viewport_width: window.innerWidth,
                         viewport_height: window.innerHeight,
                         device_type: this.getDeviceType(),
                         session_id: this.sessionId,
                         visitor_id: this.visitorId,
-                        ...eventData
+                        ...cleanedData
                     })
                 });
             } catch (error) {
