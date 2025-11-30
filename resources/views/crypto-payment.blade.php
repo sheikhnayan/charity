@@ -288,7 +288,7 @@
             // Get payment data from URL
             const urlParams = new URLSearchParams(window.location.search);
             const paymentData = {
-                payment_type: urlParams.get('type') || 'donation',
+                type: urlParams.get('type') || 'donation',
                 reference_id: urlParams.get('reference_id') || urlParams.get('donation_id'),
                 amount: urlParams.get('amount'),
                 website_id: urlParams.get('website_id'),
