@@ -104,27 +104,36 @@
                 const response = await fetch(`/api/session-recording/${recordingId}`);
                 const data = await response.json();
                 
-                // Filter for interaction events
-                // Type 3 = IncrementalSnapshot
-                // source 1 = Mutation, 2 = MouseMove, 3 = MouseInteraction, 4 = Scroll, etc
-                events = data.events.filter(e => e.type === 3);
+                console.log('Raw API response:', data);
+                console.log('Total events received:', data.events.length);
+                console.log('First 5 events:', data.events.slice(0, 5));
                 
-                console.log('Total events:', data.events.length);
-                console.log('Interaction events:', events.length);
+                // Use ALL events, not just type 3
+                events = data.events;
                 
-                // Group by source to see what we have
-                const bySource = {};
+                console.log('All events:', events.length);
+                
+                // Group by type to see what we have
+                const byType = {};
                 events.forEach(e => {
-                    const src = e.data?.source || 'unknown';
-                    bySource[src] = (bySource[src] || 0) + 1;
+                    const type = e.type || 'unknown';
+                    byType[type] = (byType[type] || 0) + 1;
                 });
-                console.log('Events by source:', bySource);
-                console.log('First 3 full events:', events.slice(0, 3).map(e => JSON.stringify(e, null, 2)));
+                console.log('Events by type:', byType);
                 
                 if (events.length > 0) {
                     startTime = events[0].timestamp;
-                    duration = events[events.length - 1].timestamp - startTime;
+                    const lastTimestamp = events[events.length - 1].timestamp;
+                    duration = lastTimestamp - startTime;
+                    
+                    console.log('Start time:', startTime);
+                    console.log('Last timestamp:', lastTimestamp);
+                    console.log('Duration (ms):', duration);
+                    console.log('Duration (sec):', duration / 1000);
+                    
                     updateTimeDisplay(0);
+                } else {
+                    console.error('No events found!');
                 }
                 
                 // Wait for iframe to load
@@ -187,7 +196,9 @@
         }
 
         function processEvent(event) {
-            if (event.type !== 3) return;
+            console.log('Processing event:', event.type, event);
+            
+            if (event.type !== 3) return; // Only process IncrementalSnapshot events for interactions
             
             const data = event.data;
             
