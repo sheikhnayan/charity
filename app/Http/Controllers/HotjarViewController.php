@@ -526,7 +526,74 @@ class HotjarViewController extends Controller
     }
 
     /**
-     * Track click events for heatmap
+     * Get recording with all events for replay
+     */
+    public function getRecordingWithEvents($recordingId)
+    {
+        try {
+            $recording = SessionRecording::findOrFail($recordingId);
+            
+            // Get all events for this recording
+            $events = \DB::table('session_events')
+                ->where('session_recording_id', $recordingId)
+                ->orderBy('timestamp', 'asc')
+                ->get()
+                ->map(function($event) {
+                    // Parse the stored JSON data back into event structure
+                    $data = json_decode($event->data, true);
+                    return [
+                        'timestamp' => $event->timestamp,
+                        'type' => $event->event_type,
+                        'data' => $data
+                    ];
+                });
+            
+            \Log::info('Fetched recording events', [
+                'recording_id' => $recordingId,
+                'event_count' => $events->count(),
+                'first_event' => $events->first(),
+                'last_event' => $events->last()
+            ]);
+            
+            return response()->json([
+                'recording' => $recording,
+                'events' => $events
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to get recording events', [
+                'error' => $e->getMessage(),
+                'recording_id' => $recordingId
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load recording'
+            ], 500);
+        }
+    }
+
+    /**
+     * Track heatmap event - unified endpoint for all heatmap types
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Recording completed'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to complete recording: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to complete recording'
+            ], 500);
+        }
+    }
+
+    /**
+     * Track heatmap event - unified endpoint for all heatmap types
      */
     public function trackClick(Request $request)
     {

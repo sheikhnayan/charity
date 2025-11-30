@@ -218,6 +218,7 @@ Route::prefix('api')->middleware([\App\Http\Middleware\CorsMiddleware::class])->
     Route::post('/session-recording/start', [HotjarViewController::class, 'startRecording']);
     Route::post('/session-recording/events', [HotjarViewController::class, 'saveEvents']);
     Route::post('/session-recording/complete', [HotjarViewController::class, 'completeRecording']);
+    Route::get('/session-recording/{id}', [HotjarViewController::class, 'getRecordingWithEvents']);
     Route::post('/heatmap/track', [HotjarViewController::class, 'trackHeatmapEvent']); // Unified tracking endpoint
     Route::post('/heatmap/click', [HotjarViewController::class, 'trackClick']);
     Route::post('/heatmap/move', [HotjarViewController::class, 'trackMouseMove']);
