@@ -69,6 +69,13 @@
                                     <strong>Authorize.net</strong> - Payment processing
                                 </label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="coinbase" value="coinbase" 
+                                       {{ old('payment_method', $paymentSettings->payment_method ?? 'authorize') === 'coinbase' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="coinbase">
+                                    <strong>Coinbase Commerce</strong> - Cryptocurrency payments (BTC, ETH, USDC, etc.)
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Stripe Settings -->
@@ -137,6 +144,30 @@
                             </div>
                         </div>
 
+                        <!-- Coinbase Commerce Settings -->
+                        <div id="coinbase-settings" class="payment-settings" style="display: none;">
+                            <h5 class="card-title"><i class="fab fa-bitcoin"></i> Coinbase Commerce Configuration</h5>
+                            <div class="form-group">
+                                <label>API Key</label>
+                                <input type="password" class="form-control" name="coinbase_api_key" 
+                                       value="{{ old('coinbase_api_key', $paymentSettings->coinbase_api_key ?? '') }}"
+                                       placeholder="Your Coinbase Commerce API Key">
+                                <small class="form-text text-muted">Get this from your Coinbase Commerce dashboard → Settings → API Keys</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Webhook Secret</label>
+                                <input type="password" class="form-control" name="coinbase_webhook_secret" 
+                                       value="{{ old('coinbase_webhook_secret', $paymentSettings->coinbase_webhook_secret ?? '') }}"
+                                       placeholder="Your Webhook Shared Secret">
+                                <small class="form-text text-muted">Get this from Coinbase Commerce → Settings → Webhook subscriptions</small>
+                            </div>
+                            <div class="alert alert-info">
+                                <strong><i class="fa fa-info-circle"></i> Webhook URL:</strong><br>
+                                <code>{{ url('/webhook/coinbase') }}</code><br>
+                                <small>Configure this URL in your Coinbase Commerce dashboard</small>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1"
@@ -194,6 +225,21 @@
                             <small><strong>Note:</strong> Always test in sandbox mode before going live</small>
                         </div>
                     </div>
+
+                    <div id="coinbase-guide" class="setup-guide" style="display: none;">
+                        <h6><i class="fab fa-bitcoin"></i> Coinbase Commerce Setup</h6>
+                        <ol>
+                            <li>Sign up at <a href="https://commerce.coinbase.com" target="_blank">Coinbase Commerce</a></li>
+                            <li>Go to Settings → API Keys</li>
+                            <li>Click "Create an API Key" and copy it</li>
+                            <li>Go to Settings → Webhook subscriptions</li>
+                            <li>Copy the "Webhook Shared Secret"</li>
+                            <li>Add webhook endpoint: <code>{{ url('/webhook/coinbase') }}</code></li>
+                        </ol>
+                        <div class="alert alert-success">
+                            <small><strong>Supported Currencies:</strong> Bitcoin (BTC), Ethereum (ETH), USDC, USDT, DAI, Litecoin (LTC)</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -244,21 +290,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
     const stripeSettings = document.getElementById('stripe-settings');
     const authorizeSettings = document.getElementById('authorize-settings');
+    const coinbaseSettings = document.getElementById('coinbase-settings');
     const stripeGuide = document.getElementById('stripe-guide');
     const authorizeGuide = document.getElementById('authorize-guide');
+    const coinbaseGuide = document.getElementById('coinbase-guide');
 
     function toggleSettings() {
         const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
         
+        // Hide all settings
+        stripeSettings.style.display = 'none';
+        authorizeSettings.style.display = 'none';
+        coinbaseSettings.style.display = 'none';
+        stripeGuide.style.display = 'none';
+        authorizeGuide.style.display = 'none';
+        coinbaseGuide.style.display = 'none';
+        
+        // Show selected method settings
         if (selectedMethod === 'stripe') {
             stripeSettings.style.display = 'block';
-            authorizeSettings.style.display = 'none';
             stripeGuide.style.display = 'block';
-            authorizeGuide.style.display = 'none';
+        } else if (selectedMethod === 'coinbase') {
+            coinbaseSettings.style.display = 'block';
+            coinbaseGuide.style.display = 'block';
         } else {
-            stripeSettings.style.display = 'none';
             authorizeSettings.style.display = 'block';
-            stripeGuide.style.display = 'none';
             authorizeGuide.style.display = 'block';
         }
     }

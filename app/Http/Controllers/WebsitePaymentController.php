@@ -44,7 +44,7 @@ class WebsitePaymentController extends Controller
         // }
 
         $validator = Validator::make($request->all(), [
-            'payment_method' => 'required|in:stripe,authorize',
+            'payment_method' => 'required|in:stripe,authorize,coinbase',
             'is_active' => 'boolean',
             'stripe_publishable_key' => 'required_if:payment_method,stripe',
             'stripe_secret_key' => 'required_if:payment_method,stripe',
@@ -52,6 +52,8 @@ class WebsitePaymentController extends Controller
             'authorize_login_id' => 'required_if:payment_method,authorize',
             'authorize_transaction_key' => 'required_if:payment_method,authorize',
             'authorize_sandbox' => 'boolean',
+            'coinbase_api_key' => 'required_if:payment_method,coinbase',
+            'coinbase_webhook_secret' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -69,7 +71,19 @@ class WebsitePaymentController extends Controller
             $paymentSettings->stripe_secret_key = $request->stripe_secret_key;
             $paymentSettings->stripe_webhook_secret = $request->stripe_webhook_secret;
             
-            // Clear authorize fields when switching to stripe
+            // Clear other fields when switching to stripe
+            $paymentSettings->authorize_login_id = null;
+            $paymentSettings->authorize_transaction_key = null;
+            $paymentSettings->coinbase_api_key = null;
+            $paymentSettings->coinbase_webhook_secret = null;
+        } elseif ($request->payment_method === 'coinbase') {
+            $paymentSettings->coinbase_api_key = $request->coinbase_api_key;
+            $paymentSettings->coinbase_webhook_secret = $request->coinbase_webhook_secret;
+            
+            // Clear other fields when switching to coinbase
+            $paymentSettings->stripe_publishable_key = null;
+            $paymentSettings->stripe_secret_key = null;
+            $paymentSettings->stripe_webhook_secret = null;
             $paymentSettings->authorize_login_id = null;
             $paymentSettings->authorize_transaction_key = null;
         } else {
@@ -77,10 +91,12 @@ class WebsitePaymentController extends Controller
             $paymentSettings->authorize_transaction_key = $request->authorize_transaction_key;
             $paymentSettings->authorize_sandbox = $request->has('authorize_sandbox');
             
-            // Clear stripe fields when switching to authorize
+            // Clear other fields when switching to authorize
             $paymentSettings->stripe_publishable_key = null;
             $paymentSettings->stripe_secret_key = null;
             $paymentSettings->stripe_webhook_secret = null;
+            $paymentSettings->coinbase_api_key = null;
+            $paymentSettings->coinbase_webhook_secret = null;
         }
 
         $paymentSettings->save();
