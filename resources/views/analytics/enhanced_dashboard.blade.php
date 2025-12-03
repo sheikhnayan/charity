@@ -1029,12 +1029,27 @@ function initializeCharts() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            // Show full name in tooltip
+                            return context[0].label;
+                        }
+                    }
+                }
             },
             scales: {
                 x: { 
                     beginAtZero: true,
                     title: { display: true, text: 'Gross Sales ($)' }
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
+                    }
                 }
             }
         }
@@ -1232,13 +1247,29 @@ function loadProductData() {
         return;
     }
     
+    // Helper function to truncate text
+    function truncateText(text, maxLength = 20) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    }
+    
     fetch(`/analytics/api/products?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}`)
         .then(response => response.json())
         .then(data => {
-            // Show top 5 items in chart
+            // Show top 5 items in chart with truncated names
             const topItems = data.slice(0, 5);
-            productChart.data.labels = topItems.map(item => item.name);
+            // Store full names for tooltip
+            productChart.data.labels = topItems.map(item => truncateText(item.name, 20));
+            // Store full names in dataset for tooltip access
+            productChart.fullNames = topItems.map(item => item.name);
             productChart.data.datasets[0].data = topItems.map(item => item.revenue);
+            
+            // Update tooltip to use full names
+            productChart.options.plugins.tooltip.callbacks.title = function(context) {
+                const index = context[0].dataIndex;
+                return productChart.fullNames[index];
+            };
+            
             productChart.update();
             
             // Populate the table with all items
@@ -1250,10 +1281,11 @@ function loadProductData() {
                     const remaining = item.available - item.sold;
                     const sellThroughClass = item.sell_through_rate >= 75 ? 'bg-success' : 
                                             item.sell_through_rate >= 50 ? 'bg-warning' : 'bg-secondary';
+                    const truncatedName = truncateText(item.name, 25);
                     return `
                         <tr>
-                            <td>
-                                <strong>${item.name}</strong>
+                            <td title="${item.name}" style="cursor: help;">
+                                <strong>${truncatedName}</strong>
                                 ${index < 5 ? '<span class="badge bg-primary ms-2" style="font-size: 0.7rem;">Top 5</span>' : ''}
                             </td>
                             <td class="text-center">
