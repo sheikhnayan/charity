@@ -56,6 +56,22 @@ class Website extends Model
         return $this->type === 'investment';
     }
 
+    /**
+     * Check if website is a ticket type
+     */
+    public function isTicket()
+    {
+        return $this->type === 'ticket';
+    }
+
+    /**
+     * Check if website is an auction type
+     */
+    public function isAuction()
+    {
+        return $this->type === 'auction';
+    }
+
     public function pages()
     {
         return $this->hasMany(Page::class);

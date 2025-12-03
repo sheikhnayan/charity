@@ -24,6 +24,95 @@
         </div>
     </div>
 
+    <!-- UTM URL Generator -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-link-45deg"></i> UTM URL Generator</h5>
+        </div>
+        <div class="card-body">
+            <form id="utmGeneratorForm" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Website <span class="text-danger">*</span></label>
+                    <select id="utm_website_id" class="form-select" required>
+                        <option value="">Select Website</option>
+                        @foreach($websites as $website)
+                            <option value="{{ $website->id }}" data-url="{{ $website->url }}">
+                                {{ $website->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Product/Item <span class="text-danger">*</span></label>
+                    <select id="utm_product" class="form-select" required disabled>
+                        <option value="">Select Product</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Source <span class="text-danger">*</span></label>
+                    <select id="utm_source" class="form-select" required>
+                        <option value="">Select Source</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="google">Google</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="email">Email</option>
+                        <option value="newsletter">Newsletter</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="col-md-2" id="custom_source_container" style="display: none;">
+                    <label class="form-label">Custom Source</label>
+                    <input type="text" id="utm_source_custom" class="form-control" placeholder="Enter source">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Medium <span class="text-danger">*</span></label>
+                    <select id="utm_medium" class="form-select" required>
+                        <option value="">Select Medium</option>
+                        <option value="cpc">CPC (Cost Per Click)</option>
+                        <option value="cpm">CPM (Cost Per Mille)</option>
+                        <option value="social">Social</option>
+                        <option value="email">Email</option>
+                        <option value="organic">Organic</option>
+                        <option value="referral">Referral</option>
+                        <option value="display">Display</option>
+                        <option value="video">Video</option>
+                        <option value="banner">Banner</option>
+                        <option value="affiliate">Affiliate</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-magic"></i> Generate URL
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Generated URL Display -->
+            <div id="generated_url_container" class="mt-4" style="display: none;">
+                <div class="alert alert-success">
+                    <h6 class="alert-heading"><i class="bi bi-check-circle"></i> Generated UTM URL</h6>
+                    <div class="input-group">
+                        <input type="text" id="generated_url" class="form-control" readonly>
+                        <button class="btn btn-primary" type="button" id="copy_url_btn">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <strong>Campaign:</strong> <span id="display_campaign"></span> | 
+                            <strong>Source:</strong> <span id="display_source"></span> | 
+                            <strong>Medium:</strong> <span id="display_medium"></span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filters -->
     <div class="card mb-4">
         <div class="card-body">
@@ -331,6 +420,150 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - UTM Generator initializing...');
+    
+    // UTM URL Generator functionality
+    const websiteSelect = document.getElementById('utm_website_id');
+    const productSelect = document.getElementById('utm_product');
+    const sourceSelect = document.getElementById('utm_source');
+    const customSourceContainer = document.getElementById('custom_source_container');
+    const customSourceInput = document.getElementById('utm_source_custom');
+    const mediumSelect = document.getElementById('utm_medium');
+    const utmForm = document.getElementById('utmGeneratorForm');
+    const generatedUrlContainer = document.getElementById('generated_url_container');
+    const generatedUrlInput = document.getElementById('generated_url');
+    const copyUrlBtn = document.getElementById('copy_url_btn');
+
+    console.log('Website select element:', websiteSelect);
+    console.log('Product select element:', productSelect);
+
+    if (!websiteSelect) {
+        console.error('ERROR: Website select element not found!');
+        return;
+    }
+
+    // Load products when website is selected
+    websiteSelect.addEventListener('change', function() {
+        const websiteId = this.value;
+        console.log('===== Website dropdown changed =====');
+        console.log('Selected website ID:', websiteId);
+        console.log('This element:', this);
+        productSelect.innerHTML = '<option value="">Loading...</option>';
+        productSelect.disabled = true;
+
+        if (websiteId) {
+            console.log('Loading products for website:', websiteId);
+            
+            fetch(`/api/websites/${websiteId}/products`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Products data received:', data);
+                    
+                    if (!data.products || data.products.length === 0) {
+                        productSelect.innerHTML = '<option value="">No products found</option>';
+                        console.warn('No products found for website type:', data.website_type);
+                        return;
+                    }
+                    
+                    productSelect.innerHTML = '<option value="">Select Product</option>';
+                    data.products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = product.name;
+                        option.dataset.name = product.name;
+                        option.dataset.slug = product.slug || product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                        productSelect.appendChild(option);
+                    });
+                    productSelect.disabled = false;
+                    console.log('Products loaded successfully:', data.products.length);
+                })
+                .catch(error => {
+                    console.error('Error loading products:', error);
+                    productSelect.innerHTML = '<option value="">Error loading products</option>';
+                    alert('Failed to load products. Check console for details.');
+                });
+        } else {
+            productSelect.innerHTML = '<option value="">Select Website First</option>';
+            productSelect.disabled = true;
+        }
+    });
+
+    // Show/hide custom source input
+    sourceSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customSourceContainer.style.display = 'block';
+            customSourceInput.required = true;
+        } else {
+            customSourceContainer.style.display = 'none';
+            customSourceInput.required = false;
+            customSourceInput.value = '';
+        }
+    });
+
+    // Generate UTM URL
+    utmForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const websiteOption = websiteSelect.options[websiteSelect.selectedIndex];
+        const websiteUrl = websiteOption.dataset.url;
+        const productOption = productSelect.options[productSelect.selectedIndex];
+        const productName = productOption.dataset.name;
+        const productSlug = productOption.dataset.slug;
+        
+        let source = sourceSelect.value;
+        if (source === 'custom') {
+            source = customSourceInput.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        }
+        
+        const medium = mediumSelect.value;
+        const campaign = productSlug;
+
+        // Build UTM URL
+        const baseUrl = websiteUrl.replace(/\/$/, ''); // Remove trailing slash
+        const productPath = `/products/${productSlug}`; // Adjust this path as needed for your routing
+        const utmParams = new URLSearchParams({
+            utm_source: source,
+            utm_medium: medium,
+            utm_campaign: campaign
+        });
+
+        const finalUrl = `${baseUrl}${productPath}?${utmParams.toString()}`;
+
+        // Display generated URL
+        generatedUrlInput.value = finalUrl;
+        document.getElementById('display_campaign').textContent = productName;
+        document.getElementById('display_source').textContent = source;
+        document.getElementById('display_medium').textContent = medium;
+        generatedUrlContainer.style.display = 'block';
+
+        // Smooth scroll to result
+        generatedUrlContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // Copy URL to clipboard
+    copyUrlBtn.addEventListener('click', function() {
+        generatedUrlInput.select();
+        document.execCommand('copy');
+        
+        // Change button text temporarily
+        const originalHtml = this.innerHTML;
+        this.innerHTML = '<i class="bi bi-check"></i> Copied!';
+        this.classList.remove('btn-primary');
+        this.classList.add('btn-success');
+        
+        setTimeout(() => {
+            this.innerHTML = originalHtml;
+            this.classList.remove('btn-success');
+            this.classList.add('btn-primary');
+        }, 2000);
+    });
+
     @if($sources['sources']->count() > 0)
     // Sources Chart
     const sourcesData = {

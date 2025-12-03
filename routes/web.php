@@ -145,6 +145,34 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::get('/export', [\App\Http\Controllers\Analytics\UTMAnalyticsController::class, 'export'])->name('analytics.utm.export');
     });
 
+    // API endpoint for UTM URL generator
+    Route::get('/api/websites/{website}/products', function($websiteId) {
+        try {
+            // Query tickets directly by website_id
+            $tickets = \App\Models\Ticket::where('website_id', $websiteId)
+                ->get(['id', 'name', 'slug']);
+            
+            $products = $tickets->map(function($ticket) {
+                return [
+                    'id' => $ticket->id,
+                    'name' => $ticket->name,
+                    'slug' => $ticket->slug ?: \Illuminate\Support\Str::slug($ticket->name)
+                ];
+            });
+            
+            return response()->json([
+                'products' => $products->values()->toArray(),
+                'count' => $products->count()
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error loading products for website: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to load products',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    })->middleware('auth');
+
     // Referrer Analytics Routes (WEBSITE-BASED)
     Route::prefix('analytics/referrer')->group(function () {
         Route::get('/', [\App\Http\Controllers\Analytics\ReferrerAnalyticsController::class, 'index'])->name('analytics.referrer');
