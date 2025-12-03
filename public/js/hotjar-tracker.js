@@ -557,34 +557,8 @@
             await new Promise(resolve => setTimeout(resolve, 15000));
 
             try {
-                // For dynamic page-builder content, check if screenshot is recent (last 24 hours)
-                const pagePath = window.location.pathname;
-                const checkResponse = await fetch(`${this.config.apiBaseUrl}/heatmap/screenshot?website_id=${this.config.websiteId}&page_path=${encodeURIComponent(pagePath)}`, {
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (checkResponse.ok) {
-                    const data = await checkResponse.json();
-                    // Check if screenshot is recent (within last 24 hours for dynamic content)
-                    const screenshotAge = Date.now() - new Date(data.created_at).getTime();
-                    const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                    
-                    if (screenshotAge < maxAge) {
-                        console.log('Hotjar Tracker: Recent screenshot exists (age: ' + Math.round(screenshotAge / 1000 / 60) + ' minutes)');
-                        return;
-                    } else {
-                        console.log('Hotjar Tracker: Screenshot outdated, capturing new one...');
-                    }
-                } else {
-                    console.log('Hotjar Tracker: No screenshot found, capturing new one...');
-                }
-
-                // Capture screenshot using html2canvas
-                console.log('Hotjar Tracker: Capturing screenshot...');
+                // Always capture a new screenshot on every visit
+                console.log('Hotjar Tracker: Capturing new screenshot...');
                 
                 // Load html2canvas if not already loaded
                 if (typeof html2canvas === 'undefined') {
@@ -596,8 +570,8 @@
                     this.doScreenshotCapture();
                 }
             } catch (error) {
-                console.log('Hotjar Tracker: Screenshot check failed:', error);
-                // If check fails, try to capture anyway
+                console.log('Hotjar Tracker: Screenshot capture failed:', error);
+                // If error occurs, try to capture anyway
                 if (typeof html2canvas !== 'undefined') {
                     this.doScreenshotCapture();
                 }
