@@ -247,5 +247,7 @@
     <script src="{{asset('user/assets/js/dashboards-analytics.js')}}"></script>
     <script src="{{asset('js/ckeditor-custom-fonts.js')}}"></script>
     <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
+    
+    @stack('scripts')
   </body>
 </html>

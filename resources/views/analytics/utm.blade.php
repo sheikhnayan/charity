@@ -36,7 +36,7 @@
                     <select id="utm_website_id" class="form-select" required>
                         <option value="">Select Website</option>
                         @foreach($websites as $website)
-                            <option value="{{ $website->id }}" data-url="{{ $website->url }}">
+                            <option value="{{ $website->id }}" data-url="{{ $website->domain }}">
                                 {{ $website->name }}
                             </option>
                         @endforeach
@@ -415,8 +415,6 @@
     </div>
     @endif
 </div>
-
-@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -629,5 +627,4 @@ document.addEventListener('DOMContentLoaded', function() {
     @endif
 });
 </script>
-@endpush
 @endsection
