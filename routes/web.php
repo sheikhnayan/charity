@@ -652,6 +652,40 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         AdminController::class, 'student'
     ])->name('admin.student');
 
+    // User management (custom role-based)
+    Route::get('/users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])
+        ->name('admin.users.create')
+        ->middleware('role:superadmin|website_owner');
+
+    Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])
+        ->name('admin.users.store')
+        ->middleware('role:superadmin|website_owner');
+
+    Route::get('/users/{id}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])
+        ->name('admin.users.edit')
+        ->middleware('role:superadmin|website_owner');
+
+    Route::put('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'update'])
+        ->name('admin.users.update')
+        ->middleware('role:superadmin|website_owner');
+
+    // Role management (simple)
+    Route::get('/roles', [\App\Http\Controllers\Admin\RoleController::class, 'index'])
+        ->name('admin.roles.index')
+        ->middleware('role:superadmin');
+
+    Route::get('/roles/create', [\App\Http\Controllers\Admin\RoleController::class, 'create'])
+        ->name('admin.roles.create')
+        ->middleware('role:superadmin');
+
+    Route::post('/roles', [\App\Http\Controllers\Admin\RoleController::class, 'store'])
+        ->name('admin.roles.store')
+        ->middleware('role:superadmin');
+
+    Route::delete('/roles/{id}', [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])
+        ->name('admin.roles.destroy')
+        ->middleware('role:superadmin');
+
     route::group(['prefix' => 'website'], function () {
         Route::get('/', [
             WebsiteController::class, 'index'

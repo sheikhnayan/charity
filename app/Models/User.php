@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -55,6 +56,112 @@ class User extends Authenticatable
     public function donations()
     {
         return $this->hasMany(Donation::class);
+    }
+
+    /**
+     * Roles relation (scoped by website via pivot column website_id)
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user_website')
+            ->withPivot('website_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Assign a role to user for a specific website (null for global)
+     */
+    public function assignRoleForWebsite($roleName, $websiteId = null)
+    {
+        $role = Role::where('name', $roleName)->first();
+        if (!$role) {
+            $role = Role::create(['name' => $roleName, 'label' => ucfirst($roleName)]);
+        }
+
+        // Avoid duplicate
+        $exists = \DB::table('role_user_website')
+            ->where('role_id', $role->id)
+            ->where('user_id', $this->id)
+            ->where('website_id', $websiteId)
+            ->exists();
+
+        if (!$exists) {
+            \DB::table('role_user_website')->insert([
+                'role_id' => $role->id,
+                'user_id' => $this->id,
+                'website_id' => $websiteId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Sync roles for a given website scope. Removes existing role assignments for that website and inserts the provided ones.
+     * @param array $roleNames
+     * @param int|null $websiteId
+     * @return void
+     */
+    public function syncRolesForWebsite(array $roleNames, $websiteId = null)
+    {
+        // Delete existing assignments for this user + website scope
+        \DB::table('role_user_website')
+            ->where('user_id', $this->id)
+            ->where(function($q) use ($websiteId) {
+                if (is_null($websiteId)) {
+                    $q->whereNull('website_id');
+                } else {
+                    $q->where('website_id', $websiteId);
+                }
+            })
+            ->delete();
+
+        foreach ($roleNames as $roleName) {
+            $role = Role::where('name', $roleName)->first();
+            if (!$role) {
+                $role = Role::create(['name' => $roleName, 'label' => ucfirst($roleName)]);
+            }
+
+            \DB::table('role_user_website')->insert([
+                'role_id' => $role->id,
+                'user_id' => $this->id,
+                'website_id' => $websiteId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Check if user has a role for a website (or globally)
+     */
+    public function hasRoleForWebsite($roleName, $websiteId = null)
+    {
+        $role = Role::where('name', $roleName)->first();
+        if (!$role) {
+            return false;
+        }
+
+        // Check global role
+        $global = \DB::table('role_user_website')
+            ->where('role_id', $role->id)
+            ->where('user_id', $this->id)
+            ->whereNull('website_id')
+            ->exists();
+
+        if ($global) {
+            return true;
+        }
+
+        if ($websiteId) {
+            return \DB::table('role_user_website')
+                ->where('role_id', $role->id)
+                ->where('user_id', $this->id)
+                ->where('website_id', $websiteId)
+                ->exists();
+        }
+
+        return false;
     }
 
     public function website()

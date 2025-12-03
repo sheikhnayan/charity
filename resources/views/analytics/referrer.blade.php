@@ -1,4 +1,4 @@
-@extends('admin.main')
+@extends('layouts.admin')
 
 @section('title', 'Referrer Analytics')
 

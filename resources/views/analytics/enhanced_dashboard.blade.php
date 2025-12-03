@@ -1,4 +1,4 @@
-@extends('admin.main')
+@extends('layouts.admin')
 
 @section('content')
 <!-- Load Chart.js UMD version and other dependencies FIRST -->
@@ -11,115 +11,144 @@
 <style>
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #ffffff !important;
+        background: #f8f9fa !important;
         min-height: 100vh;
     }
     
     .analytics-container {
-        background: #ffffff;
-        padding: 20px;
+        background: #f8f9fa;
+        padding: 0;
         min-height: 100vh;
     }
     
     .dashboard-header {
         background: #ffffff;
-        border-radius: 20px;
-        padding: 25px;
-        margin-bottom: 30px;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-radius: 0;
+        padding: 20px 24px;
+        margin-bottom: 0;
+        border-bottom: 1px solid #e5e7eb;
+        box-shadow: none;
     }
     
     .dashboard-title {
-        color: #2c3e50;
-        font-weight: 700;
-        font-size: 2.5rem;
+        color: #111827;
+        font-weight: 600;
+        font-size: 1rem;
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     
     .dashboard-subtitle {
-        color: #6c757d;
-        font-size: 1.1rem;
-        margin: 8px 0 0 0;
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin: 4px 0 0 0;
         font-weight: 400;
     }
     
     .filter-controls {
         background: #ffffff;
-        border-radius: 15px;
-        padding: 20px;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-radius: 0;
+        padding: 16px 24px;
+        border-bottom: 1px solid #e5e7eb;
+        box-shadow: none;
     }
     
     .filter-controls select, .filter-controls input {
         background: #ffffff;
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-weight: 400;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
     }
     
     .filter-controls select:focus, .filter-controls input:focus {
         background: white;
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-        border-color: #86b7fe;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
         outline: none;
     }
     
     .filter-controls label {
-        color: #495057 !important;
-        font-weight: 600;
+        color: #374151 !important;
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-bottom: 6px;
     }
     
     .btn-filter {
-        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        background: #1f2937;
         border: none;
-        border-radius: 10px;
-        padding: 12px 24px;
+        border-radius: 6px;
+        padding: 8px 16px;
         color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        box-shadow: none;
     }
     
     .btn-filter:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+        background: #111827;
+        transform: none;
+        box-shadow: none;
         color: white;
+    }
+    
+    .period-selector {
+        display: inline-flex;
+        gap: 0.5rem;
+        padding: 0.25rem;
+        background: #f3f4f6;
+        border-radius: 6px;
+    }
+    
+    .period-btn {
+        padding: 0.375rem 0.75rem;
+        border: none;
+        background: transparent;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .period-btn.active {
+        background: white;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        color: #111827;
     }
     
     .metric-card {
         background: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 20px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: left;
+        box-shadow: none;
+        transition: all 0.2s ease;
         position: relative;
-        overflow: hidden;
+        overflow: visible;
+        height: 100%;
     }
     
     .metric-card::before {
         content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #0d6efd, #20c997, #fd7e14, #dc3545);
-        border-radius: 20px 20px 0 0;
+        display: none;
     }
     
     .metric-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .metric-card .metric-value {
-        animation: countUp 2s ease-out;
+        animation: none;
     }
     
     @keyframes countUp {
@@ -127,174 +156,177 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
-    .metric-card h6 {
-        color: #6c757d;
-        font-size: 0.9rem;
+    .metric-card h6, .metric-card .metric-label {
+        color: #6b7280;
+        font-size: 0.875rem;
         font-weight: 500;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        margin-bottom: 8px;
+        text-transform: none;
+        letter-spacing: 0;
     }
     
     .metric-value {
-        color: #2c3e50;
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin: 10px 0;
+        color: #111827;
+        font-size: 1.875rem;
+        font-weight: 600;
+        margin: 8px 0;
+        line-height: 1.2;
     }
     
     .metric-subtitle {
-        color: #6c757d;
-        font-size: 0.85rem;
-        font-weight: 400;
+        color: #10b981;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-top: 8px;
     }
     
     .metric-icon {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 2.5rem;
-        color: rgba(108, 117, 125, 0.3);
+        display: none;
     }
     
     .chart-card {
         background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-        padding: 30px;
-        margin-bottom: 30px;
-        border: 1px solid #e9ecef;
-        transition: all 0.3s ease;
+        border-radius: 8px;
+        box-shadow: none;
+        padding: 24px;
+        margin-bottom: 24px;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
     }
     
     .chart-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .chart-card:hover .chart-title i {
-        transform: scale(1.2);
-        color: #0d6efd;
+        transform: none;
+        color: inherit;
     }
     
     .chart-title i {
-        transition: all 0.3s ease;
+        transition: none;
     }
     
     .chart-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f8f9fa;
+        margin-bottom: 20px;
+        padding-bottom: 0;
+        border-bottom: none;
     }
     
     .chart-title {
-        font-size: 1.4rem;
+        font-size: 1rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: #111827;
         margin: 0;
     }
     
     .chart-title i {
-        margin-right: 10px;
-        color: #667eea;
+        margin-right: 8px;
+        color: #6b7280;
+        font-size: 1rem;
     }
     
     .chart-controls select {
-        background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 8px 12px;
-        font-weight: 500;
-        color: #495057;
-        transition: all 0.3s ease;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-weight: 400;
+        font-size: 0.875rem;
+        color: #374151;
+        transition: all 0.2s ease;
     }
     
     .chart-controls select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         outline: none;
     }
     
     .chart-container {
         position: relative;
-        height: 400px;
+        height: 300px;
         margin: 20px 0;
     }
     
     .funnel-container {
         position: relative;
-        height: 500px;
+        height: 400px;
     }
     
     .geomap-container {
-        height: 600px;
-        border-radius: 15px;
+        height: 500px;
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .funnel-step {
-        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-        color: white;
-        padding: 20px;
+        background: #f3f4f6;
+        color: #111827;
+        padding: 16px;
         margin: 8px 0;
-        border-radius: 15px;
-        text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        border-radius: 6px;
+        text-align: left;
+        transition: all 0.2s ease;
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
     }
     
     .funnel-step:hover {
-        transform: translateX(5px);
-        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: #e5e7eb;
     }
     
     .funnel-step strong {
         display: block;
-        font-size: 1.1rem;
-        margin-bottom: 5px;
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+        font-weight: 600;
     }
     
     .product-item {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border: none;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 12px 0;
+        transition: all 0.2s ease;
+        box-shadow: none;
     }
     
     .product-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transform: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .progress-custom {
-        height: 12px;
-        border-radius: 25px;
-        background: #e9ecef;
+        height: 8px;
+        border-radius: 4px;
+        background: #e5e7eb;
         overflow: hidden;
-        margin: 10px 0;
+        margin: 8px 0;
     }
     
     .progress-bar-custom {
         height: 100%;
-        background: linear-gradient(90deg, #0d6efd, #0b5ed7);
+        background: linear-gradient(90deg, #0ea5e9, #38bdf8);
         transition: width 0.8s ease;
-        border-radius: 25px;
+        border-radius: 4px;
     }
     
     .badge-custom {
-        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        background: #1f2937;
         color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.875rem;
     }
     
     .funnel-grid {
@@ -455,89 +487,36 @@
     </div>
     
     <!-- Overview Stats -->
-    <div class="row g-4 mb-4">
+    <div class="row g-3 mb-4">
+        <!-- Gross Sales -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
-                <i class="metric-icon fas fa-chart-line"></i>
-                <h6>
-                    @if($selectedWebsite && $selectedWebsite->isInvestment())
-                        Total Investments
-                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
-                        Total Donations
-                    @else
-                        Total Conversions
-                    @endif
-                </h6>
-                <div class="metric-value" id="total-conversions">{{ number_format($stats['today']['conversions'] ?? 0) }}</div>
-                <div class="metric-subtitle">
-                    <i class="fas fa-dollar-sign me-1"></i>
-                    @if($selectedWebsite && $selectedWebsite->isInvestment())
-                        Invested: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
-                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
-                        Raised: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
-                    @else
-                        Revenue: $<span id="total-revenue">{{ number_format(($stats['today']['revenue'] ?? 0) / 100, 2) }}</span>
-                    @endif
-                </div>
+                <h6 class="metric-label">Gross sales</h6>
+                <div class="metric-value">{{ $stats['today']['grossSalesFormatted'] ?? '$0.00' }}</div>
             </div>
         </div>
+        
+        <!-- Returning Customer Rate -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="h6 mb-0">Sessions</div>
-                        <div class="display-6" id="total-sessions">{{ number_format($stats['today']['uniqueVisitors'] ?? 0) }}</div>
-                    </div>
-                    <i class="fas fa-users fa-2x opacity-75"></i>
-                </div>
-                <div class="small mt-2">👥 Unique Visitors</div>
+                <h6 class="metric-label">Returning customer rate</h6>
+                <div class="metric-value">{{ $stats['today']['returningCustomerRateFormatted'] ?? '0%' }}</div>
             </div>
         </div>
+        
+        <!-- Orders Fulfilled -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
-                <i class="metric-icon fas fa-percentage"></i>
-                <h6>Conversion Rate</h6>
-                <div class="metric-value" id="conversion-rate">0%</div>
-                <div class="metric-subtitle">
-                    <i class="fas fa-chart-line me-1"></i>
-                    Performance Metric
-                </div>
+                <h6 class="metric-label">Orders fulfilled</h6>
+                <div class="metric-value">{{ number_format($stats['today']['ordersFulfilled'] ?? 0) }}</div>
             </div>
         </div>
+        
+        <!-- Orders -->
         <div class="col-xl-3 col-md-6">
             <div class="metric-card">
-                <i class="metric-icon fas fa-dollar-sign"></i>
-                <h6>
-                    @if($selectedWebsite && $selectedWebsite->isInvestment())
-                        Total Capital Raised
-                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
-                        Total Funds Raised
-                    @else
-                        Total Revenue
-                    @endif
-                </h6>
-                <div class="metric-value" id="total-revenue-card">{{ $stats['today']['revenueFormatted'] ?? '$0.00' }}</div>
-                <div class="metric-subtitle">
-                    <i class="fas fa-coins me-1"></i>
-                    @if($selectedWebsite && $selectedWebsite->isInvestment())
-                        Avg Investment: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
-                    @elseif($selectedWebsite && $selectedWebsite->isFundraiser())
-                        Avg Donation: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
-                    @else
-                        Avg: $<span id="avg-order-value">{{ ($stats['today']['conversions'] ?? 0) > 0 ? number_format(($stats['today']['revenue'] ?? 0) / ($stats['today']['conversions'] ?? 1), 2) : '0.00' }}</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="metric-card">
-                <i class="metric-icon fas fa-users"></i>
-                <h6>Total Sessions</h6>
-                <div class="metric-value" id="total-sessions">{{ number_format($stats['today']['sessions'] ?? 0) }}</div>
-                <div class="metric-subtitle">
-                    <i class="fas fa-eye me-1"></i>
-                    Unique Visitors
-                </div>
+                <h6 class="metric-label">Orders</h6>
+                <div class="metric-value">{{ number_format($stats['today']['orders'] ?? 0) }}</div>
             </div>
         </div>
     </div>
@@ -743,7 +722,7 @@
         <div class="chart-header">
             <h4 class="chart-title">
                 <i class="fas fa-shopping-cart"></i>
-                Product Sell-Through Analysis
+                Top Selling Items
             </h4>
             <div class="chart-controls">
                 <span class="badge badge-custom">
@@ -752,12 +731,32 @@
                 </span>
             </div>
         </div>
-        <div class="product-grid">
-            <div class="chart-container">
-                <canvas id="productChart"></canvas>
+        <div class="row">
+            <div class="col-12">
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="productChart"></canvas>
+                </div>
             </div>
-            <div id="product-breakdown">
-                <!-- Product items will be populated by JavaScript -->
+        </div>
+        <div class="mt-4">
+            <h6 class="mb-3"><i class="fas fa-table me-1"></i> All Items Performance</h6>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover" id="product-table">
+                    <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                        <tr>
+                            <th>Item Name</th>
+                            <th class="text-center">Items Sold</th>
+                            <th class="text-center">Items Remaining</th>
+                            <th class="text-end">Gross Sales</th>
+                            <th class="text-center">Sell-Through Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1019,20 +1018,23 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [{
-                label: 'Sell-Through Rate (%)',
+                label: 'Gross Sales ($)',
                 data: [],
-                backgroundColor: '#E91E63',
+                backgroundColor: '#0ea5e9',
                 borderRadius: 6
             }]
         },
         options: {
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                y: { 
+                x: { 
                     beginAtZero: true,
-                    max: 100,
-                    title: { display: true, text: 'Sell-Through Rate (%)' }
+                    title: { display: true, text: 'Gross Sales ($)' }
                 }
             }
         }
@@ -1233,28 +1235,43 @@ function loadProductData() {
     fetch(`/analytics/api/products?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}`)
         .then(response => response.json())
         .then(data => {
-            productChart.data.labels = data.map(item => item.name);
-            productChart.data.datasets[0].data = data.map(item => item.sell_through_rate);
+            // Show top 5 items in chart
+            const topItems = data.slice(0, 5);
+            productChart.data.labels = topItems.map(item => item.name);
+            productChart.data.datasets[0].data = topItems.map(item => item.revenue);
             productChart.update();
             
-            // Update product breakdown
-            const breakdownHtml = data.map(item => `
-                <div class="product-item">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>${item.name}</strong>
-                        <span class="badge bg-primary">$${item.price}</span>
-                    </div>
-                    <div class="progress-custom mb-2">
-                        <div class="progress-bar-custom" style="width: ${item.sell_through_rate}%"></div>
-                    </div>
-                    <div class="row small text-muted">
-                        <div class="col">Sold: ${item.sold}/${item.available}</div>
-                        <div class="col text-end">${item.sell_through_rate}%</div>
-                    </div>
-                    <div class="text-end"><strong>Revenue: $${item.revenue.toLocaleString()}</strong></div>
-                </div>
-            `).join('');
-            document.getElementById('product-breakdown').innerHTML = breakdownHtml;
+            // Populate the table with all items
+            const tableBody = document.getElementById('product-table-body');
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No product data available</td></tr>';
+            } else {
+                tableBody.innerHTML = data.map((item, index) => {
+                    const remaining = item.available - item.sold;
+                    const sellThroughClass = item.sell_through_rate >= 75 ? 'bg-success' : 
+                                            item.sell_through_rate >= 50 ? 'bg-warning' : 'bg-secondary';
+                    return `
+                        <tr>
+                            <td>
+                                <strong>${item.name}</strong>
+                                ${index < 5 ? '<span class="badge bg-primary ms-2" style="font-size: 0.7rem;">Top 5</span>' : ''}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success">${item.sold.toLocaleString()}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info">${remaining.toLocaleString()}</span>
+                            </td>
+                            <td class="text-end">
+                                <strong>$${item.revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge ${sellThroughClass}">${item.sell_through_rate}%</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
         })
         .catch(error => console.error('Error loading product data:', error));
 }

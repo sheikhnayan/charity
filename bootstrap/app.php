@@ -37,6 +37,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'invest/save-info',
             'webhook/coinbase', // Coinbase Commerce webhooks
         ]);
+
+        // Register custom role middleware alias for route usage
+        // Usage in routes: ->middleware('role:superadmin|website_owner')
+        if (method_exists($middleware, 'alias')) {
+            $middleware->alias([ 'role' => \App\Http\Middleware\EnsureRole::class ]);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

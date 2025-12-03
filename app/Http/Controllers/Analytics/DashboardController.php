@@ -68,6 +68,9 @@ class DashboardController extends Controller
             'conversions_website' => PaymentFunnelEvent::where('website_id', $websiteId)->where('funnel_step', 'payment_completed')->count()
         ]);
 
+        // Calculate Returning Customer Rate
+        $returningCustomerRate = $this->getReturningCustomerRate($websiteId, $startDate, $endDate);
+
         // Get daily stats for the past week
         $weeklyStats = collect(range(6, 0))->map(function ($daysAgo) use ($websiteId) {
             $date = now()->subDays($daysAgo)->startOfDay();
@@ -83,15 +86,23 @@ class DashboardController extends Controller
         // Calculate revenue values
         $todayRevenue = $this->getRevenue($websiteId, $startDate, $endDate);
         $monthRevenue = $this->getRevenue($websiteId, $lastMonth, now());
+        $todayConversions = $this->getConversions($websiteId, $startDate, $endDate);
         
         return [
             'today' => [
                 'pageViews' => $this->getPageViews($websiteId, $startDate, $endDate),
                 'uniqueVisitors' => $this->getUniqueVisitors($websiteId, $startDate, $endDate),
-                'conversions' => $this->getConversions($websiteId, $startDate, $endDate),
+                'conversions' => $todayConversions,
                 'revenue' => $todayRevenue,
                 'revenueFormatted' => '$' . number_format($todayRevenue, 2),
-                'sessions' => $this->getUniqueVisitors($websiteId, $startDate, $endDate), // Add sessions data
+                'sessions' => $this->getUniqueVisitors($websiteId, $startDate, $endDate),
+                // Shopify-style metrics
+                'grossSales' => $todayRevenue, // Total revenue = gross sales
+                'grossSalesFormatted' => '$' . number_format($todayRevenue, 2),
+                'returningCustomerRate' => $returningCustomerRate,
+                'returningCustomerRateFormatted' => number_format($returningCustomerRate, 2) . '%',
+                'ordersFulfilled' => $todayConversions, // Completed payments = fulfilled orders
+                'orders' => $todayConversions, // Total orders = conversions
             ],
             'week' => [
                 'dates' => $weeklyStats->pluck('date')->toArray(),
@@ -367,10 +378,10 @@ class DashboardController extends Controller
                     'amount' => $event->amount,
                     'session_id' => $event->session_id,
                     'user_id' => $event->user_id,
+                    'url' => $event->url ?? 'payment',
+                    'page_url' => $event->url ?? 'Payment Form',
                     'country' => $event->country,
                     'state' => $event->state,
-                    'url' => $event->form_type . ' form',
-                    'page_url' => ucfirst($event->form_type) . ' Page'
                 ];
             });
     }
@@ -399,6 +410,39 @@ class DashboardController extends Controller
                     'auction_name' => $auction->name ?? 'Auction Item'
                 ];
             });
+    }
+
+    /**
+     * Calculate returning customer rate
+     * Returns percentage of customers who have made multiple purchases
+     */
+    protected function getReturningCustomerRate($websiteId, $startDate, $endDate)
+    {
+        $completionStep = $this->getCompletionFunnelStep();
+        
+        // Get all customers (users) who made purchases in the date range
+        $customersInPeriod = PaymentFunnelEvent::where('funnel_step', $completionStep)
+            ->where('website_id', $websiteId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotNull('user_id') // Only count registered users
+            ->distinct('user_id')
+            ->pluck('user_id');
+        
+        if ($customersInPeriod->isEmpty()) {
+            return 0;
+        }
+        
+        // Count how many of these customers have made purchases BEFORE this period
+        $returningCustomers = PaymentFunnelEvent::where('funnel_step', $completionStep)
+            ->where('website_id', $websiteId)
+            ->where('created_at', '<', $startDate) // Purchases before the period
+            ->whereIn('user_id', $customersInPeriod)
+            ->distinct('user_id')
+            ->count();
+        
+        $totalCustomers = $customersInPeriod->count();
+        
+        return $totalCustomers > 0 ? ($returningCustomers / $totalCustomers) * 100 : 0;
     }
 
     /**

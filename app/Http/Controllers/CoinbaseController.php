@@ -124,25 +124,43 @@ class CoinbaseController extends Controller
             $referenceDetails = $this->getReferenceDetails($validated['type'], $validated['reference_id']);
             
             if (!$referenceDetails) {
+                Log::warning('Coinbase createCharge: reference not found', [
+                    'type' => $validated['type'],
+                    'reference_id' => $validated['reference_id'],
+                ]);
+
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid reference ID',
+                    'error' => 'Invalid reference ID for provided type',
+                    'type' => $validated['type'],
+                    'reference_id' => $validated['reference_id'],
                 ], 400);
             }
             
             // Set website-specific credentials on the service
             $this->coinbaseService->setCredentials($credentials['api_key'], $credentials['webhook_secret']);
 
-            // Track funnel: payment_initiated
-            $this->funnelService->trackEvent([
-                'funnel_step' => 'payment_initiated',
-                'payment_type' => $validated['type'],
-                'amount' => $validated['amount'] * 100, // Convert to cents
-                'payment_method' => 'coinbase',
-                'website_id' => $validated['website_id'] ?? auth()->user()->website_id ?? null,
-                'session_id' => session()->getId(),
-                'visitor_id' => $request->cookie('visitor_id') ?? session()->getId(),
-            ]);
+            // Log masked API key for debugging (do not log full key)
+            try {
+                $apiKey = $credentials['api_key'] ?? null;
+                if ($apiKey) {
+                    $masked = substr($apiKey, 0, 4) . str_repeat('*', max(0, strlen($apiKey) - 8)) . substr($apiKey, -4);
+                } else {
+                    $masked = 'none';
+                }
+                Log::info('Coinbase createCharge: using api key', ['api_key_masked' => $masked, 'website_id' => $validated['website_id'] ?? null]);
+            } catch (\Throwable $e) {
+                // ignore logging errors
+            }
+
+            // Track funnel: payment_initiated (use service helper)
+            $this->funnelService->trackPaymentInitiated(
+                $validated['type'],
+                $validated['amount'],
+                'coinbase',
+                $validated['form_data'] ?? [],
+                auth()->id() ?? null
+            );
 
             // Create Coinbase charge
             $chargeData = [
@@ -163,13 +181,13 @@ class CoinbaseController extends Controller
 
             if (!$result['success']) {
                 // Track failure
-                $this->funnelService->trackEvent([
-                    'funnel_step' => 'payment_failed',
-                    'payment_type' => $validated['type'],
-                    'amount' => $validated['amount'] * 100,
-                    'payment_method' => 'coinbase',
-                    'error_message' => $result['error'],
-                ]);
+                $this->funnelService->trackPaymentFailed(
+                    $validated['type'],
+                    $validated['amount'],
+                    'coinbase',
+                    $result['error'],
+                    auth()->id() ?? null
+                );
 
                 return response()->json([
                     'success' => false,
@@ -195,14 +213,8 @@ class CoinbaseController extends Controller
                 'session_id' => session()->getId(),
             ]);
 
-            // Track: payment_processing
-            $this->funnelService->trackEvent([
-                'funnel_step' => 'payment_processing',
-                'payment_type' => $validated['type'],
-                'amount' => $validated['amount'] * 100,
-                'payment_method' => 'coinbase',
-                'transaction_id' => $charge['code'],
-            ]);
+            // Note: payment_processing is not a tracked funnel step in PaymentFunnelEvent.
+            // We already tracked payment_initiated above; no additional funnel event is required here.
 
             return response()->json([
                 'success' => true,
@@ -310,15 +322,13 @@ class CoinbaseController extends Controller
             $this->updateReferenceModel($cryptoPayment);
 
             // Track funnel: payment_completed
-            $this->funnelService->trackEvent([
-                'funnel_step' => 'payment_completed',
-                'payment_type' => $cryptoPayment->payment_type,
-                'amount' => $cryptoPayment->amount * 100,
-                'payment_method' => 'coinbase',
-                'transaction_id' => $cryptoPayment->charge_code,
-                'website_id' => $cryptoPayment->website_id,
-                'session_id' => $cryptoPayment->session_id,
-            ]);
+            $this->funnelService->trackPaymentCompleted(
+                $cryptoPayment->payment_type,
+                $cryptoPayment->amount,
+                'coinbase',
+                $cryptoPayment->charge_code,
+                $cryptoPayment->user_id ?? null
+            );
 
             Log::info('Crypto payment confirmed', ['payment_id' => $cryptoPayment->id]);
         });
@@ -335,13 +345,13 @@ class CoinbaseController extends Controller
         ]);
 
         // Track failure
-        $this->funnelService->trackEvent([
-            'funnel_step' => 'payment_failed',
-            'payment_type' => $cryptoPayment->payment_type,
-            'amount' => $cryptoPayment->amount * 100,
-            'payment_method' => 'coinbase',
-            'transaction_id' => $cryptoPayment->charge_code,
-        ]);
+        $this->funnelService->trackPaymentFailed(
+            $cryptoPayment->payment_type,
+            $cryptoPayment->amount,
+            'coinbase',
+            json_encode($chargeData),
+            $cryptoPayment->user_id ?? null
+        );
 
         Log::warning('Crypto payment failed', ['payment_id' => $cryptoPayment->id]);
     }

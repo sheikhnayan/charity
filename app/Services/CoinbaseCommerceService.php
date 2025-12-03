@@ -35,11 +35,15 @@ class CoinbaseCommerceService
     public function createCharge($data)
     {
         try {
-            $response = Http::withHeaders([
+            $client = Http::withOptions([
+                'verify' => config('coinbase.verify_ssl', true),
+            ])->withHeaders([
                 'X-CC-Api-Key' => $this->apiKey,
                 'X-CC-Version' => '2018-03-22',
                 'Content-Type' => 'application/json',
-            ])->post("{$this->apiUrl}/charges", [
+            ]);
+
+            $response = $client->post("{$this->apiUrl}/charges", [
                 'name' => $data['name'] ?? 'Payment',
                 'description' => $data['description'] ?? 'Payment description',
                 'pricing_type' => 'fixed_price',
@@ -88,10 +92,14 @@ class CoinbaseCommerceService
     public function getCharge($chargeCode)
     {
         try {
-            $response = Http::withHeaders([
+            $client = Http::withOptions([
+                'verify' => config('coinbase.verify_ssl', true),
+            ])->withHeaders([
                 'X-CC-Api-Key' => $this->apiKey,
                 'X-CC-Version' => '2018-03-22',
-            ])->get("{$this->apiUrl}/charges/{$chargeCode}");
+            ]);
+
+            $response = $client->get("{$this->apiUrl}/charges/{$chargeCode}");
 
             if ($response->successful()) {
                 return [

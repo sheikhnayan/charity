@@ -1,4 +1,4 @@
-@extends('admin.main')
+@extends('layouts.admin')
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('user/extra.css') }}">

@@ -1,5 +1,5 @@
 {{-- filepath: resources/views/admin/ticket-category/edit.blade.php --}}
-@extends('admin.main')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
