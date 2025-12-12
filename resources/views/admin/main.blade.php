@@ -75,6 +75,199 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
 
     <script src="{{asset('user/assets/js/config.js')}}"></script>
+
+    <!-- Modern Admin Styles -->
+    <style>
+      :root {
+        --primary: #6366f1;
+        --secondary: #f472b6;
+        --accent: #22d3ee;
+        --bg: #fdfbff;
+        --text: #1e1b4b;
+      }
+
+      /* Theme palettes */
+      .theme-purple { --primary: #7c3aed; --secondary: #a78bfa; --accent: #60a5fa; --bg: #fdf6ff; --text: #0f172a; }
+      .theme-cyan { --primary: #0891b2; --secondary: #67e8f9; --accent: #7dd3fc; --bg: #f0f9ff; --text: #04272f; }
+      .theme-amber { --primary: #d97706; --secondary: #f59e0b; --accent: #fbbf24; --bg: #fff8ed; --text: #2a1f00; }
+      .theme-emerald { --primary: #10b981; --secondary: #34d399; --accent: #6ee7b7; --bg: #f0fff4; --text: #042c23; }
+
+      body {
+        background: linear-gradient(135deg, var(--bg), #eef2ff);
+        color: var(--text);
+      }
+
+      /* Sidebar Modern Styling */
+      .layout-menu {
+        background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+        transition: width .35s ease, padding .35s ease;
+      }
+
+      .layout-menu.collapsed {
+        width: 72px;
+      }
+
+      .app-brand-text {
+        color: #fff !important;
+      }
+
+      .menu-inner .menu-item .menu-link {
+        color: rgba(255,255,255,0.85) !important;
+        border-radius: 8px;
+        margin: 4px 8px;
+        transition: all 0.3s ease;
+      }
+
+      .menu-inner .menu-item .menu-link:hover {
+        background: rgba(255,255,255,0.15) !important;
+        color: #fff !important;
+        transform: translateX(5px);
+      }
+
+      .menu-inner .menu-item.active > .menu-link {
+        background: rgba(255,255,255,0.2) !important;
+        color: #fff !important;
+        font-weight: 600;
+      }
+
+      .menu-icon {
+        color: rgba(255,255,255,0.9) !important;
+      }
+
+      .menu-header-text {
+        color: rgba(255,255,255,0.7) !important;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Sidebar collapse behavior */
+      .layout-menu.collapsed .menu-header-text,
+      .layout-menu.collapsed .app-brand-text {
+        display: none;
+      }
+
+      .layout-menu.collapsed .menu-link .text-truncate {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+      }
+
+      /* Content Cards */
+      .card {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: none;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+        border-radius: 0.6rem;
+        border: none;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99,102,241,0.5);
+      }
+
+      /* Table Headers */
+      table thead th {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      }
+
+      /* Dark mode */
+      body.dark {
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      body.dark .layout-menu {
+        background: linear-gradient(135deg, #312e81, #1e40af) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+      }
+
+      body.dark .card {
+        background: #1e293b;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        color: #e2e8f0;
+      }
+
+      body.dark .content-wrapper {
+        background: #0f172a;
+      }
+
+      /* Responsive tweaks */
+      @media(max-width: 768px) {
+        .layout-menu { 
+          width: 100%; 
+          position: relative; 
+        }
+      }
+
+      /* Logout button sticky positioning */
+      .layout-menu .menu-inner {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+
+      .layout-menu .menu-inner > .menu-inner-shadow {
+        flex-shrink: 0;
+      }
+
+      .menu-inner > ul {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .menu-logout-sticky {
+        margin-top: auto !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        background: linear-gradient(to top, var(--primary) 80%, transparent) !important;
+        padding: 10px 8px !important;
+        z-index: 10;
+      }
+
+      .menu-logout-sticky .menu-link {
+        background: rgba(220, 38, 38, 0.9) !important;
+        color: #fff !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+      }
+
+      .menu-logout-sticky .menu-link:hover {
+        background: rgba(220, 38, 38, 1) !important;
+        transform: translateX(0) !important;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+      }
+
+      /* Layout menu toggle icon */
+      .layout-menu-toggle {
+        color: rgba(255,255,255,0.9) !important;
+      }
+
+      .layout-menu-toggle:hover {
+        color: #fff !important;
+      }
+    </style>
   </head>
 
   <body>
@@ -147,7 +340,7 @@
 
           <div class="menu-divider mt-0"></div>
 
-          <div class="menu-inner-shadow"></div>
+          {{-- <div class="menu-inner-shadow"></div> --}}
 
           <ul class="menu-inner py-1">
   <li class="menu-header small text-uppercase">
@@ -293,11 +486,11 @@
           <div class="text-truncate">UTM Attribution</div>
         </a>
       </li>
-      <li class="menu-item {{ request()->is('analytics/referrer') ? 'active' : '' }}">
+      {{-- <li class="menu-item {{ request()->is('analytics/referrer') ? 'active' : '' }}">
         <a href="/analytics/referrer" class="menu-link">
           <div class="text-truncate">Referrer Analytics</div>
         </a>
-      </li>
+      </li> --}}
     </ul>
   </li>
 
@@ -308,12 +501,12 @@
     </a>
   </li>
 
-  <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}">
+  {{-- <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}">
     <a href="/fraud" class="menu-link">
       <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
       <div class="text-truncate">Fraud Detection</div>
     </a>
-  </li>
+  </li> --}}
 
   {{-- <li class="menu-item {{ request()->is('cohorts*') ? 'active' : '' }}">
     <a href="/cohorts" class="menu-link">
@@ -376,8 +569,8 @@
     </a>
   </li>
 
-  <li class="menu-item" style="position: absolute; bottom: -500px;">
-    <a href="{{ url('/logout') }}" class="menu-link" style="background: red; color: #fff;">
+  <li class="menu-item menu-logout-sticky">
+    <a href="{{ url('/logout') }}" class="menu-link">
       <i class="menu-icon tf-icons bx bx-power-off"></i>
       <div class="text-truncate">Logout</div>
     </a>
@@ -390,6 +583,40 @@
         <!-- Layout container -->
         <div class="layout-page">
           <!-- Navbar -->
+
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                <i class="icon-base bx bx-menu icon-md"></i>
+              </a>
+            </div>
+
+            <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
+              <!-- Left Side: Sidebar Toggle & Welcome -->
+              <div class="d-flex align-items-center gap-3">
+                <button id="sidebarToggle" class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
+                  <i class="bx bx-menu"></i>
+                </button>
+                <div>
+                  <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
+                  <small style="color: rgba(0,0,0,0.5)">Welcome back — insights updated</small>
+                </div>
+              </div>
+
+              <!-- Right Side: Theme Controls -->
+              <div class="d-flex align-items-center gap-2">
+                <select id="themeSelect" class="form-select form-select-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;width:auto;">
+                  <option value="theme-purple">Purple</option>
+                  <option value="theme-cyan">Cyan</option>
+                  <option value="theme-amber">Amber</option>
+                  <option value="theme-emerald">Emerald</option>
+                </select>
+                <button id="darkToggle" class="btn btn-sm" title="Toggle dark mode" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
+                  <i class="bx bx-moon"></i>
+                </button>
+              </div>
+            </div>
+          </nav>
 
           {{-- <nav
             class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
@@ -794,13 +1021,81 @@
     <!-- Custom Fonts for CKEditor -->
     <script src="{{ asset('js/ckeditor-custom-fonts.js') }}"></script>
 
+    <!-- Modern Admin Theme JavaScript -->
+    <script>
+      // Persisted UI controls: dark mode, theme, sidebar collapse
+      (function(){
+        const body = document.body;
+        const darkToggle = document.getElementById('darkToggle');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const themeSelect = document.getElementById('themeSelect');
+        const sidebar = document.querySelector('.layout-menu');
+
+        if (!darkToggle || !sidebarToggle || !themeSelect || !sidebar) {
+          console.warn('Modern theme controls not found on this page');
+          return;
+        }
+
+        // Load saved preferences
+        try {
+          if (localStorage.getItem('ui:dark') === '1') {
+            body.classList.add('dark');
+            darkToggle.querySelector('i').classList.replace('bx-moon', 'bx-sun');
+          }
+          
+          const theme = localStorage.getItem('ui:theme') || 'theme-purple';
+          body.classList.add(theme);
+          themeSelect.value = theme;
+          
+          if (localStorage.getItem('ui:sidebarCollapsed') === '1') {
+            sidebar.classList.add('collapsed');
+          }
+        } catch(e) {
+          console.error('Failed to load UI preferences:', e);
+        }
+
+        // Dark mode toggle
+        darkToggle.addEventListener('click', () => {
+          body.classList.toggle('dark');
+          const isDark = body.classList.contains('dark');
+          localStorage.setItem('ui:dark', isDark ? '1' : '0');
+          
+          const icon = darkToggle.querySelector('i');
+          if (isDark) {
+            icon.classList.replace('bx-moon', 'bx-sun');
+          } else {
+            icon.classList.replace('bx-sun', 'bx-moon');
+          }
+        });
+
+        // Sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('ui:sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
+        });
+
+        // Theme select
+        themeSelect.addEventListener('change', (e) => {
+          // Remove existing theme classes
+          document.body.classList.remove('theme-purple','theme-cyan','theme-amber','theme-emerald');
+          document.body.classList.add(e.target.value);
+          localStorage.setItem('ui:theme', e.target.value);
+        });
+
+        // Keyboard shortcuts: d = dark toggle, s = sidebar, t = theme menu focus
+        document.addEventListener('keydown', (e) => {
+          // Only if not in an input/textarea
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+          
+          if (e.key === 'd') darkToggle.click();
+          if (e.key === 's') sidebarToggle.click();
+          if (e.key === 't') themeSelect.focus();
+        });
+      })();
+    </script>
+
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-  </body>
-</html>
-
-    <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
-
   </body>
 </html>
 

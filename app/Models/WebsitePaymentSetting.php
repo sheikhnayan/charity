@@ -10,12 +10,14 @@ class WebsitePaymentSetting extends Model
     protected $fillable = [
         'website_id',
         'payment_method',
+        'fee',
         'stripe_publishable_key',
         'stripe_secret_key',
         'stripe_webhook_secret',
         'authorize_login_id',
         'authorize_transaction_key',
         'authorize_sandbox',
+        'coinbase_enabled',
         'coinbase_api_key',
         'coinbase_webhook_secret',
         'is_active',
@@ -29,6 +31,7 @@ class WebsitePaymentSetting extends Model
         'authorize_login_id' => 'encrypted',
         'authorize_transaction_key' => 'encrypted',
         'authorize_sandbox' => 'boolean',
+        'coinbase_enabled' => 'boolean',
         'coinbase_api_key' => 'encrypted',
         'coinbase_webhook_secret' => 'encrypted',
         'is_active' => 'boolean',
@@ -67,10 +70,11 @@ class WebsitePaymentSetting extends Model
 
     /**
      * Check if Coinbase Commerce is configured and active
+     * Note: Coinbase is now optional and can work alongside primary gateway
      */
     public function isCoinbaseConfigured(): bool
     {
-        return $this->payment_method === 'coinbase' 
+        return $this->coinbase_enabled 
             && !empty($this->coinbase_api_key)
             && $this->is_active;
     }
@@ -123,4 +127,20 @@ class WebsitePaymentSetting extends Model
             return $this->getAuthorizeConfig();
         }
     }
+
+    /**
+     * Get the processing fee for this website
+     * Falls back to global fee if not set
+     */
+    public function getProcessingFee(): float
+    {
+        if ($this->fee !== null) {
+            return (float) $this->fee;
+        }
+        
+        // Fallback to global payment settings
+        $globalSettings = \App\Models\PaymentSetting::first();
+        return $globalSettings ? (float) $globalSettings->fee : 2.9;
+    }
 }
+

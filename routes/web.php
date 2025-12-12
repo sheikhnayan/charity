@@ -531,7 +531,8 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
 
     Route::get('/profile', function () {
-        return view('user.profile');
+        $user = Auth::user()->load('website', 'website.setting');
+        return view('user.profile', compact('user'));
     });
 
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
@@ -545,6 +546,39 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/student',[
         AdminController::class, 'student'
     ])->name('admin.student');
+
+    // Analytics Routes
+    Route::get('/analytics', [\App\Http\Controllers\User\AnalyticsController::class, 'dashboard'])->name('users.analytics.dashboard');
+    Route::get('/analytics/utm', [\App\Http\Controllers\User\AnalyticsController::class, 'utm'])->name('users.analytics.utm');
+
+    // QR Codes Routes
+    Route::get('/qr-codes', [\App\Http\Controllers\User\QRCodeController::class, 'index'])->name('users.qr-codes.index');
+    Route::post('/qr-codes/generate', [\App\Http\Controllers\User\QRCodeController::class, 'generate'])->name('users.qr-codes.generate');
+    Route::get('/qr-codes/{id}/download', [\App\Http\Controllers\User\QRCodeController::class, 'download'])->name('users.qr-codes.download');
+
+    // User Behavior Routes
+    Route::get('/hotjar/heatmaps', [\App\Http\Controllers\User\HotjarController::class, 'heatmaps'])->name('users.hotjar.heatmaps');
+    Route::get('/hotjar/recordings', [\App\Http\Controllers\User\HotjarController::class, 'recordings'])->name('users.hotjar.recordings');
+
+    // User Management Routes
+    Route::get('/manage-users', [\App\Http\Controllers\User\UserManagementController::class, 'index'])->name('users.manage-users.index');
+    Route::get('/manage-users/create', [\App\Http\Controllers\User\UserManagementController::class, 'create'])->name('users.manage-users.create');
+    Route::post('/manage-users', [\App\Http\Controllers\User\UserManagementController::class, 'store'])->name('users.manage-users.store');
+    Route::get('/manage-users/{id}/edit', [\App\Http\Controllers\User\UserManagementController::class, 'edit'])->name('users.manage-users.edit');
+    Route::put('/manage-users/{id}', [\App\Http\Controllers\User\UserManagementController::class, 'update'])->name('users.manage-users.update');
+    Route::delete('/manage-users/{id}', [\App\Http\Controllers\User\UserManagementController::class, 'destroy'])->name('users.manage-users.destroy');
+
+    // Role Management Routes
+    Route::get('/roles', [\App\Http\Controllers\User\RoleController::class, 'index'])->name('users.roles.index');
+    Route::get('/roles/create', [\App\Http\Controllers\User\RoleController::class, 'create'])->name('users.roles.create');
+    Route::post('/roles', [\App\Http\Controllers\User\RoleController::class, 'store'])->name('users.roles.store');
+    Route::get('/roles/{id}/edit', [\App\Http\Controllers\User\RoleController::class, 'edit'])->name('users.roles.edit');
+    Route::put('/roles/{id}', [\App\Http\Controllers\User\RoleController::class, 'update'])->name('users.roles.update');
+    Route::delete('/roles/{id}', [\App\Http\Controllers\User\RoleController::class, 'destroy'])->name('users.roles.destroy');
+
+    // Permission Management Routes
+    Route::get('/permissions', [\App\Http\Controllers\User\PermissionController::class, 'index'])->name('users.permissions.index');
+    Route::post('/permissions/assign', [\App\Http\Controllers\User\PermissionController::class, 'assign'])->name('users.permissions.assign');
 });
 
     Route::post('/admins/store',[AdminController::class, 'store'])->name('admin.store');
@@ -758,7 +792,8 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     });
 
     Route::prefix('ticket')->name('admin.ticket.')->group(function () {
-        Route::get('/', [TicketController::class, 'index'])->name('index');
+        Route::get('/', [TicketController::class, 'websites'])->name('websites');
+        Route::get('/website/{websiteId}', [TicketController::class, 'index'])->name('index');
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/store', [TicketController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [TicketController::class, 'edit'])->name('edit');

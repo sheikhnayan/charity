@@ -12,10 +12,26 @@ use App\Models\Website;
 
 class TicketController extends Controller
 {
-    public function index()
+    public function websites()
     {
+        $data = Website::all();
+        return view('admin.ticket.websites', compact('data'));
+    }
+
+    public function index($websiteId = null)
+    {
+        if ($websiteId) {
+            $website = Website::findOrFail($websiteId);
+            $data = Ticket::with(['website', 'category'])
+                ->where('website_id', $websiteId)
+                ->get();
+            return view('admin.ticket.index', compact('data', 'website'));
+        }
+        
+        // Fallback to all tickets if no website specified
         $data = Ticket::with(['website', 'category'])->get();
-        return view('admin.ticket.index', compact('data'));
+        $website = null;
+        return view('admin.ticket.index', compact('data', 'website'));
     }
 
     public function create()

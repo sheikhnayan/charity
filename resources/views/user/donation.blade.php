@@ -139,7 +139,7 @@
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
                                                         <td>{{ $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->name }}</td>
+                                                            <td>{{ $item->donation->user->name ?? null}}</td>
                                                         @elseif($item->type == 'general')
                                                             <td>{{ $item->website->name }}</td>
                                                         @elseif($item->type == 'sponsor')
@@ -159,7 +159,7 @@
                                                             <td>{{ $item->investment->investor_name }}</td>
                                                         @endif
                                                         @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->group_name }}</td>
+                                                            <td>{{ $item->donation->user->group_name ?? null}}</td>
                                                         @else
                                                             <td></td>
                                                         @endif
@@ -180,7 +180,9 @@
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
                                                             @if ($item->type != 'sponsor')
-                                                            {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                            @if ($item->transaction_id)
+                                                                {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                            @endif
                                                             @endif
                                                         </td>
                                                         <td>{{ $item->website->name }}</td>

@@ -84,7 +84,14 @@ class FrontendController extends Controller
         $customFonts = \App\Models\CustomFont::active()->get();
         
         // Consolidated template - use page-investment.blade.php for both website types
-        $data = Page::where('user_id', $user_id)->where('default', 1)->first();
+        // Find homepage using is_homepage field (fallback to default for backward compatibility)
+        $data = Page::where('user_id', $user_id)
+                    ->where(function($query) {
+                        $query->where('is_homepage', true)
+                              ->orWhere('default', 1);
+                    })
+                    ->orderBy('is_homepage', 'desc') // Prioritize is_homepage
+                    ->first();
         $menuSections = $this->extractMenuSections($data);
         
         if($setting->site_status == 1){

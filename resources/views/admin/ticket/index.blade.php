@@ -1,5 +1,5 @@
 {{-- filepath: resources/views/admin/ticket/index.blade.php --}}
-@extends('layouts.admin')
+@extends('admin.main')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -7,8 +7,16 @@
         <div class="col-xxl-12 mb-6 order-0">
             <div class="card p-4">
                 <div class="d-flex justify-content-between mb-3">
-                    <h4>Tickets</h4>
                     <div>
+                        <h4>Tickets @if(isset($website)) - {{ $website->name }} @endif</h4>
+                        @if(isset($website))
+                            <p class="text-muted mb-0">{{ $website->domain }}</p>
+                        @endif
+                    </div>
+                    <div>
+                        <a href="{{ route('admin.ticket.websites') }}" class="btn btn-secondary me-2">
+                            <i class="fa fa-arrow-left"></i> Back to Websites
+                        </a>
                         <a href="{{ route('admin.ticket-category.index') }}" class="btn btn-outline-primary me-2">Manage Categories</a>
                         <a href="{{ route('admin.ticket.create') }}" class="btn btn-primary">Add Ticket</a>
                     </div>

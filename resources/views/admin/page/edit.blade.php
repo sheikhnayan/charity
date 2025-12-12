@@ -123,13 +123,29 @@ label{
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
-                                                        <label for="name" class="form-label">Make Homepage</label>
-                                                        <select name="default" class="form-control" required>
-                                                            <option {{ $data->default == 1 ? 'selected' : '' }} value="1">Yes</option>
+                                                        <label for="default" class="form-label">
+                                                            <i class="fas fa-home me-1"></i>Make Homepage
+                                                        </label>
+                                                        <select name="default" id="homepage_select" class="form-control" required>
                                                             <option {{ $data->default == 0 ? 'selected' : '' }} value="0">No</option>
+                                                            <option {{ $data->default == 1 ? 'selected' : '' }} value="1">Yes</option>
                                                         </select>
+                                                        <small class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>
+                                                            If set to "Yes", this page will be accessible via the domain itself (e.g., domain.com) and displayed as "Home"
+                                                        </small>
+                                                        @if($data->is_homepage)
+                                                            <div class="alert alert-success mt-2">
+                                                                <i class="fas fa-check-circle me-1"></i>
+                                                                <strong>Current Homepage:</strong> This page is currently set as the homepage for this website.
+                                                            </div>
+                                                        @endif
+                                                        <div id="homepage_warning" class="alert alert-warning mt-2" style="display: none;">
+                                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                                            <strong>Note:</strong> Setting this as homepage will automatically remove homepage status from other pages of this website.
+                                                        </div>
                                                     </div>
-                                            </div>
+                                                </div>
                                             <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="name" class="form-label">Meta Title</label>
@@ -471,5 +487,23 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Handle homepage selection change
+document.addEventListener('DOMContentLoaded', function() {
+    const homepageSelect = document.getElementById('homepage_select');
+    const homepageWarning = document.getElementById('homepage_warning');
+    const currentIsHomepage = {{ $data->is_homepage ? 'true' : 'false' }};
+    
+    if (homepageSelect && homepageWarning) {
+        homepageSelect.addEventListener('change', function() {
+            // Show warning only if changing TO homepage (and not already homepage)
+            if (this.value === '1' && !currentIsHomepage) {
+                homepageWarning.style.display = 'block';
+            } else {
+                homepageWarning.style.display = 'none';
+            }
+        });
+    }
+});
 </script>
 @endsection

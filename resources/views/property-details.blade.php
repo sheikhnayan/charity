@@ -967,7 +967,7 @@
     @endif
     
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="margin-top: var(--main-content-margin-top, {{ 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="padding-left: 0.5rem !important; padding-right: 0.5rem !important; margin-top: var(--main-content-margin-top, {{ 
         ($header && $header->show_contact_topbar && $check && $check->isInvestment() && $header->show_investor_exclusives) ? '14.2rem' : 
         (($header && $header->show_contact_topbar) ? '10.5rem' : 
         (($check && $check->isInvestment() && $header && $header->show_investor_exclusives) ? '10.6rem' : '6.9rem'))

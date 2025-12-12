@@ -137,13 +137,23 @@ label{
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
-                                                        <div class="mb-3">
-                                                            <label for="name" class="form-label">Make Homepage</label>
-                                                            <select name="default" class="form-control" required>
-                                                                <option value="1">Yes</option>
-                                                                <option value="0">No</option>
-                                                            </select>
+                                                    <div class="mb-3">
+                                                        <label for="default" class="form-label">
+                                                            <i class="fas fa-home me-1"></i>Make Homepage
+                                                        </label>
+                                                        <select name="default" id="homepage_select" class="form-control" required>
+                                                            <option value="0">No</option>
+                                                            <option value="1">Yes</option>
+                                                        </select>
+                                                        <small class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>
+                                                            If set to "Yes", this page will be accessible via the domain itself (e.g., domain.com) and displayed as "Home"
+                                                        </small>
+                                                        <div id="homepage_warning" class="alert alert-warning mt-2" style="display: none;">
+                                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                                            <strong>Note:</strong> Setting this as homepage will automatically remove homepage status from other pages of this website.
                                                         </div>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
@@ -214,6 +224,8 @@ label{
             const mainSitePageRadio = document.getElementById('main_site_page');
             const isMainSiteHidden = document.getElementById('is_main_site');
             const websiteSelection = document.getElementById('website_selection');
+            const homepageSelect = document.getElementById('homepage_select');
+            const homepageWarning = document.getElementById('homepage_warning');
             
             // Handle page type change
             function handlePageTypeChange() {
@@ -262,6 +274,15 @@ label{
                     } else {
                         websiteTypeInfo.style.display = 'none';
                     }
+                }
+            });
+            
+            // Handle homepage selection change
+            homepageSelect.addEventListener('change', function() {
+                if (this.value === '1') {
+                    homepageWarning.style.display = 'block';
+                } else {
+                    homepageWarning.style.display = 'none';
                 }
             });
             

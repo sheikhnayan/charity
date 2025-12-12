@@ -101,9 +101,15 @@ class PageBuilderController extends Controller
             $add->meta_description = $request->meta_description;
             $add->background_color = $request->background_color;
             $add->default = $request->default;
+            $add->is_homepage = $request->default == 1; // Set homepage status
             $add->position = $nextPosition;
             $add->status = 1;
             $add->save();
+            
+            // If this page is set as homepage, remove homepage status from other main site pages
+            if ($add->is_homepage) {
+                $add->setAsHomepage();
+            }
         } else {
             // Creating a regular website page (existing logic)
             $website = Website::find($request->website_id);
@@ -120,9 +126,15 @@ class PageBuilderController extends Controller
             $add->meta_description = $request->meta_description;
             $add->background_color = $request->background_color;
             $add->default = $request->default;
+            $add->is_homepage = $request->default == 1; // Set homepage status
             $add->position = $nextPosition;
             $add->status = 1;
             $add->save();
+            
+            // If this page is set as homepage, remove homepage status from other pages of this website
+            if ($add->is_homepage) {
+                $add->setAsHomepage();
+            }
         }
 
         return redirect()->route('admin.page.index')->with('success', 'Page created successfully.');
@@ -145,6 +157,10 @@ class PageBuilderController extends Controller
         $update->default = $request->default;
         $update->status = $request->status;
         
+        // Handle homepage status
+        $newHomepageStatus = $request->default == 1;
+        $oldHomepageStatus = $update->is_homepage;
+        
         // Handle main site page updates
         if ($request->has('is_main_site') && $request->is_main_site) {
             $update->is_main_site = true;
@@ -155,7 +171,17 @@ class PageBuilderController extends Controller
             // For regular pages, keep existing website relationship
         }
         
+        $update->is_homepage = $newHomepageStatus;
         $update->update();
+        
+        // If homepage status changed to true, remove from other pages
+        if ($newHomepageStatus && !$oldHomepageStatus) {
+            $update->setAsHomepage();
+        }
+        // If homepage status changed to false, just update
+        elseif (!$newHomepageStatus && $oldHomepageStatus) {
+            $update->removeHomepageStatus();
+        }
 
         return redirect()->route('admin.page.index')->with('success', 'Page updated successfully.');
     }

@@ -65,19 +65,21 @@
                                                 </div>
 
                                                 <div class="widget-content-right">
-                                                    <div class="btn-group d-none d-md-inline-flex" role="group">
-                                                        <a href="/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}"
-                                                            class="btn btn-info btn-hover-info" target="_blank">
-                                                            <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
-                                                            <span>View</span>
-                                                        </a>
+                                                    @if(Auth::user()->role == 'student')
+                                                        <div class="btn-group d-none d-md-inline-flex" role="group">
+                                                            <a href="/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}"
+                                                                class="btn btn-info btn-hover-info" target="_blank">
+                                                                <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
+                                                                <span>View</span>
+                                                            </a>
 
-                                                        <button type="button" class="btn btn-success btn-hover-info"
-                                                            data-bs-toggle="modal" data-bs-target="#modal-share">
-                                                            <i class="fa-solid fa-share-nodes fa-fw" aria-hidden="true"></i>
-                                                            <span>Share</span>
-                                                        </button>
-                                                    </div>
+                                                            <button type="button" class="btn btn-success btn-hover-info"
+                                                                data-bs-toggle="modal" data-bs-target="#modal-share">
+                                                                <i class="fa-solid fa-share-nodes fa-fw" aria-hidden="true"></i>
+                                                                <span>Share</span>
+                                                            </button>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

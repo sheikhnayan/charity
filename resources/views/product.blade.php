@@ -1,476 +1,569 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $data->title }}</title>
-</head>
-<body>
-<!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-{{-- <link rel="stylesheet" href="{{ asset('product.css') }}"> --}}
-<link rel="stylesheet" href="{{ asset('auction.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-        #studentTable {
-            background-color: #fff !important;
-            /* Set the table background to white */
-            border: none !important;
-            /* Remove the table border */
-        }
-
-        #studentTable th,
-        #studentTable td {
-            background-color: #fff !important;
-            /* Set the background of table cells to white */
-            border: none !important;
-            /* Remove borders from table cells */
-        }
-
-        #studentTable tbody tr {
-            background-color: #fff !important;
-            /* Set the background of table rows to white */
-        }
-
-        #studentTable_filter {
-            display: none;
-        }
-
-        #studentTable_length {
-            display: none;
-        }
-
-        #studentTable thead {
-            display: none;
-            /* Hide the table header */
-        }
-
-        .non-float {
-            margin-bottom: -111px;
-        }
-
-        p {
-            font-size: 1rem;
-            line-height: 1.5;
-            font-family: AvenirLTPro-Black, sans-serif;
-            /* margin-bottom: 1.5rem; */
-        }
-
-        .c-node-ap__auction-results {
-            margin-right: 36px;
-            margin-bottom: 24px;
-            display: inline-block;
-            background-color: #f8f9fa;
-            border-color: #DBDCDD;
-            border: 1px solid;
-            border-radius: 4px;
-            padding: 24px;
-            font-size: 1rem;
-        }
-
-        .c-node-ap__fundraising-target {
-            margin-bottom: 12px;
-        }
-
-        .c-node-ap__auction-total-label {
-            margin-bottom: 12px;
-            font-size: 1.25rem;
-            line-height: 1.2;
-            font-weight: bold;
-            font-family: AvenirLTPro-Black, sans-serif;
-            color: #355159
-        }
-
-        .c-node-ap__auction-total-amount {
-            font-size: 2rem;
-            line-height: 1.5;
-            color: #d9b730;
-            font-weight: bold;
-            font-family: AvenirLTPro-Black, sans-serif;
-        }
-
-        .c-node-ap__totalizer {
-            height: 18px;
-            border-radius: 12px;
-            --color-ui: #d9b730;
-        }
-
-        .c-node-ap__auction-total-component-label {
-            color: #6d6e71
-        }
-
-        .c-node-ap__auction-total-component-amount {
-            font-size: 1rem;
-            line-height: 1.2;
-            font-weight: bold;
-            font-family: AvenirLTPro-Black, sans-serif;
-            color: #000
-        }
-
-        .footer-socials .nav-item {
-        margin-right: 1rem !important;
-        }
-
-        .footer-socials .nav-item a i {
-            font-size: 1.5rem;
-        }
-
-        footer{
-            position: relative;
-            width: 100%;
-            bottom: 0;
-            margin-top: 2rem;
-        }
-    </style>
-
-    <style>
-        /*  Google Font  */
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap');
-
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Open Sans',sans-serif}
-        body{line-height:1.5}
-
-        /* ---------- Layout ---------- */
-        .card-wrapper{max-width:1100px;margin:0 auto}
-        .card{background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);overflow:hidden}
-        img{width:100%;display:block}
-
-        /* ---------- Gallery ---------- */
-        .img-display{overflow:hidden;width:100%}
-        .img-showcase{display:flex;width:100%;transition:transform .5s ease-in-out}
-        .img-showcase img{min-width:100%;object-fit:contain}
-        .img-select{display:flex;gap:.4rem;margin-top:.5rem}
-        .img-item img{cursor:pointer;border-radius:6px}
-        .img-item img:hover{opacity:.8}
-
-        /* ---------- Product content ---------- */
-        .product-content{padding:2rem 1rem}
-        .product-title{font-size:2rem;font-weight:700;color:#12263a;text-transform:capitalize;margin:1rem 0;position:relative}
-        /* .product-title::after{content:"";position:absolute;left:0;bottom:0;width:80px;height:4px;background:#12263a} */
-        .product-price{margin:1rem 0;font-size:1rem;font-weight:700}
-        .new-price span{color:#256eff}
-        .product-price::before{content:""; background: #e5e5e5; height: 1px; width: 100%; display: block; margin-bottom: 15px;}
-        .product-price::after{content:""; background: #e5e5e5; height: 1px; width: 100%; display: block;}
-        #ai-timer-3::after{content:""; background: #e5e5e5; height: 1px; width: 100%; display: block; margin-top: 15px;}
-        .ai-timer-10::after{content:""; background: #e5e5e5; height: 1px; width: 100%; display: block; margin-top: 15px;}
-
-        .purchase-info{margin:1.5rem 0}
-        .purchase-info .btn{border:1.5px solid #ddd;border-radius:25px;padding:.45rem .8rem;margin-bottom:1rem;color:#fff;background:#256eff}
-        .purchase-info .btn:hover{opacity:.9;cursor:pointer}
-
-        /* ---------- Bids table ---------- */
-        table.views-table th,
-        table.views-table td{vertical-align:middle}
-        /* Darker backdrop for image preview only */
-#previewModal .modal-backdrop.show { background-color: rgba(0,0,0,.8); }
-
-
-        /* ---------- Responsive ---------- */
-        @media (min-width:992px){
-            .card{display:grid;grid-template-columns:repeat(2,1fr);grid-gap:1.5rem}
-            .card-wrapper{display:flex;align-items:center;justify-content:center}
-            .product-imgs{display:flex;flex-direction:column;justify-content:center}
-            .product-content{padding-top:0}
-        }
-        @media (max-width:991px){
-            .card-wrapper{padding:1rem}
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{{$data->title}} - Auction</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts - Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Custom Fonts CSS -->
+  <link href="{{ route('fonts.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  
+  <style>
     @php
         $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = \App\Models\Website::where('domain', $doamin)->first();
-        $groups = \App\Models\User::where('website_id', $check->id)->where('role', 'group_leader')->get();
-        $header = \App\Models\Header::where('website_id', $check->id)->first();
-        $footer = \App\Models\Footer::where('website_id', $check->id)->first();
-        $setting = \App\Models\Setting::where('user_id', $check->user_id)->first();
-        $user = \App\Models\User::where('id', $check->user_id)->first();
+        $domain = parse_url($url, PHP_URL_HOST);
+        $check = \App\Models\Website::where('domain', $domain)->first();
+        $customFonts = \App\Models\CustomFont::get();
     @endphp
-    @if ($header->status == 1)
-        @include('layouts.nav')
+    
+    /* Custom Fonts @font-face declarations */
+    @if(isset($customFonts) && $customFonts->count() > 0)
+    @foreach($customFonts as $font)
+    @font-face {
+        font-family: '{{ $font->font_family }}';
+        src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    @endforeach
     @endif
+    
+    /* Menu Font Family Styling */
+    @if(isset($header) && $header && $header->menu_font_family)
+    nav.navbar .nav-link,
+    nav.navbar .navbar-brand,
+    nav.navbar .btn,
+    .navbar .nav-item a,
+    .navbar ul li a {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
+    .contact-topbar,
+    .contact-topbar a,
+    .contact-topbar span,
+    .contact-topbar .contact-item,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header->investor_exclusives_font_family)
+    .investor-exclusives-bar,
+    .investor-exclusives-bar p,
+    .investor-exclusives-bar a,
+    .investor-exclusives-bar .investor-exclusives-text,
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+    }
+    @endif
+    
+    /* ---- Reset & Base (EXACT MATCH TO PRODUCT-DETAILS) ---- */
+    :root{
+      --pd-bg: {{ json_encode($check->property_details_bg_color ?? '#f5f6f7') }};
+      --pd-text: {{ json_encode($check->property_details_text_color ?? '#111827') }};
+      --pd-muted: {{ json_encode($check->property_details_muted_color ?? '#6b7280') }};
+      --pd-price: {{ json_encode($check->property_details_price_color ?? '#111827') }};
+      
+      --bg:var(--pd-bg);
+      --card:#ffffff;
+      --radius:12px;
+      --page-max:1180px
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--pd-text);margin:0;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
 
-<div class="card-wrapper" style="margin-top: 8rem;">
-    <div class="card p-4">
+    /* ---- Main layout ---- */
+    .container{max-width:var(--page-max);margin:0 auto;padding:0 18px}
+    .grid{margin-top:12px}
+    .grid .row{align-items:flex-start}
+    
+    .grid .col-lg-8 {
+        padding-right: 14px;
+    }
+    .grid .col-lg-4 {
+        padding-left: 14px;
+    }
+    
+    @media (min-width: 992px) {
+        .grid .col-lg-4 {
+            flex: 0 0 360px;
+            max-width: 360px;
+        }
+        .grid .col-lg-8 {
+            flex: 1;
+            max-width: calc(100% - 360px);
+        }
+    }
 
-        {{-- =========== Left column: Images =========== --}}
-        <div class="product-imgs">
-            <div class="img-display">
-                <div class="img-showcase">
-                    @foreach ($data->images as $item)
-                        <img src="{{ asset('/uploads/'.$item->image) }}" alt="product image">
-                    @endforeach
-                </div>
-            </div>
+    /* ---- Left column - gallery + auction details ---- */
+    .gallery-wrap{background:var(--card);border-radius:12px;padding:18px;border:1px solid #e9e9ea}
+    .gallery-top{display:flex;gap:18px}
+    .thumbs{width:84px;display:flex;flex-direction:column;gap:12px}
+    .thumbs button{background:transparent;border:0;padding:0;cursor:pointer}
+    .thumbs img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid transparent}
+    .thumbs img.active{border-color:#0066cc}
+    .main-media{flex:1;background:#fff;border-radius:10px;padding:18px;display:flex;align-items:center;justify-content:center;border:1px solid #f0f0f1}
+    .main-media img{max-width:100%;max-height:540px;border-radius:8px}
+    .media-controls{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .media-controls button{padding:8px 10px;border-radius:8px;border:1px solid #e6e6e8;background:#fff;cursor:pointer}
 
-            <div class="img-select">
-                @foreach ($data->images as $key => $item)
-                    <div class="img-item">
-                        <a href="#" data-id="{{ $key + 1 }}">
-                            <img src="{{ asset('/uploads/'.$item->image) }}" alt="thumbnail" width="130" height="130">
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+    /* ---- Right column - bid panel ---- */
+    .panel{background:var(--card);border-radius:12px;padding:18px;border:1px solid #e9e9ea;position:sticky;top:20px}
+    .title{font-size:20px;font-weight:700;margin-bottom:6px}
+    .subtitle{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .price{font-size:32px;color:#111;font-weight:800;margin-bottom:8px}
+    .condition{font-size:13px;color:var(--muted);margin-bottom:10px}
 
-        {{-- =========== Right column: Details =========== --}}
-        <div class="product-content">
-            <h4 class="product-title">{{ $data->title }}</h4>
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn.primary{background:#0066cc;color:#fff;border:0;width:100%}
+    .btn.ghost{background:#fff;border:1px solid #d9d9db;color:#0066cc}
 
-            <div class="product-price">
-                <p class="new-price">
-                    Current Bid:
-                    <span id="auction-price-{{ $data->id }}"
-                          data-live-item="price"
-                          data-tcid="{{ $data->id }}:price">
-                        ${{ $data->starting_price ?? 0 }}
-                    </span>
-                </p>
-            </div>
+    .panel .small{font-size:13px;color:var(--muted);margin-top:10px}
 
-            {{-- Timer --}}
-            <div id="ai-timer-{{ $data->id }}" class="ai-timer-10 mb-3">
-                <p class="new-price fw-bold mb-1">Time Remaining:</p>
-                <span class="d-inline-flex gap-2">
-                    <span><span id="days-{{ $data->id }}">0</span> Days</span>
-                    <span><span id="hours-{{ $data->id }}">0</span> Hrs</span>
-                    <span><span id="minutes-{{ $data->id }}">0</span> Mins</span>
-                    <span><span id="seconds-{{ $data->id }}">0</span> Secs</span>
-                </span>
-            </div>
+    /* ---- Auction Timer Styling (Styled to match product panel) ---- */
+    .timer-box{
+        background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color:#fff;
+        padding:16px;
+        border-radius:10px;
+        margin-bottom:16px;
+        text-align:center
+    }
+    .timer-box .timer-label{font-size:12px;text-transform:uppercase;margin-bottom:8px;opacity:0.9}
+    .timer-box .timer-display{display:flex;justify-content:center;gap:12px}
+    .timer-box .timer-unit{display:flex;flex-direction:column;align-items:center}
+    .timer-box .timer-value{font-size:28px;font-weight:800;line-height:1}
+    .timer-box .timer-period{font-size:10px;text-transform:uppercase;margin-top:4px;opacity:0.8}
 
-            {{-- Description --}}
-            <div class="product-detail">
-                <h2>About this item:</h2>
-                {!! $data->description !!}
-            </div>
+    /* ---- Similar / explore sections ---- */
+    .section{margin-top:20px; margin-bottom: 20px;}
+    .section h3{font-size:16px;margin:0 0 12px}
+    .cards{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
+    .card{background:#fff;padding:10px;border-radius:10px;min-width:200px;border:1px solid #eee}
+    .card img{height:120px;object-fit:cover;border-radius:8px}
+    .card .meta{padding-top:10px;font-size:13px;color:var(--muted)}
 
-            {{-- Place Bid button --}}
-            <div class="purchase-info">
-                <button type="button"
-                        class="btn js-button open-modal"
-                        data-bs-toggle="modal"
-                        data-bs-target="#bidModal">
-                    Place Bid
-                </button>
-            </div>
-        </div>
+    /* ---- Detailed description / long content ---- */
+    .desc{background:#fff;padding:18px;border-radius:10px;border:1px solid #efeff0;margin-top:18px}
+    .desc h4{margin-top:0}
 
-        {{-- =========== Bid History table =========== --}}
-        <div class="c-node-ai__additional-wrap w-100 px-4 pb-4">
-            <h2 class="h4 mb-3">Bidding</h2>
-            <div class="table-responsive">
-                <table class="views-table table table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Bidder</th>
-                            <th scope="col">Time</th>
-                            <th scope="col">Bid</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bid-history-body">
-                        <tr><td colspan="3" class="text-center">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    /* ---- Bid History Table (Styled to match product design) ---- */
+    .bid-history{background:#fff;padding:18px;border-radius:10px;border:1px solid #efeff0;margin-top:18px}
+    .bid-history h4{margin-top:0;margin-bottom:16px;font-size:18px;font-weight:700}
+    .bid-history table{width:100%;border-collapse:collapse}
+    .bid-history thead{background:#f8f9fa;border-radius:8px}
+    .bid-history th{padding:12px;text-align:left;font-size:13px;font-weight:600;color:#6b7280}
+    .bid-history td{padding:12px;border-bottom:1px solid #f0f0f1;font-size:14px}
+    .bid-history tbody tr:last-child td{border-bottom:none}
+    .bid-history tbody tr:hover{background:#f8f9fa}
 
-    </div>
-</div>
+    /* ---- Utilities / responsive ---- */
+    .muted{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
 
-{{-- =========== Bid Modal =========== --}}
-<div class="modal fade" id="bidModal" tabindex="-1" aria-labelledby="bidModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="bidForm" class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="bidModalLabel">Place a Bid</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="bidderName" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="bidderName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="bidderEmail" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="bidderEmail" required>
-                </div>
-                <div class="mb-3">
-                    <label for="bidAmount" class="form-label">Bid Amount</label>
-                    <input type="number" class="form-control" id="bidAmount" min="1" required>
-                    <div class="invalid-feedback" id="bidAmountError"></div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Submit Bid</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- === Image Preview Modal === -->
-<div class="modal" id="previewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">   <!-- lg = 900 px wide -->
-    <div class="modal-content bg-transparent border-0 shadow-none">
-      <img id="previewImg" src="" class="img-fluid rounded" alt="preview">
-    </div>
-  </div>
-</div>
-
-        @if ($footer->status == 1)
-<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
-background-color: {{ $footer->background }} !important;
-">
-    <div class="container">
-
-                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
-                {{ $footer->message }}
-            </p>
-                    @if ($footer->menu == 1)
-                        <div class="nav justify-content-center">
-                            @foreach ($check->pages->sortBy('position') as $item)
-
-                            @if($item->status == 1)
-
-                            <div class="nav-item">
-                                <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $footer->color }} !important" aria-current="page">
-                                {{ $item->name }}
+    @media (max-width:520px){.thumbs{display:none}.main-media img{max-height:320px}}
+    
+    /* Contact Top Bar Styles */
+    .contact-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1001;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-topbar .contact-item a {
+        transition: all 0.3s ease;
+        font-family: Outfit,sans-serif;
+        text-decoration: underline !important;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-topbar {
+            padding: 8px 0 !important;
+            font-size: 12px !important;
+        }
+    }
+    
+    /* Adjust navbar when contact top bar is present */
+    .contact-topbar + nav.navbar {
+        top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-topbar + nav.navbar {
+            top: 1.7rem;
+        }
+        .contact-topbar{
+            height: 28px !important;
+        }
+    }
+  </style>
+</head>
+<body class="auction-details-page" style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
+    
+    @php
+        $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
+        
+        $user_id = $check->user_id;
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $menuSections = [];
+    @endphp
+    
+    <!-- Header -->
+    @if ($header && $header->status == 1)
+        {{-- Contact Information Top Bar --}}
+        @if($header && $header->show_contact_topbar)
+            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        @if($header->contact_phone)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
+                                    {{ $header->contact_phone }}
                                 </a>
                             </div>
-                            @endif
-
-                            @endforeach
-                                                    </div>
-                    @endif
-
-                    @if ($footer->social == 1)
-                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
-                            @if ($footer->facebook)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->facebook }}" target="_blank">
-                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">facebook</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->instagram)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->instagram }}" target="_blank">
-                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">instagram</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->linkedin)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->linkedin }}" target="_blank">
-                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">linkedin</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->pinterest)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->pinterest }}" target="_blank">
-                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">pinterest</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->x)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->x }}" target="_blank">
-                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">x</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->youtube)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->youtube }}" target="_blank">
-                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">youtube</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->blue_sky)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->blue_sky }}" target="_blank">
-                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">blue sky</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->tiktok)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->tiktok }}" target="_blank">
-                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">tiktok</span>
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    @endif
-
-                @if ($footer->copy_right != null)
-                    <p class="text-center" style="margin-bottom: 0px;">
-                        <small style="color: {{ $footer->color }}">
-                            {{ $footer->copy_right }}
-                        </small>
-                    </p>
-                @endif
-    </div>
-    @if ($footer->privacy == 1)
-        <div class="row mt-4">
-            <div class="col-md-12 text-center">
-                <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
-                        </li>
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
-                        </li>
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
-                        </li>
-                    </ul>
+                        </div>
+                        @endif
+                        @if($header->contact_email)
+                        <div class="col-6 col-md-auto" style="text-align: center;">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
+                                    {{ $header->contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_cta_text)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item mb-1">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important; text-decoration : underline !important;">
+                                    {{ $header->contact_cta_text }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
             </div>
-        </div>
+        @endif
+
+        @include('layouts.nav')
+
+        {{-- Investor Exclusives Top Bar - Investment Websites Only --}}
+        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+                <div class="investor-exclusives-content">
+                    <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; text-transform: uppercase; padding-bottom: 4px;">
+                        {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                    </p>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Dynamic Navbar Height Calculator Script --}}
+            <script>
+                function updateNavbarHeights() {
+                    const navbar = document.querySelector('.navbar');
+                    const contactTopbar = document.querySelector('.contact-topbar');
+                    const investorBar = document.querySelector('.investor-exclusives-bar');
+                    
+                    if (navbar) {
+                        const navbarHeight = navbar.offsetHeight;
+                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                        const totalNavHeight = navbarHeight + contactTopbarHeight;
+                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
+                        
+                        const totalHeightRem = totalNavHeight / 16;
+                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
+                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5;
+                        
+                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
+                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                    }
+                }
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(updateNavbarHeights, 50);
+                });
+                window.addEventListener('resize', updateNavbarHeights);
+                if (document.fonts) {
+                    document.fonts.ready.then(updateNavbarHeights);
+                }
+                setTimeout(updateNavbarHeights, 100);
+                setTimeout(updateNavbarHeights, 300);
+                setTimeout(updateNavbarHeights, 500);
+                setTimeout(updateNavbarHeights, 1000);
+            </script>
+        @endif
     @endif
-</footer>
-@endif
 
+  <main class="container" style="margin-top: 14rem;">
+    <div class="grid">
+      <div class="row">
+        <!-- LEFT: Gallery, description, bid history -->
+        <div class="col-12 col-lg-8">
+          <section>
+            <div class="gallery-wrap" id="galleryWrap">
+              <div class="gallery-top">
+                <div class="thumbs" id="thumbsCol">
+                  @foreach ($data->images as $item)
+                      <button aria-label="thumbnail {{ $loop->index + 1 }}">
+                          <img src="{{ asset('uploads/'.$item->image) }}" data-full="{{ asset('uploads/'.$item->image) }}" {{ $loop->index == 0 ? 'class=active' : '' }} alt="thumb{{ $loop->index + 1 }}">
+                      </button>
+                  @endforeach
+                </div>
 
-<input type="hidden" id="product-id" value="{{ $data->id }}">
-<script>
-function startAuctionTimer(deadline, id) {
-    function update() {
+                <div class="main-media" id="mainMedia">
+                  <img id="mainImg" src="{{ asset('uploads/'.$data->images[0]->image) }}" alt="auction item" />
+                </div>
+              </div>
+
+              <div class="media-controls">
+                <button id="zoomBtn">🔍 Zoom</button>
+                <button id="prevBtn">◀</button>
+                <button id="nextBtn">▶</button>
+              </div>
+
+              <!-- Similar auctions -->
+              <div class="section">
+                <h3>Other Auctions from {{ $check->name }}</h3>
+                <div class="cards" id="similarCards" style="max-width: 710px;">
+                  @php
+                    $similar = \App\Models\Auction::where('website_id',$check->id)->where('status',1)->get();
+                  @endphp
+                  @foreach ($similar as $item)
+                  @if ($item->id != $data->id)
+                      <a href="/product/{{ $item->id }}">
+                        <div class="card"><img src="{{ asset('uploads/'.$item->images[0]->image) }}" alt="{{$item->title}}" style="width: 100%"><div class="meta">{{$item->title}}<br><strong>Current: ${{ number_format($item->starting_price, 2) }}</strong></div></div>
+                      </a>
+                  @endif
+                  @endforeach
+                </div>
+              </div>
+
+              <!-- Item description -->
+              <div class="desc" id="desc">
+                <h4>Auction Description</h4>
+                {!! $data->description !!}
+              </div>
+
+              <!-- Bid History (LIVE BIDDING SECTION) -->
+              <div class="bid-history">
+                <h4><i class="fas fa-history me-2"></i>Live Bid History</h4>
+                <div style="overflow-x: auto;">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Bidder Name</th>
+                        <th>Date & Time</th>
+                        <th>Bid Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bid-history-body">
+                      <tr>
+                        <td colspan="3" style="text-align:center;color:#999">Loading bid history...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT: Auction bid panel -->
+        <div class="col-12 col-lg-4">
+          <aside>
+            <div class="panel" role="region" aria-label="bid panel">
+              <!-- Auction Timer -->
+              <div class="timer-box">
+                <div class="timer-label">Time Remaining</div>
+                <div class="timer-display">
+                  <div class="timer-unit">
+                    <div class="timer-value" id="days-{{ $data->id }}">0</div>
+                    <div class="timer-period">Days</div>
+                  </div>
+                  <div class="timer-unit">
+                    <div class="timer-value" id="hours-{{ $data->id }}">0</div>
+                    <div class="timer-period">Hrs</div>
+                  </div>
+                  <div class="timer-unit">
+                    <div class="timer-value" id="minutes-{{ $data->id }}">0</div>
+                    <div class="timer-period">Mins</div>
+                  </div>
+                  <div class="timer-unit">
+                    <div class="timer-value" id="seconds-{{ $data->id }}">0</div>
+                    <div class="timer-period">Secs</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="title">{{$data->title}}</div>
+              <div class="subtitle">Auction by <strong>{{$check->name}}</strong></div>
+              
+              <!-- Current Bid Price -->
+              <div class="condition" style="font-size:12px;color:#666;margin-bottom:4px">Current Bid</div>
+              <div class="price" id="auction-price-{{ $data->id }}" style="color:#0066cc">${{ number_format($data->starting_price, 2) }}</div>
+
+              <div style="height:16px"></div>
+              
+              <!-- Place Bid Button -->
+              <button class="btn primary" id="placeBidBtn">
+                <i class="fas fa-gavel me-2"></i>Place Your Bid
+              </button>
+
+              <div class="small muted" style="margin-top:12px">
+                <i class="fas fa-info-circle me-1"></i>Bidding is free and simple. Place your bid now!
+              </div>
+
+              <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:16px;padding-top:12px">
+                <div class="small muted">Payment methods</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">VISA</span>
+                  <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">Mastercard</span>
+                  <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">PayPal</span>
+                  <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">Apple Pay</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Website Info -->
+            <div class="section">
+              <div style="background:#fff;padding:14px;border-radius:10px;border:1px solid #efeff0;margin-top:16px">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <div style="width:64px;height:64px;border-radius:999px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;overflow:hidden">
+                    <img src="{{ asset('uploads/'.$check->setting->logo) }}" alt="{{$check->name}}" style="width:100%;height:100%;object-fit:cover">
+                  </div>
+                  <div style="font-size:14px">
+                    <div style="font-weight:700;margin-bottom:4px">{{$check->name}}</div>
+                    <div class="small muted">Auction Host</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  @if ($footer && $footer->status == 1)
+     @include('layouts.new-footer')
+  @endif
+
+  <!-- Bid Modal -->
+  <div class="modal fade" id="bidModal" tabindex="-1" aria-labelledby="bidModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="bidForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bidModalLabel">Place Your Bid</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="bidderName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="bidderName" required>
+          </div>
+          <div class="mb-3">
+            <label for="bidderEmail" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="bidderEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="bidAmount" class="form-label">Your Bid Amount</label>
+            <input type="number" class="form-control" id="bidAmount" min="1" step="0.01" required>
+            <div class="invalid-feedback" id="bidAmountError"></div>
+            <div class="form-text">Minimum bid must be higher than current bid</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Bid</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <input type="hidden" id="product-id" value="{{ $data->id }}">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // --- Gallery thumbnail interactions (EXACT MATCH TO PRODUCT-DETAILS) ---
+    (function(){
+      const thumbs = document.querySelectorAll('#thumbsCol img');
+      const mainImg = document.getElementById('mainImg');
+      let current = 0;
+      thumbs.forEach((t,i)=>{
+        t.addEventListener('click', ()=>{
+          thumbs[current].classList.remove('active');
+          t.classList.add('active');
+          mainImg.src = t.dataset.full || t.src;
+          current = i;
+        });
+      });
+
+      document.getElementById('prevBtn').addEventListener('click', ()=>{
+        const next = (current - 1 + thumbs.length) % thumbs.length;
+        thumbs[next].click();
+      });
+      document.getElementById('nextBtn').addEventListener('click', ()=>{
+        const next = (current + 1) % thumbs.length;
+        thumbs[next].click();
+      });
+
+      document.getElementById('zoomBtn').addEventListener('click', ()=>{
+        window.open(mainImg.src, '_blank');
+      });
+    })();
+
+    // --- Auction Timer ---
+    function startAuctionTimer(deadline, id) {
+      function update() {
         const now = new Date().getTime();
         const target = new Date(deadline).getTime();
         let timeLeft = target - now;
 
         if (timeLeft <= 0) {
-            document.getElementById('days-' + id).textContent = 0;
-            document.getElementById('hours-' + id).textContent = 0;
-            document.getElementById('minutes-' + id).textContent = 0;
-            document.getElementById('seconds-' + id).textContent = 0;
-            return;
+          document.getElementById('days-' + id).textContent = 0;
+          document.getElementById('hours-' + id).textContent = 0;
+          document.getElementById('minutes-' + id).textContent = 0;
+          document.getElementById('seconds-' + id).textContent = 0;
+          return;
         }
 
         const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -482,34 +575,21 @@ function startAuctionTimer(deadline, id) {
         document.getElementById('hours-' + id).textContent = hours;
         document.getElementById('minutes-' + id).textContent = minutes;
         document.getElementById('seconds-' + id).textContent = seconds;
+      }
+      update();
+      setInterval(update, 1000);
     }
-    update();
-    setInterval(update, 1000);
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-        startAuctionTimer("{{ $data->dead_line }}", "{{ $data->id }}");
-});
+    document.addEventListener('DOMContentLoaded', function() {
+      startAuctionTimer("{{ $data->dead_line }}", "{{ $data->id }}");
+    });
+  </script>
 
-
-
-</script>
-
-<script>
-    $('.open-modal').on('click', function(){
-        $('#bidModal').modal('show');
-        $('#bidModal').removeClass('fade');
-        $('#bidModal').addClass('show');
-    })
-</script>
-
-<script type="module">
+  <script type="module">
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, limit } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    /* ──────────────────────────
-       1.  Number‑format helper
-       ────────────────────────── */
+    // Number format helper
     const formatMoney = (num, decimals = 0) =>
         Number(num).toLocaleString('en-US', {
             minimumFractionDigits: decimals,
@@ -527,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
         measurementId: "G-FC73HL5XF3"
     };
 
-    // Initialize Firebase only once
+    // Initialize Firebase
     let app;
     if (!getApps().length) {
         app = initializeApp(firebaseConfig);
@@ -536,16 +616,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const firestore = getFirestore(app);
 
-    const auctionId   = "{{ $data->id }}";
-    let   lastBid     = Number("{{ $data->starting_price ?? 0 }}");
-    const priceDiv    = document.getElementById('auction-price-{{ $data->id }}');
+    const auctionId = "{{ $data->id }}";
+    let lastBid = Number("{{ $data->starting_price ?? 0 }}");
+    const priceDiv = document.getElementById('auction-price-{{ $data->id }}');
     const bidAmountInput = document.getElementById('bidAmount');
 
-    /* ──────────────────────────
-       2.  Show latest bid
-       ────────────────────────── */
+    // Show latest bid from Firebase
     async function showLatestBid() {
-        // Get latest bid from Firestore only
         const q = query(
             collection(firestore, "bid"),
             where("auction_id", "==", auctionId),
@@ -557,13 +634,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const amount = querySnapshot.docs[0].data().amount;
             lastBid = Number(amount);
             priceDiv.textContent = '$' + formatMoney(lastBid, 2);
-            if (bidAmountInput) bidAmountInput.min = lastBid + 1;
+            if (bidAmountInput) bidAmountInput.min = lastBid + 0.01;
         }
     }
 
-    /* ──────────────────────────
-       3.  Bid history table
-       ────────────────────────── */
+    // Load bid history from Firebase
     async function loadBidHistory() {
         const q = query(
             collection(firestore, "bid"),
@@ -576,12 +651,12 @@ document.addEventListener('DOMContentLoaded', function() {
         tbody.innerHTML = '';
 
         if (querySnapshot.empty) {
-            tbody.innerHTML = `<tr><td colspan="3" class="text-center">No bids yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#999;padding:20px">No bids yet. Be the first to bid!</td></tr>`;
             return;
         }
 
         querySnapshot.forEach(doc => {
-            const bid  = doc.data();
+            const bid = doc.data();
             const date = bid.timestamp && bid.timestamp.toDate
                          ? bid.timestamp.toDate()
                          : new Date(bid.timestamp);
@@ -591,30 +666,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
             tbody.innerHTML += `
                 <tr>
-                    <td class="c-views-table__field c-views-table__field--name">${bid.name || ''}</td>
-                    <td class="c-views-table__field c-views-table__field--created">${formattedDate}</td>
-                    <td class="c-views-table__field c-views-table__field--bid-amount">$${formatMoney(bid.amount, 2)}</td>
+                    <td style="font-weight:600">${bid.name || 'Anonymous'}</td>
+                    <td style="color:#6b7280">${formattedDate}</td>
+                    <td style="font-weight:700;color:#0066cc">$${formatMoney(bid.amount, 2)}</td>
                 </tr>
             `;
         });
     }
 
-    /* ──────────────────────────
-       4.  Page‑load hooks
-       ────────────────────────── */
+    // Poll for new bids every 5 seconds (LIVE UPDATES)
+    function startBidPolling() {
+      setInterval(async () => {
+        try {
+          await showLatestBid();
+        } catch (error) {
+          console.log('Polling error:', error);
+        }
+      }, 5000);
+    }
+
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
         showLatestBid();
         loadBidHistory();
+        startBidPolling();
     });
 
-    /* ──────────────────────────
-       5.  Bid‑submit logic
-       ────────────────────────── */
+    // Open bid modal
+    document.getElementById('placeBidBtn').addEventListener('click', function() {
+      const modal = new bootstrap.Modal(document.getElementById('bidModal'));
+      modal.show();
+    });
+
+    // Submit bid to Firebase
     document.getElementById('bidForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const name   = document.getElementById('bidderName').value.trim();
-        const email  = document.getElementById('bidderEmail').value.trim();
+        const name = document.getElementById('bidderName').value.trim();
+        const email = document.getElementById('bidderEmail').value.trim();
         const amount = Number(document.getElementById('bidAmount').value);
 
         // Validate amount
@@ -630,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            // Save bid
+            // Save bid to Firebase
             await addDoc(collection(firestore, "bid"), {
                 auction_id: auctionId,
                 name,
@@ -656,46 +745,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error saving bid: ' + error.message);
         }
     });
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    /* grab pieces created by the previous script */
-    const showcase  = document.querySelector('.img-showcase');
-    const slides    = Array.from(showcase.children);
-    let   current   = 0;   // we will keep this in sync
-
-    /* Preview modal setup */
-    const previewEl   = document.getElementById('previewModal');
-    const previewImg  = document.getElementById('previewImg');
-    const previewModal= new bootstrap.Modal(previewEl);
-
-    /* --- existing slideTo() from earlier --- */
-    function slideTo(idx){
-        const w = slides[0].getBoundingClientRect().width;
-        showcase.style.transform = `translateX(-${w * idx}px)`;
-        current = idx;
-    }
-
-    /* thumbnails */
-    document.querySelectorAll('.img-select a').forEach((thumb,i)=>{
-        thumb.addEventListener('click',e=>{
-            e.preventDefault();
-            slideTo(i);
-        });
-    });
-
-    window.addEventListener('resize',()=>slideTo(current));
-
-    /* BIG IMAGE CLICK -> open preview */
-    showcase.addEventListener('click', () => {
-        previewImg.src = slides[current].getAttribute('src'); // same image, larger
-        previewModal.show();
-    });
-});
-</script>
-
-
-
+  </script>
 </body>
 </html>

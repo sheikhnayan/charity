@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.main')
 
 @section('content')
 <!-- Load Chart.js UMD version and other dependencies FIRST -->

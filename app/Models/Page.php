@@ -22,12 +22,14 @@ class Page extends Model
         'background_color',
         'default',
         'is_main_site',
+        'is_homepage',
     ];
 
     protected $casts = [
         'state' => 'array',
         'is_template' => 'boolean',
         'is_main_site' => 'boolean',
+        'is_homepage' => 'boolean',
     ];
 
     public function website()
@@ -111,5 +113,64 @@ class Page extends Model
         $template->incrementUsage();
         
         return $this;
+    }
+    
+    /**
+     * Set this page as homepage for its website
+     * Removes homepage status from other pages of the same website
+     */
+    public function setAsHomepage()
+    {
+        // Start a database transaction
+        \DB::transaction(function () {
+            // Remove homepage status from all other pages of this website
+            if ($this->is_main_site) {
+                // For main site pages, remove homepage from all main site pages
+                static::mainSite()->where('id', '!=', $this->id)->update(['is_homepage' => false, 'default' => 0]);
+            } else {
+                // For website pages, remove homepage from all pages of the same website
+                static::where('website_id', $this->website_id)
+                    ->where('id', '!=', $this->id)
+                    ->update(['is_homepage' => false, 'default' => 0]);
+            }
+            
+            // Set this page as homepage
+            $this->update([
+                'is_homepage' => true,
+                'default' => 1 // Keep backward compatibility
+            ]);
+        });
+        
+        return $this;
+    }
+    
+    /**
+     * Remove homepage status from this page
+     */
+    public function removeHomepageStatus()
+    {
+        $this->update([
+            'is_homepage' => false,
+            'default' => 0
+        ]);
+        
+        return $this;
+    }
+    
+    /**
+     * Get the display title for the page
+     * Returns "Home" if page is homepage, otherwise returns the page name
+     */
+    public function getDisplayTitle()
+    {
+        return $this->is_homepage ? 'Home' : $this->name;
+    }
+    
+    /**
+     * Scope for homepage pages
+     */
+    public function scopeHomepage($query)
+    {
+        return $query->where('is_homepage', true);
     }
 }

@@ -38,13 +38,11 @@ class WebsitePaymentController extends Controller
      */
     public function update(Request $request, Website $website)
     {
-        // Check if user has access to this website
-        // if (Auth::user()->id !== $website->user_id && !Auth::user()->is_admin) {
-        //     abort(403, 'Unauthorized access to website payment settings');
-        // }
+        dd($request->all());
 
         $validator = Validator::make($request->all(), [
-            'payment_method' => 'required|in:stripe,authorize,coinbase',
+            'payment_method' => 'required|in:stripe,authorize',
+            'fee' => 'required|numeric|min:0|max:100',
             'is_active' => 'boolean',
             'stripe_publishable_key' => 'required_if:payment_method,stripe',
             'stripe_secret_key' => 'required_if:payment_method,stripe',
@@ -52,7 +50,8 @@ class WebsitePaymentController extends Controller
             'authorize_login_id' => 'required_if:payment_method,authorize',
             'authorize_transaction_key' => 'required_if:payment_method,authorize',
             'authorize_sandbox' => 'boolean',
-            'coinbase_api_key' => 'required_if:payment_method,coinbase',
+            'coinbase_enabled' => 'boolean',
+            'coinbase_api_key' => 'required_if:coinbase_enabled,true',
             'coinbase_webhook_secret' => 'nullable|string',
         ]);
 
@@ -64,37 +63,37 @@ class WebsitePaymentController extends Controller
         $paymentSettings = $website->paymentSettings ?: new WebsitePaymentSetting();
         $paymentSettings->website_id = $website->id;
         $paymentSettings->payment_method = $request->payment_method;
+        $paymentSettings->fee = $request->fee;
         $paymentSettings->is_active = $request->has('is_active');
 
+        // Handle primary payment method (Stripe or Authorize.net)
         if ($request->payment_method === 'stripe') {
             $paymentSettings->stripe_publishable_key = $request->stripe_publishable_key;
             $paymentSettings->stripe_secret_key = $request->stripe_secret_key;
             $paymentSettings->stripe_webhook_secret = $request->stripe_webhook_secret;
             
-            // Clear other fields when switching to stripe
-            $paymentSettings->authorize_login_id = null;
-            $paymentSettings->authorize_transaction_key = null;
-            $paymentSettings->coinbase_api_key = null;
-            $paymentSettings->coinbase_webhook_secret = null;
-        } elseif ($request->payment_method === 'coinbase') {
-            $paymentSettings->coinbase_api_key = $request->coinbase_api_key;
-            $paymentSettings->coinbase_webhook_secret = $request->coinbase_webhook_secret;
-            
-            // Clear other fields when switching to coinbase
-            $paymentSettings->stripe_publishable_key = null;
-            $paymentSettings->stripe_secret_key = null;
-            $paymentSettings->stripe_webhook_secret = null;
+            // Clear authorize fields when switching to stripe
             $paymentSettings->authorize_login_id = null;
             $paymentSettings->authorize_transaction_key = null;
         } else {
+            // Authorize.net
             $paymentSettings->authorize_login_id = $request->authorize_login_id;
             $paymentSettings->authorize_transaction_key = $request->authorize_transaction_key;
             $paymentSettings->authorize_sandbox = $request->has('authorize_sandbox');
             
-            // Clear other fields when switching to authorize
+            // Clear stripe fields when switching to authorize
             $paymentSettings->stripe_publishable_key = null;
             $paymentSettings->stripe_secret_key = null;
             $paymentSettings->stripe_webhook_secret = null;
+        }
+
+        // Handle Coinbase (available alongside primary method)
+        $paymentSettings->coinbase_enabled = $request->has('coinbase_enabled');
+        if ($paymentSettings->coinbase_enabled) {
+            $paymentSettings->coinbase_api_key = $request->coinbase_api_key;
+            $paymentSettings->coinbase_webhook_secret = $request->coinbase_webhook_secret;
+        } else {
+            // Clear coinbase fields if disabled
             $paymentSettings->coinbase_api_key = null;
             $paymentSettings->coinbase_webhook_secret = null;
         }

@@ -135,10 +135,24 @@
                                             @foreach ($mainSitePages as $key => $item)
                                                 <tr>
                                                     <td>{{ $key + 1 }}</td>
-                                                    <td>{{ $item->name }}</td>
                                                     <td>
-                                                        <code>fundconnects.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
-                                                        <br><small class="text-muted">Only accessible on main domain</small>
+                                                        {{ $item->name }}
+                                                        @if($item->is_homepage)
+                                                            <span class="badge bg-primary ms-1">
+                                                                <i class="fas fa-home me-1"></i>Homepage
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($item->is_homepage)
+                                                            <code>fundconnects.com</code>
+                                                            <br><small class="text-success">
+                                                                <i class="fas fa-check-circle me-1"></i>Accessible via domain root
+                                                            </small>
+                                                        @else
+                                                            <code>fundconnects.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
+                                                            <br><small class="text-muted">Only accessible on main domain</small>
+                                                        @endif
                                                     </td>
                                                     <td>
                                                         <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
@@ -193,7 +207,14 @@
                                                 @foreach ($data->where('is_main_site', false) as $key => $item)
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
-                                                        <td>{{ $item->name }}</td>
+                                                        <td>
+                                                            {{ $item->name }}
+                                                            @if($item->is_homepage)
+                                                                <span class="badge bg-primary ms-1">
+                                                                    <i class="fas fa-home me-1"></i>Homepage
+                                                                </span>
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $item->website->name ?? 'Main Site'}}</td>
                                                         <td>
                                                             <span class="badge bg-{{ $item->website->type ?? 'Main Site' == 'investment' ? 'primary' : 'success' }}">

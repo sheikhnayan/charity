@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.main')
 
 @section('page_title', 'Notification Settings')
 

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.main')
 
 @section('content')
 <div class="container-fluid flex-grow-1 container-p-y">

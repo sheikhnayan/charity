@@ -14,6 +14,26 @@
     <title>James' Masterpiece</title>
 
     <meta name="description" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @auth
+    <meta name="user-id" content="{{ Auth::id() }}" />
+    @endauth
+    
+    <!-- Firebase Configuration -->
+    <meta name="firebase-api-key" content="{{ env('FIREBASE_API_KEY') }}">
+    <meta name="firebase-auth-domain" content="{{ env('FIREBASE_AUTH_DOMAIN') }}">
+    <meta name="firebase-project-id" content="{{ env('FIREBASE_PROJECT_ID') }}">
+    <meta name="firebase-storage-bucket" content="{{ env('FIREBASE_STORAGE_BUCKET') }}">
+    <meta name="firebase-messaging-sender-id" content="{{ env('FIREBASE_MESSAGING_SENDER_ID') }}">
+    <meta name="firebase-app-id" content="{{ env('FIREBASE_APP_ID') }}">
+    <meta name="firebase-vapid-key" content="{{ env('FIREBASE_VAPID_KEY') }}">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fundably">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('user/assets/img/favicon/favicon.ico') }}" />
@@ -27,11 +47,13 @@
 
     <link rel="stylesheet" href="{{asset('user/assets/vendor/fonts/iconify-icons.css')}}" />
 
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <!-- Core CSS -->
     <!-- build:css assets/vendor/css/theme.css  -->
 
     <link rel="stylesheet" href="{{asset('user/assets/vendor/css/core.css')}}" />
-    <link rel="stylesheet" href="{{asset('user/assets/css/demo.css')}}" />
 
     <!-- Vendors CSS -->
 
@@ -42,6 +64,9 @@
     <link rel="stylesheet" href="{{asset('user/assets/vendor/libs/apex-charts/apex-charts.css')}}" />
 
     <!-- Page CSS -->
+    
+    <!-- Custom Fonts CSS (Dynamically generated from uploaded fonts) -->
+    <link rel="stylesheet" href="{{ route('fonts.css') }}">
 
     <!-- Helpers -->
     <script src="{{asset('user/assets/vendor/js/helpers.js')}}"></script>
@@ -50,9 +75,199 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
 
     <script src="{{asset('user/assets/js/config.js')}}"></script>
-    
-    <!-- Custom Fonts CSS (Dynamically generated from uploaded fonts) -->
-    <link rel="stylesheet" href="{{ route('fonts.css') }}">
+
+    <!-- Modern Admin Styles -->
+    <style>
+      :root {
+        --primary: #6366f1;
+        --secondary: #f472b6;
+        --accent: #22d3ee;
+        --bg: #fdfbff;
+        --text: #1e1b4b;
+      }
+
+      /* Theme palettes */
+      .theme-purple { --primary: #7c3aed; --secondary: #a78bfa; --accent: #60a5fa; --bg: #fdf6ff; --text: #0f172a; }
+      .theme-cyan { --primary: #0891b2; --secondary: #67e8f9; --accent: #7dd3fc; --bg: #f0f9ff; --text: #04272f; }
+      .theme-amber { --primary: #d97706; --secondary: #f59e0b; --accent: #fbbf24; --bg: #fff8ed; --text: #2a1f00; }
+      .theme-emerald { --primary: #10b981; --secondary: #34d399; --accent: #6ee7b7; --bg: #f0fff4; --text: #042c23; }
+
+      body {
+        background: linear-gradient(135deg, var(--bg), #eef2ff);
+        color: var(--text);
+      }
+
+      /* Sidebar Modern Styling */
+      .layout-menu {
+        background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+        transition: width .35s ease, padding .35s ease;
+      }
+
+      .layout-menu.collapsed {
+        width: 72px;
+      }
+
+      .app-brand-text {
+        color: #fff !important;
+      }
+
+      .menu-inner .menu-item .menu-link {
+        color: rgba(255,255,255,0.85) !important;
+        border-radius: 8px;
+        margin: 4px 8px;
+        transition: all 0.3s ease;
+      }
+
+      .menu-inner .menu-item .menu-link:hover {
+        background: rgba(255,255,255,0.15) !important;
+        color: #fff !important;
+        transform: translateX(5px);
+      }
+
+      .menu-inner .menu-item.active > .menu-link {
+        background: rgba(255,255,255,0.2) !important;
+        color: #fff !important;
+        font-weight: 600;
+      }
+
+      .menu-icon {
+        color: rgba(255,255,255,0.9) !important;
+      }
+
+      .menu-header-text {
+        color: rgba(255,255,255,0.7) !important;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Sidebar collapse behavior */
+      .layout-menu.collapsed .menu-header-text,
+      .layout-menu.collapsed .app-brand-text {
+        display: none;
+      }
+
+      .layout-menu.collapsed .menu-link .text-truncate {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+      }
+
+      /* Content Cards */
+      .card {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: none;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+        border-radius: 0.6rem;
+        border: none;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99,102,241,0.5);
+      }
+
+      /* Table Headers */
+      table thead th {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      }
+
+      /* Dark mode */
+      body.dark {
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      body.dark .layout-menu {
+        background: linear-gradient(135deg, #312e81, #1e40af) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+      }
+
+      body.dark .card {
+        background: #1e293b;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        color: #e2e8f0;
+      }
+
+      body.dark .content-wrapper {
+        background: #0f172a;
+      }
+
+      /* Responsive tweaks */
+      @media(max-width: 768px) {
+        .layout-menu { 
+          width: 100%; 
+          position: relative; 
+        }
+      }
+
+      /* Logout button sticky positioning */
+      .layout-menu .menu-inner {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+
+      .layout-menu .menu-inner > .menu-inner-shadow {
+        flex-shrink: 0;
+      }
+
+      .menu-inner > ul {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .menu-logout-sticky {
+        margin-top: auto !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        background: linear-gradient(to top, var(--primary) 80%, transparent) !important;
+        padding: 10px 8px !important;
+        z-index: 10;
+      }
+
+      .menu-logout-sticky .menu-link {
+        background: rgba(220, 38, 38, 0.9) !important;
+        color: #fff !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+      }
+
+      .menu-logout-sticky .menu-link:hover {
+        background: rgba(220, 38, 38, 1) !important;
+        transform: translateX(0) !important;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+      }
+
+      /* Layout menu toggle icon */
+      .layout-menu-toggle {
+        color: rgba(255,255,255,0.9) !important;
+      }
+
+      .layout-menu-toggle:hover {
+        color: #fff !important;
+      }
+    </style>
   </head>
 
   <body>
@@ -125,7 +340,7 @@
 
           <div class="menu-divider mt-0"></div>
 
-          <div class="menu-inner-shadow"></div>
+          {{-- <div class="menu-inner-shadow"></div> --}}
 
           <ul class="menu-inner py-1">
 
@@ -247,17 +462,89 @@
                 </li>
             @endif
 
+              <!-- Analytics -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Analytics</span>
+              </li>
 
-              <li class="menu-item" style="position: absolute; bottom: 0px;">
-                <a
-                  href="/logout"
-                  class="menu-link"
-                  style="background: red; color: #fff;">
-                  {{-- <i class="menu-icon tf-icons bx bx-envelope"></i> --}}
-                  <div class="text-truncate" data-i18n="Email">Logout</div>
+              <li class="menu-item {{ request()->is('users/analytics') || request()->is('users/analytics/*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                  <i class="menu-icon tf-icons bx bx-chart"></i>
+                  <div class="text-truncate">Analytics</div>
+                </a>
+                <ul class="menu-sub">
+                  <li class="menu-item {{ request()->is('users/analytics') && !request()->is('users/analytics/*') ? 'active' : '' }}">
+                    <a href="/users/analytics" class="menu-link">
+                      <div class="text-truncate">Dashboard</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ request()->is('users/analytics/utm') ? 'active' : '' }}">
+                    <a href="/users/analytics/utm" class="menu-link">
+                      <div class="text-truncate">UTM Attribution</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="menu-item {{ request()->is('users/qr-codes*') ? 'active' : '' }}">
+                <a href="/users/qr-codes" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-qr"></i>
+                  <div class="text-truncate">QR Codes</div>
                 </a>
               </li>
 
+              <!-- User Behavior -->
+              <li class="menu-item {{ request()->is('users/hotjar*') || request()->is('users/heatmaps*') || request()->is('users/recordings*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                  <i class="menu-icon tf-icons bx bx-map"></i>
+                  <div class="text-truncate">User Behavior</div>
+                </a>
+                <ul class="menu-sub">
+                  <li class="menu-item {{ request()->is('users/hotjar/heatmaps') ? 'active' : '' }}">
+                    <a href="/users/hotjar/heatmaps" class="menu-link">
+                      <div class="text-truncate">Heatmaps</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ request()->is('users/hotjar/recordings') ? 'active' : '' }}">
+                    <a href="/users/hotjar/recordings" class="menu-link">
+                      <div class="text-truncate">Session Recordings</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- User Management -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">User Management</span>
+              </li>
+
+              <li class="menu-item {{ request()->is('users/manage-users*') ? 'active' : '' }}">
+                <a href="/users/manage-users" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-user"></i>
+                  <div class="text-truncate">Users</div>
+                </a>
+              </li>
+
+              <li class="menu-item {{ request()->is('users/roles*') ? 'active' : '' }}">
+                <a href="/users/roles" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
+                  <div class="text-truncate">Roles</div>
+                </a>
+              </li>
+
+              <li class="menu-item {{ request()->is('users/permissions*') ? 'active' : '' }}">
+                <a href="/users/permissions" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-check-shield"></i>
+                  <div class="text-truncate">Permissions</div>
+                </a>
+              </li>
+
+              <li class="menu-item menu-logout-sticky">
+                <a href="{{ url('/logout') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-power-off"></i>
+                  <div class="text-truncate">Logout</div>
+                </a>
+              </li>
           </ul>
         </aside>
         <!-- / Menu -->
@@ -266,105 +553,39 @@
         <div class="layout-page">
           <!-- Navbar -->
 
-          {{-- <nav
-            class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
-            id="layout-navbar">
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05);">
             <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
               <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
                 <i class="icon-base bx bx-menu icon-md"></i>
               </a>
             </div>
 
-            <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
-              <!-- Search -->
-              <div class="navbar-nav align-items-center me-auto">
-                <div class="nav-item d-flex align-items-center">
-                  <span class="w-px-22 h-px-22"><i class="icon-base bx bx-search icon-md"></i></span>
-                  <input
-                    type="text"
-                    class="form-control border-0 shadow-none ps-1 ps-sm-2 d-md-block d-none"
-                    placeholder="Search..."
-                    aria-label="Search..." />
+            <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
+              <!-- Left Side: Sidebar Toggle & Welcome -->
+              <div class="d-flex align-items-center gap-3">
+                <button id="sidebarToggle" class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
+                  <i class="bx bx-menu"></i>
+                </button>
+                <div>
+                  <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
+                  <small style="color: rgba(0,0,0,0.5)">Welcome back — insights updated</small>
                 </div>
               </div>
-              <!-- /Search -->
 
-              <ul class="navbar-nav flex-row align-items-center ms-md-auto">
-                <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item lh-1 me-4">
-                  <a
-                    class="github-button"
-                    href="https://github.com/themeselection/sneat-bootstrap-html-admin-template-free"
-                    data-icon="octicon-star"
-                    data-size="large"
-                    data-show-count="true"
-                    aria-label="Star themeselection/sneat-html-admin-template-free on GitHub"
-                    >Star</a
-                  >
-                </li>
-
-                <!-- User -->
-                <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                  <a
-                    class="nav-link dropdown-toggle hide-arrow p-0"
-                    href="javascript:void(0);"
-                    data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
-                      <img src="{{ asset('user/assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
-                    </div>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar avatar-online">
-                              <img src="{{ asset('user/assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
-                            </div>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="mb-0">John Doe</h6>
-                            <small class="text-body-secondary">Admin</small>
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                    <li>
-                      <div class="dropdown-divider my-1"></div>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">
-                        <span class="d-flex align-items-center align-middle">
-                          <i class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i
-                          ><span class="flex-grow-1 align-middle">Billing Plan</span>
-                          <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <div class="dropdown-divider my-1"></div>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="javascript:void(0);">
-                        <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span>
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <!--/ User -->
-              </ul>
+              <!-- Right Side: Theme Controls -->
+              <div class="d-flex align-items-center gap-2">
+                <select id="themeSelect" class="form-select form-select-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;width:auto;">
+                  <option value="theme-purple">Purple</option>
+                  <option value="theme-cyan">Cyan</option>
+                  <option value="theme-amber">Amber</option>
+                  <option value="theme-emerald">Emerald</option>
+                </select>
+                <button id="darkToggle" class="btn btn-sm" title="Toggle dark mode" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
+                  <i class="bx bx-moon"></i>
+                </button>
+              </div>
             </div>
-          </nav> --}}
+          </nav>
 
           <!-- / Navbar -->
 
@@ -412,8 +633,102 @@
     <!-- Page JS -->
     <script src="{{asset('user/assets/js/dashboards-analytics.js')}}"></script>
 
+    <!-- Push Notifications -->
+    <script src="{{asset('js/push-notifications.js')}}"></script>
+    
+    <!-- PWA Install Prompt -->
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button/banner (you can customize this)
+            console.log('PWA install prompt available');
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            deferredPrompt = null;
+        });
+    </script>
+
     <!-- Custom Fonts for CKEditor -->
     <script src="{{ asset('js/ckeditor-custom-fonts.js') }}"></script>
+
+    <!-- Modern Admin Theme JavaScript -->
+    <script>
+      // Persisted UI controls: dark mode, theme, sidebar collapse
+      (function(){
+        const body = document.body;
+        const darkToggle = document.getElementById('darkToggle');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const themeSelect = document.getElementById('themeSelect');
+        const sidebar = document.querySelector('.layout-menu');
+
+        if (!darkToggle || !sidebarToggle || !themeSelect || !sidebar) {
+          console.warn('Modern theme controls not found on this page');
+          return;
+        }
+
+        // Load saved preferences
+        try {
+          if (localStorage.getItem('ui:dark') === '1') {
+            body.classList.add('dark');
+            darkToggle.querySelector('i').classList.replace('bx-moon', 'bx-sun');
+          }
+          
+          const theme = localStorage.getItem('ui:theme') || 'theme-purple';
+          body.classList.add(theme);
+          themeSelect.value = theme;
+          
+          if (localStorage.getItem('ui:sidebarCollapsed') === '1') {
+            sidebar.classList.add('collapsed');
+          }
+        } catch(e) {
+          console.error('Failed to load UI preferences:', e);
+        }
+
+        // Dark mode toggle
+        darkToggle.addEventListener('click', () => {
+          body.classList.toggle('dark');
+          const isDark = body.classList.contains('dark');
+          localStorage.setItem('ui:dark', isDark ? '1' : '0');
+          
+          const icon = darkToggle.querySelector('i');
+          if (isDark) {
+            icon.classList.replace('bx-moon', 'bx-sun');
+          } else {
+            icon.classList.replace('bx-sun', 'bx-moon');
+          }
+        });
+
+        // Sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('ui:sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
+        });
+
+        // Theme select
+        themeSelect.addEventListener('change', (e) => {
+          // Remove existing theme classes
+          document.body.classList.remove('theme-purple','theme-cyan','theme-amber','theme-emerald');
+          document.body.classList.add(e.target.value);
+          localStorage.setItem('ui:theme', e.target.value);
+        });
+
+        // Keyboard shortcuts: d = dark toggle, s = sidebar, t = theme menu focus
+        document.addEventListener('keydown', (e) => {
+          // Only if not in an input/textarea
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+          
+          if (e.key === 'd') darkToggle.click();
+          if (e.key === 's') sidebarToggle.click();
+          if (e.key === 't') themeSelect.focus();
+        });
+      })();
+    </script>
 
     <!-- Place this tag before closing body tag for github widget button. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

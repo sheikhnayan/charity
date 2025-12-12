@@ -173,4 +173,22 @@ class Website extends Model
         $setting = $this->setting;
         return $setting ? $setting->payment_method : 'authorize';
     }
+
+    /**
+     * Get the processing fee for this website
+     * Returns website-specific fee or falls back to global fee
+     */
+    public function getProcessingFee(): float
+    {
+        $websitePaymentSettings = $this->paymentSettings;
+        
+        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+            return $websitePaymentSettings->getProcessingFee();
+        }
+        
+        // Fallback to global payment settings
+        $globalSettings = \App\Models\PaymentSetting::first();
+        return $globalSettings ? (float) $globalSettings->fee : 2.9;
+    }
 }
+

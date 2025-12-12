@@ -199,8 +199,10 @@ class AuthorizeNetController extends Controller
                     if ($donation->type == 'student') {
                         # code...
 
-                         $processing_fee = \App\Models\PaymentSetting::first();
-                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                        // Get website-specific processing fee
+                        $website = \App\Models\Website::find($donation->website_id);
+                        $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                        $fee = ($donation->amount / 100) * $processingFeePercentage;
 
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
@@ -242,8 +244,10 @@ class AuthorizeNetController extends Controller
                     }elseif ($donation->type == 'general') {
                         # code...
 
-                         $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                        // Get website-specific processing fee
+                        $website = \App\Models\Website::find($donation->website_id);
+                        $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                        $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
@@ -296,9 +300,10 @@ class AuthorizeNetController extends Controller
                     //     $detail->save();
                     // }
 
-                    $processing_fee = \App\Models\PaymentSetting::first();
-
-                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($donation->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
 
                     $tran = new Transaction;
@@ -375,9 +380,10 @@ class AuthorizeNetController extends Controller
 
                     $del = Transaction::where('type','auction')->where('reference_id',$donation->id)->delete();
 
-
-                     $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($donation->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
@@ -415,8 +421,10 @@ class AuthorizeNetController extends Controller
                     $investment->transaction_id = $tresponse->getTransId();
                     $investment->update();
 
-                     $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($investment->investment_amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($investment->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($investment->investment_amount / 100) * $processingFeePercentage; 
 
                     $tran = new Transaction;
                     $tran->amount = $investment->investment_amount;
@@ -581,8 +589,10 @@ class AuthorizeNetController extends Controller
                     if ($donation->type == 'student') {
                         # code...
 
-                         $processing_fee = \App\Models\PaymentSetting::first();
-                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                        // Get website-specific processing fee
+                        $website = \App\Models\Website::find($donation->website_id);
+                        $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                        $fee = ($donation->amount / 100) * $processingFeePercentage;
 
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
@@ -637,8 +647,10 @@ class AuthorizeNetController extends Controller
                     }elseif ($donation->type == 'general') {
                         # code...
 
-                        $processing_fee = \App\Models\PaymentSetting::first();
-                        $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                        // Get website-specific processing fee
+                        $website = \App\Models\Website::find($donation->website_id);
+                        $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                        $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
                         $tran = new Transaction;
                         $tran->amount = $donation->amount;
@@ -715,8 +727,10 @@ class AuthorizeNetController extends Controller
                     //     $detail->save();
                     // }
 
-                    $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($donation->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
 
                     $tran = new Transaction;
@@ -793,8 +807,10 @@ class AuthorizeNetController extends Controller
 
                     $del = Transaction::where('type','auction')->where('reference_id',$donation->id)->delete();
 
-                    $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($donation->amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($donation->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($donation->amount / 100) * $processingFeePercentage; 
 
                     $tran = new Transaction;
                     $tran->amount = $request->amount;
@@ -832,8 +848,10 @@ class AuthorizeNetController extends Controller
                     $investment->transaction_id = $charge->id;
                     $investment->update();
 
-                     $processing_fee = \App\Models\PaymentSetting::first();
-                    $fee = ($investment->investment_amount / 100) * ($processing_fee->fee ?? 5); 
+                    // Get website-specific processing fee
+                    $website = \App\Models\Website::find($investment->website_id);
+                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                    $fee = ($investment->investment_amount / 100) * $processingFeePercentage; 
 
                     $tran = new Transaction;
                     $tran->amount = $investment->investment_amount;
