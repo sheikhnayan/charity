@@ -17,11 +17,17 @@ class PageBuilderController extends Controller
 
         $page = Page::find($pageId);
         $state = $request->input('state');
+        
+        // Get show_in_menu value from request (sent as metadata)
+        $showInMenu = $request->input('show_in_menu', $page->show_in_menu);
 
         
         if ($page->is_main_site) {
             // Main site page - update directly
-            $page->update(['state' => $state]);
+            $page->update([
+                'state' => $state,
+                'show_in_menu' => $showInMenu
+            ]);
             // dd($page);
         } else {
             // Regular website page (existing logic)
@@ -34,6 +40,7 @@ class PageBuilderController extends Controller
                 ],
                 [
                     'state' => $state,
+                    'show_in_menu' => $showInMenu
                 ]
             );
         }
@@ -67,13 +74,37 @@ class PageBuilderController extends Controller
         }
     }
 
-    public function index()
+    public function websites()
     {
-        // Get both regular pages and main site pages
-        $data = Page::with(['website'])->get();
-        $mainSitePages = Page::mainSite()->get();
+        $data = Website::all();
+        return view('admin.page.websites', compact('data'));
+    }
+    
+    public function mainSitePages()
+    {
+        $data = Page::mainSite()->orderBy('position')->get();
+        $website = null; // No website for main site pages
+        $isMainSite = true;
+        return view('admin.page.index', compact('data', 'website', 'isMainSite'));
+    }
+
+    public function index($websiteId = null)
+    {
+        if ($websiteId) {
+            $website = Website::findOrFail($websiteId);
+            $data = Page::with(['website'])
+                ->where('website_id', $websiteId)
+                ->orderBy('position')
+                ->get();
+            $isMainSite = false;
+            return view('admin.page.index', compact('data', 'website', 'isMainSite'));
+        }
         
-        return view('admin.page.index', compact('data', 'mainSitePages'));
+        // Fallback to all pages if no website specified
+        $data = Page::with(['website'])->orderBy('position')->get();
+        $website = null;
+        $isMainSite = false;
+        return view('admin.page.index', compact('data', 'website', 'isMainSite'));
     }
 
     public function create()
@@ -102,6 +133,7 @@ class PageBuilderController extends Controller
             $add->background_color = $request->background_color;
             $add->default = $request->default;
             $add->is_homepage = $request->default == 1; // Set homepage status
+            $add->show_in_menu = $request->has('show_in_menu') ? 1 : 0;
             $add->position = $nextPosition;
             $add->status = 1;
             $add->save();
@@ -127,6 +159,7 @@ class PageBuilderController extends Controller
             $add->background_color = $request->background_color;
             $add->default = $request->default;
             $add->is_homepage = $request->default == 1; // Set homepage status
+            $add->show_in_menu = $request->has('show_in_menu') ? 1 : 0;
             $add->position = $nextPosition;
             $add->status = 1;
             $add->save();
@@ -156,6 +189,7 @@ class PageBuilderController extends Controller
         $update->background_color = $request->background_color;
         $update->default = $request->default;
         $update->status = $request->status;
+        $update->show_in_menu = $request->has('show_in_menu') ? 1 : 0;
         
         // Handle homepage status
         $newHomepageStatus = $request->default == 1;

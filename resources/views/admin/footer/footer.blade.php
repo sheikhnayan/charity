@@ -99,8 +99,7 @@
                                         Status
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info  "
-                                        data-title="Header status"
-                                        data-description="To completely remove the header section from your website, change the status to disabled."></i>
+                                        data-description="To completely remove the footer section from your website, change the status to disabled."></i>
                                     <select class="form-select" id="status" name="status">
                                         <option {{ $data->status == 1 ? 'selected' : '' }} value="1">
                                             Enabled
@@ -174,7 +173,6 @@
                                         Footer Background Type
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
-                                        data-title="Background Type"
                                         data-description="Choose whether to use a solid color or background images for the footer."></i>
                                     <select class="form-select" id="background_type" name="background_type">
                                         <option value="color" {{ ($data->background_type ?? 'color') == 'color' ? 'selected' : '' }}>
@@ -190,7 +188,8 @@
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Menu
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Choose whether to display the navigation menu in the footer."></i>
                                     <select class="form-select" id="display_menu" name="menu">
                                         <option value="1" {{ $data->menu == 1 ? 'selected' : '' }}>
                                             Yes, display the menu
@@ -204,22 +203,27 @@
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Message
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Custom message text to display in the footer."></i>
                                     <input type="text" name="message" value="{{ $data->message }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Copyright
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Copyright text to display in the footer, e.g., '© 2025 Your Company Name'."></i>
                                     <input type="text" name="copy_right" value="{{ $data->copy_right }}" class="form-control">
                                 </div>
+
+                                <!-- Show/Hide Policy Links Section -->
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="display_menu" class="form-label text-capitalize">
-                                        Privacy, Refund and Terms and services page link
+                                    <label for="privacy" class="form-label text-capitalize">
+                                        Display Policy Links Section
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
-                                    <select class="form-select" id="display_menu" name="privacy">
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Show or hide the policy links section in the footer. If hidden, the selected pages below will not be displayed."></i>
+                                    <select class="form-select" id="privacy" name="privacy">
                                         <option value="1" {{ $data->privacy == 1 ? 'selected' : '' }}>
                                             Yes, display
                                         </option>
@@ -227,12 +231,69 @@
                                             No, hide
                                         </option>
                                     </select>
+                                    <small class="text-muted">Control visibility of all policy links below</small>
                                 </div>
+
+                                <!-- Privacy Policy Page -->
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="privacy_page_id" class="form-label text-capitalize">
+                                        Privacy Policy Page
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Select a page from your website to use as the privacy policy page in the footer."></i>
+                                    <select class="form-select" id="privacy_page_id" name="privacy_page_id">
+                                        <option value="">None (don't show this link)</option>
+                                        @foreach($pages as $page)
+                                            <option value="{{ $page->id }}" {{ $data->privacy_page_id == $page->id ? 'selected' : '' }}>
+                                                {{ $page->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Choose a page to link to the Privacy Policy in footer</small>
+                                </div>
+
+                                <!-- Refund Policy Page -->
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="refund_page_id" class="form-label text-capitalize">
+                                        Refund Policy Page
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Select a page from your website to use as the refund policy page in the footer."></i>
+                                    <select class="form-select" id="refund_page_id" name="refund_page_id">
+                                        <option value="">None (don't show this link)</option>
+                                        @foreach($pages as $page)
+                                            <option value="{{ $page->id }}" {{ $data->refund_page_id == $page->id ? 'selected' : '' }}>
+                                                {{ $page->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Choose a page to link to the Refund Policy in footer</small>
+                                </div>
+
+                                <!-- Terms and Conditions Page -->
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="terms_page_id" class="form-label text-capitalize">
+                                        Terms and Conditions Page
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Select a page from your website to use as the terms and conditions page in the footer."></i>
+                                    <select class="form-select" id="terms_page_id" name="terms_page_id">
+                                        <option value="">None (don't show this link)</option>
+                                        @foreach($pages as $page)
+                                            <option value="{{ $page->id }}" {{ $data->terms_page_id == $page->id ? 'selected' : '' }}>
+                                                {{ $page->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Choose a page to link to the Terms of Service in footer</small>
+                                </div>
+
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Social
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Show or hide social media links in the footer."></i>
                                     <select class="form-select" id="display_menu" name="social">
                                         <option value="1" {{ $data->social == 1 ? 'selected' : '' }}>
                                             Yes
@@ -254,7 +315,6 @@
                                         Disclaimer Text
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
-                                        data-title="Disclaimer Text" 
                                         data-description="Rich text content for the disclaimer section of investment website footers."></i>
                                     <div id="disclaimer_editor" style="height: 200px;"></div>
                                     <input type="hidden" name="disclaimer_text" id="disclaimer_text" value="{!! htmlentities($data->disclaimer_text ?? '') !!}">
@@ -265,10 +325,22 @@
                                         Description Text
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
-                                        data-title="Description Text" 
                                         data-description="Rich text content for the description section of investment website footers."></i>
                                     <div id="description_editor" style="height: 200px;"></div>
                                     <input type="hidden" name="description_text" id="description_text" value="{!! htmlentities($data->description_text ?? '') !!}">
+                                </div>
+
+                                <div class="col-12 mt-3">
+                                    <label for="investment_disclaimer" class="form-label">
+                                        <i class="fas fa-file-contract me-1"></i> Footer Disclaimer
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Rich text content for the footer disclaimer that appears at the bottom of your website. This replaces the old investment disclaimer from website settings."></i>
+                                    <div id="investment_disclaimer_editor" style="height: 200px;"></div>
+                                    <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{!! htmlentities($data->investment_disclaimer ?? '') !!}">
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>This disclaimer text will be displayed in the footer of your website.
+                                    </small>
                                 </div>
 
                                 <div class="col-md-6 mt-3">
@@ -276,8 +348,7 @@
                                         Background Image (Desktop)
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
-                                        data-title="Desktop Background" 
-                                        data-description="Background image for footer on desktop devices."></i>
+                                        data-description="Background image for footer on desktop devices. Recommended size: 1920x600 pixels."></i>
                                     <input type="file" name="background_image_desktop" class="form-control" accept="image/*">
                                     @if($data->background_image_desktop)
                                         <small class="text-muted mt-1">Current: {{ $data->background_image_desktop }}</small>
@@ -289,8 +360,7 @@
                                         Background Image (Mobile)
                                     </label>
                                     <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
-                                        data-title="Mobile Background" 
-                                        data-description="Background image for footer on mobile devices."></i>
+                                        data-description="Background image for footer on mobile devices. Recommended size: 768x600 pixels."></i>
                                     <input type="file" name="background_image_mobile" class="form-control" accept="image/*">
                                     @if($data->background_image_mobile)
                                         <small class="text-muted mt-1">Current: {{ $data->background_image_mobile }}</small>
@@ -300,56 +370,64 @@
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Facebook
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your Facebook page or profile URL."></i>
                                     <input type="text" name="facebook" value="{{ $data->facebook }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Instagram
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your Instagram profile URL."></i>
                                     <input type="text" name="instagram" value="{{ $data->instagram }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         X
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your X (formerly Twitter) profile URL."></i>
                                     <input type="text" name="twitter" value="{{ $data->twitter }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Linkedin
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your LinkedIn profile or company page URL."></i>
                                     <input type="text" name="linkedin" value="{{ $data->linkedin }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Youtube
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your YouTube channel URL."></i>
                                     <input type="text" name="youtube" value="{{ $data->youtube }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Pinterest
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your Pinterest profile URL."></i>
                                     <input type="text" name="pinterest" value="{{ $data->pinterest }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         Tiktok
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your TikTok profile URL."></i>
                                     <input type="text" name="tiktok" value="{{ $data->tiktok }}" class="form-control">
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <label for="display_menu" class="form-label text-capitalize">
                                         BlueSky
                                     </label>
-                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"></i>
+                                    <i role="button" class="fa-solid fa-circle-info text-info  btn-modal-info"
+                                        data-description="Enter your BlueSky profile URL."></i>
                                     <input type="text" name="blue_sky" value="{{ $data->blue_sky }}" class="form-control">
                                 </div>
                             </div>
@@ -373,6 +451,18 @@
             .ql-snow .ql-picker.ql-size .ql-picker-label::before,
             .ql-snow .ql-picker.ql-size .ql-picker-item::before {
               content: '14px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="6px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="6px"]::before {
+              content: '6px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="8px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="8px"]::before {
+              content: '8px';
+            }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="9px"]::before,
+            .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="9px"]::before {
+              content: '9px';
             }
             .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before,
             .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
@@ -418,6 +508,22 @@
             .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
               content: '48px';
             }
+            
+            /* Size classes for Quill content */
+            .ql-size-6px { font-size: 6px !important; }
+            .ql-size-8px { font-size: 8px !important; }
+            .ql-size-9px { font-size: 9px !important; }
+            .ql-size-10px { font-size: 10px !important; }
+            .ql-size-12px { font-size: 12px !important; }
+            .ql-size-14px { font-size: 14px !important; }
+            .ql-size-16px { font-size: 16px !important; }
+            .ql-size-18px { font-size: 18px !important; }
+            .ql-size-20px { font-size: 20px !important; }
+            .ql-size-24px { font-size: 24px !important; }
+            .ql-size-28px { font-size: 28px !important; }
+            .ql-size-32px { font-size: 32px !important; }
+            .ql-size-36px { font-size: 36px !important; }
+            .ql-size-48px { font-size: 48px !important; }
             </style>
 
             <!-- Quill Editor Initialization -->
@@ -432,7 +538,7 @@
 
                     // Register custom font sizes using class attributor like page-builder
                     var SizeClass = Quill.import('attributors/class/size');
-                    SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+                    SizeClass.whitelist = ['6px', '8px', '9px', '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
                     Quill.register(SizeClass, true);
 
                     // Register custom font families
@@ -516,12 +622,59 @@
                         document.getElementById('description_text').value = descriptionQuill.root.innerHTML;
                     });
 
+                    // Initialize Quill for investment disclaimer (Footer Disclaimer)
+                    var investmentDisclaimerQuill = new Quill('#investment_disclaimer_editor', {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                [{ 'font': FontClass.whitelist }],
+                                [{ 'size': SizeClass.whitelist }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'align': [] }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                ['blockquote', 'code-block'],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                    });
+
+                    // Set initial content for investment disclaimer
+                    var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
+                    if (investmentDisclaimerContent) {
+                        investmentDisclaimerQuill.root.innerHTML = decodeHtml(investmentDisclaimerContent);
+                    }
+
+                    // Update hidden input when content changes
+                    investmentDisclaimerQuill.on('text-change', function() {
+                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
+                    });
+
                     // Ensure content is saved before form submission
                     document.querySelector('form').addEventListener('submit', function() {
                         document.getElementById('disclaimer_text').value = disclaimerQuill.root.innerHTML;
                         document.getElementById('description_text').value = descriptionQuill.root.innerHTML;
+                        document.getElementById('investment_disclaimer').value = investmentDisclaimerQuill.root.innerHTML;
                     });
 
+                    // Initialize Bootstrap tooltips for info icons
+                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('.btn-modal-info'));
+                    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                        // Create tooltip with description from data attribute
+                        var description = tooltipTriggerEl.getAttribute('data-description');
+                        
+                        if (description) {
+                            new bootstrap.Tooltip(tooltipTriggerEl, {
+                                html: true,
+                                title: description,
+                                placement: 'top',
+                                trigger: 'hover focus'
+                            });
+                        }
+                    });
 
                 });
             </script>

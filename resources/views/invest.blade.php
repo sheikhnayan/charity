@@ -2646,7 +2646,7 @@ if ($tiersData && is_array($tiersData)) {
                                     @if ($footer->menu == 1)
                                         <div class="nav justify-content-center">
                                             @foreach ($check->pages->sortBy('position') as $item)
-                                                @if ($item->status == 1)
+                                                @if ($item->status == 1 && $item->show_in_menu)
                                                     <div class="nav-item">
                                                         <a class="nav-link active"
                                                             href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}"
@@ -2933,9 +2933,6 @@ NOTE: External Death & Co scripts removed and replaced with local functionality
 
         {{-- 
 NOTE: External DealMaker Utils script removed - functionality integrated locally
-<script src="https://storage.googleapis.com/funf-magiclink/dealmaker-utils/v1/index19.js"
-base_url = "https://app.dealmaker.tech/invitations/2a18f583-9da2-4938-b2f5-f200925290fd/view"
-></script>
 --}}
 
         <!-- Custom Investment Form JavaScript -->

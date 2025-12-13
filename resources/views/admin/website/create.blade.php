@@ -198,17 +198,6 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Footer Disclaimer - Available for all website types -->
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
-                                                        <label for="investment_disclaimer" class="form-label">Footer Disclaimer</label>
-                                                        <textarea name="investment_disclaimer" class="form-control" id="investment_disclaimer" rows="3" placeholder="Enter footer disclaimer text"></textarea>
-                                                        <small class="form-text text-muted">Legal disclaimer text that will be displayed in the footer for all website types.</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">

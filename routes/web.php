@@ -57,6 +57,7 @@ Route::get('/fonts/custom.css', [\App\Http\Controllers\Admin\FontController::cla
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
+    Route::get('/analytics/export', [DashboardController::class, 'export'])->name('analytics.dashboard.export');
     Route::get('/analytics/real-time', [DashboardController::class, 'realTime'])->name('analytics.realtime');
     
     // Chart Data API Routes
@@ -831,6 +832,14 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
     route::group(['prefix' => 'page'], function () {
         Route::get('/', [
+            PageBuilderController::class, 'websites'
+        ])->name('admin.page.websites');
+        
+        Route::get('/main-site', [
+            PageBuilderController::class, 'mainSitePages'
+        ])->name('admin.page.main-site');
+        
+        Route::get('/website/{websiteId}', [
             PageBuilderController::class, 'index'
         ])->name('admin.page.index');
 
@@ -921,6 +930,9 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
 
     // Image upload route for page builder
     Route::post('/upload-image', [AdminController::class, 'uploadImage'])->name('admin.upload.image');
+    
+    // Get upload configuration limits
+    Route::get('/upload-config', [AdminController::class, 'getUploadConfig'])->name('admin.upload.config');
     
     // Video upload route for page builder
     Route::post('/upload-video', [AdminController::class, 'uploadVideo'])->name('admin.upload.video');

@@ -81,7 +81,6 @@ class WebsiteController extends Controller
             
             // Add investment fields for all website types
             $add->share_price = $request->share_price ?? null;
-            $add->investment_disclaimer = $request->investment_disclaimer ?? null;
             $add->investment_title = $request->investment_title ?? null;
             $add->min_investment = $request->min_investment ?? null;
             $add->investment_tiers = $request->investment_tiers ?? null;
@@ -251,7 +250,6 @@ class WebsiteController extends Controller
         $update->custom_sticky_button_text = $request->custom_sticky_button_text;
         // Add investment fields for all website types
         $update->share_price = $request->share_price ?? null;
-        $update->investment_disclaimer = $request->investment_disclaimer ?? null;
         $update->investment_title = $request->investment_title ?? null;
         $update->min_investment = $request->min_investment ?? null;
         $update->investment_tiers = $request->investment_tiers ?? null;

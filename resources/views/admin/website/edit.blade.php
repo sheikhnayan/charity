@@ -265,19 +265,6 @@ label{
                                                 </div>
                                             </div>
                                             
-                                            <!-- Footer Disclaimer - Available for all website types -->
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
-                                                        <label for="investment_disclaimer" class="form-label">Footer Disclaimer</label>
-                                                        <div id="investment_disclaimer_editor" style="height: 200px;" data-content="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}"></div>
-                                                        <input type="hidden" name="investment_disclaimer" id="investment_disclaimer" value="{{ htmlspecialchars($data->investment_disclaimer ?? '', ENT_QUOTES, 'UTF-8') }}">
-                                                        <small class="form-text text-muted">Legal disclaimer text with rich formatting options that will be displayed in the footer for all website types.</small>
-                                                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="debugInvestmentDisclaimer()">Debug Content</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
                                             <!-- Sticky Footer Color Settings -->
                                             <div class="row">
                                                 <div class="col-md-12">
@@ -453,56 +440,7 @@ label{
                 SizeClass.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
                 Quill.register(SizeClass, true);
 
-                // Initialize Quill editor for investment disclaimer
-                var investmentDisclaimerQuill = new Quill('#investment_disclaimer_editor', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                            [{ 'size': SizeClass.whitelist }],
-                            [{ 'color': [] }, { 'background': [] }],
-                            ['bold', 'italic', 'underline', 'strike'],
-                            [{ 'align': [] }],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'indent': '-1'}, { 'indent': '+1' }],
-                            ['blockquote', 'code-block'],
-                            ['link'],
-                            ['clean']
-                        ]
-                    }
-                });
-
-
-                // Set initial content for investment disclaimer
-                var investmentDisclaimerContent = document.getElementById('investment_disclaimer').value;
-                console.log('Initial investment disclaimer content:', investmentDisclaimerContent);
-                console.log('Raw data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
-                
-                if (investmentDisclaimerContent && investmentDisclaimerContent.trim() !== '') {
-                    try {
-                        // First try direct assignment, then decoded if needed
-                        if (investmentDisclaimerContent.includes('&')) {
-                            var decodedContent = decodeHtml(investmentDisclaimerContent);
-                            investmentDisclaimerQuill.root.innerHTML = decodedContent;
-                        } else {
-                            investmentDisclaimerQuill.root.innerHTML = investmentDisclaimerContent;
-                        }
-                        console.log('Loaded content into Quill editor');
-                    } catch (error) {
-                        console.error('Error loading content into Quill editor:', error);
-                        // Fallback: try setting as plain text
-                        investmentDisclaimerQuill.setText(investmentDisclaimerContent);
-                    }
-                }
-
-                // Update hidden input when content changes
-                investmentDisclaimerQuill.on('text-change', function() {
-                    var content = investmentDisclaimerQuill.root.innerHTML;
-                    document.getElementById('investment_disclaimer').value = content;
-                    console.log('Content updated:', content);
-                });
-
-                // Note: Form submission handler will be added after all Quill editors are initialized
+                // Note: investment_disclaimer editor removed - now managed in Footer Settings
 
                 // Initialize Quill editor for additional information
                 var additionalInformationQuill = new Quill('#additional_information_editor', {
@@ -553,15 +491,6 @@ label{
                 });
 
                 // Debug function
-                window.debugInvestmentDisclaimer = function() {
-                    console.log('=== INVESTMENT DISCLAIMER DEBUG ===');
-                    console.log('Hidden input value:', document.getElementById('investment_disclaimer').value);
-                    console.log('Quill content HTML:', investmentDisclaimerQuill.root.innerHTML);
-                    console.log('Quill content text:', investmentDisclaimerQuill.getText());
-                    console.log('Data attribute:', document.getElementById('investment_disclaimer_editor').dataset.content);
-                    alert('Check browser console for debug information');
-                };
-
                 // Debug function for additional information
                 window.debugAdditionalInformation = function() {
                     console.log('=== ADDITIONAL INFORMATION DEBUG ===');
@@ -616,11 +545,6 @@ label{
 
                 // Ensure all Quill content is saved before form submission
                 document.querySelector('form').addEventListener('submit', function(e) {
-                    // Save investment disclaimer content
-                    var disclaimerContent = investmentDisclaimerQuill.root.innerHTML;
-                    document.getElementById('investment_disclaimer').value = disclaimerContent;
-                    console.log('Form submission - saving disclaimer content:', disclaimerContent);
-                    
                     // Save additional information content
                     var additionalContent = additionalInformationQuill.root.innerHTML;
                     document.getElementById('additional_information').value = additionalContent;

@@ -355,7 +355,7 @@ class AdminController extends Controller
         $data = Footer::where('id', $request->id)->first();
         $data->status = $request->status;
         $data->color = $request->color;
-        $data->privacy = $request->privacy;
+        $data->privacy = $request->privacy ?? 1; // Default to 1 if not provided
         $data->background = $request->background;
         $data->background_type = $request->background_type ?? 'color';
         $data->menu = $request->menu;
@@ -371,12 +371,20 @@ class AdminController extends Controller
         $data->tiktok = $request->tiktok;
         $data->blue_sky = $request->blue_sky;
         
+        // Handle page link selections (can be null/empty to hide individual links)
+        $data->privacy_page_id = $request->privacy_page_id ?: null;
+        $data->refund_page_id = $request->refund_page_id ?: null;
+        $data->terms_page_id = $request->terms_page_id ?: null;
+        
         // Handle investment-specific fields
         if ($request->has('disclaimer_text')) {
             $data->disclaimer_text = $request->disclaimer_text;
         }
         if ($request->has('description_text')) {
             $data->description_text = $request->description_text;
+        }
+        if ($request->has('investment_disclaimer')) {
+            $data->investment_disclaimer = $request->investment_disclaimer;
         }
         
         // Handle image uploads
@@ -611,10 +619,13 @@ class AdminController extends Controller
         $data = Footer::where('user_id',$id)->first();
         $website = Website::where('user_id', $id)->first();
         $customFonts = \App\Models\CustomFont::active()->get();
+        
+        // Get all pages for this website
+        $pages = $website ? $website->pages()->where('status', 1)->orderBy('name')->get() : collect();
 
         // dd($id);
 
-        return view('admin.footer.footer', compact('data', 'website', 'customFonts'));
+        return view('admin.footer.footer', compact('data', 'website', 'customFonts', 'pages'));
     }
 
     public function footer_index()
@@ -748,11 +759,49 @@ class AdminController extends Controller
     public function uploadImage(Request $request)
     {
         try {
+            // Get PHP upload limits
+            $maxUploadSize = min(
+                $this->parseSize(ini_get('upload_max_filesize')),
+                $this->parseSize(ini_get('post_max_size'))
+            );
+            $maxUploadMB = round($maxUploadSize / 1024 / 1024, 2);
+            
+            // Check if file was uploaded
+            if (!$request->hasFile('image')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No image file was uploaded.'
+                ], 400);
+            }
+            
+            // Check for upload errors
+            $image = $request->file('image');
+            if ($image->getError() !== UPLOAD_ERR_OK) {
+                $errorMessages = [
+                    UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the server limit of {$maxUploadMB}MB.",
+                    UPLOAD_ERR_FORM_SIZE => "The uploaded file is too large.",
+                    UPLOAD_ERR_PARTIAL => "The file was only partially uploaded. Please try again.",
+                    UPLOAD_ERR_NO_FILE => "No file was uploaded.",
+                    UPLOAD_ERR_NO_TMP_DIR => "Missing temporary folder on server.",
+                    UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
+                    UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload.",
+                ];
+                
+                $errorCode = $image->getError();
+                $errorMessage = $errorMessages[$errorCode] ?? "Unknown upload error (code: {$errorCode})";
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'maxSize' => $maxUploadMB . 'MB'
+                ], 400);
+            }
+            
+            // Validate file
             $request->validate([
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
-            $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
             
             // Store in public/uploads directory
@@ -766,12 +815,71 @@ class AdminController extends Controller
                 'message' => 'Image uploaded successfully'
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            $message = 'Validation failed: ';
+            
+            if (isset($errors['image'])) {
+                $message .= implode(' ', $errors['image']);
+            } else {
+                $message .= 'Invalid file format or size. Maximum size is 2MB.';
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => $message
+            ], 422);
+            
         } catch (\Exception $e) {
+            \Log::error('Image upload error: ' . $e->getMessage());
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Upload failed: ' . $e->getMessage()
-            ], 400);
+            ], 500);
         }
+    }
+    
+    /**
+     * Parse size string (e.g., "8M", "100K") to bytes
+     */
+    private function parseSize($size)
+    {
+        $unit = strtoupper(substr($size, -1));
+        $value = (int) $size;
+        
+        switch ($unit) {
+            case 'G':
+                $value *= 1024;
+            case 'M':
+                $value *= 1024;
+            case 'K':
+                $value *= 1024;
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Get upload configuration limits
+     */
+    public function getUploadConfig()
+    {
+        $uploadMaxFilesize = $this->parseSize(ini_get('upload_max_filesize'));
+        $postMaxSize = $this->parseSize(ini_get('post_max_size'));
+        $maxUploadSize = min($uploadMaxFilesize, $postMaxSize);
+        
+        return response()->json([
+            'success' => true,
+            'limits' => [
+                'maxFileSize' => $maxUploadSize,
+                'maxFileSizeMB' => round($maxUploadSize / 1024 / 1024, 2),
+                'uploadMaxFilesize' => ini_get('upload_max_filesize'),
+                'postMaxSize' => ini_get('post_max_size'),
+                'maxExecutionTime' => ini_get('max_execution_time'),
+                'memoryLimit' => ini_get('memory_limit'),
+            ]
+        ]);
     }
 
     public function uploadVideo(Request $request)

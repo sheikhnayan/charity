@@ -41,8 +41,23 @@
 
                                     <div>
                                         <span class="text-capitalize">
-                                            Page
+                                            @if(isset($isMainSite) && $isMainSite)
+                                                Main Site Pages
+                                            @elseif(isset($website) && $website)
+                                                Pages - {{ $website->name }}
+                                            @else
+                                                Pages
+                                            @endif
                                         </span>
+                                        <div class="page-title-subheading">
+                                            @if(isset($isMainSite) && $isMainSite)
+                                                Manage pages for the main platform site (fundconnects.com)
+                                            @elseif(isset($website) && $website)
+                                                Manage pages for {{ $website->name }} ({{ $website->domain }})
+                                            @else
+                                                Manage all pages
+                                            @endif
+                                        </div>
                                     </div>
 
                                 </div>
@@ -63,23 +78,38 @@
                                             <i class="fas fa-chevron-right ms-1"></i>
                                         </li>
 
-                                        <li class="breadcrumb-item ">
-                                            Setting
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ route('admin.page.websites') }}">
+                                                Pages
+                                            </a>
                                             <i class="fas fa-chevron-right ms-1"></i>
                                         </li>
                                         <li class="active breadcrumb-item" aria-current="page">
-                                            Page
+                                            @if(isset($isMainSite) && $isMainSite)
+                                                Main Site
+                                            @elseif(isset($website) && $website)
+                                                {{ $website->name }}
+                                            @else
+                                                All Pages
+                                            @endif
                                         </li>
 
                                     </ol>
 
                                     <div class="btn-group" role="group" aria-label="Basic example" style="float: right">
-                                        <a href="/admins/page/create" class="btn btn-primary">Add Website Page</a>
-                                        <a href="/admins/page/create?main_site=1" class="btn btn-success">Add Main Site Page</a>
+                                        @if(isset($isMainSite) && $isMainSite)
+                                            <a href="/admins/page/create?main_site=1" class="btn btn-primary">Add Main Site Page</a>
+                                        @elseif(isset($website) && $website)
+                                            <a href="/admins/page/create?website_id={{ $website->id }}" class="btn btn-primary">Add Page</a>
+                                        @else
+                                            <a href="/admins/page/create" class="btn btn-primary">Add Page</a>
+                                        @endif
                                     </div>
                             </div>
                         </div>
 
+                        {{-- Info Alert - Only show on main page, not for specific website/main-site --}}
+                        @if(!isset($website) && !isset($isMainSite))
                         <div class="row mb-4">
                             <div class="col-lg">
                                 <div class="alert alert-info">
@@ -113,87 +143,30 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Main Site Pages Section --}}
-                        @if(!empty($mainSitePages) && $mainSitePages->count() > 0)
-                        <div class="row mb-4">
-                            <div class="col-lg">
-                                <h4><i class="fas fa-globe"></i> Main Site Pages (fundconnects.com)</h4>
-                                <div class="card-shadow-primary card-border text-white mb-3 card bg-success" style="background: #fff !important;">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>SI</th>
-                                                <th>Name</th>
-                                                <th>URL Preview</th>
-                                                <th>Position/Order</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($mainSitePages as $key => $item)
-                                                <tr>
-                                                    <td>{{ $key + 1 }}</td>
-                                                    <td>
-                                                        {{ $item->name }}
-                                                        @if($item->is_homepage)
-                                                            <span class="badge bg-primary ms-1">
-                                                                <i class="fas fa-home me-1"></i>Homepage
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if($item->is_homepage)
-                                                            <code>fundconnects.com</code>
-                                                            <br><small class="text-success">
-                                                                <i class="fas fa-check-circle me-1"></i>Accessible via domain root
-                                                            </small>
-                                                        @else
-                                                            <code>fundconnects.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
-                                                            <br><small class="text-muted">Only accessible on main domain</small>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
-                                                        <small class="text-muted d-block">Menu order</small>
-                                                    </td>
-                                                    <td>
-                                                        @if ($item->status == 1)
-                                                            <span class="badge bg-success">Active</span>
-                                                        @else
-                                                            <span class="badge bg-secondary">Inactive</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <a href="/admins/page/show/{{ $item->id }}" class="btn btn-success btn-sm">Show</a>
-                                                        <a href="/admins/page/edit/{{ $item->id }}" class="btn btn-primary btn-sm">Edit</a>
-                                                        <a href="/admins/page/delete/{{ $item->id }}" class="btn btn-danger btn-sm">Delete</a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
                         @endif
 
-                        {{-- Website Pages Section --}}
+                        {{-- Main Site Pages or Website Pages --}}
                         <div class="row">
                             <div class="col-lg">
-                                <h4><i class="fas fa-desktop"></i> Website Pages</h4>
+                                @if(isset($isMainSite) && $isMainSite)
+                                    <h4><i class="fas fa-star"></i> Main Site Pages</h4>
+                                @elseif(isset($website) && $website)
+                                    <h4><i class="fas fa-desktop"></i> {{ $website->name }} Pages</h4>
+                                @endif
+                                
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
-
                                     <table class="table">
                                         <thead>
                                             <tr>
                                                 <th>SI</th>
                                                 <th>Name</th>
-                                                <th>Website</th>
-                                                <th>Website Type</th>
+                                                @if(!isset($isMainSite) || !$isMainSite)
+                                                    <th>Website</th>
+                                                @endif
+                                                @if(isset($isMainSite) && $isMainSite)
+                                                    <th>URL Preview</th>
+                                                @endif
                                                 <th>Position/Order</th>
-                                                <th>Display Type</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -201,10 +174,12 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="8" class="text-center">No website pages found.</td>
+                                                    <td colspan="{{ (isset($isMainSite) && $isMainSite) ? '6' : '6' }}" class="text-center">
+                                                        No pages found.
+                                                    </td>
                                                 </tr>
                                             @else
-                                                @foreach ($data->where('is_main_site', false) as $key => $item)
+                                                @foreach ($data as $key => $item)
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
                                                         <td>
@@ -215,26 +190,27 @@
                                                                 </span>
                                                             @endif
                                                         </td>
-                                                        <td>{{ $item->website->name ?? 'Main Site'}}</td>
-                                                        <td>
-                                                            <span class="badge bg-{{ $item->website->type ?? 'Main Site' == 'investment' ? 'primary' : 'success' }}">
-                                                                {{ ucfirst($item->website->type ?? 'Main Site') }}
-                                                            </span>
-                                                        </td>
+                                                        @if(!isset($isMainSite) || !$isMainSite)
+                                                            <td>
+                                                                @if($item->website)
+                                                                    {{ $item->website->name }}
+                                                                    <br><small class="text-muted">{{ $item->website->domain }}</small>
+                                                                @else
+                                                                    <span class="text-muted">N/A</span>
+                                                                @endif
+                                                            </td>
+                                                        @endif
+                                                        @if(isset($isMainSite) && $isMainSite)
+                                                            <td>
+                                                                @if($item->is_homepage)
+                                                                    <code>fundconnects.com</code>
+                                                                @else
+                                                                    <code>fundconnects.com/page/{{ str_replace(' ', '-', strtolower($item->name)) }}</code>
+                                                                @endif
+                                                            </td>
+                                                        @endif
                                                         <td>
                                                             <span class="badge bg-info">{{ $item->position ?? 0 }}</span>
-                                                            @if ($item->website->type ?? 'Main Site' == 'investment')
-                                                                <small class="text-muted d-block">Section order</small>
-                                                            @else
-                                                                <small class="text-muted d-block">Menu order</small>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if ($item->website->type ?? "Main Site" == 'investment')
-                                                                <small class="text-muted">Section on homepage</small>
-                                                            @else
-                                                                <small class="text-muted">Separate page</small>
-                                                            @endif
                                                         </td>
                                                         <td>
                                                             @if ($item->status == 1)

@@ -29,7 +29,7 @@
                     @else
                         {{-- Fundraiser website: Multi-page navigation (current behavior) --}}
                         @foreach ($check->pages->sortBy('position') as $item)
-                            @if ($item->status == 1)
+                            @if ($item->status == 1 && $item->show_in_menu)
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $header->color }} !important;">{{ $item->name }}</a>
                                 </li>

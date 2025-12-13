@@ -819,7 +819,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ route('admin.ticket.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.ticket.websites') }}" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
         </div>

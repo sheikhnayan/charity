@@ -454,7 +454,7 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('authorize.payment') }}" method="POST"
+                <form action="{{ route('stripe.post') }}" method="POST" id="payment-form"
                     style="padding: 1rem; background: #f4f4f4; border: 1px solid #dedede; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                     @csrf
                     <input type="hidden" name="donation_id" value="{{ $data->id }}">
@@ -463,16 +463,12 @@
                         value="{{ (($data->amount / 100) * $payment->fee) + $data->amount }}">
                     <div data-testid="form-field-wrapper" class="sc-jnLVoO gJUOyx">
                         <div class="sc-hUpaCq iQeRTc">
-                            <div color="#2B2A35" data-testid="authenticationEmailInputContainer" id="card_number"
+                            <div color="#2B2A35" data-testid="authenticationEmailInputContainer" id="card_number_wrapper"
                                 width="100%" value="" aria-required="true" aria-invalid="false"
                                 font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
                                 font-size="14px" class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative">
-                                <input notranslate="true" type="text" class="form-control pr-5"
-                                    @error('card_number') is-invalid @enderror name="card_number" required
-                                    autocomplete="off" maxlength="16" placeholder="Card number" color="#2B2A35"
-                                    id="card_number" width="100%"
-                                    font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
-                                    font-size="14px" class="sc-hBUSln kIfaoz" value="" style="width: 100%; padding-right: 2.5rem;" required>
+                                <!-- Stripe Element will be mounted here -->
+                                <div id="card_number" class="form-control" style="padding: 0.8rem; height: auto; background: white;"></div>
                                 <span class="position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;">
                                     <i class="fa fa-lock" aria-hidden="true" style="color: #888;"></i>
                                 </span>
@@ -483,12 +479,8 @@
                                 value="" aria-required="true" aria-invalid="false"
                                 font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
                                 font-size="14px" class=" expiry sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ">
-                                <input notranslate="true" type="text" class="form-control" maxlength="15"
-                                    placeholder="Expiration date (MM / YY)" pattern="^(0[1-9]|1[0-2])\ / \d{2}$" name="expiration_date" autocomplete="off" color="#2B2A35"
-                                    id="expiration_date" width="100%"
-                                    font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
-                                    font-size="14px" class="sc-hBUSln kIfaoz" value="" style="width: 100%" required
-                                    oninput="formatExpiryDate(this)">
+                                <!-- Stripe Expiry Element will be mounted here -->
+                                <div id="expiration_date" class="form-control" style="padding: 0.8rem; height: auto; background: white;"></div>
                             </div>
 
 
@@ -497,11 +489,8 @@
                                 value="" aria-required="true" aria-invalid="false"
                                 font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
                                 font-size="14px" class="security sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ">
-                                <input notranslate="true" type="text" class="form-control pr-5"
-                                    placeholder="Security code" name="cvv" autocomplete="email" color="#2B2A35" id="cvv"
-                                    width="100%" aria-required="true" aria-invalid="false"
-                                    font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
-                                    font-size="14px" class="sc-hBUSln kIfaoz" value="" style="width: 100%; padding-right: 2.5rem;" required>
+                                <!-- Stripe CVC Element will be mounted here -->
+                                <div id="cvv" class="form-control" style="padding: 0.8rem; height: auto; background: white; padding-right: 2.5rem;"></div>
                                 <span class="position-absolute" style="right: 13px; top: 42%; transform: translateY(-50%); cursor: pointer;" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" title="3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front.">
                                     <i class="fa fa-question-circle" aria-hidden="true" style="color: #888;"></i>
                                 </span>
@@ -1112,6 +1101,108 @@
         populateStatesAndFields();
         document.getElementById('country').addEventListener('change', populateStatesAndFields);
     });
+</script>
+
+<!-- Stripe JS -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Initialize Stripe with publishable key
+    @php
+        $paymentConfig = \App\Models\Payment::where('user_id', auth()->check() ? auth()->id() : $user_id)->first();
+    @endphp
+    
+    const stripe = Stripe("{{ $paymentConfig && isset($paymentConfig->config['publishable_key']) ? $paymentConfig->config['publishable_key'] : env('STRIPE_KEY') }}");
+    const elements = stripe.elements();
+    
+    // Define style to match the authorize.net design
+    const style = {
+        base: {
+            fontSize: '14px',
+            color: '#2B2A35',
+            fontFamily: 'Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    };
+    
+    // Create Stripe Elements
+    const cardNumber = elements.create('cardNumber', {
+        style: style,
+        placeholder: 'Card number'
+    });
+    
+    const cardExpiry = elements.create('cardExpiry', {
+        style: style,
+        placeholder: 'MM / YY'
+    });
+    
+    const cardCvc = elements.create('cardCvc', {
+        style: style,
+        placeholder: 'CVV'
+    });
+    
+    // Mount Elements to DOM
+    cardNumber.mount('#card_number');
+    cardExpiry.mount('#expiration_date');
+    cardCvc.mount('#cvv');
+    
+    // Handle form submission
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('pay-btn');
+    
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        // Disable submit button to prevent multiple submissions
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        }
+        
+        // Create token with Stripe
+        const {token, error} = await stripe.createToken(cardNumber);
+        
+        if (error) {
+            // Show error to user
+            const errorElement = document.getElementById('card-errors');
+            if (errorElement) {
+                errorElement.textContent = error.message;
+            } else {
+                alert(error.message);
+            }
+            
+            // Re-enable submit button
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Pay Now <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>';
+            }
+        } else {
+            // Add token to form as hidden input
+            const tokenInput = document.createElement('input');
+            tokenInput.setAttribute('type', 'hidden');
+            tokenInput.setAttribute('name', 'stripeToken');
+            tokenInput.setAttribute('value', token.id);
+            form.appendChild(tokenInput);
+            
+            // Submit the form
+            form.submit();
+        }
+    });
+    
+    // Add error display element if not exists
+    if (!document.getElementById('card-errors')) {
+        const errorDiv = document.createElement('div');
+        errorDiv.id = 'card-errors';
+        errorDiv.style.color = '#fa755a';
+        errorDiv.style.marginTop = '10px';
+        errorDiv.style.fontSize = '14px';
+        form.insertBefore(errorDiv, form.firstChild);
+    }
 </script>
 
 {{-- @if($footer && $website)

@@ -23,6 +23,7 @@ class Page extends Model
         'default',
         'is_main_site',
         'is_homepage',
+        'show_in_menu',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Page extends Model
         'is_template' => 'boolean',
         'is_main_site' => 'boolean',
         'is_homepage' => 'boolean',
+        'show_in_menu' => 'boolean',
     ];
 
     public function website()

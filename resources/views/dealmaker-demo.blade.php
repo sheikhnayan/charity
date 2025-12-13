@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Last Published: Thu Aug 28 2025 16:28:18 GMT+0000 (Coordinated Universal Time) -->
-<html data-wf-domain="www.dealmaker.tech" data-wf-page="68547489207784144a773f3e" data-wf-site="656f55af4b70f4ce7ae4b997"
+<html data-wf-page="68547489207784144a773f3e" data-wf-site="656f55af4b70f4ce7ae4b997"
     lang="en">
 
 <head>
@@ -678,7 +678,6 @@
         rel="shortcut icon" type="image/x-icon" />
     <link href="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d9c0817e01979b38b7550_fav_256.png"
         rel="apple-touch-icon" />
-    <link href="https://www.dealmaker.tech" rel="canonical" /><!-- Google Tag Manager -->
     <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];
@@ -1093,7 +1092,7 @@ a,
                         </nav>
                         
                         <div class="nav-actions">
-                            <a href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}" 
+                            <a href="{{ $setting->signin_url ?? '/login' }}" 
                                class="nav-signin" style="display: none;">
                                 <svg class="signin-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1146,7 +1145,7 @@ a,
                         </nav>
                         
                         <div class="mobile-nav-actions">
-                            <a href="{{ $setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}" 
+                            <a href="{{ $setting->signin_url ?? '/login' }}" 
                                class="mobile-signin" style="display: none;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

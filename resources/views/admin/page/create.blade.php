@@ -157,6 +157,23 @@ label{
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
+                                                        <label for="show_in_menu" class="form-label">
+                                                            <i class="fas fa-bars me-1"></i>Show in Menu
+                                                        </label>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="show_in_menu" name="show_in_menu" value="1" checked>
+                                                            <label class="form-check-label" for="show_in_menu">
+                                                                Display this page in the website navigation menu
+                                                            </label>
+                                                        </div>
+                                                        <small class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>
+                                                            Toggle this to control whether the page appears in the menu. Useful for hidden pages like thank you pages or private pages.
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
                                                         <label for="name" class="form-label">Meta Title</label>
                                                         <input type="text" name="meta_title" class="form-control" id="meta_title" placeholder="Meta Title">
                                                     </div>
@@ -200,7 +217,7 @@ label{
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Submit</button>
-                                            <a href="{{ route('admin.page.index') }}" class="btn btn-danger">Cancel</a>
+                                            <a href="{{ route('admin.page.websites') }}" class="btn btn-danger">Cancel</a>
                                         </div>
 
                                     </form>

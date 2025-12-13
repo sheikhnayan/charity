@@ -547,4 +547,114 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Failed to load geomap data', 'message' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Export analytics dashboard data as CSV or Excel
+     */
+    public function export(Request $request)
+    {
+        $websiteId = $request->website_id;
+        $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() 
+                                        : now()->subDays(90)->startOfDay();
+        $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() 
+                                    : now()->endOfDay();
+        $format = $request->format ?? 'csv'; // csv or excel
+
+        // Get analytics data
+        $stats = $this->getAnalyticsStats($websiteId, $startDate, $endDate);
+        
+        // Get website name for file naming
+        $websiteName = $websiteId ? \App\Models\Website::find($websiteId)?->name : 'All_Websites';
+        $websiteName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $websiteName);
+
+        if ($format === 'excel') {
+            // Excel export
+            $excelService = new \App\Services\ExcelExportService();
+            $spreadsheet = $excelService->exportAnalyticsDashboard($stats, $websiteName, $startDate, $endDate);
+            
+            $filename = 'analytics_dashboard_' . $websiteName . '_' . now()->format('Y-m-d');
+            return $excelService->generateAndDownload($spreadsheet, $filename);
+        }
+
+        // CSV export
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="analytics_dashboard_' . $websiteName . '_' . now()->format('Y-m-d') . '.csv"',
+        ];
+
+        $callback = function() use ($stats, $startDate, $endDate) {
+            $file = fopen('php://output', 'w');
+            
+            // Summary section
+            fputcsv($file, ['Analytics Dashboard Export']);
+            fputcsv($file, ['Date Range', $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d')]);
+            fputcsv($file, []);
+            
+            // Overview Stats
+            fputcsv($file, ['Overview Statistics']);
+            fputcsv($file, ['Metric', 'Value']);
+            fputcsv($file, ['Page Views', number_format($stats['today']['pageViews'] ?? 0)]);
+            fputcsv($file, ['Unique Visitors', number_format($stats['today']['uniqueVisitors'] ?? 0)]);
+            fputcsv($file, ['Conversions', number_format($stats['today']['conversions'] ?? 0)]);
+            fputcsv($file, ['Revenue', '$' . number_format($stats['today']['revenue'] ?? 0, 2)]);
+            fputcsv($file, ['Gross Sales', '$' . number_format($stats['today']['grossSales'] ?? 0, 2)]);
+            fputcsv($file, ['Returning Customer Rate', number_format($stats['today']['returningCustomerRate'] ?? 0, 2) . '%']);
+            fputcsv($file, ['Orders Fulfilled', number_format($stats['today']['ordersFulfilled'] ?? 0)]);
+            fputcsv($file, []);
+            
+            // Weekly Stats - Fixed key from 'weekly' to 'week'
+            if (!empty($stats['week'])) {
+                fputcsv($file, ['Weekly Performance']);
+                fputcsv($file, ['Date', 'Page Views', 'Unique Visitors', 'Conversions', 'Revenue']);
+                
+                // Get dates and data arrays
+                $dates = $stats['week']['dates'] ?? [];
+                $pageViews = $stats['week']['pageViews'] ?? [];
+                $uniqueVisitors = $stats['week']['uniqueVisitors'] ?? [];
+                $conversions = $stats['week']['conversions'] ?? [];
+                $revenue = $stats['week']['revenue'] ?? [];
+                
+                // Combine arrays into rows
+                for ($i = 0; $i < count($dates); $i++) {
+                    fputcsv($file, [
+                        $dates[$i] ?? '',
+                        number_format($pageViews[$i] ?? 0),
+                        number_format($uniqueVisitors[$i] ?? 0),
+                        number_format($conversions[$i] ?? 0),
+                        '$' . number_format($revenue[$i] ?? 0, 2)
+                    ]);
+                }
+                fputcsv($file, []);
+            }
+            
+            // Top Pages
+            if (!empty($stats['topPages'])) {
+                fputcsv($file, ['Top Pages']);
+                fputcsv($file, ['Page', 'Views']);
+                foreach ($stats['topPages'] as $page) {
+                    fputcsv($file, [
+                        $page['page'] ?? 'Unknown',
+                        number_format($page['views'] ?? 0)
+                    ]);
+                }
+                fputcsv($file, []);
+            }
+            
+            // Top Referrers
+            if (!empty($stats['topReferrers'])) {
+                fputcsv($file, ['Top Referrers']);
+                fputcsv($file, ['Source', 'Visitors']);
+                foreach ($stats['topReferrers'] as $referrer) {
+                    fputcsv($file, [
+                        $referrer['source'] ?? 'Unknown',
+                        number_format($referrer['visitors'] ?? 0)
+                    ]);
+                }
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

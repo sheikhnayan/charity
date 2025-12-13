@@ -38,7 +38,7 @@ class WebsitePaymentController extends Controller
      */
     public function update(Request $request, Website $website)
     {
-        dd($request->all());
+        // dd($request->all());
 
         $validator = Validator::make($request->all(), [
             'payment_method' => 'required|in:stripe,authorize',

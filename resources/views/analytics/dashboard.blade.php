@@ -8,6 +8,16 @@
         <h1 class="mt-4">Analytics Dashboard</h1>
         
         <div class="d-flex gap-3">
+            <!-- Export Buttons -->
+            <div class="btn-group">
+                <a href="{{ route('analytics.dashboard.export', array_merge(request()->all(), ['format' => 'csv'])) }}" class="btn btn-success">
+                    <i class="bi bi-filetype-csv"></i> Export CSV
+                </a>
+                <a href="{{ route('analytics.dashboard.export', array_merge(request()->all(), ['format' => 'excel'])) }}" class="btn btn-primary">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </a>
+            </div>
+            
             <!-- Website Selector -->
             <form id="websiteForm" class="d-flex gap-3" action="{{ route('analytics.dashboard') }}" method="GET">
                 <select name="website_id" class="form-select" onchange="this.form.submit()">

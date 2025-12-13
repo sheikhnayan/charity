@@ -847,25 +847,27 @@ img {
         <div class="footer_line_divider"></div>
         <div class="footer_bottom_wrapper">
             <ul id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e36600-e0e365c4" role="list" class="footer_link_list">
-                @if ($setting->refund)
-                    <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}"
-                            aria-label="Read privacy policy" target="_blank" class="footer_legal_link">Refund policy</a>
-                    </li>
-                @endif
-                @if ($setting->privacy)
-                    <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}"
-                            aria-label="Read privacy policy" target="_blank" class="footer_legal_link">Privacy policy</a>
-                    </li>
-                @endif
-                @if ($setting->terms)
-                    <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}"
-                            aria-label="Read privacy policy" target="_blank" class="footer_legal_link">Terms of service</a>
-                    </li>
+                @if ($footer && $footer->privacy == 1)
+                    @if ($footer->refund_page_id && $footer->refund_page)
+                        <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($footer->refund_page->name)) }}"
+                                aria-label="Read refund policy" class="footer_legal_link">Refund policy</a>
+                        </li>
+                    @endif
+                    @if ($footer->privacy_page_id && $footer->privacy_page)
+                        <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($footer->privacy_page->name)) }}"
+                                aria-label="Read privacy policy" class="footer_legal_link">Privacy policy</a>
+                        </li>
+                    @endif
+                    @if ($footer->terms_page_id && $footer->terms_page)
+                        <li class="footer_link_item"><a href="/page/{{ str_replace(' ', '-', strtolower($footer->terms_page->name)) }}"
+                                aria-label="Read terms of service" class="footer_legal_link">Terms of service</a>
+                        </li>
+                    @endif
                 @endif
             </ul>
             <div id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365fe-e0e365c4" class="footer_credit_text" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin: auto;">
                 <div style="color: inherit !important; font-family: Outfit,sans-serif !important;">
-                    {!! $website->investment_disclaimer !!}
+                    {!! $footer->investment_disclaimer ?? '' !!}
                 </div>
             </div>
         </div>

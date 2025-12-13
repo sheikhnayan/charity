@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Last Published: Thu Aug 28 2025 16:28:18 GMT+0000 (Coordinated Universal Time) -->
-<html data-wf-domain="www.dealmaker.tech" data-wf-page="68547489207784144a773f3e" data-wf-site="656f55af4b70f4ce7ae4b997"
+<html data-wf-page="68547489207784144a773f3e" data-wf-site="656f55af4b70f4ce7ae4b997"
     lang="en">
 @php
     $main_setting = \App\Models\DealmakerConfig::getInstance();;
@@ -52,7 +52,6 @@
         rel="shortcut icon" type="image/x-icon" />
     <link href="https://cdn.prod.website-files.com/656f55af4b70f4ce7ae4b997/685d9c0817e01979b38b7550_fav_256.png"
         rel="apple-touch-icon" />
-    <link href="https://www.dealmaker.tech" rel="canonical" /><!-- Google Tag Manager -->
     <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];
@@ -514,7 +513,7 @@ a,
                  
                     <div class="navbar_menu-buttons"><a
                       style="display: none;"
-                            href="{{ $main_setting->signin_url ?? 'https://app.dealmaker.tech/users/sign_in' }}"
+                            href="{{ $main_setting->signin_url ?? '/login' }}"
                             class="n_button is-ghost w-inline-block">
                             <div class="signin_icon w-embed"><svg width="auto" height="auto" viewBox="0 0 38 38"
                                     fill="none" xmlns="http://www.w3.org/2000/svg">

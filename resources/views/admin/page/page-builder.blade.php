@@ -2853,7 +2853,7 @@ button a:hover {
                 <div class="component-item" draggable="true" data-type="sell-tickets"><i class="fas fa-ticket-alt me-2"></i>Sell Tickets</div>
                 <div class="component-item" draggable="true" data-type="whos-coming"><i class="fas fa-users me-2"></i>Who's Coming</div>
                 <div class="component-item" draggable="true" data-type="donation-form"><i class="fas fa-heart me-2"></i>Donation Form</div>
-                <div class="component-item" draggable="true" data-type="donor-list"><i class="fas fa-list me-2"></i>Donor List</div>
+                {{-- <div class="component-item" draggable="true" data-type="donor-list"><i class="fas fa-list me-2"></i>Donor List</div> --}}
                 {{-- <div class="component-item" draggable="true" data-type="donation-slider">Donation Slider</div> --}}
                 <div class="component-item" draggable="true" data-type="custom-form"><i class="fas fa-wpforms me-2"></i>Custom Form</div>
                 <div class="component-item" draggable="true" data-type="contact-form"><i class="fas fa-envelope me-2"></i>Contact Form</div>
@@ -2880,6 +2880,18 @@ button a:hover {
                     <div class="form-group">
                         <label>Page Background Color</label>
                         <input type="color" id="pageBackgroundColor" value="{{ $data->background_color ?? '#ffffff' }}" oninput="updatePageBackground(this.value)">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="showInMenu" name="show_in_menu" value="1" {{ $data->show_in_menu ? 'checked' : '' }} style="width: 20px; height: 20px; cursor: pointer;">
+                            <span style="font-weight: 500;">
+                                <i class="bi bi-list-ul"></i> Show in Menu
+                            </span>
+                        </label>
+                        <small class="text-muted" style="display: block; margin-top: 5px; margin-left: 30px;">
+                            When enabled, this page will appear in the site navigation menu.
+                        </small>
                     </div>
                 </div>
             </div>
@@ -4260,6 +4272,7 @@ button a:hover {
         objectFit: 'cover',
         link: '',
         openInNewTab: false,
+        useUrl: false,
     };
     content.renderImage = function() {
         const d = content._imageData;
@@ -5118,6 +5131,7 @@ break;
                 buttonText: 'Learn More',
                 buttonUrl: '#',
                 buttonColor: '#667eea',
+                showButton: true,
                 textColor: '#ffffff',
                 imageUrl: '',
                 imageWidth: '300',
@@ -5149,7 +5163,7 @@ break;
                         <div style="text-align: ${d.textAlign}; color: ${d.textColor}; z-index: 2; max-width: 800px; margin: ${d.contentType === 'both' ? '0 0 30px 0' : '0'};">
                             ${d.heading ? `<h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">${d.heading}</h1>` : ''}
                             ${d.subheading ? `<p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${d.subheading}</p>` : ''}
-                            ${d.buttonText ? `<a href="${d.buttonUrl}" class="btn" style="background-color: ${d.buttonColor}; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s;">${d.buttonText}</a>` : ''}
+                            ${d.showButton && d.buttonText ? `<a href="${d.buttonUrl}" class="btn" style="background-color: ${d.buttonColor}; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s;">${d.buttonText}</a>` : ''}
                         </div>
                     `;
                 }
@@ -7891,8 +7905,27 @@ break;
             const d = content._imageData || {};
             specificControls = `
                 <div class="form-group">
-                    <label>Upload Image</label>
-                    <input type="file" accept="image/*" onchange="uploadSingleImage(event)">
+                    <label>Image Source</label>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
+                            <input type="radio" name="imageSourceType" value="upload" ${!d.useUrl ? 'checked' : ''} onchange="toggleImageSource(false)" style="margin-right: 5px;">
+                            Upload File
+                        </label>
+                        <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="imageSourceType" value="url" ${d.useUrl ? 'checked' : ''} onchange="toggleImageSource(true)" style="margin-right: 5px;">
+                            Use URL
+                        </label>
+                    </div>
+                    
+                    <div id="imageUploadSection" style="display: ${!d.useUrl ? 'block' : 'none'};">
+                        <input type="file" accept="image/*" onchange="uploadSingleImage(event)">
+                    </div>
+                    
+                    <div id="imageUrlSection" style="display: ${d.useUrl ? 'block' : 'none'};">
+                        <input type="text" placeholder="Enter image URL (e.g., https://example.com/image.jpg)" value="${d.useUrl ? d.src : ''}" oninput="updateImageUrl(this.value)" style="width: 100%;">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">Enter a full URL to an image</small>
+                    </div>
+                    
                     <img src="${d.src}" class="image-preview" style="margin-top:8px;max-width:100%;border-radius:4px;"/>
                 </div>
                 <div class="form-group">
@@ -10526,20 +10559,29 @@ break;
                             <textarea rows="2" oninput="updateVideoField(this.value, 'subheading')" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Your subheading or description">${videoData.subheading}</textarea>
                         </div>
                         <div class="form-group">
-                            <label>Button Text</label>
-                            <input type="text" value="${videoData.buttonText}" oninput="updateVideoField(this.value, 'buttonText')" placeholder="Learn More">
-                        </div>
-                        <div class="form-group">
-                            <label>Button URL</label>
-                            <input type="text" value="${videoData.buttonUrl}" oninput="updateVideoField(this.value, 'buttonUrl')" placeholder="#">
-                        </div>
-                        <div class="form-group">
-                            <label>Button Color</label>
-                            <input type="color" value="${videoData.buttonColor}" oninput="updateVideoField(this.value, 'buttonColor')">
-                        </div>
-                        <div class="form-group">
                             <label>Text Color</label>
                             <input type="color" value="${videoData.textColor}" oninput="updateVideoField(this.value, 'textColor')">
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" ${videoData.showButton !== false ? 'checked' : ''} onchange="updateVideoField(this.checked, 'showButton')" style="margin-right: 8px;">
+                                Show Button
+                            </label>
+                        </div>
+                        <div id="buttonSettings" style="display: ${videoData.showButton !== false ? 'block' : 'none'};">
+                            <div class="form-group">
+                                <label>Button Text</label>
+                                <input type="text" value="${videoData.buttonText}" oninput="updateVideoField(this.value, 'buttonText')" placeholder="Learn More">
+                            </div>
+                            <div class="form-group">
+                                <label>Button URL</label>
+                                <input type="text" value="${videoData.buttonUrl}" oninput="updateVideoField(this.value, 'buttonUrl')" placeholder="#">
+                            </div>
+                            <div class="form-group">
+                                <label>Button Color</label>
+                                <input type="color" value="${videoData.buttonColor}" oninput="updateVideoField(this.value, 'buttonColor')">
+                            </div>
                         </div>
                     </div>
                     
@@ -11888,13 +11930,37 @@ function uploadSingleImage(event) {
     if (!selectedComponent) return;
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showUploadNotification('Please select a valid image file.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file size
+    const maxSize = window.uploadConfig?.maxFileSize || (2 * 1024 * 1024);
+    const maxSizeMB = window.uploadConfig?.maxFileSizeMB || 2;
+    
+    if (file.size > maxSize) {
+        showUploadNotification(`File size (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds the maximum allowed size of ${maxSizeMB}MB.`, 'error');
+        event.target.value = '';
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         const content = getContentElement(selectedComponent);
         if (!content._imageData) return;
         content._imageData.src = e.target.result;
+        content._imageData.useUrl = false; // Mark as uploaded file, not URL
         content.renderImage();
         updatePropertyPanel();
+        showUploadNotification('Image updated successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        event.target.value = '';
     };
     reader.readAsDataURL(file);
 }
@@ -11922,6 +11988,49 @@ function updateImageField(value, field) {
     
     // Save throttled history for image field changes
     saveHistoryThrottled(`Image ${field} updated`);
+}
+
+function toggleImageSource(useUrl) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._imageData) return;
+    
+    content._imageData.useUrl = useUrl;
+    
+    // Show/hide appropriate sections
+    const uploadSection = document.getElementById('imageUploadSection');
+    const urlSection = document.getElementById('imageUrlSection');
+    
+    if (uploadSection && urlSection) {
+        if (useUrl) {
+            uploadSection.style.display = 'none';
+            urlSection.style.display = 'block';
+        } else {
+            uploadSection.style.display = 'block';
+            urlSection.style.display = 'none';
+        }
+    }
+    
+    updatePropertyPanel();
+}
+
+function updateImageUrl(url) {
+    if (!selectedComponent) return;
+    const content = getContentElement(selectedComponent);
+    if (!content._imageData) return;
+    
+    content._imageData.src = url;
+    content._imageData.useUrl = true;
+    content.renderImage();
+    
+    // Update the preview image in the property panel
+    const preview = document.querySelector('.image-preview');
+    if (preview) {
+        preview.src = url;
+    }
+    
+    // Save throttled history for image URL changes
+    saveHistoryThrottled('Image URL updated');
 }
 
 // Timeline functions
@@ -12610,6 +12719,14 @@ function updateVideoField(value, field) {
                 textSettings.style.display = 'block';
                 imageSettings.style.display = 'block';
             }
+        }
+    }
+    
+    // Toggle button settings visibility when showButton changes
+    if (field === 'showButton') {
+        const buttonSettings = document.getElementById('buttonSettings');
+        if (buttonSettings) {
+            buttonSettings.style.display = value ? 'block' : 'none';
         }
     }
     
@@ -14003,16 +14120,47 @@ function applyResponsiveStyles() {
         function handleImageUpload(event) {
             const files = Array.from(event.target.files);
             if (!files.length) return;
+            
+            const maxSize = window.uploadConfig?.maxFileSize || (2 * 1024 * 1024);
+            const maxSizeMB = window.uploadConfig?.maxFileSizeMB || 2;
+            let hasErrors = false;
+            let processedCount = 0;
+            
             files.forEach(file => {
-                if (!file.type.startsWith('image/')) return;
+                if (!file.type.startsWith('image/')) {
+                    showUploadNotification(`File "${file.name}" is not a valid image.`, 'error');
+                    hasErrors = true;
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    showUploadNotification(`File "${file.name}" (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum size of ${maxSizeMB}MB.`, 'error');
+                    hasErrors = true;
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     uploadedImages.push(e.target.result);
-                    renderImageGallery();
+                    processedCount++;
+                    
+                    if (processedCount === files.filter(f => f.type.startsWith('image/') && f.size <= maxSize).length) {
+                        renderImageGallery();
+                        if (!hasErrors) {
+                            showUploadNotification(`${processedCount} image(s) uploaded successfully!`, 'success');
+                        }
+                    }
+                };
+                reader.onerror = function() {
+                    showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+                    hasErrors = true;
                 };
                 reader.readAsDataURL(file);
             });
-            document.getElementById('uploadStatus').innerText = 'Images uploaded!';
+            
+            if (processedCount === 0 && !hasErrors) {
+                document.getElementById('uploadStatus').innerText = 'No valid images to upload.';
+            }
         }
 
         // Render image gallery for selection (multiple select)
@@ -14829,6 +14977,24 @@ function applyResponsiveStyles() {
         if (!selectedComponent || !input.files || !input.files[0]) return;
         
         const file = input.files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showUploadNotification('Please select a valid image file.', 'error');
+            input.value = '';
+            return;
+        }
+        
+        // Check file size (get from server config or use default 2MB)
+        const maxSize = window.uploadConfig?.maxFileSize || (2 * 1024 * 1024); // 2MB default
+        const maxSizeMB = window.uploadConfig?.maxFileSizeMB || 2;
+        
+        if (file.size > maxSize) {
+            showUploadNotification(`File size (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds the maximum allowed size of ${maxSizeMB}MB.`, 'error');
+            input.value = '';
+            return;
+        }
+        
         const formData = new FormData();
         formData.append('image', file);
         formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
@@ -14851,13 +15017,14 @@ function applyResponsiveStyles() {
                 updatePropertyPanel();
                 // Reset the file input
                 input.value = '';
+                showUploadNotification('Image uploaded successfully!', 'success');
             } else {
-                alert('Upload failed: ' + (data.message || 'Unknown error'));
+                showUploadNotification(data.message || 'Upload failed. Please try again.', 'error');
             }
         })
         .catch(error => {
             console.error('Upload error:', error);
-            alert('Upload failed. Please try again.');
+            showUploadNotification('Upload failed. Please check your connection and try again.', 'error');
         })
         .finally(() => {
             // Reset loading state
@@ -14865,6 +15032,92 @@ function applyResponsiveStyles() {
             input.disabled = false;
         });
     }
+    
+    // Show upload notification
+    function showUploadNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotif = document.getElementById('uploadNotification');
+        if (existingNotif) {
+            existingNotif.remove();
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.id = 'uploadNotification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+    
+    // Add CSS animations
+    if (!document.getElementById('uploadNotificationStyles')) {
+        const style = document.createElement('style');
+        style.id = 'uploadNotificationStyles';
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Fetch upload configuration on page load
+    (function fetchUploadConfig() {
+        fetch('/admins/upload-config')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.uploadConfig = data.limits;
+                    console.log('Upload limits loaded:', data.limits);
+                }
+            })
+            .catch(error => {
+                console.error('Failed to fetch upload config:', error);
+                // Use defaults if fetch fails
+                window.uploadConfig = {
+                    maxFileSize: 2 * 1024 * 1024, // 2MB
+                    maxFileSizeMB: 2
+                };
+            });
+    })();
 
     // --- Custom Form Builder Logic ---
     // Remove add/remove field controls from the preview panel. Only allow from property panel.
@@ -17227,11 +17480,19 @@ function applyResponsiveStyles() {
           }
         });
       }
+      
+      // Get show_in_menu value from checkbox
+      const showInMenuCheckbox = document.getElementById('showInMenu');
+      const showInMenu = showInMenuCheckbox ? (showInMenuCheckbox.checked ? 1 : 0) : 1;
+      console.log('Show in menu value:', showInMenu);
 
       fetch('/admins/page/save/'+id, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
-        body: JSON.stringify({ state })
+        body: JSON.stringify({ 
+          state: state,
+          show_in_menu: showInMenu
+        })
       })
       .then(res => {
         console.log('Save response status:', res.status);

@@ -476,11 +476,28 @@
                     </label>
                     <input type="date" name="end_date" class="form-control" value="{{ $endDate->format('Y-m-d') }}" max="{{ date('Y-m-d') }}">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <button type="submit" class="btn btn-filter w-100">
                         <i class="fas fa-filter me-2"></i>Apply Filter
                         <span class="loading-spinner d-none ms-2"></span>
                     </button>
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label text-white fw-semibold" style="visibility: hidden;">Export</label>
+                    <div class="d-flex gap-1">
+                        <a href="{{ route('analytics.dashboard.export', array_merge(request()->all(), ['format' => 'csv'])) }}" 
+                           class="btn btn-success flex-fill" 
+                           style="font-size: 11px; padding: 8px 4px;"
+                           title="Export as CSV">
+                            <i class="bi bi-filetype-csv"></i> CSV
+                        </a>
+                        <a href="{{ route('analytics.dashboard.export', array_merge(request()->all(), ['format' => 'excel'])) }}" 
+                           class="btn btn-primary flex-fill" 
+                           style="font-size: 11px; padding: 8px 4px;"
+                           title="Export as Excel">
+                            <i class="bi bi-file-earmark-excel"></i> XLS
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>

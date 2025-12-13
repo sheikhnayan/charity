@@ -251,4 +251,174 @@ class ExcelExportService
             $headers
         );
     }
+
+    /**
+     * Export Analytics Dashboard data to Excel
+     */
+    public function exportAnalyticsDashboard($stats, $websiteName = null, $startDate, $endDate)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Set title
+        $title = 'Analytics Dashboard';
+        if ($websiteName) {
+            $title .= ' - ' . $websiteName;
+        }
+        $sheet->setTitle('Analytics Dashboard');
+        
+        // Add title and date range
+        $sheet->setCellValue('A1', $title);
+        $sheet->mergeCells('A1:D1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 16],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ]);
+        
+        $sheet->setCellValue('A2', 'Date Range: ' . $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d'));
+        $sheet->mergeCells('A2:D2');
+        $sheet->getStyle('A2')->applyFromArray([
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ]);
+        
+        // Overview Statistics
+        $row = 4;
+        $sheet->setCellValue('A' . $row, 'Overview Statistics');
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->getStyle('A' . $row)->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4472C4']],
+            'font' => ['color' => ['rgb' => 'FFFFFF']]
+        ]);
+        
+        $row++;
+        $overviewData = [
+            ['Metric', 'Value'],
+            ['Page Views', number_format($stats['today']['pageViews'] ?? 0)],
+            ['Unique Visitors', number_format($stats['today']['uniqueVisitors'] ?? 0)],
+            ['Conversions', number_format($stats['today']['conversions'] ?? 0)],
+            ['Revenue', '$' . number_format($stats['today']['revenue'] ?? 0, 2)],
+            ['Gross Sales', '$' . number_format($stats['today']['grossSales'] ?? 0, 2)],
+            ['Returning Customer Rate', number_format($stats['today']['returningCustomerRate'] ?? 0, 2) . '%'],
+            ['Orders Fulfilled', number_format($stats['today']['ordersFulfilled'] ?? 0)]
+        ];
+        
+        $sheet->fromArray($overviewData, null, 'A' . $row);
+        
+        // Style overview headers
+        $sheet->getStyle('A' . $row . ':B' . $row)->applyFromArray([
+            'font' => ['bold' => true],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'D9E1F2']]
+        ]);
+        
+        $row += count($overviewData) + 2;
+        
+        // Weekly Performance - Fixed key from 'weekly' to 'week'
+        if (!empty($stats['week'])) {
+            $sheet->setCellValue('A' . $row, 'Weekly Performance');
+            $sheet->mergeCells('A' . $row . ':E' . $row);
+            $sheet->getStyle('A' . $row)->applyFromArray([
+                'font' => ['bold' => true, 'size' => 14],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4472C4']],
+                'font' => ['color' => ['rgb' => 'FFFFFF']]
+            ]);
+            
+            $row++;
+            $sheet->fromArray(['Date', 'Page Views', 'Unique Visitors', 'Conversions', 'Revenue'], null, 'A' . $row);
+            $sheet->getStyle('A' . $row . ':E' . $row)->applyFromArray([
+                'font' => ['bold' => true],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'D9E1F2']]
+            ]);
+            
+            $row++;
+            
+            // Get data arrays
+            $dates = $stats['week']['dates'] ?? [];
+            $pageViews = $stats['week']['pageViews'] ?? [];
+            $uniqueVisitors = $stats['week']['uniqueVisitors'] ?? [];
+            $conversions = $stats['week']['conversions'] ?? [];
+            $revenue = $stats['week']['revenue'] ?? [];
+            
+            // Populate rows
+            for ($i = 0; $i < count($dates); $i++) {
+                $sheet->setCellValue('A' . $row, $dates[$i] ?? '');
+                $sheet->setCellValue('B' . $row, number_format($pageViews[$i] ?? 0));
+                $sheet->setCellValue('C' . $row, number_format($uniqueVisitors[$i] ?? 0));
+                $sheet->setCellValue('D' . $row, number_format($conversions[$i] ?? 0));
+                $sheet->setCellValue('E' . $row, '$' . number_format($revenue[$i] ?? 0, 2));
+                $row++;
+            }
+            
+            $row += 2;
+        }
+        
+        // Top Pages
+        if (!empty($stats['topPages'])) {
+            $sheet->setCellValue('A' . $row, 'Top Pages');
+            $sheet->mergeCells('A' . $row . ':B' . $row);
+            $sheet->getStyle('A' . $row)->applyFromArray([
+                'font' => ['bold' => true, 'size' => 14],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4472C4']],
+                'font' => ['color' => ['rgb' => 'FFFFFF']]
+            ]);
+            
+            $row++;
+            $sheet->fromArray(['Page', 'Views'], null, 'A' . $row);
+            $sheet->getStyle('A' . $row . ':B' . $row)->applyFromArray([
+                'font' => ['bold' => true],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'D9E1F2']]
+            ]);
+            
+            $row++;
+            foreach ($stats['topPages'] as $page) {
+                $sheet->setCellValue('A' . $row, $page['page'] ?? 'Unknown');
+                $sheet->setCellValue('B' . $row, number_format($page['views'] ?? 0));
+                $row++;
+            }
+            
+            $row += 2;
+        }
+        
+        // Top Referrers
+        if (!empty($stats['topReferrers'])) {
+            $sheet->setCellValue('A' . $row, 'Top Referrers');
+            $sheet->mergeCells('A' . $row . ':B' . $row);
+            $sheet->getStyle('A' . $row)->applyFromArray([
+                'font' => ['bold' => true, 'size' => 14],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4472C4']],
+                'font' => ['color' => ['rgb' => 'FFFFFF']]
+            ]);
+            
+            $row++;
+            $sheet->fromArray(['Source', 'Visitors'], null, 'A' . $row);
+            $sheet->getStyle('A' . $row . ':B' . $row)->applyFromArray([
+                'font' => ['bold' => true],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'D9E1F2']]
+            ]);
+            
+            $row++;
+            foreach ($stats['topReferrers'] as $referrer) {
+                $sheet->setCellValue('A' . $row, $referrer['source'] ?? 'Unknown');
+                $sheet->setCellValue('B' . $row, number_format($referrer['visitors'] ?? 0));
+                $row++;
+            }
+        }
+        
+        // Auto-size columns
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        
+        // Add borders
+        $sheet->getStyle('A1:E' . ($row - 1))->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'CCCCCC']
+                ]
+            ]
+        ]);
+        
+        return $spreadsheet;
+    }
 }

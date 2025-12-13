@@ -108,6 +108,9 @@
     }
 
 /* Quill.js Class-based Font Styles for Frontend */
+.ql-size-6px { font-size: 6px !important; }
+.ql-size-8px { font-size: 8px !important; }
+.ql-size-9px { font-size: 9px !important; }
 .ql-size-10px { font-size: 10px !important; }
 .ql-size-12px { font-size: 12px !important; }
 .ql-size-14px { font-size: 14px !important; }
@@ -462,6 +465,8 @@ h5, .ql-header-5 {
 {{-- Include Quill.js styles even when no responsive CSS --}}
 <style>
 /* Quill.js Class-based Font Styles for Frontend */
+.ql-size-6px { font-size: 6px !important; }
+.ql-size-8px { font-size: 8px !important; }
 .ql-size-10px { font-size: 10px !important; }
 .ql-size-12px { font-size: 12px !important; }
 .ql-size-14px { font-size: 14px !important; }
@@ -1194,6 +1199,9 @@ h5, .ql-header-5 {
                         @if($muted) muted @endif
                         @if($controls) controls @endif
                         playsinline
+                        webkit-playsinline
+                        x-webkit-airplay="allow"
+                        preload="auto"
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover; z-index: 0;"
                     >
                         <source src="{{ $videoUrl }}" type="video/{{ $videoType }}">
@@ -1207,16 +1215,27 @@ h5, .ql-header-5 {
                 {{-- Always show overlay --}}
                 <div class="video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: {{ $rgbaOverlay }}; z-index: 1; pointer-events: none;"></div>
                 
-                {{-- Content area - always rendered --}}
+                {{-- Content area - conditional based on contentType --}}
                 <div class="video-content" style="position: relative !important; z-index: 10 !important; padding: 40px 20px; width: 100%; display: flex; flex-direction: column; align-items: {{ $textAlign === 'left' ? 'flex-start' : ($textAlign === 'right' ? 'flex-end' : 'center') }};">
-                    <div style="text-align: {{ $textAlign }}; color: {{ $textColor }}; z-index: 10; max-width: 800px; margin: 0;">
-                        <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $heading }}</h1>
-                        <p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $subheading }}</p>
-                        <a href="{{ $buttonUrl }}" class="btn" style="background-color: {{ $buttonColor }} !important; color: white !important; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">{{ $buttonText }}</a>
-                    </div>
+                    @if($contentType === 'text' || $contentType === 'both')
+                        <div style="text-align: {{ $textAlign }}; color: {{ $textColor }}; z-index: 10; max-width: 800px; margin: {{ $contentType === 'both' ? '0 0 30px 0' : '0' }};">
+                            @if(!empty($heading))
+                                <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $heading }}</h1>
+                            @endif
+                            @if(!empty($subheading))
+                                <p style="font-size: 1.5rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); color: {{ $textColor }} !important;">{{ $subheading }}</p>
+                            @endif
+                            @php
+                                $showButton = $videoData['showButton'] ?? true;
+                            @endphp
+                            @if($showButton && !empty($buttonText))
+                                <a href="{{ $buttonUrl }}" class="btn" style="background-color: {{ $buttonColor }} !important; color: white !important; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.1rem; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">{{ $buttonText }}</a>
+                            @endif
+                        </div>
+                    @endif
                     
-                    @if(!empty($imageUrl))
-                        <div style="z-index: 10; text-align: {{ $textAlign }}; margin-top: 30px;">
+                    @if(($contentType === 'image' || $contentType === 'both') && !empty($imageUrl))
+                        <div style="z-index: 10; text-align: {{ $textAlign }}; {{ $contentType === 'both' ? 'margin-top: 30px;' : '' }}">
                             <img src="{{ $imageUrl }}" alt="Content Image" style="max-width: {{ $imageWidth }}px; width: 100%; height: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px;">
                         </div>
                     @endif
@@ -1227,16 +1246,57 @@ h5, .ql-header-5 {
             @if(!empty($videoUrl) && $autoplay)
             <script>
                 (function() {
-                    const video = document.querySelector('#{{ $componentId }} video.video-bg');
-                    if (video) {
-                        video.muted = true; // Ensure muted for autoplay
-                        video.play().catch(e => {
-                            console.log('Video autoplay prevented:', e);
-                            // Try again after user interaction
-                            document.addEventListener('click', function playOnClick() {
-                                video.play();
-                                document.removeEventListener('click', playOnClick);
-                            }, { once: true });
+                    // Wait for DOM to be ready
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initVideo);
+                    } else {
+                        initVideo();
+                    }
+                    
+                    function initVideo() {
+                        const video = document.querySelector('#{{ $componentId }} video.video-bg');
+                        if (!video) return;
+                        
+                        // Force attributes for mobile compatibility
+                        video.setAttribute('muted', '');
+                        video.setAttribute('playsinline', '');
+                        video.setAttribute('webkit-playsinline', '');
+                        video.muted = true;
+                        video.playsInline = true;
+                        
+                        // Try to play
+                        const playPromise = video.play();
+                        
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                console.log('Video autoplay started successfully');
+                            }).catch(error => {
+                                console.log('Video autoplay prevented:', error);
+                                
+                                // Fallback: Try to play on any user interaction
+                                const playOnInteraction = function() {
+                                    video.muted = true;
+                                    video.play().then(() => {
+                                        console.log('Video played after user interaction');
+                                    }).catch(e => console.log('Still cannot play:', e));
+                                    
+                                    // Remove listeners after first successful attempt
+                                    document.removeEventListener('touchstart', playOnInteraction);
+                                    document.removeEventListener('click', playOnInteraction);
+                                    document.removeEventListener('scroll', playOnInteraction);
+                                };
+                                
+                                document.addEventListener('touchstart', playOnInteraction, { once: true, passive: true });
+                                document.addEventListener('click', playOnInteraction, { once: true });
+                                document.addEventListener('scroll', playOnInteraction, { once: true, passive: true });
+                            });
+                        }
+                        
+                        // Handle page visibility change (when user switches tabs)
+                        document.addEventListener('visibilitychange', function() {
+                            if (!document.hidden && video.paused) {
+                                video.play().catch(e => console.log('Cannot resume video:', e));
+                            }
                         });
                     }
                 })();

@@ -920,7 +920,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.ticket.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.ticket.index',[$data->website_id]) }}" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
         </div>
