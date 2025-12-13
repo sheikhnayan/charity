@@ -64,11 +64,14 @@ class AuthorizeNetController extends Controller
         $paymentGatewayService = new PaymentGatewayService();
         $paymentConfig = $paymentGatewayService->getPaymentConfigForWebsite($website);
         $paymentMethod = $paymentConfig['payment_method'];
+        
+        // Load custom fonts for dynamic font support
+        $customFonts = \App\Models\CustomFont::active()->get();
 
         if ($paymentMethod == 'stripe') {
-            return view('stripe', compact('data', 'type', 'website', 'paymentConfig'));
+            return view('stripe', compact('data', 'type', 'website', 'paymentConfig', 'customFonts'));
         } else {
-            return view('authorize-net', compact('data', 'type', 'website', 'paymentConfig'));
+            return view('authorize-net', compact('data', 'type', 'website', 'paymentConfig', 'customFonts'));
         }
     }
 

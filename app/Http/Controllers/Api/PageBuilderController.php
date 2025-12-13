@@ -217,7 +217,7 @@ class PageBuilderController extends Controller
             $update->removeHomepageStatus();
         }
 
-        return redirect()->route('admin.page.index')->with('success', 'Page updated successfully.');
+        return redirect()->route('admin.page.index',[$update->website_id])->with('success', 'Page updated successfully.');
     }
 
     public function delete($id)
