@@ -454,13 +454,16 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('authorize.payment') }}" method="POST"
+                <form action="{{ route('authorize.payment') }}" method="POST" id="payment-form"
                     style="padding: 1rem; background: #f4f4f4; border: 1px solid #dedede; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                     @csrf
                     <input type="hidden" name="donation_id" value="{{ $data->id }}">
                     <input type="hidden" name="type" value="{{ $type }}">
-                    <input type="hidden" name="amount"
+                    <input type="hidden" name="amount" id="total-amount-field"
                         value="{{ (($data->amount / 100) * $payment->fee) + $data->amount }}">
+                    <input type="hidden" name="tip_amount" id="tip-amount-field" value="0">
+                    <input type="hidden" name="tip_percentage" id="tip-percentage-field" value="0">
+                    <input type="hidden" name="tip_enabled" id="tip-enabled-field" value="0">
                     <div data-testid="form-field-wrapper" class="sc-jnLVoO gJUOyx">
                         <div class="sc-hUpaCq iQeRTc">
                             <div color="#2B2A35" data-testid="authenticationEmailInputContainer" id="card_number"
@@ -1111,6 +1114,22 @@
         setCountryValue();
         populateStatesAndFields();
         document.getElementById('country').addEventListener('change', populateStatesAndFields);
+        
+        // Add form submit handler to include tip in total amount
+        const paymentForm = document.getElementById('payment-form');
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', function(e) {
+                const baseAmountWithFee = {{ (($data->amount / 100) * $payment->fee) + $data->amount }};
+                const tipAmount = parseFloat(document.getElementById('tip-amount-field')?.value || 0);
+                const totalAmount = baseAmountWithFee + tipAmount;
+                
+                // Update the amount field to include tip
+                const amountField = document.getElementById('total-amount-field');
+                if (amountField) {
+                    amountField.value = totalAmount.toFixed(2);
+                }
+            });
+        }
     });
 </script>
 

@@ -179,13 +179,26 @@
                                                         <td>${{ number_format($item->amount, 2) }}</td>
                                                             
                                                         @endif
-                                                        <td>${{ number_format($item->fee, 2) }}</td>
+                                                        <td>
+                                                            @php
+                                                                // Calculate fee for Donation objects, use existing fee for Transaction objects
+                                                                if (isset($item->fee)) {
+                                                                    $fee = $item->fee;
+                                                                } else {
+                                                                    // For Donation objects, calculate fee based on website settings
+                                                                    $website = \App\Models\Website::find($item->website_id);
+                                                                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                                                                    $fee = ($item->amount / 100) * $processingFeePercentage;
+                                                                }
+                                                            @endphp
+                                                            ${{ number_format($fee, 2) }}
+                                                        </td>
                                                         <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
                                                         @if ($item->type == 'investment')
-                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $fee, 2) }}</td>
                                                         @else
                                                             
-                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $fee, 2) }}</td>
                                                         @endif
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
@@ -221,7 +234,7 @@
                                                                 @else
                                                                 data-gross="${{ number_format($item->amount, 2) }}"                                                                    
                                                                 @endif
-                                                                data-fee="${{ number_format($item->fee, 2) }}"
+                                                                data-fee="${{ number_format($fee, 2) }}"
                                                                 data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
@@ -249,7 +262,7 @@
                                                                 data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
                                                                 data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
                                                                 @if ($item->type == 'investment')
-                                                                data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
+                                                                data-total-paid="${{ number_format($item->amount + $fee, 2) }}"
                                                                 @else
                                                                 data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
                                                                 @endif

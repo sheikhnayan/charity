@@ -6910,8 +6910,8 @@ break;
                         <div class="col-md-4">
                             <label for="register_as" class="form-label">Register as</label>
                             <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
-                                <option value="individual">Individual</option>
-                                <option value="parents">Parents</option>
+                                <option value="individual">An Individual</option>
+                                <option value="parents">A Parent</option>
                             </select>
                         </div>
                         <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">

@@ -104,7 +104,7 @@
                                             Student Profile
                                         </span>
                                         <div class="page-title-subheading">
-                                            Edit {{ $user->fist_name }}'s profile information.
+                                            Edit profile information.
                                         </div>
                                     </div>
 

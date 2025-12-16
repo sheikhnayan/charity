@@ -339,6 +339,15 @@ function updateTipSummary() {
     document.getElementById('summaryTotal').textContent = '$' + totalAmount.toFixed(2);
     
     summary.style.display = currentTipAmount > 0 ? 'block' : 'none';
+    
+    // Update parent form's hidden fields
+    const tipAmountField = document.getElementById('tip-amount-field');
+    const tipPercentageField = document.getElementById('tip-percentage-field');
+    const tipEnabledField = document.getElementById('tip-enabled-field');
+    
+    if (tipAmountField) tipAmountField.value = currentTipAmount.toFixed(2);
+    if (tipPercentageField) tipPercentageField.value = currentTipPercentage.toFixed(2);
+    if (tipEnabledField) tipEnabledField.value = currentTipAmount > 0 ? '1' : '0';
 }
 
 function clearTip() {
