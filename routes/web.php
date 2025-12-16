@@ -727,6 +727,10 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::get('/student',[
         AdminController::class, 'student'
     ])->name('admin.student');
+    
+    Route::post('/parent/add-student',[
+        AdminController::class, 'addStudentByParent'
+    ])->name('parent.add-student');
 
     // User management (custom role-based)
     Route::get('/users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])

@@ -464,7 +464,7 @@
                 </li>
             @endif
 
-              @if(auth()->user()->role !== 'individual/student' && auth()->user()->role !== 'parent')
+              @if(auth()->user()->role !== 'individual/student' || auth()->user()->role !== 'parents')
               <!-- Analytics -->
               <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Analytics</span>
@@ -488,7 +488,7 @@
                   </li>
                 </ul>
               </li>
-              @endif
+              
 
               <li class="menu-item {{ request()->is('users/qr-codes*') ? 'active' : '' }}">
                 <a href="/users/qr-codes" class="menu-link">
@@ -542,7 +542,7 @@
                   <div class="text-truncate">Permissions</div>
                 </a>
               </li>
-
+              @endif
               <li class="menu-item menu-logout-sticky">
                 <a href="{{ url('/logout') }}" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-power-off"></i>

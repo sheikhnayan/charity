@@ -586,6 +586,11 @@ class AdminController extends Controller
             $data = User::where('group_id',Auth::user()->id)->where('id','!=',Auth::user()->id)->get();
 
             return view('user.students', compact('data'));
+        }elseif(Auth::user()->role == 'parent'){
+            // For parents, show only their children
+            $data = User::where('parent_id', Auth::user()->id)->get();
+
+            return view('user.students', compact('data'));
         }else{
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
@@ -595,6 +600,35 @@ class AdminController extends Controller
             return view('user.students', compact('data'));
         }
 
+    }
+
+    public function addStudentByParent(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'goal' => 'nullable|numeric|min:0'
+        ]);
+
+        $parent = Auth::user();
+
+        // Create student user
+        $student = User::create([
+            'name' => $request->first_name,
+            'fist_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'individual',
+            'parent_id' => $parent->id,
+            'website_id' => $parent->website_id,
+            'goal' => $request->goal ?? 0,
+            'status' => 1, // Auto-approve for parent-created students
+        ]);
+
+        return redirect()->back()->with('success', 'Student added successfully!');
     }
 
     public function userProfile($id)

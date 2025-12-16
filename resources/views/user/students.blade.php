@@ -49,15 +49,28 @@
 
                                     <div>
                                         <span class="text-capitalize">
-                                            Users
+                                            @if(Auth::user()->role == 'parent')
+                                                My Students
+                                            @else
+                                                Users
+                                            @endif
                                         </span>
                                         <div class="page-title-subheading">
-                                            View all Users.
+                                            @if(Auth::user()->role == 'parent')
+                                                Manage your students/children.
+                                            @else
+                                                View all Users.
+                                            @endif
                                         </div>
                                     </div>
 
                                 </div>
                                 <div class="page-title-actions">
+                                    @if(Auth::user()->role == 'parent')
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                            <i class="fas fa-plus me-2"></i>Add Student
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -223,4 +236,48 @@
                     });
                 });
             </script>
+            
+            <!-- Add Student Modal -->
+            @if(Auth::user()->role == 'parent')
+            <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('parent.add-student') }}" method="POST">
+                            @csrf
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addStudentModalLabel">Add Student/Child</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                                    <div class="form-text">Minimum 6 characters</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="goal" class="form-label">Fundraising Goal ($)</label>
+                                    <input type="number" class="form-control" id="goal" name="goal" min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Student</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endif
         @endsection
