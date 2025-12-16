@@ -510,6 +510,14 @@ class AdminController extends Controller
             $data = Transaction::where('website_id',$websites->id)->get();
 
             return view('user.donation', compact('data', 'websites'));
+        }elseif($user->role == 'parents'){
+            // Get all student IDs that belong to this parent
+            $studentIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
+            
+            // Get transactions from those students
+            $data = Transaction::whereIn('user_id', $studentIds)->latest()->get();
+
+            return view('user.donation', compact('data'));
         }elseif($user->role == 'customer'){
             $data = Transaction::where('email',$user->email)->get();
 
@@ -689,6 +697,7 @@ class AdminController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
         
+        // Save the name in both name and fist_name fields
         $student->name = $request->name;
         $student->fist_name = $request->name;
         $student->goal = $request->goal ?? 0;

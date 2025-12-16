@@ -53,10 +53,10 @@
                                                     </div>
                                                     <div class="fs-6 mt-2">
                                                         <i class="fas fa-link link-info me-1 btn-clipboard" role="button"
-                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}"></i>
-                                                        <a href="http://{{ $currentWebsite->domain }}"
+                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"></i>
+                                                        <a href="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"
                                                             class="link-info"
-                                                            target="_blank">{{ $currentWebsite->domain }}</a>
+                                                            target="_blank">{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}</a>
                                                     </div>
                                                 </div>
 
