@@ -369,12 +369,12 @@
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Payment Zip Code:</strong> <span id="modal-payment-zip"></span>
                                 </li>
-                                <li class="list-group-item d-flex justify-content-between">
+                                {{-- <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total Amount:</strong> <span id="modal-total-amount"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total Due:</strong> <span id="modal-total-due"></span>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
                     </div>
