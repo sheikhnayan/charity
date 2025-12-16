@@ -36,6 +36,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'users/investor-profile/save',
             'invest/save-info',
             'webhook/coinbase', // Coinbase Commerce webhooks
+            '/register',
+            '/login'
         ]);
 
         // Register custom role middleware alias for route usage

@@ -5411,7 +5411,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <p class="text-muted mb-4">Join our community today</p>
                     </div>
                     
-                    <div class="register fade-in">
+                    <div class="register fade-in" style="opacity: 1; transition: opacity 0.3s ease;">
                         <div class="container">
                             <form action="/register" method="POST" id="registerForm">
                                 @csrf
@@ -5518,7 +5518,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                     </div>
 
-                    <div class="login" style="display: none;">
+                    <div class="login" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
                         <div class="container fade-in">
                             <form action="/login" method="POST" id="loginForm">
                                 @csrf
