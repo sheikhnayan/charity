@@ -639,6 +639,12 @@ class AdminController extends Controller
     public function userProfile($id)
     {
         $user = User::with(['website', 'teacher', 'parent', 'children'])->findOrFail($id);
+        
+        // Check if the current user is a parent (not admin)
+        if (Auth::user()->role == 'parents') {
+            return view('user.user-profile', compact('user'));
+        }
+        
         return view('admin.user-profile', compact('user'));
     }
 
