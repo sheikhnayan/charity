@@ -589,8 +589,13 @@ class AdminController extends Controller
         }elseif(Auth::user()->role == 'parent'){
             // For parents, show only their children
             $data = User::where('parent_id', Auth::user()->id)->get();
+            
+            // Get teachers for the parent's website
+            $teachers = User::where('role', 'user')
+                ->where('website_id', Auth::user()->website_id)
+                ->get();
 
-            return view('user.students', compact('data'));
+            return view('user.students', compact('data', 'teachers'));
         }else{
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
@@ -609,6 +614,7 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'teacher_id' => 'nullable|exists:users,id',
             'goal' => 'nullable|numeric|min:0'
         ]);
 
@@ -623,6 +629,7 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'individual',
             'parent_id' => $parent->id,
+            'teacher_id' => $request->teacher_id,
             'website_id' => $parent->website_id,
             'goal' => $request->goal ?? 0,
             'status' => 1, // Auto-approve for parent-created students

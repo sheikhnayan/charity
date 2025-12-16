@@ -267,6 +267,17 @@
                                     <div class="form-text">Minimum 6 characters</div>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="teacher_id" class="form-label">Select Teacher</label>
+                                    <select class="form-select" id="teacher_id" name="teacher_id">
+                                        <option value="">Choose a teacher (optional)</option>
+                                        @if(isset($teachers))
+                                            @foreach($teachers as $teacher)
+                                                <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="goal" class="form-label">Fundraising Goal ($)</label>
                                     <input type="number" class="form-control" id="goal" name="goal" min="0" step="0.01">
                                 </div>
