@@ -607,14 +607,14 @@ class AdminController extends Controller
 
     public function addStudentByParent(Request $request)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'teacher_id' => 'required|exists:teachers,id',
-            'goal' => 'nullable|numeric|min:0'
-        ]);
+        // $request->validate([
+        //     'first_name' => 'required|string|max:255',
+        //     'last_name' => 'required|string|max:255',
+        //     'email' => 'required|email|unique:users,email',
+        //     'password' => 'required|min:6',
+        //     'teacher_id' => 'required|exists:teachers,id',
+        //     'goal' => 'nullable|numeric|min:0'
+        // ]);
 
         $parent = Auth::user();
 
