@@ -513,7 +513,7 @@ class AdminController extends Controller
         }elseif($user->role == 'parents'){
             // Get all student IDs that belong to this parent
             $studentIds = User::where('parent_id', $user->id)->pluck('email')->toArray();
-            
+            dd($studentIds);
             // Get transactions from those students
             $data = Transaction::whereIn('email', $studentIds)->latest()->get();
 
