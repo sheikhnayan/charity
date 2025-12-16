@@ -635,7 +635,7 @@
                     $('#modal-gross').text('$' + grossAmount.toFixed(2));
                     $('#modal-fee').text('$' + feeAmount.toFixed(2));
                     $('#modal-tip-amount').text('$' + tipAmount.toFixed(2));
-                    $('#modal-total-amount').text('$' + totalAmountWithFee.toFixed(2)); // Total Amount (gross + fee)
+                    $('#modal-total-amount').text('$' + grossAmount.toFixed(2)); // Total Amount (gross + fee)
                     $('#modal-total-due').text($btn.data('total-due') || '$0.00');
                     $('#modal-total-paid').text('$' + totalPaid.toFixed(2)); // Total Paid (gross + fee + tip)
                     
