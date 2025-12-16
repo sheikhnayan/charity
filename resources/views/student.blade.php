@@ -738,7 +738,7 @@
         </div>
 
         <!-- Messages Section -->
-        <div class="row justify-content-center mt-5">
+        <div class="row justify-content-center mt-5 mb-5">
             <div class="col-md-8">
                 <p class="lead text-center mt-3">
                     {{ isset($messages) ? $messages->count() : 0 }} messages have been sent to {{ $data->name }}
