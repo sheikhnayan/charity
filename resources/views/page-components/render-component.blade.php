@@ -4012,7 +4012,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                                                 data-live-item="price"
                                                                                 data-tcid="{{ $item->id }}:price"
                                                                                 style="font-size: 16px;">
-                                                                                ${{ number_format($item->starting_price ?? 0, 2) }}
+                                                                                ${{ number_format($item->starting_price ?? 0, 0) }}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -4159,7 +4159,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         const amount = Number(bidData.amount);
                                         
                                         if (amount > 0) {
-                                            priceDiv.textContent = `$${amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                            priceDiv.textContent = `$${amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
                                             console.log('Updated auction {{ $item->id }} price to:', amount);
                                         }
                                     } else {
