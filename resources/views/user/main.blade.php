@@ -394,7 +394,7 @@
                     <div class="text-truncate" data-i18n="Email">
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
-                        @elseif (Auth::user()->role == 'parent')
+                        @elseif (Auth::user()->role == 'parents')
                         My Students
                         @else
                         Group Member

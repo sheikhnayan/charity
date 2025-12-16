@@ -590,7 +590,7 @@ class AdminController extends Controller
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
 
-            $data = User::where('role', '!=','user')->whereIn('website_id',[$websites])->get();
+            $data = User::where('role', '!=','user')->whereIn('website_id', $websites)->get();
 
             return view('user.students', compact('data'));
         }
