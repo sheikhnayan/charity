@@ -42,6 +42,8 @@ class AuctionController extends Controller
         $data = Auction::where('slug', $slug)
             ->orWhere(\DB::raw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"))'), strtolower($slug))
             ->firstOrFail();
+        
+        return view('product', compact('data'));
     }
 
     /**

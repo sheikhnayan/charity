@@ -458,8 +458,6 @@ Route::get('/auction', [AuctionController::class, 'all'])->name('auction');
 
 Route::get('/place-bid', [AuctionController::class, 'store'])->name('auction.store');
 
-Route::get('/product/{slug}', [AuctionController::class, 'show'])->name('auction-show');
-
 Route::get('/page/{id}', [FrontendController::class, 'page'])->name('page');
 
 Route::get('/dealmaker-demo', [FrontendController::class, 'dealmakerDemo'])->name('dealmaker.demo');

@@ -11,6 +11,7 @@ use App\Models\Header;
 use App\Models\Footer;
 use App\Models\Setting;
 use App\Models\Ticket;
+use App\Models\Auction;
 use App\Models\TicektSell;
 use App\Models\TicketSellDetail;
 use App\Models\Investment;
@@ -24,6 +25,17 @@ class FrontendController extends Controller
 {
     public function productDetails($slug)
     {
+        // First, try to find an auction with this slug or title-based slug
+        $auction = Auction::where('slug', $slug)
+            ->orWhere(\DB::raw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"))'), strtolower($slug))
+            ->first();
+        
+        if ($auction) {
+            // This is an auction - redirect to auction view
+            return app(AuctionController::class)->show($slug);
+        }
+        
+        // Not an auction, try to find a ticket/product
         $ticket = Ticket::where('slug', $slug)->with('website')->firstOrFail();
         
         // Get website header/footer/settings
