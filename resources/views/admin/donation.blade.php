@@ -188,9 +188,9 @@
                                                         <td>${{ number_format($item->fee, 2) }}</td>
                                                         <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
                                                         @if ($item->type == 'investment')
-                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $item->fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                         @else
-                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $item->fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                         @endif
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
@@ -616,12 +616,19 @@
                     $('#modal-payment-zip').text($btn.data('payment-zip') || 'N/A');
                     
                     // Financial details
-                    $('#modal-gross').text($btn.data('gross') || '$0.00');
-                    $('#modal-fee').text($btn.data('fee') || '$0.00');
-                    $('#modal-tip-amount').text($btn.data('tip-amount') || '$0.00');
+                    const grossAmount = parseFloat(($btn.data('gross') || '$0.00').replace(/[$,]/g, '')) || 0;
+                    const feeAmount = parseFloat(($btn.data('fee') || '$0.00').replace(/[$,]/g, '')) || 0;
+                    const tipAmount = parseFloat(($btn.data('tip-amount') || '$0.00').replace(/[$,]/g, '')) || 0;
+                    
+                    // Calculate total paid including tip
+                    const totalPaid = grossAmount + feeAmount + tipAmount;
+                    
+                    $('#modal-gross').text('$' + grossAmount.toFixed(2));
+                    $('#modal-fee').text('$' + feeAmount.toFixed(2));
+                    $('#modal-tip-amount').text('$' + tipAmount.toFixed(2));
                     $('#modal-total-amount').text($btn.data('total-amount') || '$0.00');
                     $('#modal-total-due').text($btn.data('total-due') || '$0.00');
-                    $('#modal-total-paid').text($btn.data('total-paid') || '$0.00');
+                    $('#modal-total-paid').text('$' + totalPaid.toFixed(2));
                     
                     // Show/hide investment section - always show payment info, only show investment details for investment type
                     if ($btn.data('type') === 'investment') {
