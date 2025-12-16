@@ -216,6 +216,33 @@
             height: 28px !important;
         }
     }
+    
+    /* Ensure modals are hidden by default and positioned correctly */
+    #authModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 99999 !important;
+    }
+
+    #authModal.hidden {
+        display: none;
+    }
+
+    #authModal:not(.hidden) {
+        display: flex;
+    }
+
+    /* Ensure Bootstrap modal appears on top */
+    .modal-backdrop {
+        z-index: 99998 !important;
+    }
+
+    .modal {
+        z-index: 99999 !important;
+    }
   </style>
 </head>
 <body class="auction-details-page" style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
@@ -363,7 +390,7 @@
                   @endphp
                   @foreach ($similar as $item)
                   @if ($item->id != $data->id)
-                      <a href="/product/{{ $item->id }}">
+                      <a href="/product/{{ $item->slug }}">
                         <div class="card"><img src="{{ asset('uploads/'.$item->images[0]->image) }}" alt="{{$item->title}}" style="width: 100%"><div class="meta">{{$item->title}}<br><strong>Current: ${{ number_format($item->starting_price, 2) }}</strong></div></div>
                       </a>
                   @endif
@@ -692,10 +719,49 @@
         startBidPolling();
     });
 
-    // Open bid modal
-    document.getElementById('placeBidBtn').addEventListener('click', function() {
-      const modal = new bootstrap.Modal(document.getElementById('bidModal'));
-      modal.show();
+    // Open bid modal with auth check
+    document.getElementById('placeBidBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+      
+      try {
+        // Check if user is authenticated and verified
+        const authCheck = await fetch('/ajax/ticket-auth/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify({})
+        });
+        const authStatus = await authCheck.json();
+
+        if (!authStatus.authenticated || !authStatus.verified) {
+          // User not authenticated - show auth modal
+          window._isAuctionBid = true;
+          window._auctionId = '{{ $data->id }}';
+          
+          // Open auth modal
+          if (typeof setAuthMode === 'function') {
+            setAuthMode('login');
+          }
+          if (typeof openAuthModal === 'function') {
+            openAuthModal();
+          }
+          return;
+        }
+
+        // User is authenticated - show bid modal
+        const modal = new bootstrap.Modal(document.getElementById('bidModal'));
+        modal.show();
+        
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        // Fallback - show bid modal anyway
+        const modal = new bootstrap.Modal(document.getElementById('bidModal'));
+        modal.show();
+      }
     });
 
     // Submit bid to Firebase
@@ -746,5 +812,8 @@
         }
     });
   </script>
+  
+  @include('partials.ticket-auth-modal')
+  @include('partials.investor-info-modal')
 </body>
 </html>

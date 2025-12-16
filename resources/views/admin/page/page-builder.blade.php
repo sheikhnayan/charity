@@ -2728,9 +2728,11 @@ button a:hover {
         if ($data->is_main_site == 1) {
             # code...
             $groups = \App\Models\User::where('role','group_leader')->get();
+            $teachers = \App\Models\Teacher::active()->get();
         } else {
             # code...
             $groups = \App\Models\User::where('website_id', $data->website ? $data->website->id : 0)->where('role','group_leader')->get();
+            $teachers = \App\Models\Teacher::where('website_id', $data->website ? $data->website->id : 0)->where('is_active', true)->get();
         }
         
     @endphp
@@ -6907,18 +6909,17 @@ break;
                     <div class="row justify-content-center">
                         <div class="col-md-4">
                             <label for="register_as" class="form-label">Register as</label>
-                            <select class="form-select" id="register_as" name="register_as" onchange="toggleGroupSelect(this)">
+                            <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
                                 <option value="individual">Individual</option>
-                                <option value="group">Group Member</option>
-                                <option value="group_leader">Group Leader</option>
+                                <option value="parents">Parents</option>
                             </select>
                         </div>
-                        <div class="col-md-4" id="group_select_wrapper" style="display:none;">
-                            <label for="group_id" class="form-label">Select Group</label>
-                            <select class="form-select" id="group_id" name="group_id">
-                                <option value="">Select a group</option>
-                                @foreach($groups as $group)
-                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                        <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
+                            <label for="teacher_id" class="form-label">Select Teacher</label>
+                            <select class="form-select" id="teacher_id" name="teacher_id">
+                                <option value="">Select a teacher</option>
+                                @foreach($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -7008,15 +7009,15 @@ break;
                 };
             }
             
-            // Add global toggleGroupSelect function for this component
-            if (!window.toggleGroupSelect) {
-                window.toggleGroupSelect = function(selectElement) {
-                    const groupWrapper = document.getElementById('group_select_wrapper');
-                    if (groupWrapper) {
-                        if (selectElement.value === 'group') {
-                            groupWrapper.style.display = 'block';
+            // Add global toggleRegistrationFields function for this component
+            if (!window.toggleRegistrationFields) {
+                window.toggleRegistrationFields = function(selectElement) {
+                    const teacherWrapper = document.getElementById('teacher_select_wrapper');
+                    if (teacherWrapper) {
+                        if (selectElement.value === 'individual') {
+                            teacherWrapper.style.display = 'block';
                         } else {
-                            groupWrapper.style.display = 'none';
+                            teacherWrapper.style.display = 'none';
                         }
                     }
                 };
@@ -17485,13 +17486,19 @@ function applyResponsiveStyles() {
       const showInMenuCheckbox = document.getElementById('showInMenu');
       const showInMenu = showInMenuCheckbox ? (showInMenuCheckbox.checked ? 1 : 0) : 1;
       console.log('Show in menu value:', showInMenu);
+      
+      // Get page background color
+      const pageBackgroundColor = document.getElementById('pageBackgroundColor');
+      const backgroundColor = pageBackgroundColor ? pageBackgroundColor.value : '#ffffff';
+      console.log('Background color value:', backgroundColor);
 
       fetch('/admins/page/save/'+id, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
         body: JSON.stringify({ 
           state: state,
-          show_in_menu: showInMenu
+          show_in_menu: showInMenu,
+          background_color: backgroundColor
         })
       })
       .then(res => {

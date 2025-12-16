@@ -597,6 +597,12 @@ class AdminController extends Controller
 
     }
 
+    public function userProfile($id)
+    {
+        $user = User::with(['website', 'teacher', 'parent', 'children'])->findOrFail($id);
+        return view('admin.user-profile', compact('user'));
+    }
+
     public function menu($id)
     {
         $data = Header::find($id);

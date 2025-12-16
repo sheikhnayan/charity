@@ -417,6 +417,13 @@
     </a>
   </li>
 
+  <li class="menu-item {{ request()->is('admins/teachers*') ? 'active' : '' }}">
+    <a href="{{ route('admin.teachers.websites') }}" class="menu-link">
+      <i class="menu-icon tf-icons bx bx-chalkboard-teacher"></i>
+      <div class="text-truncate">Teachers</div>
+    </a>
+  </li>
+
   <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
     <a href="/admins/page" class="menu-link">
       <i class="menu-icon tf-icons bx bx-file"></i>

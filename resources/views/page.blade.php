@@ -485,6 +485,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         $domain = parse_url($url, PHP_URL_HOST);
         $check = \App\Models\Website::where('domain', $domain)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
+        $teachers = \App\Models\Teacher::where('website_id', $check->id)->where('is_active', true)->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
 
         $header = \App\Models\Header::where('website_id', $check->id)->first();

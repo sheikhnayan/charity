@@ -28,6 +28,8 @@ class User extends Authenticatable
         'group_name',
         'website_id',
         'status',
+        'teacher_id',
+        'parent_id',
     ];
 
     /**
@@ -177,5 +179,29 @@ class User extends Authenticatable
     public function investorProfile()
     {
         return $this->hasOne(UserInvestorProfile::class);
+    }
+
+    /**
+     * Get the teacher assigned to this user
+     */
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class, 'teacher_id');
+    }
+
+    /**
+     * Get the parent user (for individuals registered by parents)
+     */
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
+
+    /**
+     * Get all individuals managed by this parent
+     */
+    public function children()
+    {
+        return $this->hasMany(User::class, 'parent_id');
     }
 }

@@ -20,13 +20,17 @@ class PageBuilderController extends Controller
         
         // Get show_in_menu value from request (sent as metadata)
         $showInMenu = $request->input('show_in_menu', $page->show_in_menu);
+        
+        // Get background_color value from request
+        $backgroundColor = $request->input('background_color', $page->background_color ?? '#ffffff');
 
         
         if ($page->is_main_site) {
             // Main site page - update directly
             $page->update([
                 'state' => $state,
-                'show_in_menu' => $showInMenu
+                'show_in_menu' => $showInMenu,
+                'background_color' => $backgroundColor
             ]);
             // dd($page);
         } else {
@@ -40,7 +44,8 @@ class PageBuilderController extends Controller
                 ],
                 [
                     'state' => $state,
-                    'show_in_menu' => $showInMenu
+                    'show_in_menu' => $showInMenu,
+                    'background_color' => $backgroundColor
                 ]
             );
         }

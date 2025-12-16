@@ -3953,7 +3953,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 <div class="c-node-ai__image-wrap">
                                                     <div class="c-node-ai__image">
                                                         <svg viewBox="0 0 100 100"></svg>
-                                                        <a href="/auction/{{ $item->id }}" class="">
+                                                        <a href="/product/{{ $item->slug }}" class="">
                                                             <img alt="{{ $item->title }}"
                                                                 sizes="(min-width: 110em) 420px, (min-width: 90em) 25vw, (min-width: 60em) 33vw, (min-width: 30em) 50vw, 100vw"
                                                                 data-src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
@@ -3966,7 +3966,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 </div>
                                                 <div class="c-node-ai__details-wrap">
                                                     <h3 class="c-node-ai__title c-heading--gamma">
-                                                        <a href="/auction/{{ $item->id }}" data-mousetrap-trigger="4">
+                                                        <a href="/product/{{ $item->slug }}" data-mousetrap-trigger="4">
                                                             {{ $item->title }}
                                                         </a>
                                                     </h3>
@@ -4012,7 +4012,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                                                 data-live-item="price"
                                                                                 data-tcid="{{ $item->id }}:price"
                                                                                 style="font-size: 16px;">
-                                                                                ${{ $item->starting_price ?? 0 }}
+                                                                                ${{ number_format($item->starting_price ?? 0, 2) }}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -4158,12 +4158,13 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             });
                                             
                                             if (highestBid > 0) {
-                                                priceDiv.textContent = `$${highestBid.toLocaleString()}`;
+                                                priceDiv.textContent = `$${Number(highestBid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                                 console.log('Updated price for auction {{ $item->id }}:', highestBid);
                                             }
                                         } else {
                                             // No bids yet, show starting price
-                                            priceDiv.textContent = `${{ $item->starting_price ?? 0 }}`;
+                                            const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
+                                            priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                         }
                                     } catch (error) {
                                         console.log("Firebase query failed for auction {{ $item->id }}:", error);
@@ -4192,7 +4193,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         @foreach ($auction as $item)
                             const priceDiv{{ $item->id }} = document.getElementById('auction-price-{{ $item->id }}');
                             if (priceDiv{{ $item->id }}) {
-                                priceDiv{{ $item->id }}.textContent = `${{ $item->starting_price ?? 0 }}`;
+                                const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
+                                priceDiv{{ $item->id }}.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                             }
                         @endforeach
                     });
@@ -5181,86 +5183,332 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             @endphp
             
             @if($hasAuthFormData)
-                {{-- New auth-form with dynamic colors --}}
+                {{-- Modern Dynamic Auth Form --}}
                 <style>
-                    /* Auth form background styling */
-                    .auth-form-container {
-                        background-color: {{ $backgroundColor }} !important;
-                        padding: 2rem;
-                        border-radius: 0.5rem;
+                    /* Modern Auth Form Styling */
+                    .modern-auth-container {
+                        background: linear-gradient(135deg, {{ $backgroundColor }} 0%, {{ $backgroundColor }}dd 100%);
+                        padding: 3rem 2rem;
+                        border-radius: 20px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+                        backdrop-filter: blur(10px);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .modern-auth-container::before {
+                        content: '';
+                        position: absolute;
+                        top: -50%;
+                        right: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                        pointer-events: none;
+                    }
+                    
+                    .auth-header {
+                        position: relative;
+                        z-index: 1;
+                    }
+                    
+                    .auth-avatar {
+                        width: 120px;
+                        height: 120px;
+                        background: linear-gradient(135deg, {{ $avatarIconColor }}, {{ $avatarIconColor }}cc);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 1.5rem;
+                        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                        transition: transform 0.3s ease;
+                    }
+                    
+                    .auth-avatar:hover {
+                        transform: scale(1.05) rotate(5deg);
+                    }
+                    
+                    .auth-avatar i {
+                        font-size: 4rem;
+                        color: white;
+                    }
+                    
+                    .auth-title {
+                        font-weight: 700;
+                        font-size: 2.5rem;
+                        margin-bottom: 0.5rem;
+                        background: linear-gradient(135deg, #333, #666);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
+                    
+                    .modern-form-group {
+                        position: relative;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    .modern-form-group label {
+                        font-weight: 600;
+                        color: #555;
+                        margin-bottom: 0.5rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.9rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .modern-form-group input,
+                    .modern-form-group select {
+                        border: 2px solid #e0e0e0;
+                        border-radius: 12px;
+                        padding: 0.875rem 1rem;
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                        background-color: white;
+                    }
+                    
+                    .modern-form-group input:focus,
+                    .modern-form-group select:focus {
+                        border-color: {{ $buttonColor }};
+                        box-shadow: 0 0 0 4px {{ $buttonColor }}22;
+                        outline: none;
+                        transform: translateY(-2px);
+                    }
+                    
+                    .modern-form-group input:hover,
+                    .modern-form-group select:hover {
+                        border-color: {{ $buttonColor }}88;
+                    }
+                    
+                    .form-icon {
+                        position: absolute;
+                        right: 1rem;
+                        top: 2.5rem;
+                        color: #999;
+                        pointer-events: none;
+                    }
+                    
+                    .modern-btn-primary {
+                        background: linear-gradient(135deg, {{ $buttonColor }}, {{ $buttonColor }}dd);
+                        border: none;
+                        border-radius: 12px;
+                        padding: 1rem 2rem;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        color: {{ $buttonTextColor }};
+                        transition: all 0.3s ease;
+                        box-shadow: 0 6px 20px {{ $buttonColor }}44;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .modern-btn-primary::before {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        border-radius: 50%;
+                        background: rgba(255,255,255,0.3);
+                        transform: translate(-50%, -50%);
+                        transition: width 0.5s, height 0.5s;
+                    }
+                    
+                    .modern-btn-primary:hover::before {
+                        width: 300px;
+                        height: 300px;
+                    }
+                    
+                    .modern-btn-primary:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 10px 30px {{ $buttonColor }}66;
+                    }
+                    
+                    .modern-btn-link {
+                        color: {{ $linkColor }};
+                        background: transparent;
+                        border: 2px solid transparent;
+                        border-radius: 12px;
+                        padding: 0.75rem 2rem;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        text-decoration: none;
+                    }
+                    
+                    .modern-btn-link:hover {
+                        border-color: {{ $linkColor }};
+                        color: {{ $linkColor }};
+                        background: {{ $linkColor }}11;
+                        transform: translateY(-2px);
+                    }
+                    
+                    .teacher-select-animate {
+                        animation: slideInRight 0.4s ease;
+                    }
+                    
+                    .teacher-select-hide {
+                        animation: slideOutRight 0.4s ease;
+                    }
+                    
+                    @keyframes slideInRight {
+                        from {
+                            opacity: 0;
+                            transform: translateX(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                    
+                    @keyframes slideOutRight {
+                        from {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                        to {
+                            opacity: 0;
+                            transform: translateX(30px);
+                        }
+                    }
+                    
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    
+                    .fade-in {
+                        animation: fadeIn 0.5s ease;
+                    }
+                    
+                    .form-row {
+                        margin-bottom: 1rem;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .modern-auth-container {
+                            padding: 2rem 1rem;
+                        }
+                        .auth-title {
+                            font-size: 2rem;
+                        }
                     }
                 </style>
-                <div id="{{ $componentId }}" style="{{ $styleStr }}" class="auth-form-container">
-                    <div class="row">
-                        <div class="col-md-12 mt-4 mb-4 text-center">
-                            <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: {{ $avatarIconColor }} !important;"></i>
-                            <h2 class="display-6 tit">Register</h2>
+                
+                <div id="{{ $componentId }}" style="{{ $styleStr }}" class="modern-auth-container">
+                    <div class="auth-header text-center fade-in">
+                        <div class="auth-avatar">
+                            <i class="fa-solid fa-circle-user" aria-hidden="true"></i>
                         </div>
+                        <h2 class="auth-title tit">Register</h2>
+                        <p class="text-muted mb-4">Join our community today</p>
                     </div>
-                    <div class="register">
+                    
+                    <div class="register fade-in">
                         <div class="container">
-                            <form action="/register" method="POST">
+                            <form action="/register" method="POST" id="registerForm">
                                 @csrf
-                                <div class="row justify-content-center">
+                                <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
-                                        <label for="first_name" class="form-label">First name</label>
-                                        <input type="text" class="form-control" id="first_name" name="name">
+                                        <div class="modern-form-group">
+                                            <label for="first_name">
+                                                <i class="fa-solid fa-user"></i> First name
+                                            </label>
+                                            <input type="text" class="form-control" id="first_name" name="name" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="last_name" class="form-label">Last name</label>
-                                        <input type="text" class="form-control" id="last_name" name="last_name">
+                                        <div class="modern-form-group">
+                                            <label for="last_name">
+                                                <i class="fa-solid fa-user"></i> Last name
+                                            </label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row justify-content-center">
+                                
+                                <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
-                                        <label for="email" class="form-label">Email address</label>
-                                        <input type="email" class="form-control" id="email" name="email">
+                                        <div class="modern-form-group">
+                                            <label for="email">
+                                                <i class="fa-solid fa-envelope"></i> Email address
+                                            </label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="confirm_email" class="form-label">Confirm email address</label>
-                                        <input type="email" class="form-control" id="confirm_email" name="confirm_email">
+                                        <div class="modern-form-group">
+                                            <label for="confirm_email">
+                                                <i class="fa-solid fa-envelope-circle-check"></i> Confirm email
+                                            </label>
+                                            <input type="email" class="form-control" id="confirm_email" name="confirm_email" required>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row justify-content-center">
+                                
+                                <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
-                                        <label for="register_as" class="form-label">Register as</label>
-                                        <select class="form-select" id="register_as" name="register_as" onchange="toggleGroupSelect(this)">
-                                            <option value="individual">Individual</option>
-                                            <option value="group">Group Member</option>
-                                            <option value="group_leader">Group Leader</option>
-                                        </select>
+                                        <div class="modern-form-group">
+                                            <label for="register_as">
+                                                <i class="fa-solid fa-user-tag"></i> Register as
+                                            </label>
+                                            <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)" required>
+                                                <option value="individual">Individual</option>
+                                                <option value="parents">Parents</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4" id="group_select_wrapper" style="display:none;">
-                                        <label for="group_id" class="form-label">Select Group</label>
-                                        <select class="form-select" id="group_id" name="group_id">
-                                            <option value="">Select a group</option>
-                                            @if(isset($groups))
-                                                @foreach($groups as $group)
-                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
+                                    <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
+                                        <div class="modern-form-group teacher-select-animate">
+                                            <label for="teacher_id">
+                                                <i class="fa-solid fa-chalkboard-teacher"></i> Select Teacher
+                                            </label>
+                                            <select class="form-select" id="teacher_id" name="teacher_id">
+                                                <option value="">Choose your teacher</option>
+                                                @if(isset($teachers))
+                                                    @foreach($teachers as $teacher)
+                                                        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row justify-content-center">
+                                
+                                <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
-                                        <label for="password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password">
+                                        <div class="modern-form-group">
+                                            <label for="password">
+                                                <i class="fa-solid fa-lock"></i> Password
+                                            </label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="confirm_password" class="form-label">Confirm password</label>
-                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                        <div class="modern-form-group">
+                                            <label for="confirm_password">
+                                                <i class="fa-solid fa-lock-keyhole"></i> Confirm password
+                                            </label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row justify-content-center">
+                                
+                                <div class="row justify-content-center mt-4">
                                     <div class="col-8">
-                                        <div class="d-grid gap-3 mt-2">
-                                            <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
-                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                Register
+                                        <div class="d-grid gap-3">
+                                            <button class="modern-btn-primary" type="submit">
+                                                <i class="fa-solid fa-user-plus me-2" aria-hidden="true"></i>
+                                                Create Account
                                             </button>
-                                            <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginForm('{{ $componentId }}')" style="color: {{ $linkColor }} !important; background-color: {{ $buttonColor }} !important;">
-                                                Login
+                                            <button class="modern-btn-link" type="button" onclick="showLoginForm('{{ $componentId }}')">
+                                                Already have an account? <strong>Login</strong>
                                             </button>
                                         </div>
                                     </div>
@@ -5270,28 +5518,37 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
 
                     <div class="login" style="display: none;">
-                        <div class="container">
-                            <form action="/login" method="POST">
+                        <div class="container fade-in">
+                            <form action="/login" method="POST" id="loginForm">
                                 @csrf
-                                <div class="row justify-content-center">
+                                <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
-                                        <label for="login_email" class="form-label">Email address</label>
-                                        <input type="email" class="form-control" id="login_email" name="email">
+                                        <div class="modern-form-group">
+                                            <label for="login_email">
+                                                <i class="fa-solid fa-envelope"></i> Email address
+                                            </label>
+                                            <input type="email" class="form-control" id="login_email" name="email" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="login_password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="login_password" name="password">
+                                        <div class="modern-form-group">
+                                            <label for="login_password">
+                                                <i class="fa-solid fa-lock"></i> Password
+                                            </label>
+                                            <input type="password" class="form-control" id="login_password" name="password" required>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row justify-content-center">
+                                
+                                <div class="row justify-content-center mt-4">
                                     <div class="col-8">
-                                        <div class="d-grid gap-3 mt-2">
-                                            <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
-                                                <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                Login
+                                        <div class="d-grid gap-3">
+                                            <button class="modern-btn-primary" type="submit">
+                                                <i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>
+                                                Sign In
                                             </button>
-                                            <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterForm('{{ $componentId }}')" style="color: {{ $linkColor }} !important;">
-                                                Register
+                                            <button class="modern-btn-link" type="button" onclick="showRegisterForm('{{ $componentId }}')">
+                                                Don't have an account? <strong>Register</strong>
                                             </button>
                                         </div>
                                     </div>
@@ -5301,7 +5558,41 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
 
                     <script>
-                        // Simple onclick functions for form toggling
+                        // Define toggleRegistrationFields globally first with smooth animations
+                        if (!window.toggleRegistrationFields) {
+                            window.toggleRegistrationFields = function(selectElement) {
+                                const teacherWrapper = document.getElementById('teacher_select_wrapper');
+                                if (teacherWrapper) {
+                                    const innerGroup = teacherWrapper.querySelector('.modern-form-group');
+                                    
+                                    if (selectElement.value === 'individual') {
+                                        teacherWrapper.style.display = 'block';
+                                        if (innerGroup) {
+                                            innerGroup.classList.remove('teacher-select-hide');
+                                            innerGroup.classList.add('teacher-select-animate');
+                                        }
+                                        // Make teacher field required for individuals
+                                        const teacherSelect = document.getElementById('teacher_id');
+                                        if (teacherSelect) teacherSelect.setAttribute('required', 'required');
+                                    } else {
+                                        if (innerGroup) {
+                                            innerGroup.classList.remove('teacher-select-animate');
+                                            innerGroup.classList.add('teacher-select-hide');
+                                            setTimeout(() => {
+                                                teacherWrapper.style.display = 'none';
+                                            }, 400);
+                                        } else {
+                                            teacherWrapper.style.display = 'none';
+                                        }
+                                        // Remove required for parents
+                                        const teacherSelect = document.getElementById('teacher_id');
+                                        if (teacherSelect) teacherSelect.removeAttribute('required');
+                                    }
+                                }
+                            };
+                        }
+                        
+                        // Form toggling with smooth transitions
                         function showLoginForm(componentId) {
                             const component = document.getElementById(componentId);
                             if (!component) {
@@ -5312,10 +5603,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             const registerForm = component.querySelector('.register');
                             const loginForm = component.querySelector('.login');
                             const titleElement = component.querySelector('.tit');
+                            const subtitleElement = component.querySelector('.auth-header p');
                             
-                            if (registerForm) registerForm.style.display = 'none';
-                            if (loginForm) loginForm.style.display = 'block';
+                            if (registerForm) {
+                                registerForm.style.opacity = '0';
+                                setTimeout(() => {
+                                    registerForm.style.display = 'none';
+                                    if (loginForm) {
+                                        loginForm.style.display = 'block';
+                                        setTimeout(() => {
+                                            loginForm.style.opacity = '1';
+                                        }, 50);
+                                    }
+                                }, 300);
+                            }
+                            
                             if (titleElement) titleElement.textContent = 'Login';
+                            if (subtitleElement) subtitleElement.textContent = 'Welcome back!';
                             
                             console.log('Switched to login form for component:', componentId);
                         }
@@ -5330,24 +5634,37 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             const registerForm = component.querySelector('.register');
                             const loginForm = component.querySelector('.login');
                             const titleElement = component.querySelector('.tit');
+                            const subtitleElement = component.querySelector('.auth-header p');
                             
-                            if (loginForm) loginForm.style.display = 'none';
-                            if (registerForm) registerForm.style.display = 'block';
+                            if (loginForm) {
+                                loginForm.style.opacity = '0';
+                                setTimeout(() => {
+                                    loginForm.style.display = 'none';
+                                    if (registerForm) {
+                                        registerForm.style.display = 'block';
+                                        setTimeout(() => {
+                                            registerForm.style.opacity = '1';
+                                        }, 50);
+                                    }
+                                }, 300);
+                            }
+                            
                             if (titleElement) titleElement.textContent = 'Register';
+                            if (subtitleElement) subtitleElement.textContent = 'Join our community today';
                             
                             console.log('Switched to register form for component:', componentId);
                         }
-
-                        function toggleGroupSelect(selectElement) {
-                            const groupWrapper = document.getElementById('group_select_wrapper');
-                            if (groupWrapper) {
-                                if (selectElement.value === 'group') {
-                                    groupWrapper.style.display = 'block';
-                                } else {
-                                    groupWrapper.style.display = 'none';
-                                }
+                        
+                        // Initialize form opacity for transitions
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const component = document.getElementById('{{ $componentId }}');
+                            if (component) {
+                                const registerForm = component.querySelector('.register');
+                                const loginForm = component.querySelector('.login');
+                                if (registerForm) registerForm.style.transition = 'opacity 0.3s ease';
+                                if (loginForm) loginForm.style.transition = 'opacity 0.3s ease';
                             }
-                        }
+                        });
                     </script>
                 </div>
             @else

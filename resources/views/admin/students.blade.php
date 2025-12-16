@@ -23,6 +23,14 @@
 .forms-wizard li.done em {
   font-family: Linearicons-Free;
 }
+
+.dt-buttons button span {
+  color: #000 !important;
+}
+
+.paginate_buttons a {
+  color: #000 !important;
+}
 </style>
     <!-- Content wrapper -->
     <div class="content-wrapper">
@@ -97,12 +105,11 @@
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Website</th>
-                                                {{-- <th>Last Name</th> --}}
                                                 <th>Email</th>
-                                                <th>Photo</th>
+                                                <th>Role</th>
+                                                <th>Teacher</th>
                                                 <th>Goal</th>
-                                                <th>Size</th>
-                                                <th>Grade</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -112,38 +119,40 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
-                                                    <td colspan="1" class="text-center">No donations found.</td>
+                                                    <td colspan="9" class="text-center">No users found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
                                                 @if ($item->role != 'admin')
                                                     <tr>
                                                         <td>{{ $item->id }}</td>
-                                                        <td>{{ $item->fist_name }} {{ $item->last_name }}</td>
-                                                        <td>{{ $item->website->name }}</td>
+                                                        <td>
+                                                            <a href="{{ route('admin.user.profile', $item->id) }}" class="text-decoration-none fw-bold text-primary">
+                                                                {{ $item->fist_name }} {{ $item->last_name }}
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ $item->website->name ?? 'N/A' }}</td>
                                                         <td>{{ $item->email }}</td>
                                                         <td>
-                                                            <img src="{{ asset($item->photo ?? null) }}" width="200px">
+                                                            <span class="badge bg-info">{{ ucfirst($item->role) }}</span>
                                                         </td>
-                                                        <td>${{ $item->goal }}</td>
-                                                        <td>{{ $item->size }}</td>
-                                                        <td>{{ $item->grade }}</td>
+                                                        <td>{{ $item->teacher->name ?? 'N/A' }}</td>
+                                                        <td>${{ number_format($item->goal ?? 0, 2) }}</td>
                                                         <td>
                                                             @if ($item->status == 1)
-                                                                <a href="#" class="btn btn-success">Approved</a>
-
+                                                                <span class="badge bg-success">Approved</span>
                                                             @else
-
-                                                                <a href="/admins/student/approve/{{ $item->id }}" class="btn btn-danger">Approve</a>
-
+                                                                <span class="badge bg-warning">Pending</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a href="{{ route('admin.user.profile', $item->id) }}" class="btn btn-sm btn-primary me-1" title="View Profile">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            @if ($item->status != 1)
+                                                                <a href="/admins/student/approve/{{ $item->id }}" class="btn btn-sm btn-success" title="Approve">
+                                                                    <i class="fas fa-check"></i>
+                                                                </a>
                                                             @endif
                                                         </td>
                                                     </tr>

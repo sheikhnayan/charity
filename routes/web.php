@@ -54,6 +54,9 @@ Route::get('/firebase-config.js', function () {
 // Custom Fonts CSS (Public - for loading fonts in editors and frontend)
 Route::get('/fonts/custom.css', [\App\Http\Controllers\Admin\FontController::class, 'css'])->name('fonts.css');
 
+// Public API endpoint for getting teachers by website
+Route::get('/api/teachers', [\App\Http\Controllers\Admin\TeacherController::class, 'getTeachers'])->name('api.teachers');
+
 // Analytics Routes
 Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function () {
     Route::get('/analytics', [DashboardController::class, 'index'])->name('analytics.dashboard');
@@ -455,7 +458,7 @@ Route::get('/auction', [AuctionController::class, 'all'])->name('auction');
 
 Route::get('/place-bid', [AuctionController::class, 'store'])->name('auction.store');
 
-Route::get('/auction/{id}', [AuctionController::class, 'show'])->name('auction-show');
+Route::get('/product/{slug}', [AuctionController::class, 'show'])->name('auction-show');
 
 Route::get('/page/{id}', [FrontendController::class, 'page'])->name('page');
 
@@ -548,6 +551,10 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
         AdminController::class, 'student'
     ])->name('admin.student');
 
+    Route::get('/user/profile/{id}', [
+        AdminController::class, 'userProfile'
+    ])->name('admin.user.profile');
+
     // Analytics Routes
     Route::get('/analytics', [\App\Http\Controllers\User\AnalyticsController::class, 'dashboard'])->name('users.analytics.dashboard');
     Route::get('/analytics/utm', [\App\Http\Controllers\User\AnalyticsController::class, 'utm'])->name('users.analytics.utm');
@@ -580,6 +587,14 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     // Permission Management Routes
     Route::get('/permissions', [\App\Http\Controllers\User\PermissionController::class, 'index'])->name('users.permissions.index');
     Route::post('/permissions/assign', [\App\Http\Controllers\User\PermissionController::class, 'assign'])->name('users.permissions.assign');
+
+    // Children Management Routes (for parents)
+    Route::get('/children', [\App\Http\Controllers\User\ChildrenController::class, 'index'])->name('users.children.index');
+    Route::get('/children/create', [\App\Http\Controllers\User\ChildrenController::class, 'create'])->name('users.children.create');
+    Route::post('/children', [\App\Http\Controllers\User\ChildrenController::class, 'store'])->name('users.children.store');
+    Route::get('/children/{id}/edit', [\App\Http\Controllers\User\ChildrenController::class, 'edit'])->name('users.children.edit');
+    Route::put('/children/{id}', [\App\Http\Controllers\User\ChildrenController::class, 'update'])->name('users.children.update');
+    Route::delete('/children/{id}', [\App\Http\Controllers\User\ChildrenController::class, 'destroy'])->name('users.children.destroy');
 });
 
     Route::post('/admins/store',[AdminController::class, 'store'])->name('admin.store');
@@ -790,6 +805,17 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
         Route::delete('/{website}/payment-settings', [
             WebsitePaymentController::class, 'destroy'
         ])->name('admin.websites.payment.destroy');
+    });
+
+    // Teacher Management Routes (Admin)
+    Route::prefix('teachers')->name('admin.teachers.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\TeacherController::class, 'websites'])->name('websites');
+        Route::get('/website/{websiteId}', [\App\Http\Controllers\Admin\TeacherController::class, 'index'])->name('index');
+        Route::get('/create/{websiteId}', [\App\Http\Controllers\Admin\TeacherController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\TeacherController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [\App\Http\Controllers\Admin\TeacherController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [\App\Http\Controllers\Admin\TeacherController::class, 'update'])->name('update');
+        Route::get('/delete/{id}', [\App\Http\Controllers\Admin\TeacherController::class, 'destroy'])->name('delete');
     });
 
     Route::prefix('ticket')->name('admin.ticket.')->group(function () {

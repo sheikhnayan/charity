@@ -1,6 +1,17 @@
 @extends('user.main')
 
 @section('content')
+    @php
+        // Get current website from domain
+        $currentDomain = request()->getHost();
+        $currentWebsite = \App\Models\Website::where('domain', $currentDomain)->first();
+        
+        // Fallback to user's website if not found
+        if (!$currentWebsite) {
+            $currentWebsite = Auth::user()->website;
+        }
+    @endphp
+    
     <link rel="stylesheet" href="{{ asset('user/extra.css') }}">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -42,14 +53,14 @@
 
                                                 <div class="widget-content-left me-3 d-none d-md-block">
                                                     <div class="widget-content-left">
-                                                        <img width="42" class="rounded" alt="The SHPS PTO Fundraiser 2025"
-                                                            src="{{ asset('uploads/' . Auth::user()->website->setting->logo) }}">
+                                                        <img width="42" class="rounded" alt="{{ $currentWebsite->name }}"
+                                                            src="{{ asset('uploads/' . $currentWebsite->setting->logo) }}">
                                                     </div>
                                                 </div>
 
                                                 <div class="widget-content-left">
                                                     <div class="widget-heading">
-                                                        {{ Auth::user()->website->name }}
+                                                        {{ $currentWebsite->name }}
                                                     </div>
                                                     {{-- <div class="widget-subheading">
                                                         Peer to Peer
@@ -57,10 +68,10 @@
                                                     </div> --}}
                                                     <div class="fs-6 mt-2">
                                                         <i class="fas fa-link link-info me-1 btn-clipboard" role="button"
-                                                            data-clipboard-text="http://{{ Auth::user()->website->domain }}"></i>
-                                                        <a href="http://{{ Auth::user()->website->domain }}"
+                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}"></i>
+                                                        <a href="http://{{ $currentWebsite->domain }}"
                                                             class="link-info"
-                                                            target="_blank">{{ Auth::user()->website->domain }}</a>
+                                                            target="_blank">{{ $currentWebsite->domain }}</a>
                                                     </div>
                                                 </div>
 

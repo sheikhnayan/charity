@@ -23,6 +23,14 @@
 .forms-wizard li.done em {
   font-family: Linearicons-Free;
 }
+
+.dt-buttons button span {
+  color: #000 !important;
+}
+
+.paginate_buttons a {
+  color: #000 !important;
+}
 </style>
 @php
         $payment = \App\Models\PaymentSetting::first();

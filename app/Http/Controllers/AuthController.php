@@ -39,16 +39,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|same:confirm_password',
         ]);
 
-        if($request->group_id != null){
-            $group_id = $request->group_id;
-        }else{
-            $group_id = null;
-        }
-
-        if($request->group_name != null){
-            $group_name = $request->group_name;
-        }else{
-            $group_name = null;
+        // Handle teacher_id for individual registrations
+        $teacher_id = null;
+        if ($request->register_as === 'individual' && $request->teacher_id) {
+            $teacher_id = $request->teacher_id;
         }
 
         $url = url()->current();
@@ -64,8 +58,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->register_as,
-            'group_id' => $group_id,
-            'group_name' => $group_name,
+            'teacher_id' => $teacher_id,
             'website_id' => $check->id,
         ]);
 
