@@ -4136,6 +4136,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 const auctionId = "{{ $item->id }}";
                                 const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
                                 
+                                console.log('Processing auction:', auctionId, 'Price div found:', !!priceDiv);
+                                
                                 if (priceDiv) {
                                     try {
                                         const bidsRef = collection(firestore, "bid");
@@ -4148,32 +4150,36 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         
                                         const querySnapshot = await getDocs(q);
                                         
+                                        console.log('Firebase query result for auction {{ $item->id }}:', !querySnapshot.empty ? 'Has bids' : 'No bids');
+                                        
                                         if (!querySnapshot.empty) {
-                                            let highestBid = 0;
-                                            querySnapshot.forEach((doc) => {
-                                                const data = doc.data();
-                                                if (data.amount > highestBid) {
-                                                    highestBid = data.amount;
-                                                }
-                                            });
+                                            const amount = querySnapshot.docs[0].data().amount;
+                                            const highestBid = Number(amount);
+                                            
+                                            console.log('Bid data for auction {{ $item->id }}:', highestBid);
                                             
                                             if (highestBid > 0) {
-                                                priceDiv.textContent = `$${Number(highestBid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                                priceDiv.textContent = `$${highestBid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                                 console.log('Updated price for auction {{ $item->id }}:', highestBid);
+                                            } else {
+                                                // Bid exists but amount is 0 or invalid
+                                                const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
+                                                priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                             }
                                         } else {
                                             // No bids yet, show starting price
                                             const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
                                             priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                            console.log('No bids found, showing starting price:', startingPrice);
                                         }
                                     } catch (error) {
-                                        console.log("Firebase query failed for auction {{ $item->id }}:", error);
+                                        console.error("Firebase query failed for auction {{ $item->id }}:", error);
                                         // Fallback to starting price if Firebase fails
                                         const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
                                         priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                     }
                                 } else {
-                                    console.log('Price element not found for auction {{ $item->id }}');
+                                    console.warn('Price element not found for auction {{ $item->id }}');
                                 }
                             }
                         @endforeach
