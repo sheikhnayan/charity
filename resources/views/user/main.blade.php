@@ -395,7 +395,7 @@
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
                         @elseif (Auth::user()->role == 'parents')
-                        My Students
+                        Students/Children
                         @else
                         Group Member
                         @endif
