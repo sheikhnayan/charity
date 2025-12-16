@@ -598,6 +598,14 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::post('/parent/add-student',[
         AdminController::class, 'addStudentByParent'
     ])->name('parent.add-student');
+    
+    Route::get('/student/profile/{id}', [
+        AdminController::class, 'editStudentProfile'
+    ])->name('parent.edit-student');
+    
+    Route::post('/student/profile/{id}', [
+        AdminController::class, 'updateStudentProfile'
+    ])->name('parent.update-student');
 });
 
     Route::post('/admins/store',[AdminController::class, 'store'])->name('admin.store');

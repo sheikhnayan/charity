@@ -370,6 +370,24 @@
                     <div class="text-truncate" data-i18n="Email">Profile</div>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent' || Auth::user()->role == 'Parents' || Auth::user()->role == 'parents')
+                <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
+                    <a
+                    href="/users/student"
+                    class="menu-link">
+                    <i class="menu-icon tf-icons bx bx bx-group"></i>
+                    <div class="text-truncate" data-i18n="Email">
+                        @if (Auth::user()->role == 'user')
+                        {{ Auth::user()->setting->participant_name }}
+                        @elseif (Auth::user()->role == 'parents')
+                        Students/Children Profile
+                        @else
+                        Group Member
+                        @endif
+                    </div>
+                    </a>
+                </li>
+              @endif
             @endif
 
 
@@ -385,24 +403,6 @@
                   <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
-              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent' || Auth::user()->role == 'Parents' || Auth::user()->role == 'parents')
-                <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
-                    <a
-                    href="/users/student"
-                    class="menu-link">
-                    <i class="menu-icon tf-icons bx bx bx-group"></i>
-                    <div class="text-truncate" data-i18n="Email">
-                        @if (Auth::user()->role == 'user')
-                        {{ Auth::user()->setting->participant_name }}
-                        @elseif (Auth::user()->role == 'parents')
-                        Students/Children
-                        @else
-                        Group Member
-                        @endif
-                    </div>
-                    </a>
-                </li>
-              @endif
             @if (Auth::user()->role == 'user')
                 <!-- Setting -->
                 <li class="menu-header small text-uppercase ">

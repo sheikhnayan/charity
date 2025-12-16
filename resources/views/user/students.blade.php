@@ -127,7 +127,7 @@
                                                     <tr>
                                                         <td>{{ $item->id }}</td>
                                                         <td>
-                                                            <a href="{{ route('admin.user.profile', $item->id) }}" class="text-decoration-none fw-bold text-primary">
+                                                            <a href="/users/student/profile/{{ $item->id }}" class="text-decoration-none fw-bold text-primary">
                                                                 {{ $item->fist_name }} {{ $item->last_name }}
                                                             </a>
                                                         </td>
@@ -145,7 +145,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <a href="{{ route('admin.user.profile', $item->id) }}" class="btn btn-sm btn-primary me-1" title="View Profile">
+                                                            <a href="/users/student/profile/{{ $item->id }}" class="btn btn-sm btn-primary me-1" title="Edit Profile">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
                                                             @if(Auth::user()->role == 'parents' && $item->status != 1)
@@ -258,15 +258,7 @@
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="password" name="password" required minlength="6">
-                                    <div class="form-text">Minimum 6 characters</div>
+                                    <div class="form-text">Email and password will be automatically generated</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>

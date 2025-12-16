@@ -18,6 +18,7 @@ use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
 use Hash;
+use Illuminate\Support\Str;
 use App\Models\PageComment;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -610,21 +611,23 @@ class AdminController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
             'teacher_id' => 'required|exists:teachers,id',
             'goal' => 'nullable|numeric|min:0'
         ]);
 
         $parent = Auth::user();
 
+        // Generate random email and password
+        $randomEmail = 'student_' . strtolower($request->first_name) . '_' . uniqid() . '@' . $parent->website->domain;
+        $randomPassword = Str::random(12);
+
         // Create student user
         $student = User::create([
             'name' => $request->first_name,
             'fist_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'email' => $randomEmail,
+            'password' => Hash::make($randomPassword),
             'role' => 'individual',
             'parent_id' => $parent->id,
             'teacher_id' => $request->teacher_id,
@@ -646,6 +649,61 @@ class AdminController extends Controller
         }
         
         return view('admin.user-profile', compact('user'));
+    }
+
+    public function editStudentProfile($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Check if the current user is a parent and this student belongs to them
+        if (Auth::user()->role == 'parents' && $user->parent_id == Auth::user()->id) {
+            // Get current website from domain
+            $currentDomain = request()->getHost();
+            $currentWebsite = \App\Models\Website::where('domain', $currentDomain)->first();
+            
+            // Fallback to user's website if not found
+            if (!$currentWebsite) {
+                $currentWebsite = Auth::user()->website;
+            }
+            
+            return view('user.edit-student-profile', compact('user', 'currentWebsite'));
+        }
+        
+        // If not authorized, redirect back
+        return redirect()->back()->with('error', 'Unauthorized access');
+    }
+
+    public function updateStudentProfile(Request $request, $id)
+    {
+        $student = User::findOrFail($id);
+        
+        // Check if the current user is a parent and this student belongs to them
+        if (Auth::user()->role != 'parents' || $student->parent_id != Auth::user()->id) {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'goal' => 'nullable|numeric|min:0',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+        
+        $student->name = $request->name;
+        $student->fist_name = $request->name;
+        $student->goal = $request->goal ?? 0;
+        $student->description = $request->description;
+        
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads'), $filename);
+            $student->photo = 'uploads/' . $filename;
+        }
+        
+        $student->save();
+        
+        return redirect()->back()->with('success', 'Student profile updated successfully!');
     }
 
     public function menu($id)
