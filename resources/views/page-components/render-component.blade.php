@@ -4007,12 +4007,20 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                                     <div id="ai-price-{{ $item->id }}" class="c-price  c-price--small-block">
                                                                         <div class="c-price__title"><span class="js-price-title">Current bid</span></div>
                                                                         <div class="c-price__wrapper">
+                                                                            @php
+                                                                                // Get latest transaction/bid for this auction
+                                                                                $latestTransaction = \App\Models\Transaction::where('type', 'auction')
+                                                                                    ->where('reference_id', $item->id)
+                                                                                    ->orderBy('created_at', 'desc')
+                                                                                    ->first();
+                                                                                $currentBid = $latestTransaction ? $latestTransaction->amount : $item->starting_price;
+                                                                            @endphp
                                                                             <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
                                                                                 id="auction-price-{{ $item->id }}"
                                                                                 data-live-item="price"
                                                                                 data-tcid="{{ $item->id }}:price"
                                                                                 style="font-size: 16px;">
-                                                                                ${{ number_format($item->starting_price ?? 0, 2) }}
+                                                                                ${{ number_format($currentBid ?? 0, 2) }}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -4107,105 +4115,6 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     setTimeout(initializeAuctionListTimers, 100);
                 }
                 </script>
-                
-                <!-- Firebase Real-time Price Updates -->
-                <script type="module">
-                try {
-                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
-                    const { getFirestore, collection, query, where, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
-
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
-                        authDomain: "charity-390ca.firebaseapp.com",
-                        projectId: "charity-390ca",
-                        storageBucket: "charity-390ca.firebasestorage.app",
-                        messagingSenderId: "875958450032",
-                        appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
-                        measurementId: "G-FC73HL5XF3"
-                    };
-
-                    const app = initializeApp(firebaseConfig);
-                    const firestore = getFirestore(app);
-
-                    // Function to update auction prices
-                    async function updateAuctionPrices() {
-                        console.log('Updating auction prices from Firebase');
-                        
-                        @foreach ($auction as $item)
-                            {
-                                const auctionId = "{{ $item->id }}";
-                                const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
-                                
-                                console.log('Processing auction:', auctionId, 'Price div found:', !!priceDiv);
-                                
-                                if (priceDiv) {
-                                    try {
-                                        const bidsRef = collection(firestore, "bid");
-                                        const q = query(
-                                            bidsRef,
-                                            where("auction_id", "==", auctionId),
-                                            orderBy("amount", "desc"),
-                                            limit(1)
-                                        );
-                                        
-                                        const querySnapshot = await getDocs(q);
-                                        
-                                        console.log('Firebase query result for auction {{ $item->id }}:', !querySnapshot.empty ? 'Has bids' : 'No bids');
-                                        
-                                        if (!querySnapshot.empty) {
-                                            const amount = querySnapshot.docs[0].data().amount;
-                                            const highestBid = Number(amount);
-                                            
-                                            console.log('Bid data for auction {{ $item->id }}:', highestBid);
-                                            
-                                            if (highestBid > 0) {
-                                                priceDiv.textContent = `$${highestBid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                                                console.log('Updated price for auction {{ $item->id }}:', highestBid);
-                                            } else {
-                                                // Bid exists but amount is 0 or invalid
-                                                const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
-                                                priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                                            }
-                                        } else {
-                                            // No bids yet, show starting price
-                                            const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
-                                            priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                                            console.log('No bids found, showing starting price:', startingPrice);
-                                        }
-                                    } catch (error) {
-                                        console.error("Firebase query failed for auction {{ $item->id }}:", error);
-                                        // Fallback to starting price if Firebase fails
-                                        const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
-                                        priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                                    }
-                                } else {
-                                    console.warn('Price element not found for auction {{ $item->id }}');
-                                }
-                            }
-                        @endforeach
-                    }
-
-                    // Initialize prices when DOM is ready
-                    document.addEventListener('DOMContentLoaded', function() {
-                        setTimeout(updateAuctionPrices, 500);
-                        
-                        // Update prices every 30 seconds
-                        setInterval(updateAuctionPrices, 30000);
-                    });
-                    
-                } catch (error) {
-                    console.log('Firebase initialization failed:', error);
-                    // Ensure fallback prices are displayed
-                    document.addEventListener('DOMContentLoaded', function() {
-                        @foreach ($auction as $item)
-                            const priceDiv{{ $item->id }} = document.getElementById('auction-price-{{ $item->id }}');
-                            if (priceDiv{{ $item->id }}) {
-                                const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
-                                priceDiv{{ $item->id }}.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                            }
-                        @endforeach
-                    });
-                }
                 </script>
             @else
                 <div style="{{ $wrapperStyleStr }}">

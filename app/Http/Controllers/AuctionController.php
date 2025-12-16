@@ -38,10 +38,11 @@ class AuctionController extends Controller
      */
     public function show(string $slug)
     {
-        // Find auction by converting title to slug format - handle multiple variations
-        $data = Auction::whereRaw('LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"), "?", ""), "!", "")) = ?', [strtolower($slug)])
-            ->orWhereRaw('LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"), "?", ""), "!", ""), "--", "-")) = ?', [strtolower($slug)])
-            ->firstOrFail();
+        // Find auction using LIKE query for flexible slug matching
+        $data = Auction::where(function($query) use ($slug) {
+            $query->whereRaw('LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"), "?", ""), "!", "")) LIKE ?', ['%' . strtolower($slug) . '%'])
+                  ->orWhereRaw('LOWER(title) LIKE ?', ['%' . str_replace('-', ' ', strtolower($slug)) . '%']);
+        })->firstOrFail();
         
         return view('product', compact('data'));
     }
