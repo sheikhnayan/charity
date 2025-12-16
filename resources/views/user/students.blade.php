@@ -49,14 +49,14 @@
 
                                     <div>
                                         <span class="text-capitalize">
-                                            @if(Auth::user()->role == 'parent')
+                                            @if(Auth::user()->role == 'parents')
                                                 My Students
                                             @else
                                                 Users
                                             @endif
                                         </span>
                                         <div class="page-title-subheading">
-                                            @if(Auth::user()->role == 'parent')
+                                            @if(Auth::user()->role == 'parents')
                                                 Manage your students/children.
                                             @else
                                                 View all Users.
@@ -66,7 +66,7 @@
 
                                 </div>
                                 <div class="page-title-actions">
-                                    @if(Auth::user()->role == 'parent')
+                                    @if(Auth::user()->role == 'parents')
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                                             <i class="fas fa-plus me-2"></i>Add Student
                                         </button>
@@ -238,7 +238,7 @@
             </script>
             
             <!-- Add Student Modal -->
-            @if(Auth::user()->role == 'parent')
+            @if(Auth::user()->role == 'parents')
             <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
