@@ -699,7 +699,7 @@ class AdminController extends Controller
         
         // Save the name in both name and fist_name fields
         $student->name = $request->name;
-        $student->fist_name = $request->name;
+        // $student->fist_name = $request->name;
         $student->goal = $request->goal ?? 0;
         $student->description = $request->description;
         
