@@ -76,7 +76,7 @@
                                                 </div>
 
                                                 <div class="widget-content-right">
-                                                    @if(Auth::user()->role == 'student')
+                                                    @if(Auth::user()->role == 'individual')
                                                         <div class="btn-group d-none d-md-inline-flex" role="group">
                                                             <a href="/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}"
                                                                 class="btn btn-info btn-hover-info" target="_blank">
@@ -95,11 +95,11 @@
                                                                 <span>Copy URL</span>
                                                             </button>
                                                         </div>
-                                                    @else
+                                                    {{-- @else
                                                         <button type="button" class="btn btn-primary btn-hover-info d-none d-md-inline-flex" onclick="copyProfileUrl()">
                                                             <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
                                                             <span>Copy Profile URL</span>
-                                                        </button>
+                                                        </button> --}}
                                                     @endif
                                                 </div>
                                             </div>

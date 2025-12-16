@@ -2,10 +2,6 @@
     $url = url()->current();
     $doamin = parse_url($url, PHP_URL_HOST);
     $check = \App\Models\Website::where('domain', $doamin)->first();
-    $header = \App\Models\Header::where('website_id', $check->id)->first();
-    $footer = \App\Models\Footer::where('website_id', $check->id)->first();
-    $setting = \App\Models\Setting::where('user_id', $check->user_id)->first();
-
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -146,11 +142,279 @@
         background-color: #eee;
         border: unset;
     }
+
+    /* Investor Exclusives Bar Styles - Dynamic Positioning */
+    .investor-exclusives-bar {
+        padding: 0px 0px;
+        text-align: center;
+        position: fixed;
+        top: calc(var(--navbar-total-height, 6rem) - 0.23rem);
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 999;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .investor-exclusives-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .investor-exclusives-text {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Contact Top Bar Styles */
+    .contact-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1001;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-topbar .contact-info {
+        gap: 0;
+    }
+    
+    .contact-topbar .contact-item {
+        font-size: 14px;
+        font-weight: 400;
+    }
+    
+    .contact-topbar .contact-item a {
+        transition: all 0.3s ease;
+        text-decoration: underline !important;
+    }
+    
+    .contact-topbar .contact-item a:hover {
+        opacity: 0.8;
+        text-decoration: none !important;
+    }
+    
+    .contact-topbar .contact-item i {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    /* Responsive design for contact top bar */
+    @media (max-width: 768px) {
+        .contact-topbar {
+            padding: 8px 0 !important;
+            font-size: 12px !important;
+            height: 28px !important;
+        }
+        
+        .contact-topbar .contact-item {
+            font-size: 11px;
+            margin-right: 8px !important;
+            margin-bottom: 0 !important;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .contact-topbar .contact-item:last-child {
+            margin-right: 0 !important;
+        }
+
+        .investor-exclusives-bar {
+            position: fixed;
+            top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem);
+            padding-bottom: 0px;
+        }
+        
+        .investor-exclusives-content {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .investor-exclusives-text {
+            font-size: 14px;
+            text-align: center;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .contact-topbar {
+            padding: 6px 0 !important;
+        }
+        
+        .contact-topbar .contact-item {
+            margin-right: 6px !important;
+            margin-bottom: 0 !important;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        
+        .contact-topbar .contact-item:last-child {
+            margin-right: 0 !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .investor-exclusives-bar {
+            padding: 10px 0;
+            top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem);
+            padding-bottom: 0px;
+        }
+        
+        .investor-exclusives-text {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+    }
+    
+    /* Adjust navbar when contact top bar is present */
+    .contact-topbar + nav.navbar {
+        top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-topbar + nav.navbar {
+            top: 1.7rem;
+        }
+    }
 </style>
 </head>
-<body>
-    @if ($header->status == 1)
-        @include('layouts.nav')
+<body style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
+    
+    @php
+        // Use user_id to fetch header, footer, setting to match product-details
+        $user_id = $check->user_id;
+        $header = \App\Models\Header::where('user_id', $user_id)->first();
+        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
+        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
+        $customFonts = \App\Models\CustomFont::get();
+    @endphp
+    
+    <!-- Header -->
+    
+    @if ($header && $header->status == 1)
+        {{-- Contact Information Top Bar --}}
+        @if($header && $header->show_contact_topbar)
+            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        @if($header->contact_phone)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
+                                    {{ $header->contact_phone }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_email)
+                        <div class="col-6 col-md-auto" style="text-align: center;">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;">
+                                    {{ $header->contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_cta_text)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item mb-1">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important;"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }} !important; text-decoration : underline !important;">
+                                    {{ $header->contact_cta_text }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
+            @include('layouts.nav')
+
+        
+        
+        {{-- Investor Exclusives Top Bar - Investment Websites Only --}}
+        @if($check && $check->isInvestment() && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+                <div class="investor-exclusives-content">
+                    <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
+                    <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; text-transform: uppercase; padding-bottom: 4px;">
+                        {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                    </p>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Dynamic Navbar Height Calculator Script --}}
+            <script>
+                function updateNavbarHeights() {
+                    const navbar = document.querySelector('.navbar');
+                    const contactTopbar = document.querySelector('.contact-topbar');
+                    const investorBar = document.querySelector('.investor-exclusives-bar');
+                    
+                    if (navbar) {
+                        const navbarHeight = navbar.offsetHeight;
+                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                        const totalNavHeight = navbarHeight + contactTopbarHeight;
+                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
+                        
+                        // Convert to rem (assuming 16px base font size)
+                        const totalHeightRem = totalNavHeight / 16;
+                        const totalHeightRemMobile = (totalNavHeight + (contactTopbar ? 8 : 0)) / 16;
+                        const totalHeightRemSmall = (totalNavHeight - (contactTopbar ? contactTopbarHeight * 0.3 : 0)) / 16;
+                        
+                        // Main content margin should account for investor bar if present
+                        const mainContentMargin = totalWithInvestorBar / 16 + 0.5; // Extra space for clean separation
+                        
+                        // Set CSS custom properties
+                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-mobile', `${totalHeightRemMobile}rem`);
+                        document.documentElement.style.setProperty('--navbar-total-height-small', `${totalHeightRemSmall}rem`);
+                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                    }
+                }
+                
+                // Run on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(updateNavbarHeights, 50);
+                });
+                
+                // Run on resize
+                window.addEventListener('resize', updateNavbarHeights);
+                
+                // Run after fonts load
+                if (document.fonts) {
+                    document.fonts.ready.then(updateNavbarHeights);
+                }
+                
+                // Fallback: run after delays
+                setTimeout(updateNavbarHeights, 100);
+                setTimeout(updateNavbarHeights, 300);
+                setTimeout(updateNavbarHeights, 500);
+                setTimeout(updateNavbarHeights, 1000);
+            </script>
+        @endif
     @endif
 
     <main style="margin-top: 6.5rem">
@@ -476,137 +740,7 @@
 
     </main>
 
-    @if ($footer->status == 1)
-<footer class="standard-client-footer text-white bg-primary" data-footer="" style="
-background-color: {{ $footer->background }} !important;
-max-width: 100%;
-">
-    <div class="container">
-
-                    <p class="lead text-center pt-4" style="color: {{ $footer->color }} !important">
-                {{ $footer->message }}
-            </p>
-                    @if ($footer->menu == 1)
-                        <div class="nav justify-content-center">
-                            @foreach ($check->pages->sortBy('position') as $item)
-
-                            @if($item->status == 1)
-
-                            <div class="nav-item">
-                                <a class="nav-link active" href="/page/{{ str_replace(' ', '-', strtolower($item->name)) }}" style="color:{{ $header->color }} !important" aria-current="page">
-                                {{ $item->name }}
-                                </a>
-                            </div>
-                            @endif
-
-                            @endforeach
-                                                    </div>
-                    @endif
-
-                    @if ($footer->social == 1)
-                        <ul class="nav justify-content-center footer-socials mt-4 mb-4">
-                            @if ($footer->facebook)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->facebook }}" target="_blank">
-                                        <i class="fa-brands fa-facebook fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">facebook</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->instagram)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->instagram }}" target="_blank">
-                                        <i class="fa-brands fa-instagram fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">instagram</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->linkedin)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->linkedin }}" target="_blank">
-                                        <i class="fa-brands fa-linkedin fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">linkedin</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->pinterest)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->pinterest }}" target="_blank">
-                                        <i class="fa-brands fa-pinterest fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">pinterest</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->x)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->x }}" target="_blank">
-                                        <i class="fa-brands fa-x-twitter fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">x</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->youtube)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->youtube }}" target="_blank">
-                                        <i class="fa-brands fa-youtube fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">youtube</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->blue_sky)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->blue_sky }}" target="_blank">
-                                        <i class="fa-solid fa-cloud fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">blue sky</span>
-                                    </a>
-                                </li>
-                            @endif
-
-                            @if ($footer->tiktok)
-                                <li class="nav-item">
-                                    <a href="{{ $footer->tiktok }}" target="_blank">
-                                        <i class="fa-brands fa-tiktok fa-fw" role="img" aria-hidden="true" style="color: {{ $footer->color }} !important"></i>
-                                        <span class="visually-hidden">tiktok</span>
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    @endif
-
-                @if ($footer->copy_right != null)
-                    <p class="text-center">
-                        <small style="color: {{ $footer->color }}">
-                            {{ $footer->copy_right }}
-                        </small>
-                    </p>
-                @endif
-
-    </div>
-    @if ($footer->privacy == 1)
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund Policy</a>
-                        </li>
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy Policy</a>
-                        </li>
-                        <li style="margin-right: 1rem;">
-                            <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
-                        </li>
-                    </ul>
-            </div>
-        </div>
-    @endif
-</footer>
-@endif
+    @include('layouts.new-footer')
 
     <!-- Include DataTables and jQuery CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
