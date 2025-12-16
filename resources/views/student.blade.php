@@ -294,7 +294,7 @@
     }
 </style>
 </head>
-<body style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
+<body>
     
     @php
         // Use user_id to fetch header, footer, setting to match product-details
