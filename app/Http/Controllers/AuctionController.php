@@ -38,9 +38,8 @@ class AuctionController extends Controller
      */
     public function show(string $slug)
     {
-        // Try to find by slug first, if not found try by title slug
-        $data = Auction::where('slug', $slug)
-            ->orWhere(\DB::raw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"))'), strtolower($slug))
+        // Find auction by converting title to slug format
+        $data = Auction::whereRaw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-")) = ?', [strtolower($slug)])
             ->firstOrFail();
         
         return view('product', compact('data'));

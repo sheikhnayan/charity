@@ -390,7 +390,7 @@
                   @endphp
                   @foreach ($similar as $item)
                   @if ($item->id != $data->id)
-                      <a href="/product/{{ $item->slug ?: Str::slug($item->title) }}">
+                      <a href="/product/{{ Str::slug($item->title) }}">
                         <div class="card"><img src="{{ asset('uploads/'.$item->images[0]->image) }}" alt="{{$item->title}}" style="width: 100%"><div class="meta">{{$item->title}}<br><strong>Current: ${{ number_format($item->starting_price, 2) }}</strong></div></div>
                       </a>
                   @endif
@@ -473,7 +473,7 @@
                 <i class="fas fa-info-circle me-1"></i>Bidding is free and simple. Place your bid now!
               </div>
 
-              <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:16px;padding-top:12px">
+              {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:16px;padding-top:12px">
                 <div class="small muted">Payment methods</div>
                 <div style="display:flex;gap:8px;margin-top:8px">
                   <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">VISA</span>
@@ -481,7 +481,7 @@
                   <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">PayPal</span>
                   <span style="background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #efeff0;font-size:12px">Apple Pay</span>
                 </div>
-              </div>
+              </div> --}}
             </div>
 
             <!-- Website Info -->
@@ -719,6 +719,56 @@
         startBidPolling();
     });
 
+    // Function to open bid modal
+    function openBidModal() {
+      const modal = new bootstrap.Modal(document.getElementById('bidModal'));
+      modal.show();
+    }
+
+    // Listen for successful login to auto-open bid modal
+    window.addEventListener('authSuccess', function() {
+      if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
+        // User just logged in and wanted to place a bid
+        setTimeout(() => {
+          openBidModal();
+          // Reset the flag
+          window._isAuctionBid = false;
+        }, 500);
+      }
+    });
+
+    // Also check periodically if user authenticated (fallback)
+    let authCheckInterval;
+    function startAuthCheck() {
+      authCheckInterval = setInterval(async () => {
+        if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
+          const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          try {
+            const authCheck = await fetch('/ajax/ticket-auth/check', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+              },
+              body: JSON.stringify({})
+            });
+            const authStatus = await authCheck.json();
+            
+            if (authStatus.authenticated && authStatus.verified) {
+              // User is now authenticated - open bid modal
+              clearInterval(authCheckInterval);
+              openBidModal();
+              window._isAuctionBid = false;
+            }
+          } catch (error) {
+            console.log('Auth check polling error:', error);
+          }
+        } else {
+          clearInterval(authCheckInterval);
+        }
+      }, 1000);
+    }
+
     // Open bid modal with auth check
     document.getElementById('placeBidBtn').addEventListener('click', async function(e) {
       e.preventDefault();
@@ -742,6 +792,9 @@
           window._isAuctionBid = true;
           window._auctionId = '{{ $data->id }}';
           
+          // Start polling for auth success
+          startAuthCheck();
+          
           // Open auth modal
           if (typeof setAuthMode === 'function') {
             setAuthMode('login');
@@ -753,14 +806,12 @@
         }
 
         // User is authenticated - show bid modal
-        const modal = new bootstrap.Modal(document.getElementById('bidModal'));
-        modal.show();
+        openBidModal();
         
       } catch (error) {
         console.error('Authentication check failed:', error);
         // Fallback - show bid modal anyway
-        const modal = new bootstrap.Modal(document.getElementById('bidModal'));
-        modal.show();
+        openBidModal();
       }
     });
 
@@ -814,6 +865,5 @@
   </script>
   
   @include('partials.ticket-auth-modal')
-  @include('partials.investor-info-modal')
 </body>
 </html>

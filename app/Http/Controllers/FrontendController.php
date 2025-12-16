@@ -25,9 +25,8 @@ class FrontendController extends Controller
 {
     public function productDetails($slug)
     {
-        // First, try to find an auction with this slug or title-based slug
-        $auction = Auction::where('slug', $slug)
-            ->orWhere(\DB::raw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-"))'), strtolower($slug))
+        // First, try to find an auction with title-based slug
+        $auction = Auction::whereRaw('LOWER(REPLACE(REPLACE(REPLACE(title, " ", "-"), "_", "-"), ".", "-")) = ?', [strtolower($slug)])
             ->first();
         
         if ($auction) {

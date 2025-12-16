@@ -3953,7 +3953,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 <div class="c-node-ai__image-wrap">
                                                     <div class="c-node-ai__image">
                                                         <svg viewBox="0 0 100 100"></svg>
-                                                        <a href="/product/{{ $item->slug ?: Str::slug($item->title) }}" class="">
+                                                        <a href="/product/{{ Str::slug($item->title) }}" class="">
                                                             <img alt="{{ $item->title }}"
                                                                 sizes="(min-width: 110em) 420px, (min-width: 90em) 25vw, (min-width: 60em) 33vw, (min-width: 30em) 50vw, 100vw"
                                                                 data-src="{{ asset('/uploads/'.$item->images[0]->image ?? '') }}"
@@ -3966,7 +3966,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                 </div>
                                                 <div class="c-node-ai__details-wrap">
                                                     <h3 class="c-node-ai__title c-heading--gamma">
-                                                        <a href="/product/{{ $item->slug ?: Str::slug($item->title) }}" data-mousetrap-trigger="4">
+                                                        <a href="/product/{{ Str::slug($item->title) }}" data-mousetrap-trigger="4">
                                                             {{ $item->title }}
                                                         </a>
                                                     </h3>
