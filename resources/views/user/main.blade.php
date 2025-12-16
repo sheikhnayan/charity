@@ -385,7 +385,7 @@
                   <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
-              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent')
+              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent' || Auth::user()->role == 'Parents')
                 <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
                     <a
                     href="/users/student"
