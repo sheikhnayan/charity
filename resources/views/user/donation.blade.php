@@ -175,7 +175,7 @@
                                                         <td>${{ number_format($item->amount, 2) }}</td>
                                                             
                                                         @else
-                                                        <td>${{ number_format($item->amount - $item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount, 2) }}</td>
                                                             
                                                         @endif
                                                         <td>${{ number_format($item->fee, 2) }}</td>
@@ -183,7 +183,7 @@
                                                         <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
                                                         @else
                                                             
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
                                                         @endif
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
@@ -217,7 +217,7 @@
                                                                 @if ($item->type == 'investment')
                                                                 data-gross="${{ number_format($item->amount, 2) }}"                                                                    
                                                                 @else
-                                                                data-gross="${{ number_format($item->amount - $item->fee, 2) }}"                                                                    
+                                                                data-gross="${{ number_format($item->amount, 2) }}"                                                                    
                                                                 @endif
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
@@ -248,7 +248,7 @@
                                                                 @if ($item->type == 'investment')
                                                                 data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
                                                                 @else
-                                                                data-total-paid="${{ number_format($item->amount, 2) }}"
+                                                                data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
                                                                 @endif
                 
                 

@@ -233,16 +233,32 @@
         @include('layouts.nav')
     @endif
     <header class="site-header" id="header" style="padding-top: 8rem;">
-        <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">THANK YOU!</h1>
+        <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">
+            @if(isset($type) && in_array($type, ['student', 'general']))
+                THANK YOU FOR YOUR DONATION!
+            @else
+                THANK YOU!
+            @endif
+        </h1>
     </header>
 
     <div class="main-content" style="text-align: center; padding-bottom: 4.3rem;">
         <i class="fa fa-check main-content__checkmark" id="checkmark"></i>
-        <p class="main-content__body p-4" data-lead-id="main-content-body">Your Transaction Is Complete. <br>
-Thank you for your purchase and a confirmation email with the details has been sent to you.
-Your order will appear in your dashboard shortly. <br>
-If you need help or have any questions, our support team is always here to assist.</p>
-        <p class="main-content__body p-4" data-lead-id="main-content-body">Please check your dashboard for your purchase details.</p>
+        
+        @if(isset($type) && in_array($type, ['student', 'general']))
+            <p class="main-content__body p-4" data-lead-id="main-content-body">
+                Your contribution has been successfully received and is already making an impact. A confirmation email with your donation details has been sent to the email address you provided (please check your spam folder if you don't see it).
+            </p>
+            <p class="main-content__body p-4" data-lead-id="main-content-body">
+                We truly appreciate your generosity and support.
+            </p>
+        @else
+            <p class="main-content__body p-4" data-lead-id="main-content-body">Your Transaction Is Complete. <br>
+            Thank you for your purchase and a confirmation email with the details has been sent to you.
+            Your order will appear in your dashboard shortly. <br>
+            If you need help or have any questions, our support team is always here to assist.</p>
+            <p class="main-content__body p-4" data-lead-id="main-content-body">Please check your dashboard for your purchase details.</p>
+        @endif
     </div>
 
     <!-- Footer -->
