@@ -195,10 +195,10 @@
                                                         </td>
                                                         <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
                                                         @if ($item->type == 'investment')
-                                                        <td>${{ number_format($item->amount + $fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                         @else
                                                             
-                                                        <td>${{ number_format($item->amount + $fee, 2) }}</td>
+                                                        <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                         @endif
                                                         {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                         <td>
@@ -379,7 +379,7 @@
                                     <strong>Payment Zip Code:</strong> <span id="modal-payment-zip"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Total Amount:</strong> <span id="modal-total-amount"></span>
+                                    <strong>Total Entered:</strong> <span id="modal-total-amount"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total Due:</strong> <span id="modal-total-due"></span>
