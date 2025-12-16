@@ -212,14 +212,14 @@
                                             value="{{ $user->name }}" required>
                                     </div>
 
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <label for="email" class="form-label required">
                                             Email
                                         </label>
                                         <input type="email" class="form-control" id="email" name="email"
                                             value="{{ $user->email }}" readonly>
                                         <div class="form-text">Email cannot be changed</div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-12">
                                         <label for="description" class="form-label ">
