@@ -586,13 +586,12 @@ class AdminController extends Controller
             $data = User::where('group_id',Auth::user()->id)->where('id','!=',Auth::user()->id)->get();
 
             return view('user.students', compact('data'));
-        }elseif(Auth::user()->role == 'parent'){
+        }elseif(Auth::user()->role == 'parents'){
             // For parents, show only their children
             $data = User::where('parent_id', Auth::user()->id)->get();
             
             // Get teachers for the parent's website from teachers table
             $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
-            dd(\App\Models\Teacher::all());
 
             return view('user.students', compact('data', 'teachers'));
         }else{
