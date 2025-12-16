@@ -113,6 +113,9 @@
                                                 <th>Role</th>
                                                 <th>Teacher</th>
                                                 <th>Goal</th>
+                                                @if(Auth::user()->role == 'parents')
+                                                <th>Raised</th>
+                                                @endif
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -120,7 +123,7 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="8" class="text-center">No student found.</td>
+                                                    <td colspan="{{ Auth::user()->role == 'parents' ? '9' : '8' }}" class="text-center">No student found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
@@ -137,6 +140,17 @@
                                                         </td>
                                                         <td>{{ $item->teacher->name ?? 'N/A' }}</td>
                                                         <td>${{ number_format($item->goal ?? 0, 2) }}</td>
+                                                        @if(Auth::user()->role == 'parents')
+                                                        <td>
+                                                            @php
+                                                                // Calculate total raised from approved donations for this student
+                                                                $totalRaised = \App\Models\Donation::where('user_id', $item->id)
+                                                                    ->where('status', 1)
+                                                                    ->sum('amount');
+                                                            @endphp
+                                                            ${{ number_format($totalRaised, 2) }}
+                                                        </td>
+                                                        @endif
                                                         <td>
                                                             @if ($item->status == 1)
                                                                 <span class="badge bg-success">Approved</span>

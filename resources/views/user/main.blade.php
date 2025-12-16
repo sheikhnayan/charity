@@ -392,6 +392,7 @@
 
 
               <!-- Reports -->
+            @if(Auth::user()->role != 'parents')
             <li class="menu-header small text-uppercase ">
                 <span class="menu-header-text">Reports</span>
               </li>
@@ -403,6 +404,7 @@
                   <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
+            @endif
             @if (Auth::user()->role == 'user')
                 <!-- Setting -->
                 <li class="menu-header small text-uppercase ">

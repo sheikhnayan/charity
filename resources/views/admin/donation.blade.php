@@ -121,8 +121,7 @@
                                             <label>Date Range:</label>
                                             <input type="text" id="dateRange" class="form-control" placeholder="Select date range" autocomplete="off">
                                         </div> --}}
-                                    </div>
-                                    <table class="table table-striped">
+                                    </div>                                    <div class="table-responsive" style="overflow-x: auto;">                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th><input type="checkbox" id="selectAll"></th>
@@ -275,6 +274,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -549,12 +549,12 @@
 
                     // Website filter
                     $('#websiteFilter').on('change', function() {
-                        table.column(11).search(this.value).draw();
+                        table.column(10).search(this.value).draw();
                     });
 
                     // Type filter
                     $('#typeFilter').on('change', function() {
-                        table.column(12).search(this.value).draw();
+                        table.column(11).search(this.value).draw();
                     });
 
 

@@ -115,6 +115,7 @@
                                             </div>
                                         @endif
                                     </div>
+                                    <div class="table-responsive" style="overflow-x: auto;">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -284,6 +285,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
