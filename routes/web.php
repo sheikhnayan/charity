@@ -593,6 +593,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/children/{id}/edit', [\App\Http\Controllers\User\ChildrenController::class, 'edit'])->name('users.children.edit');
     Route::put('/children/{id}', [\App\Http\Controllers\User\ChildrenController::class, 'update'])->name('users.children.update');
     Route::delete('/children/{id}', [\App\Http\Controllers\User\ChildrenController::class, 'destroy'])->name('users.children.destroy');
+    
+    // Parent add student route
+    Route::post('/parent/add-student',[
+        AdminController::class, 'addStudentByParent'
+    ])->name('parent.add-student');
 });
 
     Route::post('/admins/store',[AdminController::class, 'store'])->name('admin.store');
@@ -727,10 +732,6 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::get('/student',[
         AdminController::class, 'student'
     ])->name('admin.student');
-    
-    Route::post('/parent/add-student',[
-        AdminController::class, 'addStudentByParent'
-    ])->name('parent.add-student');
 
     // User management (custom role-based)
     Route::get('/users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])
