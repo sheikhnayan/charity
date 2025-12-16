@@ -61,6 +61,25 @@
                                                 </div>
 
                                                 <div class="widget-content-right">
+                                                    <div class="btn-group d-none d-md-inline-flex me-2" role="group">
+                                                        <a href="/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"
+                                                            class="btn btn-info btn-hover-info" target="_blank">
+                                                            <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
+                                                            <span>View</span>
+                                                        </a>
+
+                                                        <button type="button" class="btn btn-success btn-hover-info"
+                                                            data-bs-toggle="modal" data-bs-target="#modal-share">
+                                                            <i class="fa-solid fa-share-nodes fa-fw" aria-hidden="true"></i>
+                                                            <span>Share</span>
+                                                        </button>
+                                                        
+                                                        <button type="button" class="btn btn-primary btn-hover-info" onclick="copyProfileUrl()">
+                                                            <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
+                                                            <span>Copy URL</span>
+                                                        </button>
+                                                    </div>
+                                                    
                                                     <a href="/users/student" class="btn btn-secondary">
                                                         <i class="fa-solid fa-arrow-left fa-fw" aria-hidden="true"></i>
                                                         <span>Back to Students</span>
@@ -249,6 +268,41 @@
             </div>
         </div>
         <!-- / Content -->
+        
+        <script>
+        function copyProfileUrl() {
+            const profileUrl = window.location.origin + '/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}';
+            
+            // Create temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = profileUrl;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                // Show success message
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check fa-fw"></i><span>Copied!</span>';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-primary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-primary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy URL. Please copy manually: ' + profileUrl);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+        </script>
 
         <script>
             ClassicEditor
