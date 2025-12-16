@@ -466,7 +466,7 @@ class FrontendController extends Controller
 
         $data = User::where('id', $id)->first();
 
-        $donations = Donation::where('user_id', $id)->get();
+        $donations = Donation::where('user_id', $id)->where('status',1)->get();
 
         return view('student', compact('data', 'donations','check'));
     }
