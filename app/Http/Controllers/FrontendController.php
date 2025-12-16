@@ -467,8 +467,13 @@ class FrontendController extends Controller
         $data = User::where('id', $id)->first();
 
         $donations = Donation::where('user_id', $id)->where('status',1)->get();
+        
+        // Get messages for this student
+        $messages = \App\Models\StudentMessage::where('student_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('student', compact('data', 'donations','check'));
+        return view('student', compact('data', 'donations', 'messages', 'check'));
     }
 
     public function donation(Request $request)
@@ -523,6 +528,26 @@ class FrontendController extends Controller
         }
 
         return redirect('/authorize/payment/donation/'.$add->id)->with('success', 'Donation Pending');
+    }
+
+    public function sendStudentMessage(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:users,id',
+            'sender_name' => 'required|string|max:100',
+            'sender_email' => 'required|email|max:150',
+            'message' => 'required|string|max:5000',
+        ]);
+
+        \App\Models\StudentMessage::create([
+            'student_id' => $request->student_id,
+            'sender_name' => $request->sender_name,
+            'sender_email' => $request->sender_email,
+            'message' => $request->message,
+            'ip_address' => $request->ip()
+        ]);
+
+        return back()->with('success', 'Your message has been sent successfully!');
     }
 
     public function tickets(Request $request){

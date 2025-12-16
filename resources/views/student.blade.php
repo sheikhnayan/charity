@@ -495,8 +495,8 @@
                             <div class="col-6 col-md-3 text-center position-relative">
                                 <i class="fas fa-comments fs-4" role="img" aria-hidden="true" style="font-size: 4rem !important;"></i>
                                 <button type="button"
-                                    class="btn btn-link btn-modal stretched-link d-block mx-auto p-0 mt-4"
-                                    data-action="{{ url('/ajax/profile/'.$data->id.'/edit') }}"
+                                    class="btn btn-link stretched-link d-block mx-auto p-0 mt-4"
+                                    data-bs-toggle="modal" data-bs-target="#sendMessageModal"
                                     style="white-space:nowrap; color: #2e4053">
                                     Send message
                                     <i class="fas fa-arrow-down ms-1" role="img" aria-hidden="true"></i>
@@ -737,8 +737,86 @@
             </div>
         </div>
 
+        <!-- Messages Section -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <p class="lead text-center mt-3">
+                    {{ isset($messages) ? $messages->count() : 0 }} messages have been sent to {{ $data->name }}
+                </p>
+            </div>
+            <div class="col-8 mt-4">
+                <div class="row">
+                    @if(isset($messages))
+                        @foreach ($messages as $message)
+                            <div class="col-lg-6 mt-2" style="font-size: 12px;">
+                                <div class="p-3 rounded position-relative" style="background: #ebebeb">
+                                    <h5 class="fw-semibold text-primary">
+                                        {{ $message->sender_name }}
+                                    </h5>
+                                    <small class="text-muted d-block mb-2">{{ $message->sender_email }}</small>
+                                    
+                                    <p class="mt-3">{{ $message->message }}</p>
+
+                                    <small class="d-block opacity-75 mt-3 p-2 rounded" style="backdrop-filter: brightness(1.5);">
+                                        <i class="fa-solid fa-calendar-days me-1" aria-hidden="true"></i>
+                                        {{ $message->created_at->diffForHumans() }}
+                                    </small>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+        </div>
 
     </main>
+
+    <!-- Send Message Modal -->
+    <div class="modal fade" id="sendMessageModal" tabindex="-1" aria-labelledby="sendMessageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #2e4053; color: white;">
+                    <h5 class="modal-title" id="sendMessageModalLabel">Send Message to {{ $data->name }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('student.message') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="student_id" value="{{ $data->id }}">
+                    
+                    <div class="modal-body">
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+                        
+                        <div class="mb-3">
+                            <label for="sender_name" class="form-label fw-semibold">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="sender_name" name="sender_name" required maxlength="100">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="sender_email" class="form-label fw-semibold">Your Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="sender_email" name="sender_email" required maxlength="150">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label fw-semibold">Message <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required maxlength="5000" placeholder="Write your message here..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #2e4053; border-color: #2e4053;">
+                            <i class="fas fa-paper-plane me-1"></i> Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     @include('layouts.new-footer')
 

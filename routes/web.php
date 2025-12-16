@@ -482,6 +482,7 @@ Route::get('/invest/terms', [FrontendController::class, 'investmentTerms'])->nam
 Route::get('/invest/privacy', [FrontendController::class, 'investmentPrivacy'])->name('invest.privacy');
 
 Route::post('/donations', [FrontendController::class, 'donation'])->name('donation');
+Route::post('/student-message', [FrontendController::class, 'sendStudentMessage'])->name('student.message');
 
 Route::post('/tickets', [FrontendController::class, 'tickets'])->name('tickets');
 Route::get('/product/{slug}', [FrontendController::class, 'productDetails'])->name('product.details');
