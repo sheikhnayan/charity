@@ -450,18 +450,18 @@
                             </h2>
                             <span class="opacity-75 text-center text-lg-start mt-2"></span>
                             <div class="progress mt-3" role="progressbar"
-                                aria-valuenow="{{ $data->donations->sum('amount') }}" aria-valuemin="0"
+                                aria-valuenow="{{ $data->donations->where('status', 1)->sum('amount') }}" aria-valuemin="0"
                                 aria-valuemax="{{ $data->goal }}" data-primary-color="#2e4053"
                                 data-secondary-color="#b7bcc4" data-duration="5" data-goal-reached="true"
                                 style="height: 14px">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
-                                    style="width: @if($data->goal > 0){{ ($data->donations->sum('amount') / $data->goal)*100 }}@else 1 @endif%">
-                                    <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($data->goal > 0){{ round(($data->donations->sum('amount') / $data->goal)*100) }}@else 1 @endif% </span>
+                                    style="width: @if($data->goal > 0){{ ($data->donations->where('status', 1)->sum('amount') / $data->goal)*100 }}@else 1 @endif%">
+                                    <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($data->goal > 0){{ round(($data->donations->where('status', 1)->sum('amount') / $data->goal)*100) }}@else 1 @endif% </span>
                                 </div>
                             </div>
                             <span class="fw-semibold d-block text-center mt-2">
                                 @php
-                                    $to = $data->donations->sum('amount');
+                                    $to = $data->donations->where('status', 1)->sum('amount');
                                 @endphp
                                 ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $data->goal ?? 0 }}
                                 <small class="opacity-75 fw-light">raised</small>
