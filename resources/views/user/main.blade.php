@@ -385,7 +385,7 @@
                   <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
-              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader')
+              @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent')
                 <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
                     <a
                     href="/users/student"
@@ -394,6 +394,8 @@
                     <div class="text-truncate" data-i18n="Email">
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
+                        @elseif (Auth::user()->role == 'parent')
+                        My Students
                         @else
                         Group Member
                         @endif

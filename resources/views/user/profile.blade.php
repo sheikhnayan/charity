@@ -89,7 +89,17 @@
                                                                 <i class="fa-solid fa-share-nodes fa-fw" aria-hidden="true"></i>
                                                                 <span>Share</span>
                                                             </button>
+                                                            
+                                                            <button type="button" class="btn btn-primary btn-hover-info" onclick="copyProfileUrl()">
+                                                                <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
+                                                                <span>Copy URL</span>
+                                                            </button>
                                                         </div>
+                                                    @else
+                                                        <button type="button" class="btn btn-primary btn-hover-info d-none d-md-inline-flex" onclick="copyProfileUrl()">
+                                                            <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
+                                                            <span>Copy Profile URL</span>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </div>
@@ -597,6 +607,40 @@
             </div>
         </div>
         <!-- / Content -->
+        
+        <script>
+        function copyProfileUrl() {
+            const profileUrl = window.location.origin + '/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}';
+            
+            // Create temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = profileUrl;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                // Show success message
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check fa-fw"></i><span>Copied!</span>';
+                btn.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-primary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy URL. Please copy manually: ' + profileUrl);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+        </script>
 
         <script>
             ClassicEditor

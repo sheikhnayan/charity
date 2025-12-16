@@ -5450,7 +5450,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             </label>
                                             <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)" required>
                                                 <option value="individual">Individual</option>
-                                                <option value="parents">Parents</option>
+                                                <option value="parent">Parent</option>
                                             </select>
                                         </div>
                                     </div>

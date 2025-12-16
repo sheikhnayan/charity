@@ -6941,7 +6941,7 @@ break;
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Register
                                 </button>
-                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginFormPreview(this)" style="color: ${data.linkColor} !important; background-color: ${data.buttonColor} !important;">
+                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginFormPreview(this)" style="color: ${data.buttonColor} !important; background-color: ${data.buttonColor} !important;">
                                     Login
                                 </button>
                             </div>
@@ -6972,7 +6972,7 @@ break;
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Login
                                 </button>
-                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterFormPreview(this)" style="color: ${data.linkColor} !important; background-color: ${data.buttonColor} !important;">
+                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterFormPreview(this)" style="color: ${data.buttonColor} !important; background-color: ${data.buttonColor} !important;">
                                     Register
                                 </button>
                             </div>
