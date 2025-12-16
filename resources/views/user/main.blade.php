@@ -462,6 +462,7 @@
                 </li>
             @endif
 
+              @if(auth()->user()->role !== 'individual/student' && auth()->user()->role !== 'parent')
               <!-- Analytics -->
               <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Analytics</span>
@@ -485,6 +486,7 @@
                   </li>
                 </ul>
               </li>
+              @endif
 
               <li class="menu-item {{ request()->is('users/qr-codes*') ? 'active' : '' }}">
                 <a href="/users/qr-codes" class="menu-link">

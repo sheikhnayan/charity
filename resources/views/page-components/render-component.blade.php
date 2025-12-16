@@ -8149,3 +8149,47 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
         
     @endswitch
 </div>
+
+
+<script>
+    // Add global onclick functions for page builder preview
+            if (!window.showLoginFormPreview) {
+                window.showLoginFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    const registerForm = container.querySelector('.register');
+                    const loginForm = container.querySelector('.login');
+                    const titleElement = container.querySelector('.tit');
+                    
+                    if (registerForm) registerForm.style.display = 'none';
+                    if (loginForm) loginForm.style.display = 'block';
+                    if (titleElement) titleElement.textContent = 'Login';
+                };
+            }
+            
+            if (!window.showRegisterFormPreview) {
+                window.showRegisterFormPreview = function(button) {
+                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                    const registerForm = container.querySelector('.register');
+                    const loginForm = container.querySelector('.login');
+                    const titleElement = container.querySelector('.tit');
+                    
+                    if (loginForm) loginForm.style.display = 'none';
+                    if (registerForm) registerForm.style.display = 'block';
+                    if (titleElement) titleElement.textContent = 'Register';
+                };
+            }
+            
+            // Add global toggleRegistrationFields function for this component
+            if (!window.toggleRegistrationFields) {
+                window.toggleRegistrationFields = function(selectElement) {
+                    const teacherWrapper = document.getElementById('teacher_select_wrapper');
+                    if (teacherWrapper) {
+                        if (selectElement.value === 'individual') {
+                            teacherWrapper.style.display = 'block';
+                        } else {
+                            teacherWrapper.style.display = 'none';
+                        }
+                    }
+                };
+            }
+</script>
