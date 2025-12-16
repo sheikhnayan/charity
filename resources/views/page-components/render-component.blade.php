@@ -4169,7 +4169,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     } catch (error) {
                                         console.log("Firebase query failed for auction {{ $item->id }}:", error);
                                         // Fallback to starting price if Firebase fails
-                                        priceDiv.textContent = `${{ $item->starting_price ?? 0 }}`;
+                                        const startingPrice = parseFloat({{ $item->starting_price ?? 0 }});
+                                        priceDiv.textContent = `$${startingPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                     }
                                 } else {
                                     console.log('Price element not found for auction {{ $item->id }}');
