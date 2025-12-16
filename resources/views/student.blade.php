@@ -496,7 +496,7 @@
                                 <i class="fas fa-comments fs-4" role="img" aria-hidden="true" style="font-size: 4rem !important;"></i>
                                 <button type="button"
                                     class="btn btn-link btn-modal stretched-link d-block mx-auto p-0 mt-4"
-                                    data-action="https://gmu-events.com/ajax/profile/8100cb02-93d5-4e06-90a3-44f990caf61e/edit"
+                                    data-action="{{ url('/ajax/profile/'.$data->id.'/edit') }}"
                                     style="white-space:nowrap; color: #2e4053">
                                     Send message
                                     <i class="fas fa-arrow-down ms-1" role="img" aria-hidden="true"></i>
@@ -524,7 +524,7 @@
                         style="margin-top: 3rem;">
 
 
-                        <form method="POST" action="/donations" class="donation-form-block" method="POST">
+                        <form method="POST" action="/donations" class="donation-form-block" method="POST" id="profile-donation-form">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
                                 <div class="card border-primary shadow" style="border-width: 3px; border-color: #2e4053 !important;">
