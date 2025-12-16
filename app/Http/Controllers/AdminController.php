@@ -592,6 +592,7 @@ class AdminController extends Controller
             
             // Get teachers for the parent's website from teachers table
             $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
+            dd(\App\Models\Teacher::all());
 
             return view('user.students', compact('data', 'teachers'));
         }else{
