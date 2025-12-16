@@ -512,10 +512,10 @@ class AdminController extends Controller
             return view('user.donation', compact('data', 'websites'));
         }elseif($user->role == 'parents'){
             // Get all student IDs that belong to this parent
-            $studentIds = User::where('parent_id', $user->id)->pluck('email')->toArray();
-            dd(\App\Models\Transaction::limit(5)->latest()->get());
-            // Get transactions from those students
-            $data = Transaction::whereIn('email', $studentIds)->latest()->get();
+            $studentIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
+            
+            // Get donations from those students (donations table has user_id)
+            $data = Donation::whereIn('user_id', $studentIds)->latest()->get();
 
             return view('user.donation', compact('data'));
         }elseif($user->role == 'customer'){
