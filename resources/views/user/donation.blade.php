@@ -125,6 +125,7 @@
                                                 <th>Team Name</th>
                                                 <th>Amount Entered</th>
                                                 <th>Processing Fee</th>
+                                                <th>Tip Amount</th>
                                                 <th>Total Amount</th>
                                                 {{-- <th>Amount Net</th> --}}
                                                 <th>Payment Method</th>
@@ -145,7 +146,7 @@
                                                     <tr>
                                                         <td><input type="checkbox" class="row-check" value="{{ $item->id }}"></td>
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
-                                                        <td>{{ $item->name }} {{ $item->last_name }}</td>
+                                                        <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->name ?? null}}</td>
                                                         @elseif($item->type == 'general')
@@ -179,6 +180,7 @@
                                                             
                                                         @endif
                                                         <td>${{ number_format($item->fee, 2) }}</td>
+                                                        <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
                                                         @if ($item->type == 'investment')
                                                         <td>${{ number_format($item->amount + $item->fee, 2) }}</td>
                                                         @else
@@ -209,7 +211,7 @@
                                                                 data-bs-target="#viewDonationModal"
                                                                 data-transaction="{{ $item->transaction_id }}"
                                                                 data-ip-address="{{ $item->ip_address ?? 'N/A' }}"
-                                                                data-first-name="{{ $item->name }}"
+                                                                data-first-name="{{ $item->first_name ?? $item->name }}"
                                                                 data-last-name="{{ $item->last_name }}"
                                                                 data-email="{{ $item->email }}"
                                                                 data-phone="{{ $item->phone }}"
@@ -220,6 +222,7 @@
                                                                 data-gross="${{ number_format($item->amount, 2) }}"                                                                    
                                                                 @endif
                                                                 data-fee="${{ number_format($item->fee, 2) }}"
+                                                                data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
@@ -262,7 +265,7 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="7" class="text-end">Total:</th>
+                                                <th colspan="8" class="text-end">Total:</th>
                                                 <th id="amount-total"></th>
                                                 <th colspan="6"></th>
                                             </tr>
@@ -429,6 +432,9 @@
                                             <strong>Processing Fee:</strong> <span id="modal-fee"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
+                                            <strong>Tip Amount:</strong> <span id="modal-tip-amount"></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
                                             <strong>Total Amount Paid:</strong> <span id="modal-total-paid"></span>
                                         </li>
                                     </ul>
@@ -540,7 +546,7 @@
 
                     // Type filter
                     $('#typeFilter').on('change', function() {
-                        table.column(11).search(this.value).draw();
+                        table.column(12).search(this.value).draw();
                     });
 
 
@@ -554,7 +560,7 @@
                         let total = 0;
                         table.rows({ search: 'applied' }).every(function () {
                             let data = this.data();
-                            let amountCell = data[7]; // Column 7 is "Amount Entered" (index 7: checkbox, txn, name, product, qty, gross, entered)
+                            let amountCell = data[8]; // Column 8: Total Amount (0-indexed, after adding Tip Amount column)
                             // Remove HTML tags if present
                             let tempDiv = document.createElement('div');
                             tempDiv.innerHTML = amountCell;
@@ -607,6 +613,7 @@
                     // Financial details
                     $('#modal-gross').text($btn.data('gross') || '$0.00');
                     $('#modal-fee').text($btn.data('fee') || '$0.00');
+                    $('#modal-tip-amount').text($btn.data('tip-amount') || '$0.00');
                     $('#modal-total-amount').text($btn.data('total-amount') || '$0.00');
                     $('#modal-total-due').text($btn.data('total-due') || '$0.00');
                     $('#modal-total-paid').text($btn.data('total-paid') || '$0.00');
