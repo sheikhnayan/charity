@@ -515,10 +515,10 @@ class AdminController extends Controller
             $studentIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
             
             // Get donations from those students (donations table has user_id)
-            $data = Donation::whereIn('user_id', $studentIds)->latest()->get();
+            $data = Donation::whereIn('user_id', $studentIds)->where('status',1)->latest()->get();
 
             return view('user.donation', compact('data'));
-        }elseif($user->role == 'customer'){
+        }elseif($user->role == 'customer'){ 
             $data = Transaction::where('email',$user->email)->get();
 
             return view('user.donation', compact('data'));
