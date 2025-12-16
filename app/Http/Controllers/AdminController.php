@@ -590,10 +590,8 @@ class AdminController extends Controller
             // For parents, show only their children
             $data = User::where('parent_id', Auth::user()->id)->get();
             
-            // Get teachers for the parent's website
-            $teachers = User::where('role', 'user')
-                ->where('website_id', Auth::user()->website_id)
-                ->get();
+            // Get teachers for the parent's website from teachers table
+            $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
 
             return view('user.students', compact('data', 'teachers'));
         }else{
@@ -614,7 +612,7 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'teacher_id' => 'nullable|exists:users,id',
+            'teacher_id' => 'required|exists:teachers,id',
             'goal' => 'nullable|numeric|min:0'
         ]);
 

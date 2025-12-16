@@ -267,12 +267,12 @@
                                     <div class="form-text">Minimum 6 characters</div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="teacher_id" class="form-label">Select Teacher</label>
-                                    <select class="form-select" id="teacher_id" name="teacher_id">
-                                        <option value="">Choose a teacher (optional)</option>
+                                    <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="teacher_id" name="teacher_id" required>
+                                        <option value="">Choose a teacher</option>
                                         @if(isset($teachers))
                                             @foreach($teachers as $teacher)
-                                                <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name }}</option>
+                                                <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
