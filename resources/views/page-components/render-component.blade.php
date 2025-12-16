@@ -4007,20 +4007,12 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                                     <div id="ai-price-{{ $item->id }}" class="c-price  c-price--small-block">
                                                                         <div class="c-price__title"><span class="js-price-title">Current bid</span></div>
                                                                         <div class="c-price__wrapper">
-                                                                            @php
-                                                                                // Get latest transaction/bid for this auction
-                                                                                $latestTransaction = \App\Models\Transaction::where('type', 'auction')
-                                                                                    ->where('reference_id', $item->id)
-                                                                                    ->orderBy('created_at', 'desc')
-                                                                                    ->first();
-                                                                                $currentBid = $latestTransaction ? $latestTransaction->amount : $item->starting_price;
-                                                                            @endphp
                                                                             <div class="c-price__value js-resize-bid-text u-tc--highlight-bg"
                                                                                 id="auction-price-{{ $item->id }}"
                                                                                 data-live-item="price"
                                                                                 data-tcid="{{ $item->id }}:price"
                                                                                 style="font-size: 16px;">
-                                                                                ${{ number_format($currentBid ?? 0, 2) }}
+                                                                                ${{ number_format($item->starting_price ?? 0, 2) }}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -4113,6 +4105,88 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 // Also initialize if page is already loaded
                 if (document.readyState === 'complete' || document.readyState === 'interactive') {
                     setTimeout(initializeAuctionListTimers, 100);
+                }
+                </script>
+                
+                <!-- Firebase Real-time Price Updates -->
+                <script type="module">
+                try {
+                    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
+                    const { getFirestore, collection, query, where, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
+                        authDomain: "charity-390ca.firebaseapp.com",
+                        projectId: "charity-390ca",
+                        storageBucket: "charity-390ca.firebasestorage.app",
+                        messagingSenderId: "875958450032",
+                        appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
+                        measurementId: "G-FC73HL5XF3"
+                    };
+
+                    // Initialize Firebase (check if already initialized)
+                    let app;
+                    if (!getApps().length) {
+                        app = initializeApp(firebaseConfig);
+                    } else {
+                        app = getApps()[0];
+                    }
+                    const firestore = getFirestore(app);
+
+                    // Function to update auction prices from Firebase
+                    async function updateAuctionPrices() {
+                        console.log('Fetching auction prices from Firebase...');
+                        
+                        @foreach ($auction as $item)
+                        {
+                            const auctionId = "{{ $item->id }}";
+                            const priceDiv = document.getElementById('auction-price-{{ $item->id }}');
+                            
+                            if (priceDiv) {
+                                try {
+                                    // Query Firebase for highest bid
+                                    const q = query(
+                                        collection(firestore, "bid"),
+                                        where("auction_id", "==", auctionId),
+                                        orderBy("amount", "desc"),
+                                        limit(1)
+                                    );
+                                    
+                                    const querySnapshot = await getDocs(q);
+                                    
+                                    if (!querySnapshot.empty) {
+                                        const bidData = querySnapshot.docs[0].data();
+                                        const amount = Number(bidData.amount);
+                                        
+                                        if (amount > 0) {
+                                            priceDiv.textContent = `$${amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                            console.log('Updated auction {{ $item->id }} price to:', amount);
+                                        }
+                                    } else {
+                                        console.log('No bids found for auction {{ $item->id }}');
+                                    }
+                                } catch (error) {
+                                    console.error('Error fetching bid for auction {{ $item->id }}:', error);
+                                }
+                            }
+                        }
+                        @endforeach
+                    }
+
+                    // Update prices when DOM is ready
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(updateAuctionPrices, 500);
+                        });
+                    } else {
+                        setTimeout(updateAuctionPrices, 500);
+                    }
+                    
+                    // Poll for updates every 5 seconds
+                    setInterval(updateAuctionPrices, 5000);
+                    
+                } catch (error) {
+                    console.error('Firebase initialization failed:', error);
                 }
                 </script>
                 </script>
