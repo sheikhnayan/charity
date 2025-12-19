@@ -234,7 +234,9 @@
     @endif
     <header class="site-header" id="header" style="padding-top: 8rem;">
         <h1 class="site-header__title" data-lead-id="site-header-title" style="text-align: center;">
-            @if(isset($type) && in_array($type, ['student', 'general']))
+            @if(isset($type) && $type == 'student')
+                Thank You for Your Donation!
+            @elseif(isset($type) && $type == 'general')
                 THANK YOU FOR YOUR DONATION!
             @else
                 THANK YOU!
@@ -245,7 +247,17 @@
     <div class="main-content" style="text-align: center; padding-bottom: 4.3rem;">
         <i class="fa fa-check main-content__checkmark" id="checkmark"></i>
         
-        @if(isset($type) && in_array($type, ['student', 'general']))
+        @if(isset($type) && $type == 'student')
+            <p class="main-content__body p-4" data-lead-id="main-content-body">
+                Your contribution has been successfully received and is already making an impact. A confirmation email with your donation details has been sent to the email address you provided (please check your spam folder if you don't see it).
+            </p>
+            <p class="main-content__body p-4" data-lead-id="main-content-body">
+                We truly appreciate your generosity and support.
+            </p>
+            <p class="main-content__body p-4" data-lead-id="main-content-body">
+                We'll send your donation confirmation and receipt to this email address.
+            </p>
+        @elseif(isset($type) && $type == 'general')
             <p class="main-content__body p-4" data-lead-id="main-content-body">
                 Your contribution has been successfully received and is already making an impact. A confirmation email with your donation details has been sent to the email address you provided (please check your spam folder if you don't see it).
             </p>
