@@ -644,7 +644,50 @@
 
         <script>
             ClassicEditor
-                .create(document.querySelector('#description'))
+                .create(document.querySelector('#description'), {
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                            'outdent', 'indent', '|',
+                            'imageUpload', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
+                            'undo', 'redo'
+                        ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline',
+                            'imageStyle:block', 'imageStyle:side'
+                        ]
+                    },
+                    table: {
+                        contentToolbar: [
+                            'tableColumn', 'tableRow', 'mergeTableCells'
+                        ]
+                    },
+                    mediaEmbed: {
+                        previewsInData: true
+                    }
+                })
+                .then(editor => {
+                    // Custom upload adapter for images
+                    editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                        return {
+                            upload: () => {
+                                return loader.file.then(file => {
+                                    return new Promise((resolve, reject) => {
+                                        const reader = new FileReader();
+                                        reader.onload = () => {
+                                            resolve({ default: reader.result });
+                                        };
+                                        reader.onerror = error => reject(error);
+                                        reader.readAsDataURL(file);
+                                    });
+                                });
+                            }
+                        };
+                    };
+                })
                 .catch(error => {
                     console.error(error);
                 });

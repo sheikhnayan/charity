@@ -465,12 +465,21 @@
               <div style="height:16px"></div>
               
               <!-- Place Bid Button -->
-              <button class="btn primary" id="placeBidBtn">
+              <button class="btn primary" id="placeBidBtn" type="button">
                 <i class="fas fa-gavel me-2"></i>Place Your Bid
               </button>
 
-              <div class="small muted" style="margin-top:12px">
-                <i class="fas fa-info-circle me-1"></i>Bidding is free and simple. Place your bid now!
+              <div style="margin-top:16px;padding:14px;background:#f8f9fa;border-radius:8px;border:1px solid #e9ecef">
+                <div class="form-check d-flex align-items-start">
+                  <input class="form-check-input mt-1" type="checkbox" id="bindingBidAgreement" required style="cursor:pointer">
+                  <label class="form-check-label ms-2" for="bindingBidAgreement" style="font-size:13px;color:#111;cursor:pointer">
+                    I agree my bid is binding and authorizes a temporary payment hold (up to 30 days).
+                    <i class="fas fa-info-circle ms-1" style="color:#6b7280;cursor:help" 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="top" 
+                       title="Binding Bid Notice: Bids are binding. A temporary authorization hold may be placed on your payment method for up to 30 days. If you win, payment is required."></i>
+                  </label>
+                </div>
               </div>
 
               {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:16px;padding-top:12px">
@@ -519,13 +528,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
+          <div class="mb-3" id="bidderNameGroup">
             <label for="bidderName" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="bidderName" required>
+            <input type="text" class="form-control" id="bidderName">
           </div>
-          <div class="mb-3">
+          <div class="mb-3" id="bidderEmailGroup">
             <label for="bidderEmail" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="bidderEmail" required>
+            <input type="email" class="form-control" id="bidderEmail">
           </div>
           <div class="mb-3">
             <label for="bidAmount" class="form-label">Your Bid Amount</label>
@@ -609,6 +618,12 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       startAuctionTimer("{{ $data->dead_line }}", "{{ $data->id }}");
+      
+      // Initialize Bootstrap tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
     });
   </script>
 
@@ -720,28 +735,34 @@
     });
 
     // Function to open bid modal
-    function openBidModal() {
+    function openBidModal(authStatus = null) {
+      // If user is authenticated, hide name/email fields and populate them
+      if (authStatus && authStatus.authenticated) {
+        document.getElementById('bidderNameGroup').style.display = 'none';
+        document.getElementById('bidderEmailGroup').style.display = 'none';
+        
+        // Populate hidden fields with auth user data
+        if (authStatus.user) {
+          document.getElementById('bidderName').value = authStatus.user.name || '';
+          document.getElementById('bidderEmail').value = authStatus.user.email || '';
+        }
+      } else {
+        // Show fields for non-authenticated users
+        document.getElementById('bidderNameGroup').style.display = 'block';
+        document.getElementById('bidderEmailGroup').style.display = 'block';
+        document.getElementById('bidderName').setAttribute('required', 'required');
+        document.getElementById('bidderEmail').setAttribute('required', 'required');
+      }
+      
       const modal = new bootstrap.Modal(document.getElementById('bidModal'));
       modal.show();
     }
 
     // Listen for successful login to auto-open bid modal
-    window.addEventListener('authSuccess', function() {
+    window.addEventListener('authSuccess', function(event) {
       if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
         // User just logged in and wanted to place a bid
-        setTimeout(() => {
-          openBidModal();
-          // Reset the flag
-          window._isAuctionBid = false;
-        }, 500);
-      }
-    });
-
-    // Also check periodically if user authenticated (fallback)
-    let authCheckInterval;
-    function startAuthCheck() {
-      authCheckInterval = setInterval(async () => {
-        if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
+        setTimeout(async () => {
           const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
           try {
             const authCheck = await fetch('/ajax/ticket-auth/check', {
@@ -753,15 +774,74 @@
               body: JSON.stringify({})
             });
             const authStatus = await authCheck.json();
+            openBidModal(authStatus);
+          } catch (error) {
+            openBidModal();
+          }
+          // Reset the flag
+          window._isAuctionBid = false;
+        }, 500);
+      }
+    });
+
+    // Also check periodically if user authenticated (fallback)
+    let authCheckInterval;
+    let authCheckAttempts = 0;
+    const maxAuthCheckAttempts = 60; // Stop after 60 seconds
+    
+    function startAuthCheck() {
+      authCheckAttempts = 0;
+      authCheckInterval = setInterval(async () => {
+        if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
+          authCheckAttempts++;
+          
+          // Stop polling after max attempts
+          if (authCheckAttempts > maxAuthCheckAttempts) {
+            clearInterval(authCheckInterval);
+            window._isAuctionBid = false;
+            return;
+          }
+          
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+          if (!csrfToken) {
+            return; // Skip if no CSRF token available
+          }
+          
+          try {
+            const authCheck = await fetch('/ajax/ticket-auth/check', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+              },
+              body: JSON.stringify({})
+            });
+            
+            // Check for CSRF token expiration (419)
+            if (authCheck.status === 419) {
+              // CSRF token expired - stop polling
+              clearInterval(authCheckInterval);
+              window._isAuctionBid = false;
+              return;
+            }
+            
+            if (!authCheck.ok) {
+              return; // Skip this attempt on other errors
+            }
+            
+            const authStatus = await authCheck.json();
             
             if (authStatus.authenticated && authStatus.verified) {
               // User is now authenticated - open bid modal
               clearInterval(authCheckInterval);
-              openBidModal();
+              openBidModal(authStatus);
               window._isAuctionBid = false;
             }
           } catch (error) {
-            console.log('Auth check polling error:', error);
+            // Silently skip errors during polling
+            if (authCheckAttempts % 10 === 0) {
+              console.log('Auth check still running...', authCheckAttempts);
+            }
           }
         } else {
           clearInterval(authCheckInterval);
@@ -772,6 +852,17 @@
     // Open bid modal with auth check
     document.getElementById('placeBidBtn').addEventListener('click', async function(e) {
       e.preventDefault();
+      
+      // Check binding agreement checkbox first
+      const bindingCheckbox = document.getElementById('bindingBidAgreement');
+      if (!bindingCheckbox.checked) {
+        bindingCheckbox.classList.add('is-invalid');
+        bindingCheckbox.parentElement.parentElement.style.borderColor = '#dc3545';
+        alert('Please agree to the binding bid terms before placing your bid.');
+        return;
+      }
+      bindingCheckbox.classList.remove('is-invalid');
+      bindingCheckbox.parentElement.parentElement.style.borderColor = '#e9ecef';
       
       const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
       
@@ -806,7 +897,7 @@
         }
 
         // User is authenticated - show bid modal
-        openBidModal();
+        openBidModal(authStatus);
         
       } catch (error) {
         console.error('Authentication check failed:', error);

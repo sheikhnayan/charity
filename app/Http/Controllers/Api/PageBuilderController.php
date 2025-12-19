@@ -175,7 +175,7 @@ class PageBuilderController extends Controller
             }
         }
 
-        return redirect()->route('admin.page.index')->with('success', 'Page created successfully.');
+        return redirect()->route('admin.page.index',[$add->website_id])->with('success', 'Page created successfully.');
     }
 
     public function edit($id)
@@ -230,7 +230,7 @@ class PageBuilderController extends Controller
         $delete = Page::find($id);
         $delete->delete();
 
-        return redirect()->route('admin.page.index')->with('success', 'Page deleted successfully.');
+        return redirect()->route('admin.page.index',[$delete->website_id])->with('success', 'Page deleted successfully.');
     }
 
     public function show($id)

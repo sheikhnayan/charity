@@ -84,7 +84,9 @@ class AuthController extends Controller
         // If registration came from a page (not login page), redirect back with message
         // Otherwise redirect to login
         $referer = $request->headers->get('referer');
-        if ($referer && !str_contains($referer, '/login') && !str_contains($referer, '/register')) {
+        
+        // Always redirect back to preserve the page context for auth-form components
+        if ($referer && !str_contains($referer, '/login')) {
             return redirect()->back()->with('success', $successMessage);
         }
 
