@@ -2071,56 +2071,70 @@ h5, .ql-header-5 {
             @php
                 $banner = $component['customBannerData'] ?? [];
             @endphp
+            <style>
+                .custom-banner-title {
+                    position: absolute;
+                    top: 40%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 90%;
+                    margin: 0;
+                    line-height: 1.2;
+                }
+                .custom-banner-subtitle {
+                    position: absolute;
+                    top: 55%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 90%;
+                    margin: 0;
+                    line-height: 1.4;
+                }
+                @media screen and (max-width: 767px) {
+                    .custom-banner-title {
+                        font-size: 1.5em !important;
+                        width: 85%;
+                        top: 35%;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                    }
+                    .custom-banner-subtitle {
+                        font-size: 0.9em !important;
+                        width: 85%;
+                        top: 60%;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                    }
+                }
+                @media screen and (min-width: 768px) and (max-width: 991px) {
+                    .custom-banner-title {
+                        font-size: 1.8em !important;
+                        width: 88%;
+                    }
+                    .custom-banner-subtitle {
+                        font-size: 1em !important;
+                        width: 88%;
+                    }
+                }
+            </style>
             <div style="position:relative; text-align:{{ $banner['textAlign'] ?? 'center' }};{{ $styleStr }}">
                 @if(!empty($banner['imgSrc']))
-                    <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;">
+                    <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;display:block;">
                 @endif
                 @if(!empty($banner['title']))
-                    <h3 style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%);
-                        color:{{ $banner['titleColor'] ?? '#fff' }};
+                    <h3 style="color:{{ $banner['titleColor'] ?? '#fff' }};
                         text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['titleFontSize'] ?? '2em' }} !important; width: 90%;
+                        font-size:{{ $banner['titleFontSize'] ?? '2em' }};
                         text-align:{{ $banner['textAlign'] ?? 'center' }};" class="custom-banner-title">
                         {{ $banner['title'] }}
                     </h3>
                 @endif
                 @if(!empty($banner['subtitle']))
-                    <p style="position:absolute; top:55%; left:50%; transform:translate(-50%,-50%);
-                        color:{{ $banner['subtitleColor'] ?? '#fff' }};
+                    <p style="color:{{ $banner['subtitleColor'] ?? '#fff' }};
                         text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }} !important; width: 90%;
+                        font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }};
                         text-align:{{ $banner['textAlign'] ?? 'center' }};
-                        margin-top: {{ $banner['subtitleMarginTop'] ?? '0px' }}">
-                        {{ $banner['subtitle'] }}
-                    </p>
-                @endif
-            </div>
-        @break
-
-        @case('custom-banner')
-            @php
-                $banner = $component['customBannerData'] ?? [];
-            @endphp
-            <div style="position:relative; text-align:{{ $banner['textAlign'] ?? 'center' }};{{ $styleStr }}">
-                @if(!empty($banner['imgSrc']))
-                    <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;">
-                @endif
-                @if(!empty($banner['title']))
-                    <h3 style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%);
-                        color:{{ $banner['titleColor'] ?? '#fff' }};
-                        text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['titleFontSize'] ?? '2em' }}; width: 90%;
-                        text-align:{{ $banner['textAlign'] ?? 'center' }};" class="custom-banner-title">
-                        {{ $banner['title'] }}
-                    </h3>
-                @endif
-                @if(!empty($banner['subtitle']))
-                    <p style="position:absolute; top:55%; left:50%; transform:translate(-50%,-50%);
-                        color:{{ $banner['subtitleColor'] ?? '#fff' }};
-                        text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }}; width: 90%;
-                        text-align:{{ $banner['textAlign'] ?? 'center' }};
-                        margin-top: {{ $banner['subtitleMarginTop'] ?? '0px' }}">
+                        margin-top: {{ $banner['subtitleMarginTop'] ?? '0px' }};" class="custom-banner-subtitle">
                         {{ $banner['subtitle'] }}
                     </p>
                 @endif
