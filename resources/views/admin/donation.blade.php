@@ -152,7 +152,7 @@
                                                     <tr>
                                                         <td><input type="checkbox" class="row-check" value="{{ $item->id }}"></td>
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
-                                                        <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
+                                                        <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name ?? $item->user->last_name}}</td>
                                                         @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->name }}</td>
                                                         @elseif($item->type == 'general')
