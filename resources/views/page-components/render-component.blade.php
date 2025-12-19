@@ -3148,7 +3148,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                     $filteredStyleStr = preg_replace('/color\s*:[^;]+;?/', '', $styleStr);
                 }
             @endphp
-            <div class="section-title" style="text-align: {{ $alignment }} !important; margin: 2rem 0; {{ $filteredStyleStr }}">
+            <div class="section-title" style="margin: 2rem 0; {{ $filteredStyleStr }}">
                 @if($isRichContent)
                     {{-- Rich HTML content from Quill editor - preserve all formatting including colors --}}
                     <div style="margin: 0 0 1rem 0;">{!! $title !!}</div>
