@@ -195,8 +195,9 @@
 
             <script>
                 $(document).ready(function() {
-                    // Initialize DataTable with default search disabled
-                   let table = new DataTable('.table', {
+                    // Only initialize DataTable if there are rows with data
+                    @if (!$data->isEmpty())
+                    let table = new DataTable('.table', {
                         dom: 'Bfrtip',
                         pageLength: 25,
                         buttons: [
@@ -250,6 +251,7 @@
                             }
                         ]
                     });
+                    @endif
                 });
             </script>
             
@@ -285,10 +287,10 @@
                                         @endif
                                     </select>
                                 </div>
-                                <div class="mb-3">
+                                {{-- <div class="mb-3">
                                     <label for="goal" class="form-label">Fundraising Goal ($)</label>
                                     <input type="number" class="form-control" id="goal" name="goal" min="0" step="0.01">
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

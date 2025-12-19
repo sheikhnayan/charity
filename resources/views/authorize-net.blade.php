@@ -296,7 +296,7 @@
                 <h1 class="mt-4">Checkout</h1>
             </div>
             <div class="col-md-6 mobile mb-4 items" style="display: none;">
-                <h3>Items</h3>
+                <h3>@if ($type == 'donation') Summary @else Items @endif</h3>
                 @if ($type == 'donation')
                     <div class="row">
                         <div class="col-md-2 col-2">
@@ -395,11 +395,20 @@
                         ${{ number_format((($data->amount / 100) * $payment->fee), 2) }}
                     </div>
 
+                    @if ($type == 'donation')
+                    <div class="col-md-8 col-8 text-start mt-2" id="tip-row" style="display: none;">
+                        Tip
+                    </div>
+                    <div class="col-md-4 col-4 mt-2" id="tip-amount-display" style="display: none;">
+                        $0.00
+                    </div>
+                    @endif
+
                     <div class="col-md-8 col-8 text-start mt-4">
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;">${{ number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2) }}
+                        <h5 style="font-weight: bold;" id="checkout-total">${{ number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2) }}
                         </h5>
                     </div>
                 </div>
@@ -581,7 +590,8 @@
                     {{-- Tipping Component --}}
                     @include('components.tipping', [
                         'baseAmount' => $data->amount,
-                        'primaryColor' => '#1773b0'
+                        'primaryColor' => '#1773b0',
+                        'processingFee' => $payment->fee
                     ])
                     @endif
                     
@@ -623,7 +633,7 @@
                 </form>
             </div>
             <div class="col-md-6 desktop">
-                <h3 style="padding-top: 6rem;">Items</h3>
+                <h3 style="padding-top: 6rem;">@if ($type == 'donation') Summary @else Items @endif</h3>
                 @if ($type == 'donation')
                     <div class="row">
                         <div class="col-md-2 col-2">
@@ -722,11 +732,20 @@
                         ${{ ($data->amount / 100) * $payment->fee }}
                     </div>
 
+                    @if ($type == 'donation')
+                    <div class="col-md-8 col-8 text-start mt-2" id="tip-row-desktop" style="display: none;">
+                        Tip
+                    </div>
+                    <div class="col-md-4 col-4 mt-2" id="tip-amount-display-desktop" style="display: none;">
+                        $0.00
+                    </div>
+                    @endif
+
                     <div class="col-md-8 col-8 text-start mt-4">
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;">${{ (($data->amount / 100) * $payment->fee) + $data->amount }}
+                        <h5 style="font-weight: bold;" id="checkout-total-desktop">${{ (($data->amount / 100) * $payment->fee) + $data->amount }}
                         </h5>
                     </div>
                 </div>

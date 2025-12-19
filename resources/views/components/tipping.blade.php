@@ -186,7 +186,7 @@
     }
 </style>
 
-<div class="tipping-section" id="tippingSection">
+<div class="tipping-section active" id="tippingSection">
     <!-- Tip Toggle -->
     <div class="tip-toggle" onclick="toggleTipping()">
         <div style="flex: 1;">
@@ -197,13 +197,13 @@
             <small class="text-muted">{{ $tipMessage }}</small>
         </div>
         <label class="tip-switch">
-            <input type="checkbox" id="tipEnabled" name="tip_enabled" onchange="toggleTippingOptions()">
+            <input type="checkbox" id="tipEnabled" name="tip_enabled" onchange="toggleTippingOptions()" checked>
             <span class="tip-slider"></span>
         </label>
     </div>
     
-    <!-- Tip Options (Hidden by default) -->
-    <div class="tip-options" id="tipOptions">
+    <!-- Tip Options (Open by default) -->
+    <div class="tip-options show" id="tipOptions">
         <div class="mt-3">
             <label class="form-label fw-semibold">Select tip amount:</label>
             
@@ -241,7 +241,7 @@
             </div>
             
             <!-- Tip Summary -->
-            <div class="tip-summary" id="tipSummary" style="display: none;">
+            <div class="tip-summary" id="tipSummary">
                 <div class="tip-summary-row">
                     <span>Base Amount:</span>
                     <span id="summaryBase">${{ number_format($baseAmount, 2) }}</span>
@@ -263,6 +263,15 @@
 let baseAmount = {{ $baseAmount }};
 let currentTipAmount = 0;
 let currentTipPercentage = 0;
+let processingFeePercent = {{ $processingFee ?? 2.9 }};
+
+// Auto-select 10% tip on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const tenPercentBtn = document.querySelector('.tip-btn[data-percentage="10"]');
+    if (tenPercentBtn) {
+        selectTipPercentage(tenPercentBtn);
+    }
+});
 
 function toggleTipping() {
     const checkbox = document.getElementById('tipEnabled');
@@ -348,6 +357,51 @@ function updateTipSummary() {
     if (tipAmountField) tipAmountField.value = currentTipAmount.toFixed(2);
     if (tipPercentageField) tipPercentageField.value = currentTipPercentage.toFixed(2);
     if (tipEnabledField) tipEnabledField.value = currentTipAmount > 0 ? '1' : '0';
+    
+    // Update checkout page total
+    updateCheckoutTotal();
+}
+
+function updateCheckoutTotal() {
+    // Calculate processing fee amount
+    const processingFee = (baseAmount / 100) * processingFeePercent;
+    const newTotal = baseAmount + processingFee + currentTipAmount;
+    
+    // Update mobile total
+    const checkoutTotal = document.getElementById('checkout-total');
+    if (checkoutTotal) {
+        checkoutTotal.textContent = '$' + newTotal.toFixed(2);
+    }
+    
+    // Update desktop total
+    const checkoutTotalDesktop = document.getElementById('checkout-total-desktop');
+    if (checkoutTotalDesktop) {
+        checkoutTotalDesktop.textContent = '$' + newTotal.toFixed(2);
+    }
+    
+    // Show/hide tip rows
+    const tipRow = document.getElementById('tip-row');
+    const tipAmountDisplay = document.getElementById('tip-amount-display');
+    const tipRowDesktop = document.getElementById('tip-row-desktop');
+    const tipAmountDisplayDesktop = document.getElementById('tip-amount-display-desktop');
+    
+    if (currentTipAmount > 0) {
+        if (tipRow) tipRow.style.display = 'block';
+        if (tipAmountDisplay) {
+            tipAmountDisplay.style.display = 'block';
+            tipAmountDisplay.textContent = '$' + currentTipAmount.toFixed(2);
+        }
+        if (tipRowDesktop) tipRowDesktop.style.display = 'block';
+        if (tipAmountDisplayDesktop) {
+            tipAmountDisplayDesktop.style.display = 'block';
+            tipAmountDisplayDesktop.textContent = '$' + currentTipAmount.toFixed(2);
+        }
+    } else {
+        if (tipRow) tipRow.style.display = 'none';
+        if (tipAmountDisplay) tipAmountDisplay.style.display = 'none';
+        if (tipRowDesktop) tipRowDesktop.style.display = 'none';
+        if (tipAmountDisplayDesktop) tipAmountDisplayDesktop.style.display = 'none';
+    }
 }
 
 function clearTip() {

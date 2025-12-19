@@ -2895,6 +2895,18 @@ button a:hover {
                             When enabled, this page will appear in the site navigation menu.
                         </small>
                     </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="enableConfetti" name="enable_confetti" value="1" {{ $data->enable_confetti ? 'checked' : '' }} style="width: 20px; height: 20px; cursor: pointer;">
+                            <span style="font-weight: 500;">
+                                <i class="bi bi-stars"></i> Enable Confetti Animation
+                            </span>
+                        </label>
+                        <small class="text-muted" style="display: block; margin-top: 5px; margin-left: 30px;">
+                            When enabled, confetti animation will play when the page loads.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -17486,6 +17498,11 @@ function applyResponsiveStyles() {
       const showInMenuCheckbox = document.getElementById('showInMenu');
       const showInMenu = showInMenuCheckbox ? (showInMenuCheckbox.checked ? 1 : 0) : 1;
       console.log('Show in menu value:', showInMenu);
+      
+      // Get enable_confetti value from checkbox
+      const enableConfettiCheckbox = document.getElementById('enableConfetti');
+      const enableConfetti = enableConfettiCheckbox ? (enableConfettiCheckbox.checked ? 1 : 0) : 0;
+      console.log('Enable confetti value:', enableConfetti);
       
       // Get page background color
       const pageBackgroundColor = document.getElementById('pageBackgroundColor');

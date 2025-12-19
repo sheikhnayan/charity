@@ -502,8 +502,8 @@
 
             <script>
                 $(document).ready(function() {
-                    // $.fn.dataTable.ext.errMode = 'none';
-                    // Initialize DataTable
+                    // Only initialize DataTable if there are rows with data
+                    @if (!$data->isEmpty())
                     let table = new DataTable('.table', {
                         dom: 'Bfrtip',
                         pageLength: 25,
@@ -563,6 +563,7 @@
                     $('#typeFilter').on('change', function() {
                         table.column(12).search(this.value).draw();
                     });
+                    @endif
 
 
 

@@ -53,16 +53,16 @@
                                                     </div>
                                                     <div class="fs-6 mt-2">
                                                         <i class="fas fa-link link-info me-1 btn-clipboard" role="button"
-                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"></i>
-                                                        <a href="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"
+                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}"></i>
+                                                        <a href="http://{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}"
                                                             class="link-info"
-                                                            target="_blank">{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}</a>
+                                                            target="_blank">{{ $currentWebsite->domain }}/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}</a>
                                                     </div>
                                                 </div>
 
                                                 <div class="widget-content-right">
                                                     <div class="btn-group d-none d-md-inline-flex me-2" role="group">
-                                                        <a href="/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"
+                                                        <a href="/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}"
                                                             class="btn btn-info btn-hover-info" target="_blank">
                                                             <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
                                                             <span>View</span>
@@ -164,7 +164,7 @@
                                         <div class="dropdown-menu-header-inner bg-primary">
                                             <div>
                                                 <h5 class="menu-header-title">
-                                                    <a href="{{ $user->website->domain }}/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}"
+                                                    <a href="{{ $user->website->domain }}/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}"
                                                         class="link-light">
                                                         {{ $user->fist_name }} {{ $user->last_name }}
                                                     </a>
@@ -271,7 +271,7 @@
         
         <script>
         function copyProfileUrl() {
-            const profileUrl = window.location.origin + '/profile/{{ $user->id }}-{{ $user->name }}-{{ $user->last_name }}';
+            const profileUrl = window.location.origin + '/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}';
             
             // Create temporary textarea
             const textarea = document.createElement('textarea');

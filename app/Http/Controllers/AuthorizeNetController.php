@@ -242,7 +242,6 @@ class AuthorizeNetController extends Controller
 
                         // Track successful payment
                         $this->trackPaymentFunnel('completed', $donation->type, $donation->amount, $tresponse->getTransId(), null, $request->input('student_id'));
-
                         return view('thank-you', compact('type'));
                     }elseif ($donation->type == 'general') {
                         # code...

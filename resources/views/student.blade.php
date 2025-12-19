@@ -418,7 +418,7 @@
     @endif
 
     <main style="margin-top: 6.5rem">
-        <div class="banner" style="background: url({{ asset('/uploads/'.$check->user->setting->banner) }}); background-size: cover; min-height: 480px;">
+        <div class="banner" style="background-image: url({{ asset('/uploads/'.$check->user->setting->banner) }}); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 480px; width: 100%;">
             <div class="client-banner-content">
                 <h1 class="display-3 fw-semibold text-shadow">
                     <a href="/" class="text-light">

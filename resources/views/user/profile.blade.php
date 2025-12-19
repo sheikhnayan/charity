@@ -68,17 +68,17 @@
                                                     </div> --}}
                                                     <div class="fs-6 mt-2">
                                                         <i class="fas fa-link link-info me-1 btn-clipboard" role="button"
-                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}"></i>
-                                                        <a href="http://{{ $currentWebsite->domain }}"
+                                                            data-clipboard-text="http://{{ $currentWebsite->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"></i>
+                                                        <a href="http://{{ $currentWebsite->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"
                                                             class="link-info"
-                                                            target="_blank">{{ $currentWebsite->domain }}</a>
+                                                            target="_blank">{{ $currentWebsite->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}</a>
                                                     </div>
                                                 </div>
 
                                                 <div class="widget-content-right">
-                                                    @if(Auth::user()->role == 'individual')
+                                                    @if(Auth::user()->role == 'individual' || Auth::user()->role == 'parents')
                                                         <div class="btn-group d-none d-md-inline-flex" role="group">
-                                                            <a href="/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}"
+                                                            <a href="/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"
                                                                 class="btn btn-info btn-hover-info" target="_blank">
                                                                 <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
                                                                 <span>View</span>
@@ -199,7 +199,7 @@
                                             </div> --}}
                                             <div>
                                                 <h5 class="menu-header-title">
-                                                    <a href="{{ Auth::user()->website->domain }}/profile/139276-sheikh-nayan"
+                                                    <a href="{{ Auth::user()->website->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"
                                                         class="link-light">
                                                         {{ Auth::user()->name }} {{ Auth::user()->last_name }}
                                                     </a>
@@ -251,7 +251,7 @@
                                                         </span>
                                                         <input type="text" class="form-control" id="individual_url"
                                                             name="individual_url"
-                                                            value="{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}">
+                                                            value="{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -610,7 +610,7 @@
         
         <script>
         function copyProfileUrl() {
-            const profileUrl = window.location.origin + '/profile/{{ Auth::user()->id }}-{{ Auth::user()->name }}-{{ Auth::user()->last_name }}';
+            const profileUrl = window.location.origin + '/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}';
             
             // Create temporary textarea
             const textarea = document.createElement('textarea');
