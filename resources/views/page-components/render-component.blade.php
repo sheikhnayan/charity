@@ -5392,6 +5392,27 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </style>
                 
                 <div id="{{ $componentId }}" style="{{ $styleStr }}" class="modern-auth-container">
+                    {{-- Registration Success Message --}}
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <h5 class="alert-heading" style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
+                                <strong>{{ session('success') }}</strong>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <h5 class="alert-heading" style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-circle-exclamation" style="font-size: 1.5rem;"></i>
+                                <strong>{{ session('error') }}</strong>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    
                     <div class="auth-header text-center fade-in">
                         <div class="auth-avatar">
                             <i class="fa-solid fa-circle-user" aria-hidden="true"></i>

@@ -7,6 +7,8 @@ use Auth;
 use App\Models\User;
 use App\Models\Website;
 use Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationConfirmation;
 
 class AuthController extends Controller
 {
@@ -15,16 +17,21 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            if (Auth::user()) {
-                if (Auth::user()->role == 'admin') {
-                    # code...
+            $user = Auth::user();
+            
+            if ($user) {
+                // Check if user is parent or individual and if their status is not active
+                if (in_array($user->role, ['parents', 'individual']) && $user->status != 1) {
+                    Auth::logout();
+                    return redirect('login')->with('error', 'Your account is pending approval. Please wait for administrator approval before logging in.');
+                }
+                
+                if ($user->role == 'admin') {
                     return redirect()->intended('/admins')->with('success', 'Login successful');
-                }else{
-                    # code...
+                } else {
                     return redirect()->intended('/users')->with('success', 'Login successful');
                 }
             }
-
         }
 
         return redirect('login')->with('error', 'Invalid credentials');
@@ -52,7 +59,7 @@ class AuthController extends Controller
         $doamin = parse_url($url, PHP_URL_HOST);
         $check = Website::where('domain', $doamin)->first();
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -62,7 +69,26 @@ class AuthController extends Controller
             'website_id' => $check->id,
         ]);
 
-        return redirect('login')->with('success', 'Registration successful');
+        // Send registration confirmation email for parents and individual registrations
+        if (in_array($request->register_as, ['parents', 'individual'])) {
+            try {
+                Mail::to($user->email)->send(new RegistrationConfirmation($user, $check));
+            } catch (\Exception $e) {
+                // Log error but don't stop registration process
+                \Log::error('Registration confirmation email failed: ' . $e->getMessage());
+            }
+        }
+
+        $successMessage = "Thanks for signing up! We've received your registration and sent a confirmation email with your submission details. If you don't see it, please check your spam folder.";
+
+        // If registration came from a page (not login page), redirect back with message
+        // Otherwise redirect to login
+        $referer = $request->headers->get('referer');
+        if ($referer && !str_contains($referer, '/login') && !str_contains($referer, '/register')) {
+            return redirect()->back()->with('success', $successMessage);
+        }
+
+        return redirect('login')->with('success', $successMessage);
     }
 
     public function logout()

@@ -1386,6 +1386,33 @@ if (isset($state['components'])) {
     </style>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
+    {{-- Registration Success/Error Notification --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 9999;">
+            <div style="display: flex; align-items: start; gap: 15px;">
+                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; margin-top: 2px;"></i>
+                <div style="flex: 1;">
+                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">Success!</strong>
+                    <div>{{ session('success') }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; top: 15px; right: 15px;"></button>
+            </div>
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 9999;">
+            <div style="display: flex; align-items: start; gap: 15px;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 1.5rem; margin-top: 2px;"></i>
+                <div style="flex: 1;">
+                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">Error!</strong>
+                    <div>{{ session('error') }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; top: 15px; right: 15px;"></button>
+            </div>
+        </div>
+    @endif
+    
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);

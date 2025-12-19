@@ -207,6 +207,18 @@ button::before{
 </style>
 
 <div class="container">
+  @if(session('success'))
+    <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb; text-align: center;">
+      <strong>{{ session('success') }}</strong>
+    </div>
+  @endif
+  
+  @if(session('error'))
+    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb; text-align: center;">
+      <strong>{{ session('error') }}</strong>
+    </div>
+  @endif
+  
   <div class="user">
     <div class="img-group">
       <img src="https://i.hizliresim.com/h8hx8o4.png" alt="Welcome Back" class="img-1">

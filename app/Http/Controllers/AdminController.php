@@ -18,6 +18,8 @@ use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
 use Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AccountApproval;
 use Illuminate\Support\Str;
 use App\Models\PageComment;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -575,8 +577,22 @@ class AdminController extends Controller
     public function student_approve($id)
     {
         $data = User::find($id);
+        $previousStatus = $data->status;
         $data->status = 1;
         $data->save();
+
+        // Send approval email only if status was changed from inactive to active
+        if ($previousStatus != 1 && $data->status == 1) {
+            try {
+                $website = Website::find($data->website_id);
+                if ($website) {
+                    Mail::to($data->email)->send(new AccountApproval($data, $website));
+                }
+            } catch (\Exception $e) {
+                // Log error but don't stop the approval process
+                \Log::error('Account approval email failed: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()->with('success', 'User Approved successfully');
     }
