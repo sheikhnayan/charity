@@ -1583,12 +1583,6 @@ if (isset($state['components'])) {
         }}">
     @endif
 
-        @session('success')
-            <div class="alert alert-success mt-4" role="alert">
-                Purchase Pending
-            </div>
-        @endsession
-
         @session('error')
             <div class="alert alert-danger mt-4" role="alert">
                 {{ $value }}

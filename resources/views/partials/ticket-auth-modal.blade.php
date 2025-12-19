@@ -268,6 +268,13 @@
                     return;
                 }
                 
+                // Check if this is an auction bid (skip investor modal)
+                if (window._isAuctionBid) {
+                    console.log('Auction bid flow - skipping investor modal');
+                    window.dispatchEvent(new CustomEvent('authSuccess'));
+                    return;
+                }
+                
                 // Check if user has investor profile (only for customer role)
                 try {
                     const profileResp = await fetch('/users/investor-profile', {

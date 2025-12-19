@@ -763,21 +763,38 @@
       if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
         // User just logged in and wanted to place a bid
         setTimeout(async () => {
-          const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-          try {
-            const authCheck = await fetch('/ajax/ticket-auth/check', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-              },
-              body: JSON.stringify({})
-            });
-            const authStatus = await authCheck.json();
-            openBidModal(authStatus);
-          } catch (error) {
-            openBidModal();
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+          
+          // Create a default authenticated status
+          let authStatus = {
+            authenticated: true,
+            verified: true,
+            user: {
+              name: '',
+              email: ''
+            }
+          };
+          
+          if (csrfToken) {
+            try {
+              const authCheck = await fetch('/ajax/ticket-auth/check', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({})
+              });
+              
+              if (authCheck.ok) {
+                authStatus = await authCheck.json();
+              }
+            } catch (error) {
+              console.log('Using default auth status due to error:', error);
+            }
           }
+          
+          openBidModal(authStatus);
           // Reset the flag
           window._isAuctionBid = false;
         }, 500);
@@ -926,32 +943,23 @@
             document.getElementById('bidAmountError').textContent = '';
         }
 
-        try {
-            // Save bid to Firebase
-            await addDoc(collection(firestore, "bid"), {
-                auction_id: auctionId,
-                name,
-                email,
-                amount,
-                timestamp: new Date()
-            });
+        // Store bid data in sessionStorage for after payment
+        sessionStorage.setItem('pendingBid', JSON.stringify({
+            auction_id: auctionId,
+            name: name,
+            email: email,
+            amount: amount,
+            timestamp: new Date().toISOString()
+        }));
 
-            // Refresh UI
-            await showLatestBid();
-            await loadBidHistory();
+        // Close modal
+        const modalEl = document.getElementById('bidModal');
+        let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.hide();
 
-            // Close modal
-            const modalEl = document.getElementById('bidModal');
-            let modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modal.hide();
-
-            // Redirect to payment
-            const id = document.getElementById('product-id').value;
-            window.location.href = `/authorize/payment/auction/${id}?amount=${amount}`;
-
-        } catch (error) {
-            alert('Error saving bid: ' + error.message);
-        }
+        // Redirect to payment - bid will be saved after successful payment
+        const id = document.getElementById('product-id').value;
+        window.location.href = `/authorize/payment/auction/${id}?amount=${amount}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`;
     });
   </script>
   

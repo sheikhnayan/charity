@@ -278,6 +278,58 @@
         @include('layouts.new-footer')
     @endif
 
+    @if(isset($type) && $type == 'auction')
+    <!-- Firebase Integration for Auction Bids -->
+    <script type="module">
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0QsLeSIAFeBBUouzhgUQ3WEGfM1MAYA4",
+            authDomain: "charity-390ca.firebaseapp.com",
+            projectId: "charity-390ca",
+            storageBucket: "charity-390ca.firebasestorage.app",
+            messagingSenderId: "875958450032",
+            appId: "1:875958450032:web:338aeac86307e5ab3e41b5",
+            measurementId: "G-FC73HL5XF3"
+        };
+
+        // Initialize Firebase
+        let app;
+        if (!getApps().length) {
+            app = initializeApp(firebaseConfig);
+        } else {
+            app = getApps()[0];
+        }
+        const firestore = getFirestore(app);
+
+        // Check for pending bid and save to Firebase
+        const pendingBid = sessionStorage.getItem('pendingBid');
+        if (pendingBid) {
+            try {
+                const bidData = JSON.parse(pendingBid);
+                
+                // Save bid to Firebase
+                await addDoc(collection(firestore, "bid"), {
+                    auction_id: bidData.auction_id,
+                    name: bidData.name,
+                    email: bidData.email,
+                    amount: bidData.amount,
+                    timestamp: new Date(bidData.timestamp)
+                });
+
+                console.log('Bid successfully saved to Firebase after payment completion');
+                
+                // Clear the pending bid from session storage
+                sessionStorage.removeItem('pendingBid');
+            } catch (error) {
+                console.error('Error saving bid to Firebase:', error);
+            }
+        }
+    </script>
+    @endif
+
 </body>
 
 </html>
