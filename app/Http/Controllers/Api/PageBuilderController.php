@@ -21,6 +21,9 @@ class PageBuilderController extends Controller
         // Get show_in_menu value from request (sent as metadata)
         $showInMenu = $request->input('show_in_menu', $page->show_in_menu);
         
+        // Get enable_confetti value from request
+        $enableConfetti = $request->input('enable_confetti', $page->enable_confetti ?? 0);
+        
         // Get background_color value from request
         $backgroundColor = $request->input('background_color', $page->background_color ?? '#ffffff');
 
@@ -30,6 +33,7 @@ class PageBuilderController extends Controller
             $page->update([
                 'state' => $state,
                 'show_in_menu' => $showInMenu,
+                'enable_confetti' => $enableConfetti,
                 'background_color' => $backgroundColor
             ]);
             // dd($page);
@@ -45,6 +49,7 @@ class PageBuilderController extends Controller
                 [
                     'state' => $state,
                     'show_in_menu' => $showInMenu,
+                    'enable_confetti' => $enableConfetti,
                     'background_color' => $backgroundColor
                 ]
             );

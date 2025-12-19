@@ -3011,6 +3011,7 @@ background-color: {{ $footer->background }} !important;
         document.getElementById('raised-label').textContent = `Raised: $${raised.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 </script>
 
+@if(isset($data->enable_confetti) && $data->enable_confetti)
 <script>
     (() => {
         "use strict";
@@ -3259,10 +3260,8 @@ background-color: {{ $footer->background }} !important;
             resetInput.addEventListener("input", () => manager.resetAndStart());
         }
         })();
-
-
-
 </script>
+@endif
 
 <script>
 da = document.getElementById("time").value;

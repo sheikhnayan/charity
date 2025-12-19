@@ -17515,6 +17515,7 @@ function applyResponsiveStyles() {
         body: JSON.stringify({ 
           state: state,
           show_in_menu: showInMenu,
+          enable_confetti: enableConfetti,
           background_color: backgroundColor
         })
       })
