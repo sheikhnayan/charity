@@ -2072,6 +2072,19 @@ h5, .ql-header-5 {
                 $banner = $component['customBannerData'] ?? [];
             @endphp
             <style>
+                .custom-banner-wrapper {
+                    position: relative;
+                    width: 100%;
+                    min-height: 400px;
+                    overflow: hidden;
+                }
+                .custom-banner-image {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    display: block;
+                    min-height: 400px;
+                }
                 .custom-banner-title {
                     position: absolute;
                     top: 40%;
@@ -2091,6 +2104,13 @@ h5, .ql-header-5 {
                     line-height: 1.4;
                 }
                 @media screen and (max-width: 767px) {
+                    .custom-banner-wrapper {
+                        min-height: 300px;
+                    }
+                    .custom-banner-image {
+                        min-height: 300px;
+                        object-fit: cover;
+                    }
                     .custom-banner-title {
                         font-size: 1.5em !important;
                         width: 85%;
@@ -2107,6 +2127,12 @@ h5, .ql-header-5 {
                     }
                 }
                 @media screen and (min-width: 768px) and (max-width: 991px) {
+                    .custom-banner-wrapper {
+                        min-height: 350px;
+                    }
+                    .custom-banner-image {
+                        min-height: 350px;
+                    }
                     .custom-banner-title {
                         font-size: 1.8em !important;
                         width: 88%;
@@ -2117,9 +2143,9 @@ h5, .ql-header-5 {
                     }
                 }
             </style>
-            <div style="position:relative; text-align:{{ $banner['textAlign'] ?? 'center' }};{{ $styleStr }}">
+            <div class="custom-banner-wrapper" style="text-align:{{ $banner['textAlign'] ?? 'center' }};{{ $styleStr }}">
                 @if(!empty($banner['imgSrc']))
-                    <img src="{{ $banner['imgSrc'] }}" style="width:100%;height:auto;display:block;">
+                    <img src="{{ $banner['imgSrc'] }}" class="custom-banner-image" alt="Banner Image">
                 @endif
                 @if(!empty($banner['title']))
                     <h3 style="color:{{ $banner['titleColor'] ?? '#fff' }};
