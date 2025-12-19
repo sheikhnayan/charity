@@ -1089,15 +1089,15 @@
           localStorage.setItem('ui:theme', e.target.value);
         });
 
-        // Keyboard shortcuts: d = dark toggle, s = sidebar, t = theme menu focus
-        document.addEventListener('keydown', (e) => {
-          // Only if not in an input/textarea
-          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        // Keyboard shortcuts disabled
+        // document.addEventListener('keydown', (e) => {
+        //   // Only if not in an input/textarea
+        //   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
           
-          if (e.key === 'd') darkToggle.click();
-          if (e.key === 's') sidebarToggle.click();
-          if (e.key === 't') themeSelect.focus();
-        });
+        //   if (e.key === 'd') darkToggle.click();
+        //   if (e.key === 's') sidebarToggle.click();
+        //   if (e.key === 't') themeSelect.focus();
+        // });
       })();
     </script>
 
