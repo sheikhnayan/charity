@@ -241,9 +241,24 @@
                     <span>${{ number_format($transaction->fee, 2) }}</span>
                 </div>
                 @endif
+                @if($transaction->tip_amount && $transaction->tip_amount > 0)
+                <div class="financial-row">
+                    <span>Tip:</span>
+                    <span>${{ number_format($transaction->tip_amount, 2) }}</span>
+                </div>
+                @endif
                 <div class="financial-row total">
                     <span>Total Paid:</span>
-                    <span>${{ number_format($transaction->amount, 2) }}</span>
+                    @php
+                        $totalPaid = $transaction->amount;
+                        if ($transaction->fee_paid) {
+                            $totalPaid += $transaction->fee;
+                        }
+                        if ($transaction->tip_amount && $transaction->tip_amount > 0) {
+                            $totalPaid += $transaction->tip_amount;
+                        }
+                    @endphp
+                    <span>${{ number_format($totalPaid, 2) }}</span>
                 </div>
             </div>
         </div>
