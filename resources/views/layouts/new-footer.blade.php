@@ -708,9 +708,11 @@ img {
                     class="footer_logo_link w-nav-brand" style="height: auto;"><img width="Auto" loading="lazy" alt="{{ $website->name }}"
                         src="{{ asset('/uploads/' . $setting->logo) }}"
                         class="footer_logo"></a>
+                @if(!empty($footer->disclaimer_text) && strip_tags($footer->disclaimer_text) != '')
                 <div class="jkkjjkkj" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin-top: 40px !important;">
-                    {!! $footer->disclaimer_text ?? '<p>Energy Exploration Technologies has a mission to become a worldwide leader in the global transition to sustainable energy.</p>' !!}
+                    {!! $footer->disclaimer_text !!}
                 </div>
+                @endif
                 <div class="spacer-small"></div>
                 @if ($footer->social == 1)
                     <ul id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365c9-e0e365c4" role="list" class="footer_link_list">
@@ -840,10 +842,14 @@ img {
                 </a>
             </div>
         </div>
+        
+        @if(!empty($footer->description_text) && strip_tags($footer->description_text) != '')
         <div class="footer_line_divider"></div>
-        <div class="disclaimer_wrap text-size-tiny text-color-secondary">
+        <div class="disclaimer_wrap text-size-tiny text-color-secondary" style="text-align: center;">
            {!! $footer->description_text !!}
         </div>
+        @endif
+        
         <div class="footer_line_divider"></div>
         <div class="footer_bottom_wrapper">
             <ul id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e36600-e0e365c4" role="list" class="footer_link_list">
@@ -865,11 +871,13 @@ img {
                     @endif
                 @endif
             </ul>
+            @if(!empty($footer->investment_disclaimer) && strip_tags($footer->investment_disclaimer) != '')
             <div id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e365fe-e0e365c4" class="footer_credit_text" style="color: {{ $footer->color ?? '#ffffff' }} !important; margin: auto;">
                 <div style="color: inherit !important; font-family: Outfit,sans-serif !important;">
                     {!! $footer->investment_disclaimer ?? '' !!}
                 </div>
             </div>
+            @endif
         </div>
     </div>
     <div class="footer_bg_image_wrap"><img width="1920" sizes="(max-width: 1920px) 100vw, 1920px"
