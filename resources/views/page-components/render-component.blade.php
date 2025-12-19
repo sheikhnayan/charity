@@ -2079,7 +2079,7 @@ h5, .ql-header-5 {
                     <h3 style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%);
                         color:{{ $banner['titleColor'] ?? '#fff' }};
                         text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['titleFontSize'] ?? '2em' }}; width: 90%;
+                        font-size:{{ $banner['titleFontSize'] ?? '2em' }} !important; width: 90%;
                         text-align:{{ $banner['textAlign'] ?? 'center' }};" class="custom-banner-title">
                         {{ $banner['title'] }}
                     </h3>
@@ -2088,7 +2088,7 @@ h5, .ql-header-5 {
                     <p style="position:absolute; top:55%; left:50%; transform:translate(-50%,-50%);
                         color:{{ $banner['subtitleColor'] ?? '#fff' }};
                         text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                        font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }}; width: 90%;
+                        font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }} !important; width: 90%;
                         text-align:{{ $banner['textAlign'] ?? 'center' }};
                         margin-top: {{ $banner['subtitleMarginTop'] ?? '0px' }}">
                         {{ $banner['subtitle'] }}
