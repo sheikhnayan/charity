@@ -7063,7 +7063,7 @@ break;
 
                                     {{-- <span class="opacity-75 text-center text-lg-start mt-2"></span> --}}
 
-                                    <div class="progress" role="progressbar" aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                    <div class="progress" role="progressbar" aria-valuenow="{{ (float) $student->donations->sum('amount') }}"
                                         aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
                                         data-secondary-color="#28a745" data-duration="5"
                                         data-goal-reached="true" style="height: 14px">
@@ -7076,7 +7076,7 @@ break;
                             <span class="position-absolute top-0 end-0 m-2 opacity-50 small">
                                 <i class="fa-solid fa-award fa-2xl fa-fw position-absolute" aria-hidden="true" style="color: #FFDf01; top: 30px; right: 25px; font-size: 2.5rem !important;"></i>
                                 <span class="small fw-bold" style="top: 57px; position: relative; left: -36px; right: unset; font-size: 0.74rem; color: #000;">
-                                    $ {{ $student->donations->sum('amount') }}
+                                    $ {{ number_format((float) $student->donations->sum('amount'), 2) }}
                                 </span>
                             </span>
                             <a href="{{ env('APP_URL') }}/student/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}"
@@ -7138,7 +7138,7 @@ break;
                                                     {{ $student->name }}
                                                 </h2>
                                                 <span class="opacity-75 text-center text-lg-start mt-2"></span>
-                                                <div class="progress mt-3" role="progressbar" aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                                <div class="progress mt-3" role="progressbar" aria-valuenow="{{ (float) $student->donations->sum('amount') }}"
                                                     aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
                                                     data-secondary-color="#b7bcc4" data-duration="5"
                                                     data-goal-reached="true" style="height: 6px">
@@ -7148,9 +7148,9 @@ break;
                                                 </div>
                                                 <span class="fw-semibold d-block text-center mt-2">
                                                     @php
-                                                        $to = $student->donations->sum('amount');
+                                                        $to = (float) $student->donations->sum('amount');
                                                     @endphp
-                                                    ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0}} <small
+                                                    ${{ number_format($to, 2) }} <small class="opacity-75 fw-light">of</small> ${{ number_format($student->goal ?? 0, 2) }} <small
                                                         class="opacity-75 fw-light">raised</small>
                                                 </span>
                                             </div>
