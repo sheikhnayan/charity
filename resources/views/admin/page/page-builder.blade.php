@@ -7035,16 +7035,23 @@ break;
                 };
             }
             };
-            content.renderAuthForm();
+            content.renderAuthForm(); 
         break;
         case 'student-leaderboard':
             content = document.createElement('ol');
             content.innerHTML = `<div class="col-md-12 mt-4">
                 @php
                     $st = App\Models\User::limit(10)->where('role','user')->get();
+                    // Helper function to safely sum only numeric donation amounts
+                    $getSafeTotal = function($student) {
+                        return (float) $student->donations->filter(function($d) {
+                            return is_numeric($d->amount);
+                        })->sum('amount');
+                    };
                 @endphp
 
                 @foreach($st as $student)
+                    @php $safeAmount = $getSafeTotal($student); @endphp
                     <div class="col-lg-12" style="font-size: 12px;">
                         <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
                             style="width: 100%; max-width: 580px; margin-inline: auto; background: #ebebeb;">
@@ -7063,7 +7070,7 @@ break;
 
                                     {{-- <span class="opacity-75 text-center text-lg-start mt-2"></span> --}}
 
-                                    <div class="progress" role="progressbar" aria-valuenow="{{ (float) $student->donations->sum('amount') }}"
+                                    <div class="progress" role="progressbar" aria-valuenow="{{ $safeAmount }}"
                                         aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
                                         data-secondary-color="#28a745" data-duration="5"
                                         data-goal-reached="true" style="height: 14px">
@@ -7076,7 +7083,7 @@ break;
                             <span class="position-absolute top-0 end-0 m-2 opacity-50 small">
                                 <i class="fa-solid fa-award fa-2xl fa-fw position-absolute" aria-hidden="true" style="color: #FFDf01; top: 30px; right: 25px; font-size: 2.5rem !important;"></i>
                                 <span class="small fw-bold" style="top: 57px; position: relative; left: -36px; right: unset; font-size: 0.74rem; color: #000;">
-                                    $ {{ number_format((float) $student->donations->sum('amount'), 2) }}
+                                    $ {{ number_format($safeAmount, 2) }}
                                 </span>
                             </span>
                             <a href="{{ env('APP_URL') }}/student/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}"
@@ -7117,11 +7124,18 @@ break;
                     <tbody>
                         @php
                             $students = App\Models\User::limit(10)->where('role','user')->get();
+                            // Helper function to safely sum only numeric donation amounts
+                            $getSafeTotal = function($student) {
+                                return (float) $student->donations->filter(function($d) {
+                                    return is_numeric($d->amount);
+                                })->sum('amount');
+                            };
                         @endphp
                         @foreach ($students->chunk(2) as $item)
 
                         <tr>
                             @foreach ($item as $student)
+                            @php $safeAmount = $getSafeTotal($student); @endphp
                             <td>
                                 <div class="col-lg-12" style="font-size: 12px;">
                                     <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
@@ -7138,7 +7152,7 @@ break;
                                                     {{ $student->name }}
                                                 </h2>
                                                 <span class="opacity-75 text-center text-lg-start mt-2"></span>
-                                                <div class="progress mt-3" role="progressbar" aria-valuenow="{{ (float) $student->donations->sum('amount') }}"
+                                                <div class="progress mt-3" role="progressbar" aria-valuenow="{{ $safeAmount }}"
                                                     aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
                                                     data-secondary-color="#b7bcc4" data-duration="5"
                                                     data-goal-reached="true" style="height: 6px">
@@ -7147,10 +7161,7 @@ break;
                                                     </div>
                                                 </div>
                                                 <span class="fw-semibold d-block text-center mt-2">
-                                                    @php
-                                                        $to = (float) $student->donations->sum('amount');
-                                                    @endphp
-                                                    ${{ number_format($to, 2) }} <small class="opacity-75 fw-light">of</small> ${{ number_format($student->goal ?? 0, 2) }} <small
+                                                    ${{ number_format($safeAmount, 2) }} <small class="opacity-75 fw-light">of</small> ${{ number_format($student->goal ?? 0, 2) }} <small
                                                         class="opacity-75 fw-light">raised</small>
                                                 </span>
                                             </div>
