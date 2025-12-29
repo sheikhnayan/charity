@@ -7257,7 +7257,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 $percentageSold = $property->total_shares > 0 ? (($property->total_shares - $actualAvailableShares) / $property->total_shares) * 100 : 0;
                             @endphp
                             
-                            <div class="{{ $gridClass }} mb-4 property-item" style="padding-left: 0px; padding-right: 0px;" data-category="{{ $property->category_id ?? 'uncategorized' }}">
+                            <div class="{{ $gridClass }} mb-4 property-item" data-category="{{ $property->category_id ?? 'uncategorized' }}">
                                 <div class="property-card {{ $cardStyleClass }}">
                                     <a href="/product/{{ $property->slug }}" class="property-link">
                                         <!-- Property Image with Carousel -->
