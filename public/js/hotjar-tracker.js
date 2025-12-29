@@ -42,6 +42,10 @@
             this.lastMouseMove = { x: 0, y: 0, time: Date.now() };
             this.attentionZones = [];
             
+            // User activity tracking for screenshot capture
+            this.hasUserInteracted = false;
+            this.setupActivityDetection();
+            
             this.init();
         }
 
@@ -546,6 +550,24 @@
             return 'Other';
         }
 
+        setupActivityDetection() {
+            // Track user interaction to avoid disruptive scrolling during screenshot capture
+            const activityEvents = ['scroll', 'click', 'mousemove', 'touchstart', 'touchmove', 'keydown'];
+            
+            const markAsInteracted = () => {
+                this.hasUserInteracted = true;
+            };
+            
+            // Listen for any user activity (only once per event type for performance)
+            activityEvents.forEach(eventType => {
+                window.addEventListener(eventType, markAsInteracted, { 
+                    once: true, 
+                    passive: true,
+                    capture: true
+                });
+            });
+        }
+
         async captureScreenshotIfNeeded() {
             // Wait for page to fully load
             if (document.readyState !== 'complete') {
@@ -565,9 +587,21 @@
                     const script = document.createElement('script');
                     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
                     script.onload = () => this.doScreenshotCapture();
-                    document.head.appendChild(script);
+                    mart scroll handling based on user activity
+                let savedScrollPosition = 0;
+                
+                if (!this.hasUserInteracted) {
+                    // User hasn't interacted - safe to scroll to top directly
+                    console.log('Hotjar Tracker: No user interaction detected, scrolling to top for screenshot');
+                    window.scrollTo(0, 0);
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 } else {
-                    this.doScreenshotCapture();
+                    // User is actively browsing - save position, scroll, then restore
+                    console.log('Hotjar Tracker: User interaction detected, will restore scroll position after capture');
+                    savedScrollPosition = window.scrollY;
+                    window.scrollTo({ top: 0, behavior: 'instant' }); // Instant scroll to minimize disruption
+                    await new Promise(resolve => setTimeout(resolve, 300)); // Shorter wait
+                }
                 }
             } catch (error) {
                 console.log('Hotjar Tracker: Screenshot capture failed:', error);
@@ -647,12 +681,26 @@
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Hotjar Tracker: Screenshot save failed:', response.status, errorText);
+                    // Restore scroll position if user was interacting
+                    if (this.hasUserInteracted && savedScrollPosition > 0) {
+                        window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
+                    }
                     return;
                 }
 
                 console.log('Hotjar Tracker: Screenshot captured successfully');
+                
+                // Restore user's scroll position if they were actively browsing
+                if (this.hasUserInteracted && savedScrollPosition > 0) {
+                    console.log('Hotjar Tracker: Restoring scroll position to', savedScrollPosition);
+                    window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
+                }
             } catch (error) {
                 console.error('Hotjar Tracker: Screenshot capture failed:', error);
+                // Restore scroll position even on error
+                if (this.hasUserInteracted && savedScrollPosition > 0) {
+                    window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
+                }
             }
         }
     }
