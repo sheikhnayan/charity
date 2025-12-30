@@ -6496,7 +6496,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 items: 1
                             },
                             768: {
-                                items: 2
+                                items: 1
                             },
                             992: {
                                 items: {{ min($slidesToShow, 3) }}
