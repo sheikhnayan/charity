@@ -6493,10 +6493,14 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         nav: {{ $arrows ? 'true' : 'false' }},
                         responsive: {
                             0: {
-                                items: 1
+                                items: 1,
+                                stagePadding: 0,
+                                margin: 0
                             },
                             768: {
-                                items: 1
+                                items: 1,
+                                stagePadding: 0,
+                                margin: 0
                             },
                             992: {
                                 items: {{ min($slidesToShow, 3) }}
