@@ -5709,6 +5709,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     registerForm.style.display = 'none';
                                     if (loginForm) {
                                         loginForm.style.display = 'block';
+                                        loginForm.style.opacity = '0';
+                                        // Force reflow before changing opacity
+                                        loginForm.offsetHeight;
                                         setTimeout(() => {
                                             loginForm.style.opacity = '1';
                                         }, 50);
@@ -5740,6 +5743,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     loginForm.style.display = 'none';
                                     if (registerForm) {
                                         registerForm.style.display = 'block';
+                                        registerForm.style.opacity = '0';
+                                        // Force reflow before changing opacity
+                                        registerForm.offsetHeight;
                                         setTimeout(() => {
                                             registerForm.style.opacity = '1';
                                         }, 50);
