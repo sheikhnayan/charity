@@ -6774,7 +6774,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 loop: {{ count($tickets) >= 1 && $enableLoop ? 'true' : 'false' }}
                             },
                             768: {
-                                items: 2,
+                                items: 1,
                                 loop: {{ count($tickets) >= 2 && $enableLoop ? 'true' : 'false' }}
                             },
                             992: {
@@ -7052,7 +7052,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 loop: {{ count($properties) >= 1 && $enableLoop ? 'true' : 'false' }}
                             },
                             768: {
-                                items: 2,
+                                items: 1,
                                 loop: {{ count($properties) >= 2 && $enableLoop ? 'true' : 'false' }}
                             },
                             992: {
