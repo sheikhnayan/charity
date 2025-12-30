@@ -421,6 +421,10 @@ h5, .ql-header-5 {
         .ticket-mask .row .col-md-10{
             text-align: center !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     /* Fix investment CTA overflow */
@@ -1865,6 +1869,10 @@ h5, .ql-header-5 {
                             #{{ $sliderId }} .marquee-item img {
                                 max-height: 70px;
                             }
+
+                            .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                         }
                     `).appendTo('head');
                 }
@@ -2125,6 +2133,9 @@ h5, .ql-header-5 {
                         word-wrap: break-word;
                         overflow-wrap: break-word;
                     }
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
                 @media screen and (min-width: 768px) and (max-width: 991px) {
                     .custom-banner-wrapper {
@@ -2140,6 +2151,10 @@ h5, .ql-header-5 {
                     .custom-banner-subtitle {
                         font-size: 1em !important;
                         width: 88%;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
             </style>
@@ -2830,6 +2845,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                             gap: 1.5rem !important;
                             padding: 1rem !important;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
             @else
@@ -2931,6 +2950,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                     .timeline-line.desktop-hidden {
                         display: none !important;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
                 
                 /* Mobile layout - single column with continuous line */
@@ -2969,6 +2992,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                     
                     .timeline-item {
                         margin-bottom: 2.5rem;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
             </style>
@@ -3363,6 +3390,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                         height: auto !important;
                         padding-bottom: 56.25% !important;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
             </style>
             
@@ -3575,6 +3606,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         #{{ $sliderId }} .owl-next {
                             display: none;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
                 
@@ -3968,6 +4003,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     .{{ $uniqueId }} .c-timer__element {
                         min-width: 45px;
                         padding: 6px 4px;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
                 </style>
@@ -5026,6 +5065,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             #{{ $componentId }} .newsletter-form > div[style*="grid-template-columns"] > div:last-child {
                                 margin-bottom: 0;
                             }
+
+                            .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                         }
                     </style>
                 </section>
@@ -5428,6 +5471,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         .auth-title {
                             font-size: 2rem;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
                 
@@ -5867,6 +5914,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     .social-share-component a {
                         padding: 0.25rem;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
                 </style>
                 
@@ -6158,6 +6209,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     #{{ $componentId }} .statistics-metric-card {
                         padding: 1.5rem 1rem !important;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
             </style>
         @break
@@ -6224,6 +6279,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         #{{ $sliderId }}.owl-carousel .owl-item {
                             width: 262px !important;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
                 <div class="container">
@@ -6385,8 +6444,25 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         padding: 20px 0;
                     }
                     
+                    .ticket-carousel-component .owl-stage-outer {
+                        display: flex;
+                        justify-content: center;
+                    }
+                    
+                    .ticket-carousel-component .owl-stage {
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center;
+                    }
+                    
+                    .ticket-carousel-component .owl-item {
+                        display: flex !important;
+                        justify-content: center !important;
+                    }
+                    
                     .ticket-card {
-                        margin: 5px;
+                        margin: 5px auto !important;
+                        max-width: 90% !important;
                     }
 
                     .ticket-title {
@@ -6395,6 +6471,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
                     .ticket-price {
                         font-size: 16px;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
             </style>
@@ -6495,6 +6575,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         #{{ $sliderId }}.owl-carousel .owl-item {
                             width: 262px !important;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
                 <div class="container">
@@ -6663,6 +6747,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     .ticket-category-carousel-component .ticket-price {
                         font-size: 16px;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
             </style>
 
@@ -6767,6 +6855,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         #{{ $sliderId }}.owl-carousel .owl-item {
                             width: 262px !important;
                         }
+
+                        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                     }
                 </style>
                 <div class="container">
@@ -6932,6 +7024,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
                     .property-category-carousel-component .property-price {
                         font-size: 14px;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
             </style>
@@ -7108,6 +7204,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     #{{ $componentId }} .video-background-section img {
                         max-width: 90% !important;
                     }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
                 }
                 
                 @media (max-width: 480px) {
@@ -7122,6 +7222,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     #{{ $componentId }} .video-background-section .btn {
                         padding: 10px 25px !important;
                         font-size: 0.9rem !important;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
                     }
                 }
             </style>
@@ -7632,6 +7736,88 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 .property-listing-grid-component .property-item.filtered-out {
                     display: none;
                 }
+
+                /* Mobile Responsive Styles */
+                @media (max-width: 767px) {
+                    /* Override inline padding on parent wrapper with highest specificity */
+                    div[style].inner-section-frontend > .property-listing-grid-component,
+                    div.inner-section-frontend[style*="padding"] > .property-listing-grid-component,
+                    div[style*="padding"].inner-section-frontend .property-listing-grid-component {
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                    }
+                    
+                    /* Remove padding from inner-section-frontend */
+                    .property-listing-grid-component.inner-section-frontend,
+                    .inner-section-frontend .property-listing-grid-component {
+                        padding: 0 !important;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
+                    
+                    /* Remove all container constraints */
+                    .property-listing-grid-component .container {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                    }
+                    
+                    /* Remove all row margins */
+                    .property-listing-grid-component .property-grid-container {
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                        width: 100% !important;
+                    }
+                    
+                    /* Make items full width with minimal padding */
+                    .property-listing-grid-component .property-grid-container .property-item {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        flex: 0 0 100% !important;
+                        padding-left: 8px !important;
+                        padding-right: 8px !important;
+                        margin-bottom: 16px !important;
+                    }
+                    
+                    /* Make cards full width */
+                    .property-listing-grid-component .property-card {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                    }
+                    
+                    .property-listing-grid-component .property-name {
+                        font-size: 1.125rem;
+                    }
+                    
+                    .property-listing-grid-component .property-shares-info {
+                        grid-template-columns: 1fr !important;
+                        gap: 10px;
+                    }
+                    
+                    /* Adjust section padding */
+                    .property-listing-grid-component {
+                        padding-left: 8px !important;
+                        padding-right: 8px !important;
+                    }
+                }
+                
+                @media (min-width: 768px) and (max-width: 991px) {
+                    .property-listing-grid-component .property-grid-container .property-item {
+                        width: 50% !important;
+                        max-width: 50% !important;
+                        flex: 0 0 50% !important;
+                    }
+
+                    .inner-section-frontend {
+                        padding: 0 !important;
+                    }
+                }
             </style>
 
             <!-- Component Scripts -->
@@ -8136,6 +8322,79 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 .product-listing-grid-component .product-item.filtered-out {
                     display: none;
                 }
+
+                /* Mobile Responsive Styles */
+                @media (max-width: 767px) {
+                    /* Override inline padding on parent wrapper with highest specificity */
+                    div[style].inner-section-frontend > .product-listing-grid-component,
+                    div.inner-section-frontend[style*="padding"] > .product-listing-grid-component,
+                    div[style*="padding"].inner-section-frontend .product-listing-grid-component {
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                    }
+                    
+                    /* Remove padding from inner-section-frontend */
+                    .product-listing-grid-component.inner-section-frontend,
+                    .inner-section-frontend .product-listing-grid-component {
+                        padding: 0 !important;
+                    }
+                    
+                    /* Remove all container constraints */
+                    .product-listing-grid-component .container {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                    }
+                    
+                    /* Remove all row margins */
+                    .product-listing-grid-component .product-grid-container {
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                        width: 100% !important;
+                    }
+                    
+                    /* Make items full width with minimal padding */
+                    .product-listing-grid-component .product-grid-container .product-item {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        flex: 0 0 100% !important;
+                        padding-left: 8px !important;
+                        padding-right: 8px !important;
+                        margin-bottom: 16px !important;
+                    }
+                    
+                    /* Make cards full width */
+                    .product-listing-grid-component .product-card {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                    }
+                    
+                    .product-listing-grid-component .product-name {
+                        font-size: 1.0625rem;
+                    }
+                    
+                    .product-listing-grid-component .product-content {
+                        padding: 16px;
+                    }
+                    
+                    /* Adjust section padding */
+                    .product-listing-grid-component {
+                        padding-left: 8px !important;
+                        padding-right: 8px !important;
+                    }
+                }
+                
+                @media (min-width: 768px) and (max-width: 991px) {
+                    .product-listing-grid-component .product-grid-container .product-item {
+                        width: 50% !important;
+                        max-width: 50% !important;
+                        flex: 0 0 50% !important;
+                    }
+                }
             </style>
 
             <!-- Component Scripts -->
@@ -8252,5 +8511,39 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         }
                     }
                 };
+            }
+            
+            // Remove inline padding from inner-section-frontend on mobile for grid components
+            if (window.innerWidth <= 767) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Find all inner-section-frontend elements containing grid components
+                    const innerSections = document.querySelectorAll('.inner-section-frontend');
+                    innerSections.forEach(section => {
+                        const hasPropertyGrid = section.querySelector('.property-listing-grid-component');
+                        const hasProductGrid = section.querySelector('.product-listing-grid-component');
+                        
+                        if (hasPropertyGrid || hasProductGrid) {
+                            // Remove only left and right padding with !important
+                            section.style.setProperty('padding-left', '0', 'important');
+                            section.style.setProperty('padding-right', '0', 'important');
+                        }
+                    });
+                });
+                
+                // Re-run on resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth <= 767) {
+                        const innerSections = document.querySelectorAll('.inner-section-frontend');
+                        innerSections.forEach(section => {
+                            const hasPropertyGrid = section.querySelector('.property-listing-grid-component');
+                            const hasProductGrid = section.querySelector('.product-listing-grid-component');
+                            
+                            if (hasPropertyGrid || hasProductGrid) {
+                                section.style.setProperty('padding-left', '0', 'important');
+                                section.style.setProperty('padding-right', '0', 'important');
+                            }
+                        });
+                    }
+                });
             }
 </script>

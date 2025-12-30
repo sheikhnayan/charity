@@ -172,7 +172,7 @@ class TicketController extends Controller
 
         
 
-        return redirect()->route('admin.ticket.index')->with('success', 'Ticket created successfully.');
+        return redirect()->route('admin.ticket.index', $add->website_id)->with('success', 'Ticket created successfully.');
     }
 
     public function edit($id)
@@ -332,13 +332,14 @@ class TicketController extends Controller
 
         $add->update();
 
-        return redirect()->route('admin.ticket.index')->with('success', 'Ticket updated successfully.');
+        return redirect()->route('admin.ticket.index', $add->website_id)->with('success', 'Ticket updated successfully.');
     }
 
     public function destroy($id)
     {
         $ticket = Ticket::findOrFail($id);
+        $websiteId = $ticket->website_id;
         $ticket->delete();
-        return redirect()->route('admin.ticket.index')->with('success', 'Ticket deleted successfully.');
+        return redirect()->route('admin.ticket.index', $websiteId)->with('success', 'Ticket deleted successfully.');
     }
 }

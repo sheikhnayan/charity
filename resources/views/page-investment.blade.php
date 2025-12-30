@@ -381,6 +381,10 @@ if (isset($state['components'])) {
             height: 100% !important;
         }
 
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
+
     }
     
     @media (max-width: 480px) {
@@ -408,6 +412,11 @@ if (isset($state['components'])) {
         .close-on-mobile{
             display: none;
         }
+
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     /* Base Component Styles */
@@ -562,6 +571,10 @@ if (isset($state['components'])) {
             font-size: 0.75rem !important;
             margin-bottom: 0.25rem !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @media (max-width: 480px) {
@@ -581,6 +594,10 @@ if (isset($state['components'])) {
         .event-countdown p {
             font-size: 0.625rem !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     /* Auction Components Styles - from page-new.blade.php */
@@ -671,6 +688,10 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @media (max-width: 1199px) {
@@ -683,6 +704,10 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @media (max-width: 767px) {
@@ -690,6 +715,10 @@ if (isset($state['components'])) {
             grid-template-columns: 1fr;
             gap: 15px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     /* For when auction is in small containers (col-md-6, col-md-4, etc.) */
@@ -697,12 +726,20 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: 1fr !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @container (max-width: 900px) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     .auction-item-wrapper {
@@ -810,6 +847,10 @@ if (isset($state['components'])) {
             flex: none;
             min-width: auto;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     .c-timer {
@@ -890,6 +931,10 @@ if (isset($state['components'])) {
         .c-timer__period {
             font-size: 0.65rem;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
 
@@ -987,6 +1032,10 @@ if (isset($state['components'])) {
         .inner-section-grid.cols-3 {
             grid-template-columns: repeat(2, 1fr);
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @media (max-width: 768px) {
@@ -998,12 +1047,20 @@ if (isset($state['components'])) {
             grid-template-columns: 1fr;
             gap: 15px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     @media (max-width: 576px) {
         .inner-section-grid {
             gap: 10px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
 
     
@@ -1209,6 +1266,10 @@ if (isset($state['components'])) {
             font-size: 13px;
             padding: 6px 16px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     @media (max-width: 480px) {
@@ -1243,6 +1304,10 @@ if (isset($state['components'])) {
         .ticket-mask .row .col-md-2 img{
             width: 100% !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     /* Contact Top Bar Styles */
@@ -1328,6 +1393,10 @@ if (isset($state['components'])) {
             padding: 4px 12px !important;
             margin-top: 2px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     @media (max-width: 576px) {
@@ -1354,6 +1423,10 @@ if (isset($state['components'])) {
             padding: 3px 10px !important;
             margin-top: 2px;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     /* Adjust navbar when contact top bar is present */
@@ -1369,6 +1442,10 @@ if (isset($state['components'])) {
         .contact-topbar{
             height: 28px !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     /* Adjust main content margin when investor exclusives bar is present */
@@ -1376,12 +1453,20 @@ if (isset($state['components'])) {
         main.with-investor-bar {
             margin-top: 8.5rem !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     
     @media (max-width: 480px) {
         main.with-investor-bar {
             margin-top: 8rem !important;
         }
+
+        .inner-section-frontend {
+                        padding: 0 !important;
+                    }
     }
     </style>
 </head>
@@ -2149,6 +2234,10 @@ if (isset($state['components'])) {
                 display: none !important;
             }
 
+            .inner-section-frontend {
+                        padding: 0 !important;
+                    }
+
         }
 
         /* Responsive adjustments for smaller screens */
@@ -2170,6 +2259,10 @@ if (isset($state['components'])) {
             footer{
                 margin-bottom: 0px !important;
             }
+
+            .inner-section-frontend {
+                        padding: 0 !important;
+                    }
         }
     </style>
 
