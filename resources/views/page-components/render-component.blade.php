@@ -1565,11 +1565,11 @@ h5, .ql-header-5 {
                                         margin: 5
                                     },
                                     480: { 
-                                        items: {{ min(2, $slidesToShow) }},
+                                        items: {{ min(1, $slidesToShow) }},
                                         margin: 8
                                     },
                                     768: { 
-                                        items: {{ min(3, $slidesToShow) }},
+                                        items: {{ min(1, $slidesToShow) }},
                                         margin: 10
                                     },
                                     1000: { 
@@ -3726,8 +3726,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 nav: false
                             },
                             600: { 
-                                items: {{ min(2, $slidesToShow) }},
-                                nav: {{ $slidesToShow > 2 ? 'true' : 'false' }}
+                                items: {{ min(1, $slidesToShow) }},
+                                nav: {{ $slidesToShow > 1 ? 'true' : 'false' }}
                             },
                             1000: { 
                                 items: {{ $slidesToShow }},
