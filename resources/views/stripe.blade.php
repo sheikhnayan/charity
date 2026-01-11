@@ -630,6 +630,9 @@
                                 <img src="{{ asset('/uploads/' . $data->website->user->setting->logo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @else
+                            @php
+                                 dd($data->user);
+                            @endphp
                                 <img src="{{ asset('/uploads/' . $data->user->photo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @endif

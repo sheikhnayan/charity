@@ -50,6 +50,7 @@ class WebsiteController extends Controller
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
+            'google_analytics_id' => 'nullable|string|max:255',
         ];
 
         // Add investment fields for all website types
@@ -78,6 +79,7 @@ class WebsiteController extends Controller
             $add->type = $request->type;
             $add->status = 1;
             $add->custom_sticky_button_text = $request->custom_sticky_button_text;
+            $add->google_analytics_id = $request->google_analytics_id ?? null;
             
             // Add investment fields for all website types
             $add->share_price = $request->share_price ?? null;
@@ -235,6 +237,7 @@ class WebsiteController extends Controller
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
+            'google_analytics_id' => 'nullable|string|max:255',
         ];
         // Only validate password if present
         if ($request->filled('password')) {
@@ -248,6 +251,7 @@ class WebsiteController extends Controller
         $update->type = $request->type;
         $update->status = $request->status;
         $update->custom_sticky_button_text = $request->custom_sticky_button_text;
+        $update->google_analytics_id = $request->google_analytics_id ?? null;
         // Add investment fields for all website types
         $update->share_price = $request->share_price ?? null;
         $update->investment_title = $request->investment_title ?? null;

@@ -30,6 +30,7 @@ class Website extends Model
         'share_price_label',
         'minimum_investment_label',
         'custom_sticky_button_text',
+        'google_analytics_id',
         // Property details theming
         'property_details_bg_color',
         'property_details_text_color',

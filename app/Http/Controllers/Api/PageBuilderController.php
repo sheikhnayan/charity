@@ -78,7 +78,22 @@ class PageBuilderController extends Controller
         }
         
         if ($builderState) {
-            return response()->json(['state' => $builderState->state]);
+            // Parse the state JSON if it's a string
+            $state = is_string($builderState->state) ? json_decode($builderState->state, true) : $builderState->state;
+            
+            // Ensure state is an array with components and pageSettings
+            if (!is_array($state)) {
+                $state = [];
+            }
+            
+            // Ensure pageSettings exists and include background_color
+            if (!isset($state['pageSettings'])) {
+                $state['pageSettings'] = [];
+            }
+            
+            $state['pageSettings']['backgroundColor'] = $builderState->background_color ?? '#ffffff';
+            
+            return response()->json(['state' => $state]);
         } else {
             return response()->json(['state' => null]);
         }
