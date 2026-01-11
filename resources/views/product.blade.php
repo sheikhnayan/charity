@@ -727,13 +727,6 @@
       }, 5000);
     }
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        showLatestBid();
-        loadBidHistory();
-        startBidPolling();
-    });
-
     // Function to open bid modal
     function openBidModal(authStatus = null) {
       // If user is authenticated, hide name/email fields and populate them
@@ -757,6 +750,52 @@
       const modal = new bootstrap.Modal(document.getElementById('bidModal'));
       modal.show();
     }
+
+    // Monitor auth modal close to open bid modal if login was successful
+    function setupAuthModalListener() {
+      const authModal = document.getElementById('authModal');
+      if (authModal) {
+        authModal.addEventListener('hidden.bs.modal', async function () {
+          if (window._isAuctionBid && window._auctionId === '{{ $data->id }}') {
+            // Check if user is now authenticated
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            if (csrfToken) {
+              try {
+                const authCheck = await fetch('/ajax/ticket-auth/check', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                  },
+                  body: JSON.stringify({})
+                });
+                
+                if (authCheck.ok) {
+                  const authStatus = await authCheck.json();
+                  
+                  if (authStatus.authenticated && authStatus.verified) {
+                    // User successfully logged in - open bid modal
+                    openBidModal(authStatus);
+                    window._isAuctionBid = false;
+                  }
+                }
+              } catch (error) {
+                console.log('Error checking auth after modal close:', error);
+              }
+            }
+          }
+        });
+      }
+    }
+    
+    // Call this when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        setupAuthModalListener();
+        showLatestBid();
+        loadBidHistory();
+        startBidPolling();
+    });
 
     // Listen for successful login to auto-open bid modal
     window.addEventListener('authSuccess', function(event) {

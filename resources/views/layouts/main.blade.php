@@ -16,6 +16,23 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Google Analytics -->
+    @php
+        // Get website by domain
+        $currentDomain = request()->host();
+        $website = \App\Models\Website::where('domain', $currentDomain)->first();
+        $gaTrackingId = $website->google_analytics_id ?? null;
+    @endphp
+    @if($gaTrackingId)
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaTrackingId }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $gaTrackingId }}');
+    </script>
+    @endif
 </head>
 <body>
     <!-- Navigation Bar -->

@@ -319,7 +319,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ $data->amount }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'ticket')
@@ -340,11 +340,11 @@
                                 @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ''), '0'), '.') }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                                ${{ $item->amount }}
+                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ''), '0'), '.') }}
                             </div>
                         </div>
                     @endforeach
@@ -360,7 +360,7 @@
                             {!! $data->description !!}
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ $data->amount }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'investment')
@@ -376,7 +376,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ number_format($data->amount, 2) }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @endif
@@ -385,14 +385,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ $data->amount }}
+                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Processing Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ number_format((($data->amount / 100) * $payment->fee), 2) }}
+                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ''), '0'), '.') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -408,7 +408,7 @@
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;" id="checkout-total">${{ number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2) }}
+                        <h5 style="font-weight: bold;" id="checkout-total">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ''), '0'), '.') }}
                         </h5>
                     </div>
                 </div>
@@ -469,7 +469,7 @@
                     <input type="hidden" name="donation_id" value="{{ $data->id }}">
                     <input type="hidden" name="type" value="{{ $type }}">
                     <input type="hidden" name="amount" id="total-amount-field"
-                        value="{{ (($data->amount / 100) * $payment->fee) + $data->amount }}">
+                        value="{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ''), '0'), '.') }}">
                     <input type="hidden" name="tip_amount" id="tip-amount-field" value="0">
                     <input type="hidden" name="tip_percentage" id="tip-percentage-field" value="0">
                     <input type="hidden" name="tip_enabled" id="tip-enabled-field" value="0">
@@ -656,7 +656,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ $data->amount }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'ticket')
@@ -677,11 +677,11 @@
                                 @if ($item->ticket->type != 'property')
                                 <p style="font-weight: 400">{{ $item->ticket->description }}</p>
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ''), '0'), '.') }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                                ${{ $item->amount }}
+                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ''), '0'), '.') }}
                             </div>
                         </div>
                     @endforeach
@@ -697,7 +697,7 @@
                             {!! $data->description !!}
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ $data->amount }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'investment')
@@ -713,7 +713,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ number_format($data->amount, 2) }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                         </div>
                     </div>
                 @endif
@@ -722,14 +722,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ $data->amount }}
+                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Processing Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ ($data->amount / 100) * $payment->fee }}
+                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ''), '0'), '.') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -745,7 +745,7 @@
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;" id="checkout-total-desktop">${{ (($data->amount / 100) * $payment->fee) + $data->amount }}
+                        <h5 style="font-weight: bold;" id="checkout-total-desktop">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ''), '0'), '.') }}
                         </h5>
                     </div>
                 </div>
@@ -1138,7 +1138,7 @@
         const paymentForm = document.getElementById('payment-form');
         if (paymentForm) {
             paymentForm.addEventListener('submit', function(e) {
-                const baseAmountWithFee = {{ (($data->amount / 100) * $payment->fee) + $data->amount }};
+                const baseAmountWithFee = parseFloat('{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ''), '0'), '.') }}');
                 const tipAmount = parseFloat(document.getElementById('tip-amount-field')?.value || 0);
                 const totalAmount = baseAmountWithFee + tipAmount;
                 

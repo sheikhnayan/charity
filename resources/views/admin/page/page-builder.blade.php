@@ -2882,6 +2882,57 @@ button a:hover {
                     <div class="form-group">
                         <label>Page Background Color</label>
                         <input type="color" id="pageBackgroundColor" value="{{ $data->background_color ?? '#ffffff' }}" oninput="updatePageBackground(this.value)">
+                        <script>
+                            // Ensure the color picker reflects the effective page background.
+                            function initPageBackgroundPicker() {
+                                const input = document.getElementById('pageBackgroundColor');
+                                if (!input) return;
+
+                                // 1) If serialized page state provides a background_color, prefer that
+                                try {
+                                    if (window.pageData && window.pageData.background_color) {
+                                        const v = window.pageData.background_color;
+                                        input.value = v && v.startsWith('#') ? v : ('#' + (v || '').replace(/^#/, ''));
+                                        return;
+                                    }
+                                } catch (e) {
+                                    // ignore
+                                }
+
+                                // 2) If the page element has an inline background color, use it
+                                const pageEl = document.getElementById('page');
+                                if (pageEl) {
+                                    const inline = pageEl.style.backgroundColor;
+                                    if (inline) {
+                                        const rgbMatch = inline.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                                        if (rgbMatch) {
+                                            const r = parseInt(rgbMatch[1]);
+                                            const g = parseInt(rgbMatch[2]);
+                                            const b = parseInt(rgbMatch[3]);
+                                            const hex = '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+                                            input.value = hex;
+                                            return;
+                                        } else if (inline.startsWith('#')) {
+                                            input.value = inline;
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                // 3) Fallback to the original attribute value rendered by Blade
+                                const attr = input.getAttribute('value');
+                                if (attr) {
+                                    input.value = attr;
+                                }
+                            }
+
+                            // Run after DOM ready and again on window load to override any later script updates
+                            document.addEventListener('DOMContentLoaded', initPageBackgroundPicker);
+                            window.addEventListener('load', function() {
+                                // small defer to allow other initialization code to finish
+                                setTimeout(initPageBackgroundPicker, 50);
+                            });
+                        </script>
                     </div>
                     
                     <div class="form-group" style="margin-top: 20px;">
@@ -2984,7 +3035,8 @@ button a:hover {
             <button onclick="closeFileManager()">✖</button>
         </div>
         <input type="file" accept="image/*,video/*" onchange="handleFileUpload(event)">
-        <p id="uploadStatus"></p>
+        <small style="display: block; color: #666; margin-top: 8px;">Accepted: JPEG, PNG, GIF, WebP (images) | MP4, WebM, OGG (videos) • Max: 5MB</small>
+        <p id="uploadStatus" style="margin-top: 8px;"></p>
         <div id="fileGallery" style="display:flex; flex-wrap:wrap; margin-top:10px; gap:10px;"></div>
     </div>
 
@@ -7002,8 +7054,20 @@ break;
                     const loginForm = container.querySelector('.login');
                     const titleElement = container.querySelector('.tit');
                     
-                    if (registerForm) registerForm.style.display = 'none';
-                    if (loginForm) loginForm.style.display = 'block';
+                    if (registerForm) {
+                        registerForm.style.opacity = '0';
+                        setTimeout(() => {
+                            registerForm.style.display = 'none';
+                            if (loginForm) {
+                                loginForm.style.display = 'block';
+                                loginForm.style.opacity = '0';
+                                loginForm.offsetHeight;
+                                setTimeout(() => {
+                                    loginForm.style.opacity = '1';
+                                }, 50);
+                            }
+                        }, 300);
+                    }
                     if (titleElement) titleElement.textContent = 'Login';
                 };
             }
@@ -7015,8 +7079,20 @@ break;
                     const loginForm = container.querySelector('.login');
                     const titleElement = container.querySelector('.tit');
                     
-                    if (loginForm) loginForm.style.display = 'none';
-                    if (registerForm) registerForm.style.display = 'block';
+                    if (loginForm) {
+                        loginForm.style.opacity = '0';
+                        setTimeout(() => {
+                            loginForm.style.display = 'none';
+                            if (registerForm) {
+                                registerForm.style.display = 'block';
+                                registerForm.style.opacity = '0';
+                                registerForm.offsetHeight;
+                                setTimeout(() => {
+                                    registerForm.style.opacity = '1';
+                                }, 50);
+                            }
+                        }, 300);
+                    }
                     if (titleElement) titleElement.textContent = 'Register';
                 };
             }
@@ -7943,6 +8019,7 @@ break;
                     
                     <div id="imageUploadSection" style="display: ${!d.useUrl ? 'block' : 'none'};">
                         <input type="file" accept="image/*" onchange="uploadSingleImage(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                     </div>
                     
                     <div id="imageUrlSection" style="display: ${d.useUrl ? 'block' : 'none'};">
@@ -8286,8 +8363,9 @@ break;
                     <div class="form-group">
                         <label>Upload Background Image</label>
                         <input type="file" accept="image/*" onchange="uploadInnerSectionBackgroundImage(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                         ${innerSectionData.backgroundImage ? `<div style="margin-top: 8px;"><img src="${innerSectionData.backgroundImage}" style="max-width: 100%; max-height: 100px; border-radius: 4px; border: 1px solid #ddd;"></div>` : ''}
-                        <small class="text-muted">Use the parallax component for parallax effects</small>
+                        <small class="text-muted" style="display: block; margin-top: 8px;">Use the parallax component for parallax effects</small>
                     </div>
                 </div>
                 
@@ -8505,6 +8583,7 @@ break;
                     <div class="form-group">
                         <label>Banner Image</label>
                         <input type="file" accept="image/*" onchange="uploadCustomBannerImage(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                     </div>
                     <div class="form-group">
                         <label>Banner Title</label>
@@ -8557,6 +8636,7 @@ break;
                     <div class="form-group">
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB per image</small>
                         <div style="margin-top:8px;">
                             ${galleryData.images.map((src, idx) => '<img src="' + src + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;cursor:pointer;" onclick="openGalleryModalFromPanel(' + idx + ')">').join('')}
                         </div>
@@ -8578,6 +8658,7 @@ break;
                     <div class="form-group">
                         <label>Upload Images</label>
                         <input type="file" accept="image/*" multiple onchange="uploadSliderImages(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB per image</small>
                         <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
                             ${sliderData.images.map((src, idx) => '<img src="' + src + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="openSliderModalFromPanel(' + idx + ')">').join('')}
                         </div>
@@ -8651,8 +8732,9 @@ break;
                         <div class="form-group">
                             <label>Upload Video File</label>
                             <input type="file" accept="video/*" onchange="uploadVideoFile(event)" class="form-control mb-2">
-                            <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL">
-                            <small class="text-muted">Upload a video file (MP4, WebM, OGG) up to 10MB or enter a URL</small>
+                            <small style="display: block; color: #666; margin-top: 6px;">Accepted: MP4, WebM, OGG • Max: 50MB</small>
+                            <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL" style="margin-top: 8px;">
+                            <small class="text-muted" style="display: block; margin-top: 4px;">Or enter a direct video file URL</small>
                         </div>
                     </div>
                     
@@ -9083,6 +9165,7 @@ break;
                     <div class="form-group">
                         <label>Image</label>
                         <input type="file" accept="image/*" onchange="uploadFWTIImage(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                         <img src="${fwti.imgSrc}" style="max-width:100%;margin-top:8px;border-radius:4px;${fwti.imgSrc ? '' : 'display:none;'}"/>
                     </div>
                     <div class="form-group">
@@ -9210,6 +9293,7 @@ break;
                             <div class="form-group">
                                 <label>Logo Image</label>
                                 <input type="file" accept="image/*" onchange="uploadPressCardImage(this, ${index})" style="margin-bottom: 5px;">
+                                <small style="display: block; color: #666; margin-top: 4px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 1MB</small>
                                 ${card.logoSrc ? `<div style="margin-top: 5px;"><img src="${card.logoSrc}" style="max-width: 100px; max-height: 50px; border: 1px solid #ddd; border-radius: 4px;"><br><small style="color: #666;">Current logo</small></div>` : '<small style="color: #999;">No logo uploaded</small>'}
                             </div>
                             <div class="form-group">
@@ -10009,14 +10093,6 @@ break;
                         <small class="text-muted">Background behind the site goal section</small>
                     </div>
                     <div class="form-group">
-                        <label>Goal Amount</label>
-                        <input type="number" value="${goalData.goal}" min="1" oninput="updateSiteGoalField(this, 'goal')">
-                    </div>
-                    <div class="form-group">
-                        <label>Raised Amount</label>
-                        <input type="number" value="${goalData.raised}" min="0" oninput="updateSiteGoalField(this, 'raised')">
-                    </div>
-                    <div class="form-group">
                         <label>Bar Color</label>
                         <input type="color" value="${goalData.barColor || '#0d6efd'}" oninput="updateSiteGoalField(this, 'barColor')">
                     </div>
@@ -10050,6 +10126,7 @@ break;
                     <div class="form-group">
                         <label>Upload Image</label>
                         <input type="file" accept="image/*" onchange="uploadTextImagesImage(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                         <img src="${textImagesData.imgSrc}" style="max-width:100%;margin-top:8px;border-radius:4px;"/>
                     </div>
                     <div class="form-group">
@@ -11326,12 +11403,33 @@ function uploadCustomBannerImage(event) {
     if (!selectedComponent) return;
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showUploadNotification('Please select a valid image file.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showUploadNotification(`File size exceeds the maximum allowed size of 2MB.`, 'error');
+        event.target.value = '';
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         const content = getContentElement(selectedComponent);
         if (!content._customBannerData) return;
         content._customBannerData.imgSrc = e.target.result;
         if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
+        showUploadNotification('Banner image uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        event.target.value = '';
     };
     reader.readAsDataURL(file);
 }
@@ -11596,17 +11694,41 @@ function uploadSliderImages(event) {
     if (!files.length) return;
     const content = getContentElement(selectedComponent);
     if (!content._sliderData) return;
+    
     let loaded = 0;
+    let errors = 0;
+    const maxSize = 2 * 1024 * 1024; // 2MB per image
+    
     files.forEach(file => {
-        if (!file.type.startsWith('image/')) return;
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showUploadNotification(`File "${file.name}" is not a valid image.`, 'error');
+            errors++;
+            return;
+        }
+        
+        // Validate file size
+        if (file.size > maxSize) {
+            showUploadNotification(`File "${file.name}" (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum size of 2MB.`, 'error');
+            errors++;
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             content._sliderData.images.push(e.target.result);
             loaded++;
-            if (loaded === files.length) {
+            if (loaded === files.length - errors) {
                 content.renderSlider();
                 updatePropertyPanel();
+                if (loaded > 0) {
+                    showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+                }
             }
+        };
+        reader.onerror = function() {
+            showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+            errors++;
         };
         reader.readAsDataURL(file);
     });
@@ -11807,17 +11929,41 @@ window.addEventListener('DOMContentLoaded', function() {
     if (!files.length) return;
     const content = getContentElement(selectedComponent);
     if (!content._galleryData) return;
+    
     let loaded = 0;
+    let errors = 0;
+    const maxSize = 2 * 1024 * 1024; // 2MB per image
+    
     files.forEach(file => {
-        if (!file.type.startsWith('image/')) return;
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showUploadNotification(`File "${file.name}" is not a valid image.`, 'error');
+            errors++;
+            return;
+        }
+        
+        // Validate file size
+        if (file.size > maxSize) {
+            showUploadNotification(`File "${file.name}" (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum size of 2MB.`, 'error');
+            errors++;
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             content._galleryData.images.push(e.target.result);
             loaded++;
-            if (loaded === files.length) {
+            if (loaded === files.length - errors) {
                 content.renderGallery();
                 updatePropertyPanel();
+                if (loaded > 0) {
+                    showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+                }
             }
+        };
+        reader.onerror = function() {
+            showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+            errors++;
         };
         reader.readAsDataURL(file);
     });
@@ -12240,6 +12386,8 @@ function updateInvestCtaField(value, field) {
                 </div>
             </div>
         `;
+        // Refresh properties panel so updated values persist in UI
+        if (typeof updatePropertyPanel === 'function') setTimeout(() => updatePropertyPanel(), 10);
     }
 }
 
@@ -12247,6 +12395,22 @@ function uploadInnerSectionBackgroundImage(event) {
     if (!selectedComponent) return;
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showUploadNotification('Please select a valid image file.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showUploadNotification(`File size exceeds the maximum allowed size of 2MB.`, 'error');
+        event.target.value = '';
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         const content = getContentElement(selectedComponent);
@@ -12256,6 +12420,11 @@ function uploadInnerSectionBackgroundImage(event) {
             content.updateBackground();
         }
         updatePropertyPanel();
+        showUploadNotification('Background image uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        event.target.value = '';
     };
     reader.readAsDataURL(file);
 }
@@ -12798,21 +12967,23 @@ function handleVideoUpload(event) {
     if (!file) return;
     
     if (!selectedComponent) {
-        alert('Please select a component first');
+        showUploadNotification('Please select a component first.', 'error');
         return;
     }
     
     // Validate file type
     const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
     if (!allowedTypes.includes(file.type)) {
-        alert('Please upload a valid video file (MP4, WebM, or OGG)');
+        showUploadNotification('Please upload a valid video file (MP4, WebM, or OGG).', 'error');
+        event.target.value = '';
         return;
     }
     
     // Validate file size (50MB max)
     const maxSize = 50 * 1024 * 1024; // 50MB in bytes
     if (file.size > maxSize) {
-        alert('File size must be less than 50MB');
+        showUploadNotification('File size must be less than 50MB.', 'error');
+        event.target.value = '';
         return;
     }
     
@@ -13082,11 +13253,31 @@ function uploadPressCardImage(input, cardIndex) {
     const file = input.files[0];
     if (!file) return;
     
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showUploadNotification('Please select a valid image file.', 'error');
+        input.value = '';
+        return;
+    }
+    
+    // Validate file size (1MB max for press cards)
+    const maxSize = 1 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showUploadNotification(`File size exceeds the maximum allowed size of 1MB.`, 'error');
+        input.value = '';
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         updatePressCardField(`cards.${cardIndex}.logoSrc`, e.target.result);
         // Update the property panel to show the new image without losing selection
         refreshPressCardSettings();
+        showUploadNotification('Logo image uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        input.value = '';
     };
     reader.readAsDataURL(file);
 }
@@ -13180,12 +13371,33 @@ function uploadFWTIImage(event) {
     if (!selectedComponent) return;
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showUploadNotification('Please select a valid image file.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showUploadNotification(`File size exceeds the maximum allowed size of 2MB.`, 'error');
+        event.target.value = '';
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         const content = getContentElement(selectedComponent);
         if (!content._fwtiData) return;
         content._fwtiData.imgSrc = e.target.result;
         if (typeof content.renderFWTI === 'function') content.renderFWTI();
+        showUploadNotification('Image uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        event.target.value = '';
     };
     reader.readAsDataURL(file);
 }
@@ -13687,14 +13899,34 @@ function applyResponsiveStyles() {
         const file = event.target.files[0];
         if (file && selectedComponent) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = selectedComponent.querySelector('img');
-                img.src = e.target.result;
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showUploadNotification('Please select a valid image file for FWTI.', 'error');
+            event.target.value = '';
+            return;
+        }
 
-                // Update preview if exists
-                const preview = selectedComponent.closest('.properties').querySelector('.image-preview');
-                if (preview) {
-                    preview.src = e.target.result;
+        // Validate file size (2MB max)
+        const maxSize = 2 * 1024 * 1024;
+        if (file.size > maxSize) {
+            showUploadNotification('File size exceeds the maximum allowed size of 2MB for this image.', 'error');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._fwtiData) return;
+            content._fwtiData.imgSrc = e.target.result;
+            if (typeof content.renderFWTI === 'function') content.renderFWTI();
+            showUploadNotification('Image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
                 }
             };
             reader.readAsDataURL(file);
@@ -13786,7 +14018,7 @@ function applyResponsiveStyles() {
             // Check file size (10MB = 10 * 1024 * 1024 bytes)
             const maxSize = 10 * 1024 * 1024;
             if (file.size > maxSize) {
-                alert('File size must be less than 10MB');
+                showUploadNotification('File size must be less than 10MB.', 'error');
                 event.target.value = '';
                 return;
             }
@@ -13828,15 +14060,16 @@ function applyResponsiveStyles() {
                     console.log('Content element:', getContentElement(selectedComponent));
                     updateVideoEmbed(data.url, 'uploaded');
                     console.log('Video embed updated');
+                    showUploadNotification('Video uploaded successfully!', 'success');
                 } else {
-                    alert('Upload failed: ' + (data.message || 'Unknown error'));
+                    showUploadNotification('Upload failed: ' + (data.message || 'Unknown error'), 'error');
                     event.target.value = '';
                 }
             })
             .catch(error => {
                 progressDiv.remove();
                 console.error('Upload error:', error);
-                alert('Upload failed: ' + error.message);
+                showUploadNotification('Upload failed: ' + error.message, 'error');
                 event.target.value = '';
             });
         }
@@ -14874,12 +15107,32 @@ function applyResponsiveStyles() {
         if (!selectedComponent) return;
         const file = event.target.files[0];
         if (!file) return;
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showUploadNotification('Please select a valid image file.', 'error');
+            event.target.value = '';
+            return;
+        }
+
+        // Validate file size (2MB max)
+        const maxSize = 2 * 1024 * 1024;
+        if (file.size > maxSize) {
+            showUploadNotification(`File size exceeds the maximum allowed size of 2MB.`, 'error');
+            event.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function(e) {
             const content = getContentElement(selectedComponent);
             if (!content._textImagesData) return;
             content._textImagesData.imgSrc = e.target.result;
             if (typeof content.renderTextImages === 'function') content.renderTextImages();
+            showUploadNotification('Image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
         };
         reader.readAsDataURL(file);
     }
@@ -14983,6 +15236,8 @@ function applyResponsiveStyles() {
         }
         
         if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
+        // Refresh properties panel so updated values persist in UI
+        if (typeof updatePropertyPanel === 'function') setTimeout(() => updatePropertyPanel(), 10);
     }
 
     // --- Statistics Metric Functions ---
@@ -14994,6 +15249,8 @@ function applyResponsiveStyles() {
         content._statisticsData[field] = value;
         
         if (typeof content.renderStatisticsMetric === 'function') content.renderStatisticsMetric();
+        // Refresh properties panel so updated values persist in UI
+        if (typeof updatePropertyPanel === 'function') setTimeout(() => updatePropertyPanel(), 10);
     }
 
     // Upload image for investment tier background
@@ -15001,14 +15258,34 @@ function applyResponsiveStyles() {
         if (!selectedComponent || !input.files || !input.files[0]) return;
         
         const file = input.files[0];
-        
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            showUploadNotification('Please select a valid image file.', 'error');
-            input.value = '';
+            showUploadNotification('Please select a valid image file for the investment tier.', 'error');
+            event.target.value = '';
             return;
         }
-        
+
+        // Validate file size (1MB max for tier images)
+        const maxSize = 1 * 1024 * 1024;
+        if (file.size > maxSize) {
+            showUploadNotification('File size exceeds the maximum allowed size of 1MB for investment tier images.', 'error');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._investmentTierData) return;
+            content._investmentTierData.imgSrc = e.target.result;
+            if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
+            showUploadNotification('Investment tier image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the investment tier image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
         // Check file size (get from server config or use default 2MB)
         const maxSize = window.uploadConfig?.maxFileSize || (2 * 1024 * 1024); // 2MB default
         const maxSizeMB = window.uploadConfig?.maxFileSizeMB || 2;
@@ -15540,9 +15817,8 @@ function applyResponsiveStyles() {
                 let compData = { type: compType };
                 
                 // Save complete component data (same as main components)
-                if (compContent) {
-                  compData.html = compContent.innerHTML;
-                  compData.style = {
+                                    if (compContent) {
+                                    compData.style = {
                     color: compContent.style.color || '',
                     backgroundColor: compContent.style.backgroundColor || '',
                     fontSize: compContent.style.fontSize || '',
@@ -15647,14 +15923,38 @@ function applyResponsiveStyles() {
                       }
                       break;
                     case 'investment-tier':
-                      if (compContent._investmentTierData) {
-                        compData.investmentTierData = compContent._investmentTierData;
-                      }
+                                            if (compContent._investmentTierData) {
+                                                compData.investmentTierData = compContent._investmentTierData;
+                                            } else if (compData.html && !compData.investmentTierData) {
+                                                try {
+                                                    const tmp = document.createElement('div');
+                                                    tmp.innerHTML = compData.html;
+                                                    const titleEl = tmp.querySelector('.text-block-94');
+                                                    const priceEl = tmp.querySelector('.number-larger-2');
+                                                    const descEl = tmp.querySelector('.div-block-173 div');
+                                                    compData.investmentTierData = {
+                                                        tierName: titleEl ? titleEl.textContent.trim() : '',
+                                                        tierPrice: priceEl ? priceEl.textContent.trim() : '',
+                                                        tierDescription: descEl ? descEl.textContent.trim() : ''
+                                                    };
+                                                } catch (e) { console.error('Failed to parse nested investment-tier html', e); }
+                                            }
                       break;
                     case 'statistics-metric':
-                      if (compContent._statisticsData) {
-                        compData.statisticsData = compContent._statisticsData;
-                      }
+                                            if (compContent._statisticsData) {
+                                                compData.statisticsData = compContent._statisticsData;
+                                            } else if (compData.html && !compData.statisticsData) {
+                                                try {
+                                                    const tmp = document.createElement('div');
+                                                    tmp.innerHTML = compData.html;
+                                                    const metricEl = tmp.querySelector('.metric-number');
+                                                    const descEl = tmp.querySelector('.metric-description');
+                                                    compData.statisticsData = {
+                                                        metric: metricEl ? metricEl.textContent.trim() : '',
+                                                        description: descEl ? descEl.textContent.trim() : ''
+                                                    };
+                                                } catch (e) { console.error('Failed to parse nested statistics html', e); }
+                                            }
                       break;
                     case 'full-width-text-image':
                       if (compContent._fwtiData) {
@@ -15712,13 +16012,22 @@ function applyResponsiveStyles() {
                       break;
                   }
                   
-                  // Save responsive styles for nested components
-                  if (compContent._responsiveStyles) {
-                    compData.responsiveStyles = compContent._responsiveStyles;
-                  }
-                }
-                
-                return compData;
+                                    // Save responsive styles for nested components
+                                    if (compContent._responsiveStyles) {
+                                        compData.responsiveStyles = compContent._responsiveStyles;
+                                    }
+
+                                    // Only save raw HTML fallback when no component-specific structured data was added.
+                                    // Allowed meta keys: type, style, wrapperStyle, responsiveStyles
+                                    const allowedMeta = ['type','style','wrapperStyle','responsiveStyles'];
+                                    const extraKey = Object.keys(compData).some(k => !allowedMeta.includes(k));
+                                    if (!extraKey) {
+                                        compData.html = compContent.innerHTML;
+                                    }
+
+                                }
+
+                                return compData;
               });
             });
             break;
@@ -15808,9 +16117,13 @@ function applyResponsiveStyles() {
       
       console.log('DeserializeBuilder - Total components to load:', components.length);
       console.log('DeserializeBuilder - Components array:', components.map(c => ({ type: c.type, hasVideoData: !!c.videoData })));
+      console.log('[DESERIALIZE] pageSettings:', pageSettings);
+      console.log('[DESERIALIZE] pageSettings.backgroundColor:', pageSettings.backgroundColor);
+      console.log('[DESERIALIZE] window.pageData.background_color BEFORE:', window.pageData?.background_color);
       
       // Apply page settings
       if (pageSettings.backgroundColor) {
+        console.log('[DESERIALIZE] Applying backgroundColor from pageSettings:', pageSettings.backgroundColor);
         updatePageBackground(pageSettings.backgroundColor);
         const colorInput = document.getElementById('pageBackgroundColor');
         if (colorInput) {
@@ -15928,7 +16241,26 @@ function applyResponsiveStyles() {
                     investCtaDefaults.labelColor = data.properties.label_color || investCtaDefaults.labelColor;
                     investCtaDefaults.dividerColor = data.properties.divider_color || investCtaDefaults.dividerColor;
                 }
-                
+
+                // If structured investCtaData is missing but legacy HTML exists, try to recover values
+                if ((!data.investCtaData || Object.keys(data.investCtaData || {}).length === 0) && data.html) {
+                    try {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = data.html;
+                        const btn = tmp.querySelector('.invest-cta-button');
+                        const leftVal = tmp.querySelectorAll('.investment-value')[0];
+                        const leftLabel = tmp.querySelectorAll('.investment-label')[0];
+                        const rightVal = tmp.querySelectorAll('.investment-value')[1];
+                        const rightLabel = tmp.querySelectorAll('.investment-label')[1];
+                        if (btn && btn.textContent) investCtaDefaults.buttonText = btn.textContent.trim();
+                        if (btn && btn.getAttribute('href')) investCtaDefaults.buttonUrl = btn.getAttribute('href');
+                        if (leftVal) investCtaDefaults.leftValue = leftVal.textContent.trim();
+                        if (leftLabel) investCtaDefaults.leftLabel = leftLabel.textContent.trim();
+                        if (rightVal) investCtaDefaults.rightValue = rightVal.textContent.trim();
+                        if (rightLabel) investCtaDefaults.rightLabel = rightLabel.textContent.trim();
+                    } catch (e) { console.error('Failed to parse invest-cta html during deserialize', e); }
+                }
+
                 actualContent._investCtaData = data.investCtaData || investCtaDefaults;
                 // Re-render the component with saved data
                 const investWrapper = actualContent.querySelector('.invest-cta-wrapper');
@@ -16481,7 +16813,21 @@ function applyResponsiveStyles() {
                 break;
 
             case 'investment-tier':
-                const loadedTierData = data.investmentTierData || {};
+                let loadedTierData = data.investmentTierData || {};
+                if (Object.keys(loadedTierData || {}).length === 0 && data.html) {
+                    try {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = data.html;
+                        const titleEl = tmp.querySelector('.text-block-94');
+                        const priceEl = tmp.querySelector('.number-larger-2');
+                        const descEl = tmp.querySelector('.div-block-173 div');
+                        loadedTierData = {
+                            tierName: titleEl ? titleEl.textContent.trim() : '',
+                            tierPrice: priceEl ? priceEl.textContent.trim() : '',
+                            tierDescription: descEl ? descEl.textContent.trim() : ''
+                        };
+                    } catch (e) { console.error('Failed to parse investment-tier html during deserialize', e); }
+                }
                 
                 // Handle migration from old textColor to separate color fields
                 const fallbackColor = loadedTierData.textColor || '#ffffff';
@@ -16530,8 +16876,20 @@ function applyResponsiveStyles() {
                 break;
 
             case 'statistics-metric':
-                const loadedStatisticsData = data.statisticsData || {};
-                
+                let loadedStatisticsData = data.statisticsData || {};
+                if (Object.keys(loadedStatisticsData || {}).length === 0 && data.html) {
+                    try {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = data.html;
+                        const metricEl = tmp.querySelector('.metric-number');
+                        const descEl = tmp.querySelector('.metric-description');
+                        loadedStatisticsData = {
+                            metric: metricEl ? metricEl.textContent.trim() : '',
+                            description: descEl ? descEl.textContent.trim() : ''
+                        };
+                    } catch (e) { console.error('Failed to parse statistics-metric html during deserialize', e); }
+                }
+
                 // Merge loaded data with defaults
                 actualContent._statisticsData = Object.assign({
                     metric: '3X',
@@ -17391,6 +17749,146 @@ function applyResponsiveStyles() {
                           console.log('DESERIALIZE NESTED: Loading product-listing-grid properties:', compData.properties);
                         }
                         break;
+                      case 'investment-tier':
+                        if (compData.investmentTierData && Object.keys(compData.investmentTierData).length > 0) {
+                          nestedContent._investmentTierData = compData.investmentTierData;
+                          console.log('Nested investment-tier deserialized with structured data:', compData.investmentTierData);
+                        } else if (compData.html) {
+                          // Recovery: parse from HTML if structured data missing
+                          try {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = compData.html;
+                            const tierName = tempDiv.querySelector('.tier-name')?.textContent || 'Tier';
+                            const tierPrice = tempDiv.querySelector('.tier-price')?.textContent || '$0';
+                            const tierDesc = tempDiv.querySelector('.tier-description')?.textContent || '';
+                            
+                            nestedContent._investmentTierData = {
+                              tierName: tierName,
+                              tierPrice: tierPrice,
+                              tierDescription: tierDesc,
+                              backgroundColor: 'rgb(59, 130, 246)',
+                              borderColor: 'rgb(59, 130, 246)',
+                              textColor: '#ffffff'
+                            };
+                            console.log('Recovered investment-tier from HTML:', nestedContent._investmentTierData);
+                          } catch (e) {
+                            console.error('Failed to parse investment-tier from HTML:', e);
+                            nestedContent._investmentTierData = {
+                              tierName: 'Tier',
+                              tierPrice: '$0',
+                              tierDescription: '',
+                              backgroundColor: 'rgb(59, 130, 246)',
+                              borderColor: 'rgb(59, 130, 246)',
+                              textColor: '#ffffff'
+                            };
+                          }
+                        } else {
+                          nestedContent._investmentTierData = {
+                            tierName: 'Tier',
+                            tierPrice: '$0',
+                            tierDescription: '',
+                            backgroundColor: 'rgb(59, 130, 246)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            textColor: '#ffffff'
+                          };
+                        }
+                        nestedContent.renderInvestmentTier();
+                        break;
+                      case 'statistics-metric':
+                        if (compData.statisticsData && Object.keys(compData.statisticsData).length > 0) {
+                          nestedContent._statisticsData = compData.statisticsData;
+                          console.log('Nested statistics-metric deserialized with structured data:', compData.statisticsData);
+                        } else if (compData.html) {
+                          // Recovery: parse from HTML if structured data missing
+                          try {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = compData.html;
+                            const metric = tempDiv.querySelector('.metric-value')?.textContent || '0';
+                            const description = tempDiv.querySelector('.metric-description')?.textContent || 'Metric';
+                            
+                            nestedContent._statisticsData = {
+                              metric: metric,
+                              description: description,
+                              backgroundColor: 'transparent',
+                              textColor: '#000000',
+                              descriptionColor: '#666666'
+                            };
+                            console.log('Recovered statistics-metric from HTML:', nestedContent._statisticsData);
+                          } catch (e) {
+                            console.error('Failed to parse statistics-metric from HTML:', e);
+                            nestedContent._statisticsData = {
+                              metric: '0',
+                              description: 'Metric',
+                              backgroundColor: 'transparent',
+                              textColor: '#000000',
+                              descriptionColor: '#666666'
+                            };
+                          }
+                        } else {
+                          nestedContent._statisticsData = {
+                            metric: '0',
+                            description: 'Metric',
+                            backgroundColor: 'transparent',
+                            textColor: '#000000',
+                            descriptionColor: '#666666'
+                          };
+                        }
+                        nestedContent.renderStatisticsMetric();
+                        break;
+                      case 'invest-cta':
+                        if (compData.investCtaData && Object.keys(compData.investCtaData).length > 0) {
+                          nestedContent._investCtaData = compData.investCtaData;
+                          console.log('Nested invest-cta deserialized with structured data:', compData.investCtaData);
+                        } else if (compData.html) {
+                          // Recovery: parse from HTML if structured data missing
+                          try {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = compData.html;
+                            const btnText = tempDiv.querySelector('.cta-button')?.textContent || 'Invest Now';
+                            const btnUrl = tempDiv.querySelector('.cta-button')?.getAttribute('href') || '#';
+                            const leftValue = tempDiv.querySelector('.left-value')?.textContent || '0';
+                            const leftLabel = tempDiv.querySelector('.left-label')?.textContent || 'Metric 1';
+                            const rightValue = tempDiv.querySelector('.right-value')?.textContent || '0';
+                            const rightLabel = tempDiv.querySelector('.right-label')?.textContent || 'Metric 2';
+                            
+                            nestedContent._investCtaData = {
+                              buttonText: btnText,
+                              buttonUrl: btnUrl,
+                              leftValue: leftValue,
+                              leftLabel: leftLabel,
+                              rightValue: rightValue,
+                              rightLabel: rightLabel,
+                              backgroundColor: 'rgb(59, 130, 246)',
+                              textColor: '#ffffff'
+                            };
+                            console.log('Recovered invest-cta from HTML:', nestedContent._investCtaData);
+                          } catch (e) {
+                            console.error('Failed to parse invest-cta from HTML:', e);
+                            nestedContent._investCtaData = {
+                              buttonText: 'Invest Now',
+                              buttonUrl: '#',
+                              leftValue: '0',
+                              leftLabel: 'Metric 1',
+                              rightValue: '0',
+                              rightLabel: 'Metric 2',
+                              backgroundColor: 'rgb(59, 130, 246)',
+                              textColor: '#ffffff'
+                            };
+                          }
+                        } else {
+                          nestedContent._investCtaData = {
+                            buttonText: 'Invest Now',
+                            buttonUrl: '#',
+                            leftValue: '0',
+                            leftLabel: 'Metric 1',
+                            rightValue: '0',
+                            rightLabel: 'Metric 2',
+                            backgroundColor: 'rgb(59, 130, 246)',
+                            textColor: '#ffffff'
+                          };
+                        }
+                        nestedContent.renderInvestCta();
+                        break;
                       default:
                         // For basic components like text, heading, etc., just restore HTML
                         if (nestedContent && compData.html) {
@@ -17400,7 +17898,7 @@ function applyResponsiveStyles() {
                     }
                     
                     // Restore styles (only if not already handled by component-specific rendering)
-                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image', 'press-card', 'video'].includes(compData.type)) {
+                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image', 'press-card', 'video', 'investment-tier', 'statistics-metric', 'invest-cta'].includes(compData.type)) {
                       Object.assign(nestedContent.style, compData.style);
                     }
                     
@@ -17515,10 +18013,23 @@ function applyResponsiveStyles() {
       const enableConfetti = enableConfettiCheckbox ? (enableConfettiCheckbox.checked ? 1 : 0) : 0;
       console.log('Enable confetti value:', enableConfetti);
       
-      // Get page background color
-      const pageBackgroundColor = document.getElementById('pageBackgroundColor');
-      const backgroundColor = pageBackgroundColor ? pageBackgroundColor.value : '#ffffff';
-      console.log('Background color value:', backgroundColor);
+      // Get page background color - prefer window.pageData as authoritative source
+      let backgroundColor = '#ffffff'; // fallback
+      
+      // 1. Try to get from pageData (in-memory state)
+      if (window.pageData && window.pageData.background_color) {
+        backgroundColor = window.pageData.background_color;
+        console.log('[saveBuilderState] Got background from pageData:', backgroundColor);
+      } else {
+        // 2. Fallback to color input value
+        const pageBackgroundColor = document.getElementById('pageBackgroundColor');
+        if (pageBackgroundColor) {
+          backgroundColor = pageBackgroundColor.value || '#ffffff';
+          console.log('[saveBuilderState] Got background from input.value:', backgroundColor);
+        }
+      }
+      
+      console.log('[saveBuilderState] Final background color value:', backgroundColor);
 
       fetch('/admins/page/save/'+id, {
         method: 'POST',
@@ -18537,28 +19048,75 @@ function applyResponsiveStyles() {
             background_color: '{{ $data->background_color ?? "#ffffff" }}'
         };
     }
+    
+    console.log('[INIT] window.pageData initialized:', window.pageData);
+
+    // Add a synchronization watchdog that ensures color input always reflects pageData
+    (function setupColorSyncWatchdog() {
+        const colorInput = document.getElementById('pageBackgroundColor');
+        if (!colorInput) {
+            console.warn('[COLOR SYNC] Color input not found');
+            return;
+        }
+        
+        // Watch for any changes to pageData.background_color and sync the input
+        const originalPageData = window.pageData;
+        let lastSyncedColor = originalPageData?.background_color;
+        
+        // Periodic check every 500ms to catch any async updates
+        setInterval(() => {
+            if (window.pageData && window.pageData.background_color !== lastSyncedColor) {
+                console.log('[COLOR SYNC] pageData changed from', lastSyncedColor, 'to', window.pageData.background_color);
+                colorInput.value = window.pageData.background_color;
+                lastSyncedColor = window.pageData.background_color;
+            }
+        }, 500);
+        
+        console.log('[COLOR SYNC] Watchdog started, initial color:', lastSyncedColor);
+    })();
 
     // Page Background Color Update Function
     function updatePageBackground(color) {
         const page = document.getElementById('page');
         const canvas = document.getElementById('canvas');
         const root = document.documentElement;
+        const colorInput = document.getElementById('pageBackgroundColor');
+        
+        // Normalize color to hex if needed
+        let normalizedColor = color;
+        if (color && color.startsWith('rgb')) {
+            // Convert rgb(...) to hex
+            const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                const r = parseInt(rgbMatch[1]);
+                const g = parseInt(rgbMatch[2]);
+                const b = parseInt(rgbMatch[3]);
+                normalizedColor = '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+                console.log(`[updatePageBackground] Converted rgb to hex: ${color} -> ${normalizedColor}`);
+            }
+        }
         
         // Update page background
         if (page) {
-            page.style.backgroundColor = color;
+            page.style.backgroundColor = normalizedColor;
         }
         
         // Update canvas background to match page background
         if (canvas) {
-            canvas.style.backgroundColor = color;
+            canvas.style.backgroundColor = normalizedColor;
         }
         
         // Update CSS variable for consistent theming
-        root.style.setProperty('--bg-color', color);
+        root.style.setProperty('--bg-color', normalizedColor);
         
         // Save to page data
-        window.pageData.background_color = color;
+        window.pageData.background_color = normalizedColor;
+        
+        // CRITICAL: Also update the color input value to ensure it reflects the current state
+        if (colorInput) {
+            colorInput.value = normalizedColor;
+            console.log(`[updatePageBackground] Updated color input to: ${normalizedColor}`);
+        }
         
         // Trigger auto-save
         if (typeof autoSavePage === 'function') {

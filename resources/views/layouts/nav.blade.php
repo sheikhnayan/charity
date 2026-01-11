@@ -1,3 +1,21 @@
+<!-- Google Analytics -->
+    @php
+        // Get website by domain
+        $currentDomain = request()->host();
+        $website = \App\Models\Website::where('domain', $currentDomain)->first();
+        // dd($website);
+        $gaTrackingId = $website->google_analytics_id ?? null;
+    @endphp
+    @if($gaTrackingId)
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaTrackingId }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $gaTrackingId }}');
+    </script>
+    @endif
+
 <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-xl {{ $header->floating == 1 ? 'fixed-top' : 'non-float'}} bg-primary" style="background-color: {{ $header->background }} !important;">
         <div class="container invest-mobile">

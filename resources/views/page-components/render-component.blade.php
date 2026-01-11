@@ -4426,9 +4426,24 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 @case('site-goal')
                                     @if(isset($component['goalData']))
                                         @php
-                                        // Example data for the new site-goal component (replace with your dynamic data as needed)
-                                        $goal = isset($component['goalData']['goal']) ? (float)$component['goalData']['goal'] : 10000;
-                                        $raised = isset($component['goalData']['raised']) ? (float)$component['goalData']['raised'] : 3500;
+                                        // Get goal from website settings
+                                        $goal = isset($setting) && isset($setting->goal) ? (float)$setting->goal : 10000;
+                                        
+                                        // Get raised amount from all approved donations
+                                        $raised = 0;
+                                        if (isset($check) && isset($check->id)) {
+                                            // Get donations for this website
+                                            $raised = \App\Models\Donation::where('website_id', $check->id)
+                                                ->where('status', 1)
+                                                ->sum('amount');
+                                        } elseif (isset($data) && isset($data->user_id)) {
+                                            // Fallback: get donations for the page owner
+                                            $raised = \App\Models\Donation::where('user_id', $data->user_id)
+                                                ->where('status', 1)
+                                                ->sum('amount');
+                                        }
+                                        
+                                        $raised = (float)$raised;
                                         $percent = $goal > 0 ? min(100, round(($raised / $goal) * 100, 2)) : 0;
                                         $label = $component['goalData']['label'] ?? 'Fundraising Goal';
                                         $showTicks = true;
@@ -4496,7 +4511,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                                     $tickPercent = $tick * 100;
                                                                     $tickValue = $tick * $goal;
                                                                 } else {
-                                                                    $tickPercent = min($tick / $goal, 1) * 100;
+                                                                    $tickPercent = min($tick / ($goal != 0 ? $goal : 1), 1) * 100;
                                                                     $tickValue = $tick;
                                                                 }
                                                             }
@@ -5508,7 +5523,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <p class="text-muted mb-4">Join our community today</p>
                     </div>
                     
-                    <div class="register fade-in" style="opacity: 1; transition: opacity 0.3s ease;">
+                    <div class="register fade-in" style="display: block; opacity: 1; transition: opacity 0.3s ease;">
                         <div class="container">
                             <form action="/register" method="POST" id="registerForm">
                                 @csrf
@@ -5692,7 +5707,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         
                         // Form toggling with smooth transitions
                         function showLoginForm(componentId) {
+                            console.log('showLoginForm called with componentId:', componentId);
                             const component = document.getElementById(componentId);
+                            console.log('Found component:', component);
                             if (!component) {
                                 console.warn('Auth form component not found:', componentId);
                                 return;
@@ -5702,6 +5719,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             const loginForm = component.querySelector('.login');
                             const titleElement = component.querySelector('.tit');
                             const subtitleElement = component.querySelector('.auth-header p');
+                            
+                            console.log('Register form:', registerForm);
+                            console.log('Login form:', loginForm);
                             
                             if (registerForm) {
                                 registerForm.style.opacity = '0';
@@ -5714,6 +5734,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         loginForm.offsetHeight;
                                         setTimeout(() => {
                                             loginForm.style.opacity = '1';
+                                            console.log('Login form should now be visible');
                                         }, 50);
                                     }
                                 }, 300);
@@ -5726,7 +5747,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         }
                         
                         function showRegisterForm(componentId) {
+                            console.log('showRegisterForm called with componentId:', componentId);
                             const component = document.getElementById(componentId);
+                            console.log('Found component:', component);
                             if (!component) {
                                 console.warn('Auth form component not found:', componentId);
                                 return;
@@ -5736,6 +5759,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             const loginForm = component.querySelector('.login');
                             const titleElement = component.querySelector('.tit');
                             const subtitleElement = component.querySelector('.auth-header p');
+                            
+                            console.log('Register form:', registerForm);
+                            console.log('Login form:', loginForm);
                             
                             if (loginForm) {
                                 loginForm.style.opacity = '0';
@@ -5748,6 +5774,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         registerForm.offsetHeight;
                                         setTimeout(() => {
                                             registerForm.style.opacity = '1';
+                                            console.log('Register form should now be visible');
                                         }, 50);
                                     }
                                 }, 300);

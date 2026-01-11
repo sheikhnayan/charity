@@ -146,6 +146,18 @@ label{
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
+                                                        <label for="google_analytics_id" class="form-label">
+                                                            <i class="bx bxl-google me-1"></i>Google Analytics Tracking ID
+                                                        </label>
+                                                        <input type="text" name="google_analytics_id" value="{{ $data->google_analytics_id ?? '' }}" class="form-control" id="google_analytics_id" placeholder="e.g., G-XXXXXXXXXX">
+                                                        <small class="form-text text-muted">Enter your Google Analytics tracking ID (e.g., G-XXXXXXXXXX). Leave blank to disable analytics for this website.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
                                                         <label for="status" class="form-label">Status</label>
                                                         <select name="status" id="status" class="form-control">
                                                             <option {{ $data->status == 0 ? 'selected' : '' }} value="0">Deactive</option>

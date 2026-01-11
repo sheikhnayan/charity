@@ -207,6 +207,18 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="google_analytics_id" class="form-label">
+                                                            <i class="bx bxl-google me-1"></i>Google Analytics Tracking ID
+                                                        </label>
+                                                        <input type="text" name="google_analytics_id" class="form-control" id="google_analytics_id" placeholder="e.g., G-XXXXXXXXXX">
+                                                        <small class="form-text text-muted">Enter your Google Analytics tracking ID (e.g., G-XXXXXXXXXX). Leave blank to disable analytics for this website.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                             <a href="{{ route('admin.website.index') }}" class="btn btn-danger">Cancel</a>
                                         </div>
