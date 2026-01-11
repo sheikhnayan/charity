@@ -304,7 +304,7 @@
                                 <img src="{{ asset('/uploads/' . $data->website->user->setting->logo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @else
-                                <img src="{{ asset('/uploads/' . $data->user->image) }}" width="64px"
+                                <img src="{{ asset('/uploads/' . $data->user->photo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @endif
                             {{-- <span
@@ -641,7 +641,7 @@
                                 <img src="{{ asset('/uploads/' . $data->website->user->setting->logo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @else
-                                <img src="{{ asset('/uploads/' . $data->user->image) }}" width="64px"
+                                <img src="{{ asset('/uploads/' . $data->user->photo) }}" width="64px"
                                     style="border-radius: 5px; border: 1px solid #eee;">
                             @endif
                             {{-- <span
