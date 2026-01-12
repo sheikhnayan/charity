@@ -1725,7 +1725,7 @@ if (isset($state['components'])) {
         @endforeach
 
         {{-- Main content area with universal inner-section handling --}}
-        <div id="rendered-page">
+        <div id="rendered-page" style="margin-bottom: 3rem;">
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';
