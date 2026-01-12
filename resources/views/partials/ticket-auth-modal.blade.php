@@ -4,7 +4,7 @@
         <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-4 text-center flex-shrink-0">
             <button class="absolute top-3 right-3 text-white hover:text-gray-200 text-2xl font-bold z-10" onclick="closeAuthModal()">&times;</button>
             <i class="fas fa-user-circle text-white text-4xl mb-2"></i>
-            <h2 class="text-xl font-bold text-white">Welcome Back</h2>
+            <h2 class="text-xl font-bold text-white">Welcome</h2>
             <p class="text-purple-100 text-xs mt-1">Login or create your account</p>
         </div>
         
@@ -28,6 +28,38 @@
                     <i class="fas fa-lock text-purple-600 mr-2"></i>Password
                 </label>
                 <input type="password" name="password" id="authPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;" required>
+            </div>
+
+            <!-- Forgot Password UI -->
+            <div class="mb-3 hidden" id="forgotPasswordRequestField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
+                    <i class="fas fa-envelope-open-text text-purple-600 mr-2"></i>Enter your email to reset password
+                </label>
+                <input type="email" name="forgot_email" id="forgotEmail" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;">
+                <button type="button" id="forgotPasswordRequestBtn" class="mt-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-4 py-2 rounded-lg font-bold w-full text-base shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Reset Code
+                </button>
+            </div>
+
+            <div class="mb-3 hidden" id="forgotPasswordVerifyField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
+                    <i class="fas fa-shield-alt text-purple-600 mr-2"></i>Enter the code sent to your email
+                </label>
+                <input type="text" name="forgot_code" id="forgotCode" maxlength="6" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-center text-xl font-bold tracking-widest" placeholder="000000" style="color: #000 !important;">
+                <button type="button" id="forgotPasswordVerifyBtn" class="mt-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-4 py-2 rounded-lg font-bold w-full text-base shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-check mr-2"></i>Verify Code
+                </button>
+            </div>
+
+            <div class="mb-3 hidden" id="forgotPasswordResetField">
+                <label class="block text-gray-800 font-semibold mb-1 text-sm">
+                    <i class="fas fa-key text-purple-600 mr-2"></i>Enter your new password
+                </label>
+                <input type="password" name="forgot_new_password" id="forgotNewPassword" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;">
+                <input type="password" name="forgot_confirm_password" id="forgotConfirmPassword" class="w-full mt-2 px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;" placeholder="Confirm new password">
+                <button type="button" id="forgotPasswordResetBtn" class="mt-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white px-4 py-2 rounded-lg font-bold w-full text-base shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-save mr-2"></i>Set New Password
+                </button>
             </div>
 
             <div class="mb-3" id="confirmPasswordField">
@@ -66,14 +98,18 @@
             </div>
             
             <div class="text-center pt-3 border-t border-gray-200">
-                <p class="text-xs text-gray-600 mb-2">Don't have an account yet?</p>
-                <div class="flex gap-2 justify-center">
-                    <a href="#" id="switchToRegister" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
-                        <i class="fas fa-user-plus mr-1"></i>Register
-                    </a>
-                    <span class="text-gray-400">|</span>
-                    <a href="#" id="switchToLogin" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
-                        <i class="fas fa-sign-in-alt mr-1"></i>Login
+                <div class="flex flex-col gap-2 items-center">
+                    <div class="flex gap-2 justify-center">
+                        <a href="#" id="switchToRegister" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
+                            <i class="fas fa-user-plus mr-1"></i>Register
+                        </a>
+                        <span class="text-gray-400">|</span>
+                        <a href="#" id="switchToLogin" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
+                            <i class="fas fa-sign-in-alt mr-1"></i>Login
+                        </a>
+                    </div>
+                    <a href="#" id="switchToForgot" class="text-purple-600 hover:text-purple-800 font-semibold text-xs hover:underline mt-1">
+                        <i class="fas fa-unlock-alt mr-1"></i>Forgot Password?
                     </a>
                 </div>
             </div>
@@ -98,6 +134,7 @@
     window.openAuthModal = openAuthModal;
     window.closeAuthModal = closeAuthModal;
 
+
     let authMode = 'login';
     function setAuthMode(mode) {
         authMode = mode;
@@ -108,27 +145,33 @@
             authSuccess.textContent = '';
             authSuccess.classList.add('hidden');
         }
-        
-        const verificationField = document.getElementById('verificationField');
-        const passwordField = document.getElementById('passwordField');
-        const confirmPasswordField = document.getElementById('confirmPasswordField');
-        const nameFieldContainer = document.getElementById('nameFieldContainer');
+
+        // Hide all special fields
+        document.getElementById('verificationField').classList.add('hidden');
+        document.getElementById('passwordField').classList.remove('hidden');
+        document.getElementById('confirmPasswordField').classList.add('hidden');
+        document.getElementById('nameFieldContainer').classList.add('hidden');
+        document.getElementById('forgotPasswordRequestField').classList.add('hidden');
+        document.getElementById('forgotPasswordVerifyField').classList.add('hidden');
+        document.getElementById('forgotPasswordResetField').classList.add('hidden');
+
         const submitBtn = document.getElementById('authSubmitBtn');
-        
-        verificationField.classList.add('hidden');
-        passwordField.classList.remove('hidden');
-        confirmPasswordField.classList.add('hidden');
-        nameFieldContainer.classList.add('hidden');
-        
+
         if (mode === 'register') {
             submitBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
-            confirmPasswordField.classList.remove('hidden');
-            nameFieldContainer.classList.remove('hidden');
+            document.getElementById('confirmPasswordField').classList.remove('hidden');
+            document.getElementById('nameFieldContainer').classList.remove('hidden');
         } else if (mode === 'verify') {
             submitBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Verify Account';
-            verificationField.classList.remove('hidden');
-            passwordField.classList.add('hidden');
-            nameFieldContainer.classList.add('hidden');
+            document.getElementById('verificationField').classList.remove('hidden');
+            document.getElementById('passwordField').classList.add('hidden');
+            document.getElementById('nameFieldContainer').classList.add('hidden');
+        } else if (mode === 'forgot') {
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
+            document.getElementById('passwordField').classList.add('hidden');
+            document.getElementById('confirmPasswordField').classList.add('hidden');
+            document.getElementById('nameFieldContainer').classList.add('hidden');
+            document.getElementById('forgotPasswordRequestField').classList.remove('hidden');
         } else {
             submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
         }
@@ -138,6 +181,115 @@
 
     document.getElementById('switchToRegister').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('register'); });
     document.getElementById('switchToLogin').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('login'); });
+
+    document.getElementById('switchToForgot').addEventListener('click', function(e){
+        e.preventDefault();
+        setAuthMode('forgot');
+    });
+
+    // Forgot Password Flow
+    let forgotEmail = '';
+    let forgotCode = '';
+
+    document.getElementById('forgotPasswordRequestBtn').addEventListener('click', async function(e) {
+        const email = document.getElementById('forgotEmail').value.trim();
+        const authError = document.getElementById('authError');
+        const authSuccess = document.getElementById('authSuccess');
+        if (!email) {
+            authError.textContent = 'Please enter your email address.';
+            return;
+        }
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Sending...';
+        try {
+            const res = await ajaxPost('/ajax/ticket-auth/forgot-request', { email });
+            if (res.success) {
+                authSuccess.textContent = 'Reset code sent to ' + email + '. Check your email and spam folder.';
+                authSuccess.classList.remove('hidden');
+                authError.textContent = '';
+                forgotEmail = email;
+                document.getElementById('forgotPasswordRequestField').classList.add('hidden');
+                document.getElementById('forgotPasswordVerifyField').classList.remove('hidden');
+            } else {
+                authError.textContent = res.message || 'Failed to send reset code.';
+                authSuccess.classList.add('hidden');
+            }
+        } catch (err) {
+            authError.textContent = 'Server error. Please try again.';
+            authSuccess.classList.add('hidden');
+        } finally {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Send Reset Code';
+        }
+    });
+
+    document.getElementById('forgotPasswordVerifyBtn').addEventListener('click', async function(e) {
+        const code = document.getElementById('forgotCode').value.trim();
+        const authError = document.getElementById('authError');
+        const authSuccess = document.getElementById('authSuccess');
+        if (!code) {
+            authError.textContent = 'Please enter the code sent to your email.';
+            return;
+        }
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Verifying...';
+        try {
+            const res = await ajaxPost('/ajax/ticket-auth/forgot-verify', { email: forgotEmail, code });
+            if (res.success) {
+                authSuccess.textContent = 'Code verified. Please set your new password.';
+                authSuccess.classList.remove('hidden');
+                authError.textContent = '';
+                forgotCode = code;
+                document.getElementById('forgotPasswordVerifyField').classList.add('hidden');
+                document.getElementById('forgotPasswordResetField').classList.remove('hidden');
+            } else {
+                authError.textContent = res.message || 'Invalid code.';
+                authSuccess.classList.add('hidden');
+            }
+        } catch (err) {
+            authError.textContent = 'Server error. Please try again.';
+            authSuccess.classList.add('hidden');
+        } finally {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-check mr-2"></i>Verify Code';
+        }
+    });
+
+    document.getElementById('forgotPasswordResetBtn').addEventListener('click', async function(e) {
+        const newPassword = document.getElementById('forgotNewPassword').value;
+        const confirmPassword = document.getElementById('forgotConfirmPassword').value;
+        const authError = document.getElementById('authError');
+        const authSuccess = document.getElementById('authSuccess');
+        if (!newPassword || !confirmPassword) {
+            authError.textContent = 'Please enter and confirm your new password.';
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            authError.textContent = 'Passwords do not match.';
+            return;
+        }
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+        try {
+            const res = await ajaxPost('/ajax/ticket-auth/forgot-reset', { email: forgotEmail, code: forgotCode, password: newPassword });
+            if (res.success) {
+                authSuccess.textContent = 'Password reset! You can now log in.';
+                authSuccess.classList.remove('hidden');
+                authError.textContent = '';
+                document.getElementById('forgotPasswordResetField').classList.add('hidden');
+                setAuthMode('login');
+            } else {
+                authError.textContent = res.message || 'Failed to reset password.';
+                authSuccess.classList.add('hidden');
+            }
+        } catch (err) {
+            authError.textContent = 'Server error. Please try again.';
+            authSuccess.classList.add('hidden');
+        } finally {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-save mr-2"></i>Set New Password';
+        }
+    });
 
     // Resend verification code handler
     document.getElementById('resendCodeBtn').addEventListener('click', async function(e) {

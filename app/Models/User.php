@@ -30,6 +30,8 @@ class User extends Authenticatable
         'status',
         'teacher_id',
         'parent_id',
+        'password_reset_code',
+        'password_reset_expires',
     ];
 
     /**
@@ -40,6 +42,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'password_reset_code',
     ];
 
     /**

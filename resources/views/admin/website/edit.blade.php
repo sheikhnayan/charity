@@ -158,6 +158,42 @@ label{
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
+                                                        <label for="contact_emails" class="form-label">
+                                                            <i class="bx bx-envelope me-1"></i>Contact Form Notification Emails
+                                                        </label>
+                                                        <div id="contact_emails_container">
+                                                            @php
+                                                                $emails = $data->contact_emails ?? [];
+                                                                $emailsList = is_array($emails) ? $emails : (is_string($emails) ? json_decode($emails, true) ?? [] : []);
+                                                            @endphp
+                                                            @foreach($emailsList as $index => $email)
+                                                                <div class="input-group mb-2">
+                                                                    <input type="email" name="contact_emails[]" class="form-control" value="{{ $email }}" placeholder="Enter email address" required>
+                                                                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endforeach
+                                                            @if(empty($emailsList))
+                                                                <div class="input-group mb-2">
+                                                                    <input type="email" name="contact_emails[]" class="form-control" placeholder="Enter email address" required>
+                                                                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                                                                        <i class="bx bx-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addEmailField()">
+                                                            <i class="bx bx-plus me-1"></i>Add Another Email
+                                                        </button>
+                                                        <small class="form-text text-muted d-block mt-2">Contact form submissions will be sent to all listed emails in addition to the admin email. Enter at least one email address.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
                                                         <label for="status" class="form-label">Status</label>
                                                         <select name="status" id="status" class="form-control">
                                                             <option {{ $data->status == 0 ? 'selected' : '' }} value="0">Deactive</option>
@@ -579,6 +615,32 @@ label{
                     investmentFields.style.display = 'block';
                 } else {
                     investmentFields.style.display = 'none';
+                }
+            }
+
+            // Email management functions
+            function addEmailField() {
+                const container = document.getElementById('contact_emails_container');
+                const newEmailField = document.createElement('div');
+                newEmailField.className = 'input-group mb-2';
+                newEmailField.innerHTML = `
+                    <input type="email" name="contact_emails[]" class="form-control" placeholder="Enter email address" required>
+                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                `;
+                container.appendChild(newEmailField);
+            }
+
+            function removeEmailField(button) {
+                const container = document.getElementById('contact_emails_container');
+                const fields = container.querySelectorAll('.input-group');
+                
+                // Only allow removal if there's more than one email field
+                if (fields.length > 1) {
+                    button.closest('.input-group').remove();
+                } else {
+                    alert('You must keep at least one contact email.');
                 }
             }
 

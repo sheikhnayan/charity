@@ -11419,19 +11419,21 @@ function uploadCustomBannerImage(event) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = getContentElement(selectedComponent);
-        if (!content._customBannerData) return;
-        content._customBannerData.imgSrc = e.target.result;
-        if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
-        showUploadNotification('Banner image uploaded successfully!', 'success');
-    };
-    reader.onerror = function() {
-        showUploadNotification('Failed to read the image file.', 'error');
-        event.target.value = '';
-    };
-    reader.readAsDataURL(file);
+    {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._customBannerData) return;
+            content._customBannerData.imgSrc = e.target.result;
+            if (typeof content.renderCustomBanner === 'function') content.renderCustomBanner();
+            showUploadNotification('Banner image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 function updateCustomBannerField(value, field) {
@@ -11714,23 +11716,25 @@ function uploadSliderImages(event) {
             return;
         }
         
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            content._sliderData.images.push(e.target.result);
-            loaded++;
-            if (loaded === files.length - errors) {
-                content.renderSlider();
-                updatePropertyPanel();
-                if (loaded > 0) {
-                    showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+        {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                content._sliderData.images.push(e.target.result);
+                loaded++;
+                if (loaded === files.length - errors) {
+                    content.renderSlider();
+                    updatePropertyPanel();
+                    if (loaded > 0) {
+                        showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+                    }
                 }
-            }
-        };
-        reader.onerror = function() {
-            showUploadNotification(`Failed to read file "${file.name}".`, 'error');
-            errors++;
-        };
-        reader.readAsDataURL(file);
+            };
+            reader.onerror = function() {
+                showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+                errors++;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -11949,23 +11953,25 @@ window.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            content._galleryData.images.push(e.target.result);
-            loaded++;
-            if (loaded === files.length - errors) {
-                content.renderGallery();
-                updatePropertyPanel();
-                if (loaded > 0) {
-                    showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+        {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                content._galleryData.images.push(e.target.result);
+                loaded++;
+                if (loaded === files.length - errors) {
+                    content.renderGallery();
+                    updatePropertyPanel();
+                    if (loaded > 0) {
+                        showUploadNotification(`${loaded} image(s) uploaded successfully!`, 'success');
+                    }
                 }
-            }
-        };
-        reader.onerror = function() {
-            showUploadNotification(`Failed to read file "${file.name}".`, 'error');
-            errors++;
-        };
-        reader.readAsDataURL(file);
+            };
+            reader.onerror = function() {
+                showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+                errors++;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -12118,21 +12124,23 @@ function uploadSingleImage(event) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = getContentElement(selectedComponent);
-        if (!content._imageData) return;
-        content._imageData.src = e.target.result;
-        content._imageData.useUrl = false; // Mark as uploaded file, not URL
-        content.renderImage();
-        updatePropertyPanel();
-        showUploadNotification('Image updated successfully!', 'success');
-    };
-    reader.onerror = function() {
-        showUploadNotification('Failed to read the image file.', 'error');
-        event.target.value = '';
-    };
-    reader.readAsDataURL(file);
+    {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._imageData) return;
+            content._imageData.src = e.target.result;
+            content._imageData.useUrl = false; // Mark as uploaded file, not URL
+            content.renderImage();
+            updatePropertyPanel();
+            showUploadNotification('Image updated successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
 }
 function updateImageField(value, field) {
     if (!selectedComponent) return;
@@ -12411,22 +12419,24 @@ function uploadInnerSectionBackgroundImage(event) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = getContentElement(selectedComponent);
-        if (!content._innerSectionData) return;
-        content._innerSectionData.backgroundImage = e.target.result;
-        if (content.updateBackground) {
-            content.updateBackground();
-        }
-        updatePropertyPanel();
-        showUploadNotification('Background image uploaded successfully!', 'success');
-    };
-    reader.onerror = function() {
-        showUploadNotification('Failed to read the image file.', 'error');
-        event.target.value = '';
-    };
-    reader.readAsDataURL(file);
+    {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._innerSectionData) return;
+            content._innerSectionData.backgroundImage = e.target.result;
+            if (content.updateBackground) {
+                content.updateBackground();
+            }
+            updatePropertyPanel();
+            showUploadNotification('Background image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 function updateInnerSectionField(value, field) {
@@ -13268,18 +13278,20 @@ function uploadPressCardImage(input, cardIndex) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        updatePressCardField(`cards.${cardIndex}.logoSrc`, e.target.result);
-        // Update the property panel to show the new image without losing selection
-        refreshPressCardSettings();
-        showUploadNotification('Logo image uploaded successfully!', 'success');
-    };
-    reader.onerror = function() {
-        showUploadNotification('Failed to read the image file.', 'error');
-        input.value = '';
-    };
-    reader.readAsDataURL(file);
+    {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            updatePressCardField(`cards.${cardIndex}.logoSrc`, e.target.result);
+            // Update the property panel to show the new image without losing selection
+            refreshPressCardSettings();
+            showUploadNotification('Logo image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            input.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 // Debug helper function for press card
@@ -13387,19 +13399,21 @@ function uploadFWTIImage(event) {
         return;
     }
     
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = getContentElement(selectedComponent);
-        if (!content._fwtiData) return;
-        content._fwtiData.imgSrc = e.target.result;
-        if (typeof content.renderFWTI === 'function') content.renderFWTI();
-        showUploadNotification('Image uploaded successfully!', 'success');
-    };
-    reader.onerror = function() {
-        showUploadNotification('Failed to read the image file.', 'error');
-        event.target.value = '';
-    };
-    reader.readAsDataURL(file);
+    {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = getContentElement(selectedComponent);
+            if (!content._fwtiData) return;
+            content._fwtiData.imgSrc = e.target.result;
+            if (typeof content.renderFWTI === 'function') content.renderFWTI();
+            showUploadNotification('Image uploaded successfully!', 'success');
+        };
+        reader.onerror = function() {
+            showUploadNotification('Failed to read the image file.', 'error');
+            event.target.value = '';
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 
@@ -13895,76 +13909,39 @@ function applyResponsiveStyles() {
       }
     });
 
-    function uploadImage(event) {
-        const file = event.target.files[0];
-        if (file && selectedComponent) {
-            const reader = new FileReader();
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            showUploadNotification('Please select a valid image file for FWTI.', 'error');
-            event.target.value = '';
-            return;
-        }
-
-        // Validate file size (2MB max)
-        const maxSize = 2 * 1024 * 1024;
-        if (file.size > maxSize) {
-            showUploadNotification('File size exceeds the maximum allowed size of 2MB for this image.', 'error');
-            event.target.value = '';
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = getContentElement(selectedComponent);
-            if (!content._fwtiData) return;
-            content._fwtiData.imgSrc = e.target.result;
-            if (typeof content.renderFWTI === 'function') content.renderFWTI();
-            showUploadNotification('Image uploaded successfully!', 'success');
-        };
-        reader.onerror = function() {
-            showUploadNotification('Failed to read the image file.', 'error');
-            event.target.value = '';
-        };
-        reader.readAsDataURL(file);
-                }
-            };
-            reader.readAsDataURL(file);
+    function updateButtonAlignment(select) {
+        if (selectedComponent && selectedComponent.dataset.type === 'button') {
+            const wrapper = getContentElement(selectedComponent); // This returns your wrapper div
+            if (wrapper) {
+                wrapper.style.textAlign = select.value;
+            }
         }
     }
 
-        function updateButtonAlignment(select) {
-            if (selectedComponent && selectedComponent.dataset.type === 'button') {
-                const wrapper = getContentElement(selectedComponent); // This returns your wrapper div
-                if (wrapper) {
-                wrapper.style.textAlign = select.value;
-                }
-            }
+    function updateAuctionListColumns(columns) {
+        if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
+            const content = getContentElement(selectedComponent);
+            const cards = content.querySelectorAll('.col-md-4');
+            cards.forEach(card => {
+                card.className = `col-md-${12/columns}`;
+            });
         }
+    }
 
-        function updateAuctionListColumns(columns) {
-            if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
-                const content = getContentElement(selectedComponent);
-                const cards = content.querySelectorAll('.col-md-4');
-                cards.forEach(card => {
-                    card.className = `col-md-${12/columns}`;
-                });
-            }
+    function toggleAuctionStartingBid(show) {
+        if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
+            const content = getContentElement(selectedComponent);
+            const bidElements = content.querySelectorAll('.card-text');
+            bidElements.forEach(el => {
+                el.style.display = show ? 'block' : 'none';
+            });
         }
+    }
 
-        function toggleAuctionStartingBid(show) {
-            if (selectedComponent && selectedComponent.dataset.type === 'auction-list') {
-                const content = getContentElement(selectedComponent);
-                const bidElements = content.querySelectorAll('.card-text');
-                bidElements.forEach(el => {
-                    el.style.display = show ? 'block' : 'none';
-                });
-            }
-        }
-
-        function uploadSingleImage(event) {
-            const file = event.target.files[0];
-            if (file && selectedComponent && selectedComponent.dataset.type === 'image') {
+    function uploadSingleImage(event) {
+        const file = event.target.files[0];
+        if (file && selectedComponent && selectedComponent.dataset.type === 'image') {
+            {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const content = getContentElement(selectedComponent);
@@ -13976,25 +13953,26 @@ function applyResponsiveStyles() {
                 reader.readAsDataURL(file);
             }
         }
+    }
 
-        function updateImageField(value, field) {
-            if (selectedComponent && selectedComponent.dataset.type === 'image') {
-                const content = getContentElement(selectedComponent);
-                if (content && content._imageData) {
-                    content._imageData[field] = value;
-                    content.renderImage();
-                }
+    function updateImageField(value, field) {
+        if (selectedComponent && selectedComponent.dataset.type === 'image') {
+            const content = getContentElement(selectedComponent);
+            if (content && content._imageData) {
+                content._imageData[field] = value;
+                content.renderImage();
             }
         }
+    }
 
-        function updateVideoEmbed(url, type = 'youtube') {
-            console.log('updateVideoEmbed called with:', { url, type, selectedComponent });
-            if (!selectedComponent) {
-                console.log('No selected component!');
-                return;
-            }
-            const content = getContentElement(selectedComponent);
-            console.log('Content element:', content);
+    function updateVideoEmbed(url, type = 'youtube') {
+        console.log('updateVideoEmbed called with:', { url, type, selectedComponent });
+        if (!selectedComponent) {
+            console.log('No selected component!');
+            return;
+        }
+        const content = getContentElement(selectedComponent);
+        console.log('Content element:', content);
             if (content && content.updateVideo) {
                 // Properly update the video data
                 content._videoData.url = url;
@@ -14223,19 +14201,21 @@ function applyResponsiveStyles() {
             const file = event.target.files[0];
             if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                // For site-banner and custom-banner, content is the banner div
-                const content = getContentElement(selectedComponent);
-                if (content) {
-                    // Find the img inside the banner div
-                    const img = content.querySelector('img');
-                    if (img) {
-                        img.src = e.target.result;
+            {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // For site-banner and custom-banner, content is the banner div
+                    const content = getContentElement(selectedComponent);
+                    if (content) {
+                        // Find the img inside the banner div
+                        const img = content.querySelector('img');
+                        if (img) {
+                            img.src = e.target.result;
+                        }
                     }
-                }
-            };
-            reader.readAsDataURL(file);
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function updateBannerText(text) {
@@ -14396,23 +14376,25 @@ function applyResponsiveStyles() {
                     return;
                 }
                 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImages.push(e.target.result);
-                    processedCount++;
-                    
-                    if (processedCount === files.filter(f => f.type.startsWith('image/') && f.size <= maxSize).length) {
-                        renderImageGallery();
-                        if (!hasErrors) {
-                            showUploadNotification(`${processedCount} image(s) uploaded successfully!`, 'success');
+                {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImages.push(e.target.result);
+                        processedCount++;
+                        
+                        if (processedCount === files.filter(f => f.type.startsWith('image/') && f.size <= maxSize).length) {
+                            renderImageGallery();
+                            if (!hasErrors) {
+                                showUploadNotification(`${processedCount} image(s) uploaded successfully!`, 'success');
+                            }
                         }
-                    }
-                };
-                reader.onerror = function() {
-                    showUploadNotification(`Failed to read file "${file.name}".`, 'error');
-                    hasErrors = true;
-                };
-                reader.readAsDataURL(file);
+                    };
+                    reader.onerror = function() {
+                        showUploadNotification(`Failed to read file "${file.name}".`, 'error');
+                        hasErrors = true;
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
             
             if (processedCount === 0 && !hasErrors) {
@@ -15122,19 +15104,21 @@ function applyResponsiveStyles() {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = getContentElement(selectedComponent);
-            if (!content._textImagesData) return;
-            content._textImagesData.imgSrc = e.target.result;
-            if (typeof content.renderTextImages === 'function') content.renderTextImages();
-            showUploadNotification('Image uploaded successfully!', 'success');
-        };
-        reader.onerror = function() {
-            showUploadNotification('Failed to read the image file.', 'error');
-            event.target.value = '';
-        };
-        reader.readAsDataURL(file);
+        {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = getContentElement(selectedComponent);
+                if (!content._textImagesData) return;
+                content._textImagesData.imgSrc = e.target.result;
+                if (typeof content.renderTextImages === 'function') content.renderTextImages();
+                showUploadNotification('Image uploaded successfully!', 'success');
+            };
+            reader.onerror = function() {
+                showUploadNotification('Failed to read the image file.', 'error');
+                event.target.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     function toggleTextImagesShowImage(checkbox) {
@@ -15273,66 +15257,23 @@ function applyResponsiveStyles() {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = getContentElement(selectedComponent);
-            if (!content._investmentTierData) return;
-            content._investmentTierData.imgSrc = e.target.result;
-            if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
-            showUploadNotification('Investment tier image uploaded successfully!', 'success');
-        };
-        reader.onerror = function() {
-            showUploadNotification('Failed to read the investment tier image file.', 'error');
-            event.target.value = '';
-        };
-        reader.readAsDataURL(file);
-        // Check file size (get from server config or use default 2MB)
-        const maxSize = window.uploadConfig?.maxFileSize || (2 * 1024 * 1024); // 2MB default
-        const maxSizeMB = window.uploadConfig?.maxFileSizeMB || 2;
-        
-        if (file.size > maxSize) {
-            showUploadNotification(`File size (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds the maximum allowed size of ${maxSizeMB}MB.`, 'error');
-            input.value = '';
-            return;
+        {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = getContentElement(selectedComponent);
+                if (!content._investmentTierData) return;
+                content._investmentTierData.imgSrc = e.target.result;
+                if (typeof content.renderInvestmentTier === 'function') content.renderInvestmentTier();
+                showUploadNotification('Investment tier image uploaded successfully!', 'success');
+            };
+            reader.onerror = function() {
+                showUploadNotification('Failed to read the investment tier image file.', 'error');
+                event.target.value = '';
+            };
+            reader.readAsDataURL(file);
         }
-        
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-        
-        // Show loading state
-        const originalText = input.parentElement.querySelector('small').textContent;
-        input.parentElement.querySelector('small').textContent = 'Uploading...';
-        input.disabled = true;
-        
-        fetch('/admins/upload-image', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the background image URL
-                updateInvestmentTierField(data.url, 'backgroundImage');
-                // Update the property panel to show the new image
-                updatePropertyPanel();
-                // Reset the file input
-                input.value = '';
-                showUploadNotification('Image uploaded successfully!', 'success');
-            } else {
-                showUploadNotification(data.message || 'Upload failed. Please try again.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Upload error:', error);
-            showUploadNotification('Upload failed. Please check your connection and try again.', 'error');
-        })
-        .finally(() => {
-            // Reset loading state
-            input.parentElement.querySelector('small').textContent = originalText;
-            input.disabled = false;
-        });
     }
+    
     
     // Show upload notification
     function showUploadNotification(message, type = 'info') {

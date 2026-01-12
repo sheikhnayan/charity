@@ -66,8 +66,8 @@
     
     /* ---- Reset & Base ---- */
     /* Product Details Color Variables (from Website settings) */
-    :root{
-      --pd-bg: {{ json_encode($ticket->user->website->property_details_bg_color ?? '#f5f6f7') }};
+        :root{
+            --pd-bg: {{ json_encode($ticket->page_bg_color ?? $ticket->user->website->property_details_bg_color ?? '#f5f6f7') }};
       --pd-text: {{ json_encode($ticket->user->website->property_details_text_color ?? '#111827') }};
       --pd-muted: {{ json_encode($ticket->user->website->property_details_muted_color ?? '#6b7280') }};
       /* --pd-heading: {{ json_encode($ticket->user->website->property_details_heading_color ?? '#1e293b') }}; */
@@ -659,7 +659,10 @@
     }
   </style>
 </head>
-<body class="product-details-page" style="background-color: {{ $ticket->user->website->property_details_bg_color ?? '#f5f6f7' }} !important;">
+<body class="product-details-page" style="background-color: {{ $ticket->page_bg_color ?? '#f5f6f7' }} !important;">
+    <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
+        @include('partials.back-button')
+    </div>
     
     @php
         $url = url()->current();

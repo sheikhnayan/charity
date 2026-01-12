@@ -218,7 +218,7 @@
                                                                 Pending
                                                             @endif
                                                         </td>
-                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') }}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-info btn-sm view-btn"
                                                                 data-bs-toggle="modal"
@@ -240,7 +240,7 @@
                                                                 data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
-                                                                data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}"
+                                                                data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') }}"
                                                                 @if($item->type === 'investment' && $item->investment)
                                                                     data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
                                                                     data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"

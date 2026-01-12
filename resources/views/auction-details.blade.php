@@ -160,11 +160,18 @@
     </style>
 </head>
 
-<body style="background-color: #fff;">
+@php
+    $url = url()->current();
+    $doamin = parse_url($url, PHP_URL_HOST);
+    $check = \App\Models\Website::where('domain', $doamin)->first();
+    $pageBackgroundColor = $data->page_bg_color ?? ($check->property_details_bg_color ?? '#ffffff');
+@endphp
+<body style="background-color: {{ $pageBackgroundColor }} !important;">
+    <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
+        @include('partials.back-button')
+    </div>
     @php
-        $url = url()->current();
-        $doamin = parse_url($url, PHP_URL_HOST);
-        $check = \App\Models\Website::where('domain', $doamin)->first();
+        
         $groups = \App\Models\User::where('website_id', $check->id)->where('role', 'group_leader')->get();
         $header = \App\Models\Header::where('website_id', $check->id)->first();
         $footer = \App\Models\Footer::where('website_id', $check->id)->first();
@@ -174,13 +181,13 @@
     @if ($header->status == 1)
         @include('layouts.nav')
     @endif
-    <main class="c-content c-content--anon c-content--ai-full" id="main" style="margin-top: 7rem; background-color: #fff;">
+    <main class="c-content c-content--anon c-content--ai-full" id="main" style="margin-top: 7rem; background-color: {{ $pageBackgroundColor }} !important;">
 
 
 
 
 
-        <div class="c-content__main c-content__main--ai-full" id="content-main" style="background-color: #fff;">
+        <div class="c-content__main c-content__main--ai-full" id="content-main" style="background-color: {{ $pageBackgroundColor }} !important;">
             <div class="o-wrapper--tight-1@md">
 
 

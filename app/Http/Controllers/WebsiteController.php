@@ -67,6 +67,8 @@ class WebsiteController extends Controller
         $validation['invest_amount_title'] = 'nullable|string|max:255';
         $validation['share_price_label'] = 'nullable|string|max:255';
         $validation['minimum_investment_label'] = 'nullable|string|max:255';
+        $validation['contact_emails'] = 'nullable|array';
+        $validation['contact_emails.*'] = 'email';
 
         $request->validate($validation);
 
@@ -95,6 +97,7 @@ class WebsiteController extends Controller
             $add->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
             $add->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
             $add->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
+            $add->contact_emails = $request->contact_emails ?? [];
             
             $add->save();
 
@@ -237,6 +240,8 @@ class WebsiteController extends Controller
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
+            'contact_emails' => 'nullable|array',
+            'contact_emails.*' => 'email',
             'google_analytics_id' => 'nullable|string|max:255',
         ];
         // Only validate password if present
@@ -264,6 +269,7 @@ class WebsiteController extends Controller
         $update->additional_information = $request->additional_information ?? null;
         $update->invest_page_title = $request->invest_page_title ?? 'Complete Your Investment';
         $update->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
+        $update->contact_emails = $request->contact_emails ?? [];
         $update->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
         $update->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
         $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;

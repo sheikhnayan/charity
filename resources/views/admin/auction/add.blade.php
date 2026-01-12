@@ -87,8 +87,19 @@
                                     </select>
                                 </div>
 
-
-                            </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <label for="page_bg_color" class="form-label text-capitalize">
+                                        Page Background Color
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                    data-title="Page Background Color"
+                                    data-description="Choose a background color for the item detail page. Defaults to white (#ffffff)."></i>
+                                    <div class="input-group">
+                                        <input type="color" name="page_bg_color" id="page_bg_color" class="form-control form-control-color" value="#ffffff" style="max-width: 80px;">
+                                        <input type="text" class="form-control" id="page_bg_color_text" value="#ffffff" readonly>
+                                    </div>
+                                    <small class="text-muted">This color will be applied to the background of the auction detail page.</small>
+                                </div>
 
                             <div class="sticky-save-button-container mt-4" bis_skin_checked="1">
                                 <div class="sticky-save-button-inner" bis_skin_checked="1">
@@ -110,6 +121,15 @@
                     .catch(error => {
                         console.error(error);
                     });
+
+                // Sync color picker with text display
+                const colorInput = document.getElementById('page_bg_color');
+                const colorText = document.getElementById('page_bg_color_text');
+                if (colorInput && colorText) {
+                    colorInput.addEventListener('change', function() {
+                        colorText.value = this.value;
+                    });
+                }
             </script>
 
             <script>

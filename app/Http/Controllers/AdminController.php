@@ -810,6 +810,7 @@ class AdminController extends Controller
         $data->value = $request->value;
         $data->timezone = $request->timezone;
         $data->status = $request->status;
+        $data->page_bg_color = $request->page_bg_color ?? '#ffffff';
         $data->save();
 
         if (isset($request->images)) {
@@ -839,6 +840,7 @@ class AdminController extends Controller
         $data->value = $request->value;
         $data->timezone = $request->timezone;
         $data->status = $request->status;
+        $data->page_bg_color = $request->page_bg_color ?? '#ffffff';
         $data->update();
 
         // Remove old images

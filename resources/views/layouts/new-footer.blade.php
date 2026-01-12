@@ -697,6 +697,15 @@ img {
     // dd($setting);
 
 @endphp
+@if ($website && $website->isInvestment())
+    <style>
+        @media (max-width: 360px) {
+            footer{
+                margin-bottom: 6rem !important;
+            }
+        }
+    </style>
+@endif
 
 <footer id="footer" class="footer_component no-border">
     <div class="footer_container u-container z-index-1" style="padding-bottom: 0px;">

@@ -343,129 +343,59 @@
           {{-- <div class="menu-inner-shadow"></div> --}}
 
           <ul class="menu-inner py-1">
+  <!-- Configuration Section -->
   <li class="menu-header small text-uppercase">
-    <span class="menu-header-text">Site Settings</span>
+    <span class="menu-header-text">Configuration</span>
   </li>
 
-  <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}">
-    <a href="/admins" class="menu-link">
+  <li class="menu-item {{ request()->is('admins', 'admins/payment', 'admins/payout-methods', 'admin/dealmaker-settings', 'admin/notification-settings', 'admin/fonts*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
       <i class="menu-icon tf-icons bx bx-cog"></i>
       <div class="text-truncate">Settings</div>
     </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}"><a href="/admins" class="menu-link"><div class="text-truncate">General Settings</div></a></li>
+      <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}"><a href="/admins/payment" class="menu-link"><div class="text-truncate">Payment Setting</div></a></li>
+      <li class="menu-item {{ request()->is('admins/payout-methods') ? 'active' : '' }}"><a href="/admins/payout-methods" class="menu-link"><div class="text-truncate">Payout Methods</div></a></li>
+      <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}"><a href="/admins/dealmaker-settings" class="menu-link"><div class="text-truncate">Homepage Settings</div></a></li>
+      <li class="menu-item {{ request()->is('admin/notification-settings') ? 'active' : '' }}"><a href="/admin/notification-settings" class="menu-link"><div class="text-truncate">Notifications</div></a></li>
+      <li class="menu-item {{ request()->is('admin/fonts*') ? 'active' : '' }}"><a href="{{ route('admin.fonts.index') }}" class="menu-link"><div class="text-truncate">Fonts</div></a></li>
+    </ul>
   </li>
 
-  <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}">
-    <a href="/admins/payment" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-credit-card"></i>
-      <div class="text-truncate">Payment Setting</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/payout-methods') ? 'active' : '' }}">
-    <a href="/admins/payout-methods" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-wallet"></i>
-      <div class="text-truncate">Payout Methods</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}">
-    <a href="/admins/dealmaker-settings" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-home"></i>
-      <div class="text-truncate">Homepage Settings</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admin/notification-settings') ? 'active' : '' }}">
-    <a href="/admin/notification-settings" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-bell"></i>
-      <div class="text-truncate">Notifications</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admin/fonts*') ? 'active' : '' }}">
-    <a href="{{ route('admin.fonts.index') }}" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-font"></i>
-      <div class="text-truncate">Fonts</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}">
-    <a href="/admins/website" class="menu-link">
+  <!-- Website Section -->
+  <li class="menu-item {{ request()->is('admins/website', 'admins/page', 'admins/templates*', 'admins/menu', 'admins/footer', 'admins/newsletter*', 'admins/comments') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
       <i class="menu-icon tf-icons bx bx-globe"></i>
       <div class="text-truncate">Website</div>
     </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}"><a href="/admins/website" class="menu-link"><div class="text-truncate">Home</div></a></li>
+      <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}"><a href="/admins/page" class="menu-link"><div class="text-truncate">Page</div></a></li>
+      <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}"><a href="/admins/templates" class="menu-link"><div class="text-truncate">Page Template</div></a></li>
+      <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}"><a href="/admins/menu" class="menu-link"><div class="text-truncate">Header</div></a></li>
+      <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}"><a href="/admins/footer" class="menu-link"><div class="text-truncate">Footer</div></a></li>
+      <li class="menu-item {{ request()->is('admins/newsletter*') ? 'active' : '' }}"><a href="/admins/newsletter" class="menu-link"><div class="text-truncate">Newsletter</div></a></li>
+      <li class="menu-item {{ request()->is('admins/comments') ? 'active' : '' }}"><a href="/admins/comments" class="menu-link"><div class="text-truncate">Comments</div></a></li>
+      <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}"><a href="/admins/student" class="menu-link"><div class="text-truncate">Registrations</div></a></li>
+    </ul>
   </li>
 
-  <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}">
-    <a href="/admins/ticket" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-support"></i>
-      <div class="text-truncate">Ticket</div>
+  <!-- Features Section -->
+  <li class="menu-item {{ request()->is('admins/ticket', 'admins/auction', 'admins/sponsor', 'admins/teachers*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+      <i class="menu-icon tf-icons bx bx-star"></i>
+      <div class="text-truncate">Features</div>
     </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}"><a href="/admins/ticket" class="menu-link"><div class="text-truncate">Ticket</div></a></li>
+      <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}"><a href="/admins/auction" class="menu-link"><div class="text-truncate">Auction</div></a></li>
+      <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}"><a href="/admins/sponsor" class="menu-link"><div class="text-truncate">Sponsor</div></a></li>
+      <li class="menu-item {{ request()->is('admins/teachers*') ? 'active' : '' }}"><a href="{{ route('admin.teachers.websites') }}" class="menu-link"><div class="text-truncate">Teachers</div></a></li>
+    </ul>
   </li>
 
-  <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}">
-    <a href="/admins/auction" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-badge-check"></i>
-      <div class="text-truncate">Auction</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}">
-    <a href="/admins/sponsor" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-user-check"></i>
-      <div class="text-truncate">Sponsor</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/teachers*') ? 'active' : '' }}">
-    <a href="{{ route('admin.teachers.websites') }}" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-chalkboard-teacher"></i>
-      <div class="text-truncate">Teachers</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
-    <a href="/admins/page" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-file"></i>
-      <div class="text-truncate">Page</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}">
-    <a href="/admins/templates" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-file-blank"></i>
-      <div class="text-truncate">Page Templates</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}">
-    <a href="/admins/menu" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-layout"></i>
-      <div class="text-truncate">Header</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}">
-    <a href="/admins/footer" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-layout"></i>
-      <div class="text-truncate">Footer</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/newsletter*') ? 'active' : '' }}">
-    <a href="/admins/newsletter" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-envelope"></i>
-      <div class="text-truncate">Newsletter</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/comments') ? 'active' : '' }}">
-    <a href="/admins/comments" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-comment-detail"></i>
-      <div class="text-truncate">Comments</div>
-    </a>
-  </li>
-
+  <!-- Account Section -->
   <li class="menu-item {{ request()->is('admins/change-password') ? 'active' : '' }}">
     <a href="/admins/change-password" class="menu-link">
       <i class="menu-icon tf-icons bx bx-lock"></i>
@@ -473,31 +403,30 @@
     </a>
   </li>
 
+  <!-- Reports & Analytics Section -->
   <li class="menu-header small text-uppercase">
-    <span class="menu-header-text">Reports</span>
+    <span class="menu-header-text">Reports & Analytics</span>
   </li>
 
-  <li class="menu-item {{ request()->is('analytics') || request()->is('analytics/*') ? 'active open' : '' }}">
+  <li class="menu-item {{ request()->is('analytics*') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
       <i class="menu-icon tf-icons bx bx-chart"></i>
       <div class="text-truncate">Analytics</div>
     </a>
     <ul class="menu-sub">
-      <li class="menu-item {{ request()->is('analytics') && !request()->is('analytics/*') ? 'active' : '' }}">
-        <a href="/analytics" class="menu-link">
-          <div class="text-truncate">Dashboard</div>
-        </a>
-      </li>
-      <li class="menu-item {{ request()->is('analytics/utm') ? 'active' : '' }}">
-        <a href="/analytics/utm" class="menu-link">
-          <div class="text-truncate">UTM Attribution</div>
-        </a>
-      </li>
-      {{-- <li class="menu-item {{ request()->is('analytics/referrer') ? 'active' : '' }}">
-        <a href="/analytics/referrer" class="menu-link">
-          <div class="text-truncate">Referrer Analytics</div>
-        </a>
-      </li> --}}
+      <li class="menu-item {{ request()->is('analytics') && !request()->is('analytics/*') ? 'active' : '' }}"><a href="/analytics" class="menu-link"><div class="text-truncate">Dashboard</div></a></li>
+      <li class="menu-item {{ request()->is('analytics/utm') ? 'active' : '' }}"><a href="/analytics/utm" class="menu-link"><div class="text-truncate">UTM Attribution</div></a></li>
+    </ul>
+  </li>
+
+  <li class="menu-item {{ request()->is('hotjar*', 'heatmaps*', 'recordings*') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+      <i class="menu-icon tf-icons bx bx-map"></i>
+      <div class="text-truncate">User Behavior</div>
+    </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('hotjar/heatmaps') ? 'active' : '' }}"><a href="/hotjar/heatmaps" class="menu-link"><div class="text-truncate">Heatmaps</div></a></li>
+      <li class="menu-item {{ request()->is('hotjar/recordings') ? 'active' : '' }}"><a href="/hotjar/recordings" class="menu-link"><div class="text-truncate">Session Recordings</div></a></li>
     </ul>
   </li>
 
@@ -508,72 +437,17 @@
     </a>
   </li>
 
-  {{-- <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}">
-    <a href="/fraud" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
-      <div class="text-truncate">Fraud Detection</div>
-    </a>
-  </li> --}}
-
-  {{-- <li class="menu-item {{ request()->is('cohorts*') ? 'active' : '' }}">
-    <a href="/cohorts" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-group"></i>
-      <div class="text-truncate">Cohort Analysis</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('ab-tests*') ? 'active' : '' }}">
-    <a href="/ab-tests" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-test-tube"></i>
-      <div class="text-truncate">A/B Testing</div>
-    </a>
-  </li> --}}
-
-  <li class="menu-item {{ request()->is('hotjar*') || request()->is('heatmaps*') || request()->is('recordings*') ? 'active open' : '' }}">
+  <!-- Transactions Section -->
+  <li class="menu-item {{ request()->is('admins/donation', 'admins/tax-list', 'admins/tax-receipt', 'admins/student') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
-      <i class="menu-icon tf-icons bx bx-map"></i>
-      <div class="text-truncate">User Behavior</div>
-    </a>
-    <ul class="menu-sub">
-      <li class="menu-item {{ request()->is('hotjar/heatmaps') ? 'active' : '' }}">
-        <a href="/hotjar/heatmaps" class="menu-link">
-          <div class="text-truncate">Heatmaps</div>
-        </a>
-      </li>
-      <li class="menu-item {{ request()->is('hotjar/recordings') ? 'active' : '' }}">
-        <a href="/hotjar/recordings" class="menu-link">
-          <div class="text-truncate">Session Recordings</div>
-        </a>
-      </li>
-    </ul>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}">
-    <a href="/admins/donation" class="menu-link">
       <i class="menu-icon tf-icons bx bx-transfer"></i>
       <div class="text-truncate">Transactions</div>
     </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/tax-list') ? 'active' : '' }}">
-    <a href="/admins/tax-list" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-file-find"></i>
-      <div class="text-truncate">1099-K Tax</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/tax-receipt') ? 'active' : '' }}">
-    <a href="/admins/tax-receipt-list" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-receipt"></i>
-      <div class="text-truncate">Tax Receipt</div>
-    </a>
-  </li>
-
-  <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}">
-    <a href="/admins/student" class="menu-link">
-      <i class="menu-icon tf-icons bx bx-group"></i>
-      <div class="text-truncate">Registrations</div>
-    </a>
+    <ul class="menu-sub">
+      <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}"><a href="/admins/donation" class="menu-link"><div class="text-truncate">Home</div></a></li>
+      <li class="menu-item {{ request()->is('admins/tax-list') ? 'active' : '' }}"><a href="/admins/tax-list" class="menu-link"><div class="text-truncate">1099-K Tax</div></a></li>
+      <li class="menu-item {{ request()->is('admins/tax-receipt') ? 'active' : '' }}"><a href="/admins/tax-receipt-list" class="menu-link"><div class="text-truncate">Tax Receipt</div></a></li>
+    </ul>
   </li>
 
   <li class="menu-item menu-logout-sticky">

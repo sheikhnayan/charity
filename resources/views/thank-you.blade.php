@@ -241,7 +241,6 @@
             @else
                 THANK YOU!
             @endif 
-            {{ $type }}
         </h1>
     </header>
 

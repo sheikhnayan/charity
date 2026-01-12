@@ -248,7 +248,7 @@
                             </div>
                         </div>
 
-                        <div class="card-footer bg-light d-flex flex-wrap gap-2">
+                        <div class="card-footer d-flex flex-wrap gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-save me-1"></i> Save Payment Settings
                             </button>

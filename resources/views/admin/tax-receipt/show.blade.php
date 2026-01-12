@@ -132,8 +132,7 @@
                                     Logo
                                 </label>
                                 <br>
-
-                                <img class="mt-4" src="{{ asset('storage/' . $data->logo ?? '') }}" width="200px">
+                                <img class="mt-4" src="{{ asset($data ? 'storage/' . $data->logo : '') }}" width="200px">
                             </div>
                             <div class="col-12" style="order: -1;">
                                 <label for="signature" class="form-label required">
@@ -141,7 +140,7 @@
                                 </label>
                                 <br>
 
-                                <img class="mt-4" src="{{ asset('storage/' . $data->signature ?? '') }}" width="200px">
+                                <img class="mt-4" src="{{ asset($data?->signature ? 'storage/' . $data->signature : '') }}" width="200px">
                             </div>
                             </form>
                         </div>

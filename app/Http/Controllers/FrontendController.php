@@ -393,9 +393,36 @@ class FrontendController extends Controller
 
     public function contact_form(Request $request)
     {
-        $emails = $request->input('notification_emails', []);
+        // Get website ID from request or get it from the domain
+        $website_id = $request->input('website_id');
+        $website = null;
+        
+        // If no website_id in request, try to find by domain
+        if (!$website_id) {
+            $host = request()->getHost();
+            $website = \App\Models\Website::where('domain', $host)->first();
+        } else {
+            $website = \App\Models\Website::find($website_id);
+        }
+
+        // Collect all emails: contact_emails from website settings + admin email
+        $emails = [];
+        
+        if ($website && $website->contact_emails) {
+            $contactEmails = is_array($website->contact_emails) ? $website->contact_emails : json_decode($website->contact_emails, true);
+            $emails = array_merge($emails, (array)$contactEmails);
+        }
+        
+        // Add admin email (website owner's email)
+        if ($website && $website->user && $website->user->email) {
+            if (!in_array($website->user->email, $emails)) {
+                $emails[] = $website->user->email;
+            }
+        }
+        
+        // Fallback if no emails configured
         if (empty($emails)) {
-            $emails = ['sheikhnayan1997@gmail.com']; // fallback email
+            $emails = ['sheikhnayan1997@gmail.com'];
         }
 
         $subject = 'New Contact Form Submission';
@@ -410,7 +437,7 @@ class FrontendController extends Controller
             \Mail::send([], [], function ($message) use ($to, $subject, $html) {
                 $message->to($to)
                     ->subject($subject)
-                    ->html($html); // <-- use html() instead of setBody()
+                    ->html($html);
             });
         }
 
@@ -419,9 +446,36 @@ class FrontendController extends Controller
 
     public function custom_form(Request $request)
     {
-        $emails = $request->input('notification_emails', []);
+        // Get website ID from request or get it from the domain
+        $website_id = $request->input('website_id');
+        $website = null;
+        
+        // If no website_id in request, try to find by domain
+        if (!$website_id) {
+            $host = request()->getHost();
+            $website = \App\Models\Website::where('domain', $host)->first();
+        } else {
+            $website = \App\Models\Website::find($website_id);
+        }
+
+        // Collect all emails: contact_emails from website settings + admin email
+        $emails = [];
+        
+        if ($website && $website->contact_emails) {
+            $contactEmails = is_array($website->contact_emails) ? $website->contact_emails : json_decode($website->contact_emails, true);
+            $emails = array_merge($emails, (array)$contactEmails);
+        }
+        
+        // Add admin email (website owner's email)
+        if ($website && $website->user && $website->user->email) {
+            if (!in_array($website->user->email, $emails)) {
+                $emails[] = $website->user->email;
+            }
+        }
+        
+        // Fallback if no emails configured
         if (empty($emails)) {
-            $emails = ['sheikhnayan1997@gmail.com']; // fallback email
+            $emails = ['sheikhnayan1997@gmail.com'];
         }
 
         $subject = 'New Contact Form Submission';

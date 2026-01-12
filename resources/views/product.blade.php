@@ -72,7 +72,7 @@
     
     /* ---- Reset & Base (EXACT MATCH TO PRODUCT-DETAILS) ---- */
     :root{
-      --pd-bg: {{ json_encode($check->property_details_bg_color ?? '#f5f6f7') }};
+      --pd-bg: {{ json_encode($data->page_bg_color ?? $check->property_details_bg_color ?? '#f5f6f7') }};
       --pd-text: {{ json_encode($check->property_details_text_color ?? '#111827') }};
       --pd-muted: {{ json_encode($check->property_details_muted_color ?? '#6b7280') }};
       --pd-price: {{ json_encode($check->property_details_price_color ?? '#111827') }};
@@ -245,7 +245,10 @@
     }
   </style>
 </head>
-<body class="auction-details-page" style="background-color: {{ $check->property_details_bg_color ?? '#f5f6f7' }} !important;">
+<body class="auction-details-page" style="background-color: {{ $data->page_bg_color ?? '#f5f6f7' }} !important;">
+  <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
+    @include('partials.back-button')
+  </div>
     
     @php
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();

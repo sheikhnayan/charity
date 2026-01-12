@@ -25,7 +25,8 @@ class Ticket extends Model
         'market',
         'website_id',
         'category_id',
-        'features_heading'
+        'features_heading',
+        'page_bg_color'
     ];
 
     protected $casts = [

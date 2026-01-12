@@ -20,10 +20,6 @@ use App\Http\Controllers\Admin\PaymentMethodAnalyticsController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Website;
 
@@ -1155,6 +1151,69 @@ Route::post('/ajax/ticket-auth/check', function(Request $request) {
 
 Route::get('/refresh-csrf', function() {
     return response()->json(['token' => csrf_token()]);
+});
+// --- Forgot Password AJAX Endpoints ---
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+
+Route::post('/ajax/ticket-auth/forgot-request', function(Request $request) {
+    $request->validate(['email' => 'required|email']);
+    $user = \App\Models\User::where('email', $request->email)->first();
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'No user found with that email.'], 404);
+    }
+    $code = rand(100000, 999999);
+    $user->password_reset_code = $code;
+    $user->password_reset_expires = now()->addMinutes(15);
+    $user->save();
+    Mail::send('emails.password-reset-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+        $m->to($user->email)->subject('Password Reset Code');
+    });
+    return response()->json(['success' => true, 'message' => 'Reset code sent to your email.']);
+});
+
+Route::post('/ajax/ticket-auth/forgot-verify', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'code' => 'required',
+    ]);
+    $user = \App\Models\User::where('email', $request->email)->first();
+    if (!$user || !$user->password_reset_code || !$user->password_reset_expires) {
+        return response()->json(['success' => false, 'message' => 'No reset request found.'], 404);
+    }
+    if ($user->password_reset_code !== $request->code) {
+        return response()->json(['success' => false, 'message' => 'Invalid reset code.'], 422);
+    }
+    if (\Carbon\Carbon::parse($user->password_reset_expires)->isPast()) {
+        return response()->json(['success' => false, 'message' => 'Reset code expired.'], 422);
+    }
+    return response()->json(['success' => true, 'message' => 'Code verified.']);
+});
+
+Route::post('/ajax/ticket-auth/forgot-reset', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'code' => 'required',
+        'password' => 'required|min:6',
+    ]);
+    $user = \App\Models\User::where('email', $request->email)->first();
+    if (!$user || !$user->password_reset_code || !$user->password_reset_expires) {
+        return response()->json(['success' => false, 'message' => 'No reset request found.'], 404);
+    }
+    if ($user->password_reset_code !== $request->code) {
+        return response()->json(['success' => false, 'message' => 'Invalid reset code.'], 422);
+    }
+    if (\Carbon\Carbon::parse($user->password_reset_expires)->isPast()) {
+        return response()->json(['success' => false, 'message' => 'Reset code expired.'], 422);
+    }
+    $user->password = Hash::make($request->password);
+    $user->password_reset_code = null;
+    $user->password_reset_expires = null;
+    $user->save();
+    return response()->json(['success' => true, 'message' => 'Password reset successful. You can now log in.']);
 });
 // --- End Ticket Auth/Verification AJAX Endpoints ---
 

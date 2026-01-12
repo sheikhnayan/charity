@@ -31,6 +31,7 @@ class Website extends Model
         'minimum_investment_label',
         'custom_sticky_button_text',
         'google_analytics_id',
+        'contact_emails',
         // Property details theming
         'property_details_bg_color',
         'property_details_text_color',
@@ -38,6 +39,10 @@ class Website extends Model
         'property_details_heading_color',
         'property_details_price_color',
         'property_details_accent_color'
+    ];
+
+    protected $casts = [
+        'contact_emails' => 'array',
     ];
 
     /**

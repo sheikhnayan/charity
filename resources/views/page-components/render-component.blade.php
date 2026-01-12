@@ -247,6 +247,8 @@ h5, .ql-header-5 {
     flex-shrink: 0;
 }
 
+
+
 /* Global Mobile Fixes */
 @media screen and (max-width: 767px) {
     /* Prevent horizontal overflow on mobile */
@@ -651,7 +653,7 @@ h5, .ql-header-5 {
             
             @if($fullWidth)
                 {{-- Full Width Section - Use CSS to break out of container --}}
-                <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="{{ $sectionStyle }}" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
+                <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="margin-top: 25px;" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
                     <style>
                         #{{ $componentId }} {
                             width: 100vw;
@@ -804,9 +806,9 @@ h5, .ql-header-5 {
                         </div>
                     @else
                         {{-- Full width content - direct row --}}
-                        <div class="row">
+                        <div class="row" style="padding-left: 0px !important; padding-right: 0px !important;">
                             @for($columnIndex = 0; $columnIndex < $columns; $columnIndex++)
-                                <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}">
+                                <div class="{{ $bootstrapClass }} {{ $animationEnabled ? 'animated-column' : '' }}" data-stagger-delay="{{ $columnIndex * floatval($columnStaggerDelay) }}" style=" padding-left: 0px !important; padding-right: 0px !important;">
                                     @if(isset($nestedComponents[$columnIndex]) && is_array($nestedComponents[$columnIndex]))
                                         @foreach($nestedComponents[$columnIndex] as $nestedIndex => $nestedComponent)
                                             @php $nestedComponentId = "{$componentId}-nested-{$columnIndex}-{$nestedIndex}"; @endphp
@@ -5800,7 +5802,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             @else
                 {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
-                <div style="{{ $styleStr }}">
+                <div style="{{ $styleStr }} margin-top: 3rem;">
                     @if(isset($component['html']))
                         {!! $component['html'] !!}
 
@@ -6265,84 +6267,53 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
         @case('ticket-carousel')
             @php
-                // Get component properties
                 $properties = $component['properties'] ?? [];
                 $slidesToShow = $properties['slides_to_show'] ?? 3;
                 $autoplay = ($properties['autoplay'] ?? 0) == 1;
                 $autoplaySpeed = $properties['autoplay_speed'] ?? 3000;
-                $dots = true; // Default to true for now
-                $arrows = true; // Default to true for now
+                $dots = true;
+                $arrows = true;
                 $sliderId = 'ticket-slider-' . ($componentId ?? uniqid());
-                
-                // Styling options
+
                 $cardBackgroundColor = $properties['card_background_color'] ?? '#ffffff';
-                $cardBorderRadius = '8px'; // Default value
-                $titleColor = '#000'; // Default value
+                $cardBorderRadius = '8px';
+                $titleColor = '#000';
                 $priceColor = $properties['price_text_color'] ?? '#2e7d3e';
                 $descriptionColor = $properties['description_text_color'] ?? '#666666';
                 $buttonBackgroundColor = $properties['button_background_color'] ?? '#007bff';
                 $buttonTextColor = $properties['button_text_color'] ?? '#ffffff';
 
-                // Get active ticke ts for this website
                 $tickets = \App\Models\Ticket::where('website_id', $check->id ?? 1)
                     ->where('status', 1)
                     ->where('type', 'product')
                     ->latest()
                     ->get();
             @endphp
-            
-            <!-- Load Required CSS -->
+
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-            
-            <!-- Component Structure -->
-            <div class="ticket-carousel-component" style="{{ $styleStr }}">
-                <style>
-                    #{{ $sliderId }}.owl-carousel .owl-item {
-                        min-width: 262px;
-                        max-width: 262px;
-                        width: 262px !important;
-                    }
-                    #{{ $sliderId }}.owl-carousel .ticket-card {
-                        width: 262px;
-                        max-width: 262px;
-                        min-width: 262px;
-                    }
-                    @media (max-width: 767px) {
-                        #{{ $sliderId }}.owl-carousel .owl-item {
-                            width: 262px !important;
-                        }
 
-                        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-                    }
-                </style>
+            <div class="ticket-carousel-component" style="{{ $styleStr }}">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
-                            @if(isset($tickets) && count($tickets) > 0)
+                            @if($tickets->count() > 0)
                                 <div class="owl-carousel ticket-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
-                                        <div class="ticket-card">
-                                            <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
-                                                <div class="ticket-image">
-                                                    <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
-                                                    {{-- @if($ticket->quantity && $ticket->quantity < 10)
-                                                        <div class="ticket-badge">Only {{ $ticket->quantity }} left!</div>
-                                                    @endif --}}
-                                                </div>
-                                                <div class="ticket-info">
-                                                    <h3 class="ticket-title">{{ $ticket->name }}</h3>
-                                                    {{-- @if($ticket->description)
-                                                        <p class="ticket-description">{{ Str::limit($ticket->description, 60) }}</p>
-                                                    @endif --}}
-                                                    <div class="ticket-meta">
-                                                        <span class="ticket-price">${{ number_format($ticket->price, 2) }}</span>
-                                                        {{-- <button class="ticket-buy-btn">Buy Now</button> --}}
+                                        <div class="ticket-card-wrapper">
+                                            <div class="ticket-card">
+                                                <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
+                                                    <div class="ticket-image">
+                                                        <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
                                                     </div>
-                                                </div>
-                                            </a>
+                                                    <div class="ticket-info">
+                                                        <h3 class="ticket-title">{{ $ticket->name }}</h3>
+                                                        <div class="ticket-meta">
+                                                            <span class="ticket-price">${{ number_format($ticket->price, 2) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -6356,228 +6327,107 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             </div>
 
-            <!-- Component Styles -->
             <style>
-                .ticket-carousel-component {
-                    padding: 40px 0;
-                }
+            .ticket-carousel-component { padding: 40px 0; }
+            .ticket-card-wrapper { display: flex; justify-content: center; }
+            .ticket-card {
+                background: {{ $cardBackgroundColor }};
+                border-radius: {{ $cardBorderRadius }};
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+                max-width: 262px;  /* Desktop max width */
+                width: 100%;       /* Responsive width */
+                margin: 0 10px;
+            }
+            .ticket-card:hover { transform: translateY(-5px); }
+            .ticket-link { text-decoration: none; color: inherit; display: block; }
+            .ticket-image {
+                position: relative;
+                height: 262px;      /* Fixed height for image */
+                width: 100%;
+                overflow: hidden;
+            }
+            .ticket-image img {
+                position: absolute; top:0; left:0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .ticket-info { padding: 15px; }
+            .ticket-title {
+                font-size: 0.875rem !important;
+                font-weight: 400 !important;
+                color: {{ $titleColor }};
+                margin-bottom: 8px;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            }
+            .ticket-meta { display: flex; justify-content: space-between; align-items: center; }
+            .ticket-price { font-size: 18px; font-weight: 700; color: {{ $priceColor }}; }
+            .no-tickets { text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; }
 
-                .ticket-card {
-                    background: {{ $cardBackgroundColor }};
-                    border-radius: {{ $cardBorderRadius }};
-                    overflow: hidden;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    transition: transform 0.3s ease;
-                    margin: 10px;
-                }
-
-                .ticket-card:hover {
-                    transform: translateY(-5px);
-                }
-
-                .ticket-link {
-                    text-decoration: none;
-                    color: inherit;
-                    display: block;
-                }
-
-                .ticket-image {
-                    position: relative;
-                    padding-top: 66.67%; /* 3:2 Aspect ratio */
-                    overflow: hidden;
-                    height: 262px;
-                    width: 262px;
-                }
-
-                .ticket-image img {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    height: 262px !important;
-                    width: 262px !important;
-                }
-
-                .ticket-badge {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background: rgba(255, 87, 34, 0.95);
-                    color: white;
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    font-weight: 600;
-                }
-
-                .ticket-info {
-                    padding: 15px;
-                }
-
-                .ticket-title {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: {{ $titleColor }};
-                    margin-bottom: 8px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    font-size: 0.875rem !important;
-                    font-weight: 400 !important;
-                }
-
-                .ticket-description {
-                    font-size: 14px;
-                    color: {{ $descriptionColor }};
-                    margin-bottom: 15px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-
-                .ticket-meta {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-
-                .ticket-price {
-                    font-size: 18px;
-                    font-weight: 700;
-                    color: {{ $priceColor }};
-                }
-
-                .ticket-buy-btn {
-                    background: {{ $buttonBackgroundColor }};
-                    color: {{ $buttonTextColor }};
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    font-weight: 600;
-                    transition: opacity 0.3s;
-                }
-
-                .ticket-buy-btn:hover {
-                    opacity: 0.9;
-                }
-
-                .no-tickets {
-                    text-align: center;
-                    padding: 40px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                }
-
-                /* Responsive styles */
-                @media (max-width: 768px) {
-                    .ticket-carousel-component {
-                        padding: 20px 0;
-                    }
-                    
-                    .ticket-carousel-component .owl-stage-outer {
-                        display: flex;
-                        justify-content: center;
-                    }
-                    
-                    .ticket-carousel-component .owl-stage {
-                        display: flex !important;
-                        justify-content: center !important;
-                        align-items: center;
-                    }
-                    
-                    .ticket-carousel-component .owl-item {
-                        display: flex !important;
-                        justify-content: center !important;
-                    }
-                    
-                    .ticket-card {
-                        margin: 5px auto !important;
-                        max-width: 90% !important;
-                    }
-
-                    .ticket-title {
-                        font-size: 14px;
-                    }
-
-                    .ticket-price {
-                        font-size: 16px;
-                    }
-
-                    .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-                }
+            /* Responsive */
+            @media (max-width: 768px) {
+                .ticket-carousel-component { padding: 20px 0; }
+                .ticket-card { margin: 0 auto; } /* Center card */
+                .ticket-title { font-size: 14px; }
+                .ticket-price { font-size: 16px; }
+            }
             </style>
 
-            <!-- Initialize Owl Carousel -->
             <script>
-                $(document).ready(function(){
-                    $("#{{ $sliderId }}").owlCarousel({
-                        items: {{ $slidesToShow }},
-                        loop: true,
-                        margin: 20,
-                        autoplay: {{ $autoplay ? 'true' : 'false' }},
-                        autoplayTimeout: {{ $autoplaySpeed }},
-                        autoplayHoverPause: true,
-                        dots: {{ $dots ? 'true' : 'false' }},
-                        nav: {{ $arrows ? 'true' : 'false' }},
-                        responsive: {
-                            0: {
-                                items: 1
-                            },
-                            768: {
-                                items: 1
-                            },
-                            992: {
-                                items: {{ min($slidesToShow, 3) }}
-                            }
-                        }
-                    });
+            $(document).ready(function(){
+                $("#{{ $sliderId }}").owlCarousel({
+                    loop: true,
+                    margin: 20,
+                    autoplay: {{ $autoplay ? 'true' : 'false' }},
+                    autoplayTimeout: {{ $autoplaySpeed }},
+                    autoplayHoverPause: true,
+                    dots: {{ $dots ? 'true' : 'false' }},
+                    nav: {{ $arrows ? 'true' : 'false' }},
+                    responsive: {
+                        0: { items: 1 },                    // Mobile: 1 item
+                        576: { items: 1 },
+                        768: { items: Math.min({{ $slidesToShow }}, 2) }, // Tablets
+                        992: { items: {{ min($slidesToShow, 3) }} }       // Desktop
+                    }
                 });
+            });
             </script>
         @break
 
+
         @case('ticket-category-carousel')
             @php
-                // Get component properties
                 $properties = $component['properties'] ?? [];
                 $selectedCategoryId = $properties['category_id'] ?? null;
                 $slidesToShow = $properties['slides_to_show'] ?? 3;
                 $autoplay = ($properties['autoplay'] ?? 0) == 1;
                 $autoplaySpeed = $properties['autoplay_speed'] ?? 3000;
                 $enableLoop = ($properties['loop'] ?? 1) == 1;
-                $dots = true; // Default to true for now
-                $arrows = true; // Default to true for now
+                $dots = true;
+                $arrows = true;
                 $sliderId = 'ticket-category-slider-' . ($componentId ?? uniqid());
-                
-                // Styling options
+
                 $cardBackgroundColor = $properties['card_background_color'] ?? '#ffffff';
-                $cardBorderRadius = '8px'; // Default value
-                $titleColor = '#000'; // Default value
+                $cardBorderRadius = '8px';
+                $titleColor = '#000';
                 $priceColor = $properties['price_text_color'] ?? '#2e7d3e';
                 $descriptionColor = $properties['description_text_color'] ?? '#666666';
                 $buttonBackgroundColor = $properties['button_background_color'] ?? '#007bff';
                 $buttonTextColor = $properties['button_text_color'] ?? '#ffffff';
 
-                // Get tickets filtered by category for this website
                 $query = \App\Models\Ticket::where('website_id', $check->id ?? 1)
                     ->where('status', 1)
                     ->where('type', 'product');
-                
-                // Apply category filter if selected
+
                 if ($selectedCategoryId) {
                     $query->where('category_id', $selectedCategoryId);
                 }
-                
+
                 $tickets = $query->latest()->get();
-                
-                // Determine if loop should be enabled (only if we have enough items)
                 $actualLoop = $enableLoop && count($tickets) >= $slidesToShow;
-                
-                // Debug information
+
                 $ticketCount = count($tickets);
                 $debugInfo = [
                     'enableLoop' => $enableLoop,
@@ -6586,55 +6436,31 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     'actualLoop' => $actualLoop
                 ];
             @endphp
-            
-            <!-- Load Required CSS -->
+
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-            
-            <!-- Component Structure -->
-            <div class="ticket-category-carousel-component" style="{{ $styleStr }}">
-                <style>
-                    #{{ $sliderId }}.owl-carousel .owl-item {
-                        min-width: 262px;
-                        max-width: 262px;
-                        width: 262px !important;
-                    }
-                    #{{ $sliderId }}.owl-carousel .ticket-card {
-                        width: 262px;
-                        max-width: 262px;
-                        min-width: 262px;
-                    }
-                    @media (max-width: 767px) {
-                        #{{ $sliderId }}.owl-carousel .owl-item {
-                            width: 262px !important;
-                        }
 
-                        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-                    }
-                </style>
+            <div class="ticket-category-carousel-component" style="{{ $styleStr }}">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
-                            @if(isset($tickets) && count($tickets) > 0)
+                            @if($tickets->count() > 0)
                                 <div class="owl-carousel ticket-category-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
-                                        <div class="ticket-card">
-                                            <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
-                                                <div class="ticket-image">
-                                                    <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
-                                                    {{-- @if($ticket->quantity && $ticket->quantity < 10)
-                                                        <div class="ticket-badge">Only {{ $ticket->quantity }} left!</div>
-                                                    @endif --}}
-                                                </div>
-                                                <div class="ticket-info">
-                                                    <h3 class="ticket-title">{{ $ticket->name }}</h3>
-                                                    <div class="ticket-meta">
-                                                        <span class="ticket-price">${{ number_format($ticket->price, 2) }}</span>
+                                        <div class="ticket-card-wrapper">
+                                            <div class="ticket-card">
+                                                <a href="{{ route('product.details', $ticket->slug) }}" class="ticket-link">
+                                                    <div class="ticket-image">
+                                                        <img src="{{ asset($ticket->image) }}" alt="{{ $ticket->name }}">
                                                     </div>
-                                                </div>
-                                            </a>
+                                                    <div class="ticket-info">
+                                                        <h3 class="ticket-title">{{ $ticket->name }}</h3>
+                                                        <div class="ticket-meta">
+                                                            <span class="ticket-price">${{ number_format($ticket->price, 2) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -6648,177 +6474,89 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             </div>
 
-            <!-- Component Styles -->
             <style>
-                .ticket-category-carousel-component {
-                    padding: 40px 0;
-                }
+            .ticket-category-carousel-component { padding: 40px 0; }
+            .ticket-card-wrapper { display: flex; justify-content: center; }
+            .ticket-card {
+                background: {{ $cardBackgroundColor }};
+                border-radius: {{ $cardBorderRadius }};
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+                max-width: 262px;  /* Desktop max width */
+                width: 100%;       /* Responsive width */
+                margin: 0 10px;
+            }
+            .ticket-card:hover { transform: translateY(-5px); }
+            .ticket-link { text-decoration: none; color: inherit; display: block; }
+            .ticket-image {
+                position: relative;
+                height: 262px;      /* Fixed image height */
+                width: 100%;
+                overflow: hidden;
+            }
+            .ticket-image img {
+                position: absolute; top:0; left:0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .ticket-info { padding: 15px; }
+            .ticket-title {
+                font-size: 0.875rem !important;
+                font-weight: 400 !important;
+                color: {{ $titleColor }};
+                margin-bottom: 8px;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            }
+            .ticket-meta { display: flex; justify-content: space-between; align-items: center; }
+            .ticket-price { font-size: 18px; font-weight: 700; color: {{ $priceColor }}; }
+            .no-tickets { text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; }
 
-                .ticket-category-carousel-component .ticket-card {
-                    background: {{ $cardBackgroundColor }};
-                    border-radius: {{ $cardBorderRadius }};
-                    overflow: hidden;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    transition: transform 0.3s ease;
-                    margin: 10px;
-                }
-
-                .ticket-category-carousel-component .ticket-card:hover {
-                    transform: translateY(-5px);
-                }
-
-                .ticket-category-carousel-component .ticket-link {
-                    text-decoration: none;
-                    color: inherit;
-                    display: block;
-                }
-
-                .ticket-category-carousel-component .ticket-image {
-                    position: relative;
-                    padding-top: 66.67%; /* 3:2 Aspect ratio */
-                    overflow: hidden;
-                    height: 262px;
-                    width: 262px;
-                }
-
-                .ticket-category-carousel-component .ticket-image img {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: unset;
-                    height: 262px !important;
-                    width: 262px !important;
-                }
-
-                .ticket-category-carousel-component .ticket-badge {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background: rgba(255, 87, 34, 0.95);
-                    color: white;
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    font-weight: 600;
-                }
-
-                .ticket-category-carousel-component .ticket-info {
-                    padding: 15px;
-                }
-
-                .ticket-category-carousel-component .ticket-title {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: {{ $titleColor }};
-                    margin-bottom: 8px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    font-size: 0.875rem !important;
-                    font-weight: 400 !important;
-                }
-
-                .ticket-category-carousel-component .ticket-description {
-                    font-size: 14px;
-                    color: {{ $descriptionColor }};
-                    margin-bottom: 15px;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-
-                .ticket-category-carousel-component .ticket-meta {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-
-                .ticket-category-carousel-component .ticket-price {
-                    font-size: 18px;
-                    font-weight: 700;
-                    color: {{ $priceColor }};
-                }
-
-                .ticket-category-carousel-component .ticket-buy-btn {
-                    background: {{ $buttonBackgroundColor }};
-                    color: {{ $buttonTextColor }};
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    font-weight: 600;
-                    transition: opacity 0.3s;
-                }
-
-                .ticket-category-carousel-component .ticket-buy-btn:hover {
-                    opacity: 0.9;
-                }
-
-                .ticket-category-carousel-component .no-tickets {
-                    text-align: center;
-                    padding: 40px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                }
-
-                /* Responsive styles */
-                @media (max-width: 768px) {
-                    .ticket-category-carousel-component {
-                        padding: 20px 0;
-                    }
-                    
-                    .ticket-category-carousel-component .ticket-card {
-                        margin: 5px;
-                    }
-
-                    .ticket-category-carousel-component .ticket-title {
-                        font-size: 14px;
-                    }
-
-                    .ticket-category-carousel-component .ticket-price {
-                        font-size: 16px;
-                    }
-
-                    .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-                }
+            /* Responsive */
+            @media (max-width: 768px) {
+                .ticket-category-carousel-component { padding: 20px 0; }
+                .ticket-card { margin: 0 auto; } /* Center card on mobile */
+                .ticket-title { font-size: 14px; }
+                .ticket-price { font-size: 16px; }
+            }
             </style>
 
-            <!-- Initialize Owl Carousel -->
             <script>
-                console.log('Ticket Category Carousel Debug:', {!! json_encode($debugInfo) !!});
-                
-                $(document).ready(function(){
-                    $("#{{ $sliderId }}").owlCarousel({
-                        items: {{ $slidesToShow }},
-                        loop: {{ $actualLoop ? 'true' : 'false' }},
-                        margin: 20,
-                        autoplay: {{ $autoplay ? 'true' : 'false' }},
-                        autoplayTimeout: {{ $autoplaySpeed }},
-                        autoplayHoverPause: true,
-                        dots: {{ $dots ? 'true' : 'false' }},
-                        nav: {{ $arrows ? 'true' : 'false' }},
-                        responsive: {
-                            0: {
-                                items: 1,
-                                loop: {{ count($tickets) >= 1 && $enableLoop ? 'true' : 'false' }}
-                            },
-                            768: {
-                                items: 2,
-                                loop: {{ count($tickets) >= 2 && $enableLoop ? 'true' : 'false' }}
-                            },
-                            992: {
-                                items: {{ min($slidesToShow, 3) }},
-                                loop: {{ count($tickets) >= min($slidesToShow, 3) && $enableLoop ? 'true' : 'false' }}
-                            }
+            console.log('Ticket Category Carousel Debug:', {!! json_encode($debugInfo) !!});
+
+            $(document).ready(function(){
+                $("#{{ $sliderId }}").owlCarousel({
+                    loop: {{ $actualLoop ? 'true' : 'false' }},
+                    margin: 20,
+                    autoplay: {{ $autoplay ? 'true' : 'false' }},
+                    autoplayTimeout: {{ $autoplaySpeed }},
+                    autoplayHoverPause: true,
+                    dots: {{ $dots ? 'true' : 'false' }},
+                    nav: {{ $arrows ? 'true' : 'false' }},
+                    responsive: {
+                        0: {
+                            items: 1,
+                            loop: {{ count($tickets) >= 1 && $enableLoop ? 'true' : 'false' }}
+                        },
+                        576: {
+                            items: 1,
+                            loop: {{ count($tickets) >= 1 && $enableLoop ? 'true' : 'false' }}
+                        },
+                        768: {
+                            items: Math.min({{ $slidesToShow }}, 2),
+                            loop: {{ count($tickets) >= 2 && $enableLoop ? 'true' : 'false' }}
+                        },
+                        992: {
+                            items: {{ min($slidesToShow, 3) }},
+                            loop: {{ count($tickets) >= min($slidesToShow, 3) && $enableLoop ? 'true' : 'false' }}
                         }
-                    });
+                    }
                 });
+            });
             </script>
         @break
+
 
         @case('property-category-carousel')
             @php

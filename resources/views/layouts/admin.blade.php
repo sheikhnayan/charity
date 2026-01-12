@@ -94,79 +94,54 @@
           <div class="menu-inner-shadow"></div>
 
           <ul class="menu-inner py-1">
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Site Settings</span></li>
+            <!-- Configuration Section -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Configuration</span></li>
 
-            <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}">
-                <a href="{{ url('/admins') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-cog"></i><div data-i18n="Settings">Settings</div></a>
+            <li class="menu-item {{ request()->is('admins', 'admins/payment', 'admins/payout-methods', 'admin/dealmaker-settings', 'admin/notification-settings', 'admin/fonts*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-cog"></i><div data-i18n="Settings">Settings</div></a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('admins') ? 'active' : '' }}"><a href="{{ url('/admins') }}" class="menu-link"><div data-i18n="Settings">General Settings</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}"><a href="{{ route('admin.payment.setting') }}" class="menu-link"><div data-i18n="Payment Setting">Payment Setting</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/payout-methods') ? 'active' : '' }}"><a href="{{ route('admin.payment-method') }}" class="menu-link"><div data-i18n="Payout Methods">Payout Methods</div></a></li>
+                    <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}"><a href="{{ route('dealmaker.admin.index') }}" class="menu-link"><div data-i18n="Homepage Settings">Homepage Settings</div></a></li>
+                    <li class="menu-item {{ request()->is('admin/notification-settings') ? 'active' : '' }}"><a href="{{ route('admin.notification-settings') }}" class="menu-link"><div data-i18n="Notifications">Notifications</div></a></li>
+                    <li class="menu-item {{ request()->is('admin/fonts*') ? 'active' : '' }}"><a href="{{ route('admin.fonts.index') }}" class="menu-link"><div data-i18n="Fonts">Fonts</div></a></li>
+                </ul>
             </li>
 
-            <li class="menu-item {{ request()->is('admins/payment') ? 'active' : '' }}">
-                <a href="{{ route('admin.payment.setting') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-credit-card"></i><div data-i18n="Payment Setting">Payment Setting</div></a>
+            <!-- Website Content Section -->
+            <li class="menu-item {{ request()->is('admins/website', 'admins/page', 'admins/templates*', 'admins/menu', 'admins/footer', 'admins/newsletter*', 'admins/comments') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-globe"></i><div data-i18n="Website">Website</div></a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}"><a href="{{ route('admin.website.index') }}" class="menu-link"><div data-i18n="Website">Home</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}"><a href="{{ route('admin.page.index') }}" class="menu-link"><div data-i18n="Page">Page</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}"><a href="{{ route('admin.templates.index') }}" class="menu-link"><div data-i18n="Page Templates">Page Template</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}"><a href="{{ url('/admins/menu') }}" class="menu-link"><div data-i18n="Header">Header</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}"><a href="{{ url('/admins/footer') }}" class="menu-link"><div data-i18n="Footer">Footer</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/newsletter*') ? 'active' : '' }}"><a href="{{ route('admin.newsletter') }}" class="menu-link"><div data-i18n="Newsletter">Newsletter</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/comments') ? 'active' : '' }}"><a href="{{ route('admin.comments') }}" class="menu-link"><div data-i18n="Comments">Comments</div></a></li>
+                </ul>
             </li>
 
-            <li class="menu-item {{ request()->is('admins/payout-methods') ? 'active' : '' }}">
-                <a href="{{ route('admin.payment-method') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-wallet"></i><div data-i18n="Payout Methods">Payout Methods</div></a>
+            <!-- Features Section -->
+            <li class="menu-item {{ request()->is('admins/ticket', 'admins/auction', 'admins/sponsor') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-star"></i><div data-i18n="Features">Features</div></a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}"><a href="{{ route('admin.ticket.index') }}" class="menu-link"><div data-i18n="Ticket">Ticket</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}"><a href="{{ route('admin.auction') }}" class="menu-link"><div data-i18n="Auction">Auction</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}"><a href="{{ route('admin.sponsor.index') }}" class="menu-link"><div data-i18n="Sponsor">Sponsor</div></a></li>
+                </ul>
             </li>
 
-            <li class="menu-item {{ request()->is('admin/dealmaker-settings') ? 'active' : '' }}">
-                <a href="{{ route('dealmaker.admin.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-home"></i><div data-i18n="Homepage Settings">Homepage Settings</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admin/notification-settings') ? 'active' : '' }}">
-                <a href="{{ route('admin.notification-settings') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-bell"></i><div data-i18n="Notifications">Notifications</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admin/fonts*') ? 'active' : '' }}">
-                <a href="{{ route('admin.fonts.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-font"></i><div data-i18n="Fonts">Fonts</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}">
-                <a href="{{ route('admin.website.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-globe"></i><div data-i18n="Website">Website</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}">
-                <a href="{{ route('admin.ticket.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-support"></i><div data-i18n="Ticket">Ticket</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}">
-                <a href="{{ route('admin.auction') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-badge-check"></i><div data-i18n="Auction">Auction</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}">
-                <a href="{{ route('admin.sponsor.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-user-check"></i><div data-i18n="Sponsor">Sponsor</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
-                <a href="{{ route('admin.page.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-file"></i><div data-i18n="Page">Page</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}">
-                <a href="{{ route('admin.templates.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-file-blank"></i><div data-i18n="Page Templates">Page Templates</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}">
-                <a href="{{ url('/admins/menu') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-layout"></i><div data-i18n="Header">Header</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}">
-                <a href="{{ url('/admins/footer') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-layout"></i><div data-i18n="Footer">Footer</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/newsletter*') ? 'active' : '' }}">
-                <a href="{{ route('admin.newsletter') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-envelope"></i><div data-i18n="Newsletter">Newsletter</div></a>
-            </li>
-
-            <li class="menu-item {{ request()->is('admins/comments') ? 'active' : '' }}">
-                <a href="{{ route('admin.comments') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-comment-detail"></i><div data-i18n="Comments">Comments</div></a>
-            </li>
-
+            <!-- Account Section -->
             <li class="menu-item {{ request()->is('admins/change-password') ? 'active' : '' }}">
                 <a href="{{ route('admin.change-password') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-lock"></i><div data-i18n="Change Password">Change Password</div></a>
             </li>
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Reports</span></li>
+            <!-- Reports & Analytics Section -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Reports & Analytics</span></li>
 
-            <li class="menu-item {{ request()->is('analytics') || request()->is('analytics/*') ? 'active open' : '' }}">
+            <li class="menu-item {{ request()->is('analytics*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-chart"></i><div data-i18n="Analytics">Analytics</div></a>
                 <ul class="menu-sub">
                     <li class="menu-item {{ request()->is('analytics') && !request()->is('analytics/*') ? 'active' : '' }}"><a href="{{ route('analytics.dashboard') }}" class="menu-link"><div data-i18n="Dashboard">Dashboard</div></a></li>
@@ -175,11 +150,7 @@
                 </ul>
             </li>
 
-            <li class="menu-item {{ request()->is('qr-codes*') ? 'active' : '' }}"><a href="{{ route('admin.qr.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-qr"></i><div data-i18n="QR Codes">QR Codes</div></a></li>
-
-            <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}"><a href="{{ route('fraud.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-shield-alt-2"></i><div data-i18n="Fraud Detection">Fraud Detection</div></a></li>
-
-            <li class="menu-item {{ request()->is('hotjar*') || request()->is('heatmaps*') || request()->is('recordings*') ? 'active open' : '' }}">
+            <li class="menu-item {{ request()->is('hotjar*', 'heatmaps*', 'recordings*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-map"></i><div data-i18n="User Behavior">User Behavior</div></a>
                 <ul class="menu-sub">
                     <li class="menu-item {{ request()->is('hotjar/heatmaps') ? 'active' : '' }}"><a href="{{ route('hotjar.heatmaps') }}" class="menu-link"><div data-i18n="Heatmaps">Heatmaps</div></a></li>
@@ -187,13 +158,19 @@
                 </ul>
             </li>
 
-            <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}"><a href="{{ route('admin.donation') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-transfer"></i><div data-i18n="Transactions">Transactions</div></a></li>
+            <li class="menu-item {{ request()->is('qr-codes*') ? 'active' : '' }}"><a href="{{ route('admin.qr.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-qr"></i><div data-i18n="QR Codes">QR Codes</div></a></li>
 
-            <li class="menu-item {{ request()->is('admins/tax-list') ? 'active' : '' }}"><a href="{{ route('admin.tax.list') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-file-find"></i><div data-i18n="1099-K Tax">1099-K Tax</div></a></li>
+            <li class="menu-item {{ request()->is('fraud*') ? 'active' : '' }}"><a href="{{ route('fraud.index') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-shield-alt-2"></i><div data-i18n="Fraud Detection">Fraud Detection</div></a></li>
 
-            <li class="menu-item {{ request()->is('admins/tax-receipt') ? 'active' : '' }}"><a href="{{ route('admin.tax-receipt.list') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-receipt"></i><div data-i18n="Tax Receipt">Tax Receipt</div></a></li>
-
-            <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}"><a href="{{ route('admin.student') }}" class="menu-link"><i class="menu-icon tf-icons bx bx-group"></i><div data-i18n="Registrations">Registrations</div></a></li>
+            <li class="menu-item {{ request()->is('admins/donation', 'admins/tax-list', 'admins/tax-receipt', 'admins/student') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-transfer"></i><div data-i18n="Transactions">Transactions</div></a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('admins/donation') ? 'active' : '' }}"><a href="{{ route('admin.donation') }}" class="menu-link"><div data-i18n="Transactions">Donations</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/tax-list') ? 'active' : '' }}"><a href="{{ route('admin.tax.list') }}" class="menu-link"><div data-i18n="1099-K Tax">1099-K Tax</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/tax-receipt') ? 'active' : '' }}"><a href="{{ route('admin.tax-receipt.list') }}" class="menu-link"><div data-i18n="Tax Receipt">Tax Receipt</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}"><a href="{{ route('admin.student') }}" class="menu-link"><div data-i18n="Registrations">Registrations</div></a></li>
+                </ul>
+            </li>
           </ul>
         </aside>
         <!-- / Menu -->

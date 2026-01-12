@@ -83,7 +83,7 @@
         
         /* Property Details Color Variables (from Website settings) */
         :root{
-            --pd-bg: {{ json_encode($website->property_details_bg_color ?? '#ffffff') }};
+            --pd-bg: {{ json_encode($ticket->page_bg_color ?? $website->property_details_bg_color ?? '#ffffff') }};
             --pd-text: {{ json_encode($website->property_details_text_color ?? '#111827') }};
             --pd-muted: {{ json_encode($website->property_details_muted_color ?? '#6b7280') }};
             --pd-heading: {{ json_encode($website->property_details_heading_color ?? '#1e293b') }};
@@ -824,7 +824,10 @@
         a,.markdown-content a,.btn.ghost{color: {{ $website->property_details_muted_color }} !important;}
     </style>
 </head>
-<body class="property-details-page" style="background-color: {{ $website->property_details_bg_color ?? '#ffffff' }} !important;">
+<body class="property-details-page" style="background-color: {{ $ticket->page_bg_color ?? '#ffffff' }} !important;">
+    <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
+        @include('partials.back-button')
+    </div>
     
     @php
         $url = url()->current();

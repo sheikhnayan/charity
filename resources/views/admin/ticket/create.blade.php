@@ -268,6 +268,15 @@
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="page_bg_color" class="form-label">Page Background Color</label>
+                        <div class="input-group">
+                            <input type="color" name="page_bg_color" id="page_bg_color" class="form-control form-control-color" value="#ffffff" style="max-width: 80px;">
+                            <input type="text" class="form-control" id="page_bg_color_text" value="#ffffff" readonly>
+                        </div>
+                        <small class="text-muted">This color will be applied to the background of the item detail page. Defaults to white (#ffffff).</small>
+                    </div>
+
                     <div class="product">
                         <div class="mb-3">
                             <label for="size" class="form-label">Size</label>
@@ -980,6 +989,15 @@
                 marketField.value = marketQuill.root.innerHTML;
             }
         });
+
+        // Sync color picker with text display
+        const colorInput = document.getElementById('page_bg_color');
+        const colorText = document.getElementById('page_bg_color_text');
+        if (colorInput && colorText) {
+            colorInput.addEventListener('change', function() {
+                colorText.value = this.value;
+            });
+        }
     });
 </script>
 @endsection

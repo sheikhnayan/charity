@@ -85,7 +85,7 @@
     }
 </style>
 </head>
-<body style="background-color: #fff;">
+<body style="background-color: {{ $data->page_bg_color }};">
     @php
 $url = url()->current();
 $doamin = parse_url($url, PHP_URL_HOST);

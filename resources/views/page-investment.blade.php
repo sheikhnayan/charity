@@ -147,6 +147,8 @@ if (isset($state['components'])) {
         box-sizing: border-box !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
     
     /* Enable borders and padding for inner-sections */
@@ -904,6 +906,9 @@ if (isset($state['components'])) {
         font-weight: bold;
         font-size: 1rem;
         color: #2c3e50;
+    }
+    .footer_link_item {
+        height: 24px !important;
     }
 
     /* Mobile-specific adjustments for auction components */
@@ -2256,9 +2261,16 @@ if (isset($state['components'])) {
                 min-width: 120px;
             }
 
-            footer{
-                margin-bottom: 0px !important;
-            }
+            @if ($check && $check->isInvestment())
+                footer{
+                    margin-bottom: 4.7rem !important;
+                }
+            @else
+                footer{
+                    margin-bottom: 0px !important;
+                }
+            @endif
+
 
             .inner-section-frontend {
                         padding: 0 !important;
