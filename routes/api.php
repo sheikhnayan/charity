@@ -238,6 +238,65 @@ Route::post('/logger', function (Request $request) {
     return response()->json(['status' => 'logged'], 200);
 });
 
+// Public API: Lists for QR donate selection (website-scoped by domain)
+Route::get('/auctions', function (Request $request) {
+    try {
+        $host = $request->getHost();
+        $website = \App\Models\Website::where('domain', $host)->first();
+        if (!$website && auth('web')->check()) {
+            $website = auth('web')->user()->website;
+        }
+        if (!$website) {
+            return response()->json(['success' => false, 'items' => []]);
+        }
+        $auctions = \App\Models\Auction::where('website_id', $website->id)
+            ->orderByDesc('id')
+            ->get(['id','title','value']);
+        return response()->json(['success' => true, 'auctions' => $auctions]);
+    } catch (\Throwable $e) {
+        return response()->json(['success' => false, 'items' => [], 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('/tickets', function (Request $request) {
+    try {
+        $host = $request->getHost();
+        $website = \App\Models\Website::where('domain', $host)->first();
+        if (!$website && auth('web')->check()) {
+            $website = auth('web')->user()->website;
+        }
+        if (!$website) {
+            return response()->json(['success' => false, 'items' => []]);
+        }
+        $tickets = \App\Models\Ticket::where('website_id', $website->id)
+            ->orderByDesc('id')
+            ->get(['id','name','price','category_id']);
+        return response()->json(['success' => true, 'tickets' => $tickets]);
+    } catch (\Throwable $e) {
+        return response()->json(['success' => false, 'items' => [], 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('/students', function (Request $request) {
+    try {
+        $host = $request->getHost();
+        $website = \App\Models\Website::where('domain', $host)->first();
+        if (!$website && auth('web')->check()) {
+            $website = auth('web')->user()->website;
+        }
+        if (!$website) {
+            return response()->json(['success' => false, 'items' => []]);
+        }
+        $students = \App\Models\User::where('website_id', $website->id)
+            ->whereNotNull('parent_id')
+            ->orderBy('name')
+            ->get(['id','name','last_name','email']);
+        return response()->json(['success' => true, 'students' => $students]);
+    } catch (\Throwable $e) {
+        return response()->json(['success' => false, 'items' => [], 'message' => $e->getMessage()], 500);
+    }
+});
+
 // QR Code API Routes (for fetching data)
 Route::prefix('qr')->group(function () {
     // Get auctions for a website

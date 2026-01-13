@@ -112,43 +112,58 @@
                     
                     <form id="qrGeneratorForm">
                         @csrf
-                        
+                        @if(!isset($websites))
+                            <div class="mb-2">
+                                <div class="alert alert-info py-2 mb-0">
+                                    <i class="fas fa-globe me-1"></i>
+                                    Website: <strong>{{ $website->name ?? 'Current' }}</strong> ({{ $website->domain ?? request()->getHost() }})
+                                </div>
+                            </div>
+                        @else
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-globe me-1"></i> Website *
+                                </label>
+                                <select class="form-select" name="website_id" id="websiteSelect" required>
+                                    @foreach($websites as $w)
+                                        <option value="{{ $w->id }}" {{ isset($website) && $website->id === $w->id ? 'selected' : '' }}>{{ $w->name }} ({{ $w->domain }})</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Admin: select website to generate for</small>
+                            </div>
+                        @endif
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
-                                <i class="fas fa-globe me-1"></i> Website *
+                                <i class="fas fa-layer-group me-1"></i> Type *
                             </label>
-                            <select class="form-select" name="website_id" id="websiteSelect" required>
-                                <option value="">Select Website...</option>
-                                @foreach($websites as $website)
-                                    <option value="{{ $website->id }}">{{ $website->name }} ({{ $website->domain }})</option>
-                                @endforeach
+                            <select class="form-select" name="type" id="typeSelect" required>
+                                <option value="donation" selected>Donation</option>
+                                <option value="auction">Auction</option>
+                                <option value="ticket">Ticket</option>
                             </select>
                         </div>
-                        
-                        <div class="mb-3">
+
+                        <div class="mb-3" id="referenceGroup" style="display:none;">
                             <label class="form-label fw-semibold">
-                                <i class="fas fa-tag me-1"></i> Campaign Name
+                                <i class="fas fa-list me-1"></i> Select Item
                             </label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   name="campaign_name" 
-                                   id="campaignName"
-                                   placeholder="e.g., Summer Gala 2025, Holiday Campaign">
-                            <small class="text-muted">Optional: Track donations by campaign</small>
+                            <select class="form-select" name="reference_id" id="referenceSelect"></select>
+                            <small class="text-muted" id="referenceHelp"></small>
                         </div>
-                        
-                        <div class="mb-3">
+
+                        <div class="mb-3" id="amountGroup">
                             <label class="form-label fw-semibold">
                                 <i class="fas fa-dollar-sign me-1"></i> Preset Amount
                             </label>
                             <input type="number" 
                                    class="form-control" 
-                                   name="preset_amount" 
+                                   name="amount" 
                                    id="presetAmount"
                                    placeholder="25.00"
                                    step="0.01"
                                    min="1">
-                            <small class="text-muted">Optional: Pre-fill donation amount</small>
+                            <small class="text-muted">Optional: Pre-fill donation/auction amount</small>
                         </div>
                         
                         <div class="mb-3">
@@ -188,8 +203,9 @@
                                 </div>
                                 
                                 <div class="text-start mb-3">
-                                    <strong>Campaign:</strong> <span id="previewCampaign">-</span><br>
                                     <strong>Website:</strong> <span id="previewWebsite">-</span><br>
+                                    <strong>Type:</strong> <span id="previewType">-</span><br>
+                                    <strong>Item:</strong> <span id="previewItem">-</span><br>
                                     <strong>URL:</strong> <small><code id="previewUrl">-</code></small>
                                 </div>
                                 
@@ -220,34 +236,87 @@
 
 <script>
 let currentQRUrl = '';
+let currentWebsiteId = {{ $website->id ?? 'null' }};
+const auctions = @json($auctions ?? []);
+const tickets = @json($tickets ?? []);
+const students = @json($students ?? []);
 
-// Load statistics on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const websiteSelect = document.getElementById('websiteSelect');
-    
-    // Load stats when website is selected
-    websiteSelect.addEventListener('change', function() {
-        if (this.value) {
-            loadStatistics(this.value);
-        }
+function populateReference(type) {
+    const group = document.getElementById('referenceGroup');
+    const select = document.getElementById('referenceSelect');
+    const help = document.getElementById('referenceHelp');
+    select.innerHTML = '';
+
+    let items = [];
+    if (type === 'auction') {
+        items = auctions.map(a => ({ id: a.id, label: `${a.title} (${(a.value ?? 0)})` }));
+        help.textContent = 'Select an auction item (optional).';
+    } else if (type === 'ticket') {
+        items = tickets.map(t => ({ id: t.id, label: `${t.name} (${(t.price ?? 0)})` }));
+        help.textContent = 'Select a ticket (optional).';
+    } else if (type === 'donation') {
+        items = students.map(s => ({ id: s.id, label: `${s.name ?? ''} ${s.last_name ?? ''}`.trim() }));
+        help.textContent = 'Select a student (optional).';
+    }
+
+    // Optional selection
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '— None —';
+    select.appendChild(placeholder);
+
+    items.forEach(it => {
+        const opt = document.createElement('option');
+        opt.value = it.id;
+        opt.textContent = it.label;
+        select.appendChild(opt);
     });
-    
-    // Load stats for first website by default
-    if (websiteSelect.options.length > 1) {
-        websiteSelect.selectedIndex = 1;
-        loadStatistics(websiteSelect.value);
+
+    group.style.display = 'block';
+}
+
+// Load statistics and initialize form on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('typeSelect');
+    const amountGroup = document.getElementById('amountGroup');
+    const websiteSelectEl = document.getElementById('websiteSelect');
+
+    // Initial populate
+    populateReference(typeSelect.value);
+    amountGroup.style.display = (typeSelect.value === 'ticket') ? 'none' : 'block';
+
+    typeSelect.addEventListener('change', function() {
+        populateReference(this.value);
+        // Hide amount for tickets
+        amountGroup.style.display = (this.value === 'ticket') ? 'none' : 'block';
+    });
+
+    if (websiteSelectEl) {
+        // Super admin: load stats for selected website and update on change
+        if (websiteSelectEl.value) {
+            currentWebsiteId = websiteSelectEl.value;
+            loadStatistics(currentWebsiteId);
+        }
+        websiteSelectEl.addEventListener('change', function() {
+            currentWebsiteId = this.value;
+            loadStatistics(currentWebsiteId);
+        });
+    } else {
+        if (currentWebsiteId) {
+            loadStatistics(currentWebsiteId);
+        }
     }
 });
 
 // Generate QR Code
 document.getElementById('qrGeneratorForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
-    
+
     try {
-        const response = await fetch('{{ route('admin.qr.generate.campaign') }}', {
+        const response = await fetch('{{ route('admin.qr.generate') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -256,36 +325,36 @@ document.getElementById('qrGeneratorForm').addEventListener('submit', async func
             },
             body: JSON.stringify(data)
         });
-        
-        // Check if response is JSON
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
             console.error('Non-JSON response:', text);
-            throw new Error('Server returned non-JSON response. Check console for details.');
+            throw new Error('Server returned non-JSON response.');
         }
-        
+
         const result = await response.json();
-        
-        // Handle validation errors (422)
+
         if (response.status === 422 && result.errors) {
             const errorMessages = Object.values(result.errors).flat().join(', ');
             showNotification('Validation Error: ' + errorMessages, 'danger');
             return;
         }
-        
+
         if (result.success) {
-            // Show preview
             document.getElementById('qrPlaceholder').style.display = 'none';
             document.getElementById('qrPreview').style.display = 'block';
             document.getElementById('qrCodeImage').src = result.qr_code_base64;
-            document.getElementById('previewCampaign').textContent = result.campaign_name || 'General Donation';
             document.getElementById('previewWebsite').textContent = result.website;
+
+            const type = document.getElementById('typeSelect').value;
+            const refSel = document.getElementById('referenceSelect');
+            const itemText = refSel.options[refSel.selectedIndex]?.text || '—';
+            document.getElementById('previewType').textContent = type;
+            document.getElementById('previewItem').textContent = itemText;
             document.getElementById('previewUrl').textContent = result.donation_url;
-            
+
             currentQRUrl = result.donation_url;
-            
-            // Show success message
             showNotification('QR Code generated successfully!', 'success');
         } else {
             showNotification('Error: ' + (result.message || result.error || 'Unknown error'), 'danger');
@@ -334,14 +403,15 @@ function copyUrl() {
 function printQR() {
     const printWindow = window.open('', '_blank');
     const qrImage = document.getElementById('qrCodeImage').src;
-    const campaign = document.getElementById('previewCampaign').textContent;
+    const type = document.getElementById('previewType').textContent;
+    const item = document.getElementById('previewItem').textContent;
     const website = document.getElementById('previewWebsite').textContent;
     
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
-            <title>QR Code - ${campaign}</title>
+            <title>QR Code - ${type}</title>
             <style>
                 body { 
                     text-align: center; 
@@ -360,7 +430,7 @@ function printQR() {
         </head>
         <body>
             <h2>${website}</h2>
-            <h3>${campaign}</h3>
+            <h3>${type}${item && item !== '—' ? ' · ' + item : ''}</h3>
             <img src="${qrImage}" alt="QR Code">
             <p style="margin-top: 20px;">Scan to donate</p>
             <p><small>${currentQRUrl}</small></p>

@@ -11,6 +11,20 @@ use App\Services\PaymentFunnelService;
 
 class QRCodeDonationController extends Controller
 {
+    private function getCurrentWebsite()
+    {
+        try {
+            $url = url()->current();
+            $domain = parse_url($url, PHP_URL_HOST);
+            $currentWebsite = \App\Models\Website::where('domain', $domain)->first();
+            if (!$currentWebsite && auth()->check()) {
+                $currentWebsite = auth()->user()->website;
+            }
+            return $currentWebsite;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
     /**
      * Get the current domain for QR code generation
      */
@@ -46,47 +60,72 @@ class QRCodeDonationController extends Controller
     public function generate(Request $request)
     {
         $request->validate([
-            'website_id' => 'required|exists:websites,id',
-            'campaign_name' => 'nullable|string|max:255',
+            'type' => 'required|string|in:donation,auction,ticket',
+            'reference_id' => 'nullable|integer',
             'amount' => 'nullable|numeric|min:1',
-            'type' => 'nullable|string|in:general,student,ticket,auction,investment'
+            'size' => 'nullable|integer|min:100|max:1000',
+            'website_id' => 'nullable|integer|exists:websites,id',
         ]);
-
-        $website = Website::findOrFail($request->website_id);
         
+        // Resolve website context
+        $website = null;
+        if (auth()->check() && auth()->user()->hasRoleForWebsite('admin')) {
+            if ($request->filled('website_id')) {
+                $website = Website::find($request->website_id);
+            }
+        }
+        if (!$website) {
+            // Fallback to current inferred website (website admin scope)
+            $website = $this->getCurrentWebsite();
+        }
+        if (!$website) {
+            return response()->json(['success' => false, 'message' => 'Website context not found'], 422);
+        }
+
         // Generate unique QR code identifier
         $qrIdentifier = Str::random(10);
         
         // Build donation URL with QR parameters
         $params = [
             'qr' => $qrIdentifier,
-            'website_id' => $website->id
+            'website_id' => $website->id,
+            'type' => $request->type,
         ];
-        
-        if ($request->campaign_name) {
-            $params['campaign'] = $request->campaign_name;
-        }
-        
+
         if ($request->amount) {
             $params['amount'] = $request->amount;
         }
-        
-        if ($request->type) {
-            $params['type'] = $request->type;
+
+        // Map reference id according to type
+        if ($request->type === 'auction' && $request->reference_id) {
+            $params['auction_id'] = (int) $request->reference_id;
+        } elseif ($request->type === 'ticket' && $request->reference_id) {
+            $params['ticket_id'] = (int) $request->reference_id;
+        } elseif ($request->type === 'donation' && $request->reference_id) {
+            $params['student_id'] = (int) $request->reference_id;
         }
         
-        // Use current domain for QR code URL
-        $donationUrl = $this->getCurrentDomain() . '/qr-donate?' . http_build_query($params);
-        
-        // Generate QR code
-        $qrCode = QrCode::size(300)
-            ->margin(2)
-            ->errorCorrection('H')
-            ->generate($donationUrl);
-        
+        // Use selected website domain (or current inferred) for QR code URL
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+                (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') 
+                ? 'https://' : 'http://';
+        $domainBase = $website->domain ? ($protocol . $website->domain) : $this->getCurrentDomain();
+        $donationUrl = $domainBase . '/qr-donate?' . http_build_query($params);
+
+        $size = $request->input('size', 500);
+
+        // Generate QR code as base64 PNG for consistent preview rendering
+        $qrCode = base64_encode(
+            QrCode::format('png')
+                ->size($size)
+                ->margin(2)
+                ->errorCorrection('H')
+                ->generate($donationUrl)
+        );
+
         return response()->json([
             'success' => true,
-            'qr_code' => $qrCode,
+            'qr_code_base64' => 'data:image/png;base64,' . $qrCode,
             'qr_identifier' => $qrIdentifier,
             'donation_url' => $donationUrl,
             'website' => $website->name
@@ -112,12 +151,26 @@ class QRCodeDonationController extends Controller
         $presetAmount = $request->query('amount');
         $donationType = $request->query('type', 'general');
         
+        // Normalize variables for view
+        $type = $request->query('type', 'donation');
+        $selectedId = null;
+        if ($type === 'auction') {
+            $selectedId = $request->query('auction_id');
+        } elseif ($type === 'ticket') {
+            $selectedId = $request->query('ticket_id');
+            // Map to 'sales' for view compatibility
+            $type = 'sales';
+        } elseif ($type === 'donation') {
+            $selectedId = $request->query('student_id');
+        }
+
         return view('qr-donate', compact(
             'website',
             'qrIdentifier',
             'campaignName',
             'presetAmount',
-            'donationType'
+            'type',
+            'selectedId'
         ));
     }
 
@@ -237,8 +290,35 @@ class QRCodeDonationController extends Controller
      */
     public function adminIndex()
     {
-        $websites = Website::where('status', 1)->get();
-        return view('admin.qr-codes.index', compact('websites'));
+        $user = auth()->user();
+        $isSuper = $user && $user->hasRoleForWebsite('admin');
+        
+
+        // Resolve website context
+        $currentWebsite = $this->getCurrentWebsite();
+        if (!$currentWebsite) {
+            $currentWebsite = Website::first();
+        }
+
+        $auctions = \App\Models\Auction::where('website_id', optional($currentWebsite)->id)->orderByDesc('id')->get(['id','title','value']);
+        $tickets = \App\Models\Ticket::where('website_id', optional($currentWebsite)->id)->orderByDesc('id')->get(['id','name','price','category_id']);
+        $students = \App\Models\User::where('website_id', optional($currentWebsite)->id)
+            ->whereNotNull('parent_id')
+            ->orderBy('name')
+            ->get(['id','name','last_name','email']);
+
+        $data = [
+            'website' => $currentWebsite,
+            'auctions' => $auctions,
+            'tickets' => $tickets,
+            'students' => $students,
+        ];
+
+        if ($isSuper) {
+            $data['websites'] = Website::orderBy('name')->get(['id','name','domain']);
+        }
+
+        return view('admin.qr-codes.index', $data);
     }
 
     /**
