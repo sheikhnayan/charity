@@ -522,24 +522,76 @@
         const websiteId = {{ $website->id }};
         const currentType = '{{ $type }}';
         const selectedIdFromUrl = '{{ $selectedId ?? "" }}';
+        const presetAmount = '{{ $presetAmount ?? "" }}';
+        const isQRScanned = selectedIdFromUrl !== ''; // True if QR was scanned with pre-selection
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // If QR was scanned, hide type tabs and show only selected content
+            if (isQRScanned) {
+                hideTypeSelectionTabs();
+            }
+            
             setupTypeSelection();
             loadDataForType(currentType);
             setupAmountButtons();
+            
+            // Set preset amount if provided
+            if (presetAmount && currentType === 'donation') {
+                document.getElementById('donationAmount').value = parseFloat(presetAmount);
+            }
+            
+            // Auto-select 10% tip for donations
+            if (currentType === 'donation') {
+                autoSelectTip();
+            }
+            
             trackFormView();
         });
+
+        // Hide type selection tabs when QR code pre-selected item
+        function hideTypeSelectionTabs() {
+            const typeSelector = document.querySelector('.type-selector');
+            const typeTabs = document.querySelector('.type-tabs');
+            
+            if (typeTabs) {
+                typeTabs.style.display = 'none';
+            }
+            
+            // Add info banner instead
+            if (typeSelector && !document.getElementById('qrModeInfo')) {
+                const infoBanner = document.createElement('div');
+                infoBanner.id = 'qrModeInfo';
+                infoBanner.className = 'alert alert-info mb-3';
+                infoBanner.innerHTML = `<i class="fas fa-qrcode me-2"></i> <strong>QR Mode:</strong> Showing selected ${currentType}`;
+                typeSelector.insertBefore(infoBanner, typeSelector.firstChild);
+            }
+        }
 
         // Setup type selection tabs
         function setupTypeSelection() {
             document.querySelectorAll('.type-tab').forEach(tab => {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
+                    // Don't allow type switching if QR scanned
+                    if (isQRScanned) {
+                        return;
+                    }
                     const newType = this.getAttribute('data-type');
                     switchType(newType);
                 });
             });
+        }
+
+        // Auto-select 10% tip
+        function autoSelectTip() {
+            setTimeout(() => {
+                // Find 10% button in tipping component (usually second button after default)
+                const tipButtons = document.querySelectorAll('[data-tip-percentage="10"]');
+                if (tipButtons.length > 0) {
+                    tipButtons[0].click();
+                }
+            }, 300);
         }
 
         // Switch between types
@@ -647,6 +699,24 @@
                 return;
             }
             
+            // If QR scanned, show only selected auction (no clickable list)
+            if (isQRScanned && selectedIdFromUrl) {
+                const selected = auctions.find(a => a.id == selectedIdFromUrl);
+                if (selected) {
+                    list.innerHTML = `
+                        <div class="selection-item selected" style="cursor: default;">
+                            <div class="selection-item-radio"></div>
+                            <div class="selection-item-label">
+                                <div>${selected.title}</div>
+                                <div class="selection-item-sublabel">Value: $${parseFloat(selected.value).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('auctionIdInput').value = selected.id;
+                    return;
+                }
+            }
+            
             list.innerHTML = auctions.map(auction => `
                 <div class="selection-item ${selectedIdFromUrl == auction.id ? 'selected' : ''}" data-id="${auction.id}">
                     <div class="selection-item-radio"></div>
@@ -668,6 +738,24 @@
                 return;
             }
             
+            // If QR scanned, show only selected ticket (no clickable list)
+            if (isQRScanned && selectedIdFromUrl) {
+                const selected = tickets.find(t => t.id == selectedIdFromUrl);
+                if (selected) {
+                    list.innerHTML = `
+                        <div class="selection-item selected" style="cursor: default;">
+                            <div class="selection-item-radio"></div>
+                            <div class="selection-item-label">
+                                <div>${selected.name}</div>
+                                <div class="selection-item-sublabel">${selected.category_name || 'Ticket'} • $${parseFloat(selected.price).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('ticketIdInput').value = selected.id;
+                    return;
+                }
+            }
+            
             list.innerHTML = tickets.map(ticket => `
                 <div class="selection-item ${selectedIdFromUrl == ticket.id ? 'selected' : ''}" data-id="${ticket.id}">
                     <div class="selection-item-radio"></div>
@@ -687,6 +775,24 @@
             if (students.length === 0) {
                 list.innerHTML = '<div class="text-center py-5 text-muted"><i class="fas fa-inbox"></i> No students available</div>';
                 return;
+            }
+            
+            // If QR scanned, show only selected student (no clickable list)
+            if (isQRScanned && selectedIdFromUrl) {
+                const selected = students.find(s => s.id == selectedIdFromUrl);
+                if (selected) {
+                    list.innerHTML = `
+                        <div class="selection-item selected" style="cursor: default;">
+                            <div class="selection-item-radio"></div>
+                            <div class="selection-item-label">
+                                <div>${selected.name} ${selected.last_name}</div>
+                                <div class="selection-item-sublabel">${selected.email}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('studentIdInput').value = selected.id;
+                    return;
+                }
             }
             
             list.innerHTML = students.map(student => `
@@ -718,6 +824,11 @@
                 listContainer = document.getElementById('studentList');
                 inputElement = document.getElementById('studentIdInput');
                 requiredElement = document.querySelector('.donation-student-required');
+            }
+            
+            // If QR scanned, don't attach click listeners (make items non-selectable)
+            if (isQRScanned) {
+                return;
             }
             
             listContainer.querySelectorAll('.selection-item').forEach(item => {
