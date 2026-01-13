@@ -504,7 +504,8 @@
                 <div id="tippingContainer" style="display: none;" class="mt-4">
                     @include('components.tipping', [
                         'baseAmount' => 0,
-                        'primaryColor' => '#28a745'
+                        'primaryColor' => '#28a745',
+                        'processingFee' => 2.9
                     ])
                 </div>
                 
@@ -581,11 +582,6 @@
                     <div class="mb-3">
                         <select class="form-select" name="billing_country" id="billing_country" required>
                             <option value="" disabled selected hidden>Country/Region</option>
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="GB">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                            <option value="Other">Other</option>
                         </select>
                     </div>
                     
@@ -651,12 +647,7 @@
                         </div>
                         <div class="col-md-4">
                             <select class="form-select" name="billing_state" id="billing_state" required>
-                                <option value="" disabled selected hidden>State</option>
-                                <option value="AL">Alabama</option>
-                                <option value="CA">California</option>
-                                <option value="TX">Texas</option>
-                                <option value="NY">New York</option>
-                                <option value="Other">Other</option>
+                                <option value="" disabled selected hidden>State/Province</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -687,11 +678,11 @@
                 <div class="order-summary mt-4 p-3 bg-light rounded">
                     <h6 class="fw-bold mb-3"><i class="fas fa-receipt me-2"></i> Order Summary</h6>
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Amount:</span>
+                        <span>Base Amount:</span>
                         <span id="summaryAmount" class="fw-bold">$0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3" id="summaryTipRow" style="display: none;">
-                        <span>Tip (10%):</span>
+                        <span>Tip:</span>
                         <span id="summaryTip" class="fw-bold">$0.00</span>
                     </div>
                     <hr/>
@@ -1176,6 +1167,11 @@
             document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
             document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
             
+            // Update tipping component's base amount
+            if (typeof updateBaseAmount === 'function') {
+                updateBaseAmount(amount);
+            }
+            
             // Show tip row if donation type and tip is selected
             if (currentType === 'donation' && tipAmount > 0) {
                 document.getElementById('summaryTipRow').style.display = 'flex';
@@ -1353,6 +1349,71 @@
                 populatePaymentFields();
             }
         });
+
+        // ============== Country and State Dropdowns ==============
+        const countryStateData = {
+            "United States": [
+                "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
+            ].sort(),
+            "Canada": [
+                "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"
+            ].sort(),
+            "Australia": [
+                "Australian Capital Territory","New South Wales","Northern Territory","Queensland","South Australia","Tasmania","Victoria","Western Australia"
+            ].sort(),
+            "India": [
+                "Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"
+            ].sort(),
+            "United Kingdom": ["England","Scotland","Wales","Northern Ireland"],
+            "Germany": ["Baden-Württemberg","Bavaria","Berlin","Brandenburg","Bremen","Hamburg","Hesse","Lower Saxony","Mecklenburg-Vorpommern","North Rhine-Westphalia","Rhineland-Palatinate","Saarland","Saxony","Saxony-Anhalt","Schleswig-Holstein","Thuringia"],
+            "France": ["Auvergne-Rhône-Alpes","Bourgogne-Franche-Comté","Brittany","Centre-Val de Loire","Corsica","Grand Est","Guadeloupe","Guyana","Hauts-de-France","Île-de-France","La Réunion","Martinique","Mayotte","Normandy","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d'Azur"]
+        };
+        
+        const countryList = Object.keys(countryStateData).concat(["Spain","Italy","Japan","South Korea","Mexico","Other"]).filter((v, i, a) => a.indexOf(v) === i);
+        
+        // Initialize country dropdown on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            populateCountries();
+            
+            // Add event listener to country select
+            const countrySelect = document.getElementById('billing_country');
+            if (countrySelect) {
+                countrySelect.addEventListener('change', function() {
+                    populateStates(this.value);
+                });
+            }
+        });
+        
+        function populateCountries() {
+            const countrySelect = document.getElementById('billing_country');
+            if (!countrySelect) return;
+            
+            // Clear existing options except the first placeholder
+            countrySelect.innerHTML = '<option value="" disabled selected hidden>Country/Region</option>';
+            
+            countryList.forEach(function(country) {
+                const option = document.createElement('option');
+                option.value = country;
+                option.text = country;
+                countrySelect.appendChild(option);
+            });
+        }
+        
+        function populateStates(country) {
+            const stateSelect = document.getElementById('billing_state');
+            if (!stateSelect) return;
+            
+            stateSelect.innerHTML = '<option value="" disabled selected hidden>State/Province</option>';
+            
+            if (countryStateData[country]) {
+                countryStateData[country].forEach(function(state) {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.text = state;
+                    stateSelect.appendChild(option);
+                });
+            }
+        }
     </script>
 </body>
 </html>
