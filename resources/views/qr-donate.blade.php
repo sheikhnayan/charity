@@ -366,6 +366,12 @@
                 
                 <!-- Donation Type Content -->
                 <div class="type-content {{ $type === 'donation' ? 'active' : '' }}" data-type-content="donation">
+                    <!-- Student Details (when selected) -->
+                    <div id="studentDetailsSection" style="display: none;" class="mb-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-user me-2"></i> Beneficiary</h6>
+                        <div id="studentDetails"></div>
+                    </div>
+                    
                     <div class="text-center mb-3">
                         <small class="text-muted">Choose an amount or enter your own</small>
                     </div>
@@ -405,6 +411,12 @@
                         </div>
                     </div>
                     <input type="hidden" name="auction_id_temp" id="auctionSelected" value="{{ $selectedId ?? '' }}">
+                    
+                    <!-- Auction Details (when selected) -->
+                    <div id="auctionDetailsSection" style="display: none;" class="mt-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-gavel me-2"></i> Auction Details</h6>
+                        <div id="auctionDetails"></div>
+                    </div>
                 </div>
                 
                 <!-- Sales/Tickets Type Content -->
@@ -489,11 +501,75 @@
                 </div>
                 
                 <!-- Tipping Component (Donation Type Only) -->
-                <div id="tippingContainer" style="display: none;">
+                <div id="tippingContainer" style="display: none;" class="mt-4">
                     @include('components.tipping', [
                         'baseAmount' => 0,
                         'primaryColor' => '#28a745'
                     ])
+                </div>
+                
+                <!-- Payment Section -->
+                <div class="payment-section mt-4 p-3 bg-light rounded">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-credit-card me-2"></i> Payment Details</h6>
+                    
+                    <!-- Stripe Payment -->
+                    <div id="stripeContainer" style="display: none;">
+                        <div id="card-element" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px 15px;"></div>
+                        <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                    </div>
+                    
+                    <!-- Authorize.Net Payment (fallback) -->
+                    <div id="authorizeNetContainer" style="display: block;">
+                        <p class="text-muted small mb-3">Enter your card details below</p>
+                        <input type="text" 
+                               id="cardNumber" 
+                               name="card_number" 
+                               class="form-control" 
+                               placeholder="Card Number" 
+                               maxlength="19"
+                               pattern="\d{13,19}"
+                               required>
+                        <div class="row g-2 mt-2">
+                            <div class="col-8">
+                                <input type="text" 
+                                       id="cardExpiry" 
+                                       name="card_expiry" 
+                                       class="form-control" 
+                                       placeholder="MM/YY" 
+                                       maxlength="5"
+                                       pattern="\d{2}/\d{2}"
+                                       required>
+                            </div>
+                            <div class="col-4">
+                                <input type="text" 
+                                       id="cardCvc" 
+                                       name="card_cvc" 
+                                       class="form-control" 
+                                       placeholder="CVC" 
+                                       maxlength="4"
+                                       pattern="\d{3,4}"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="order-summary mt-4 p-3 bg-light rounded">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-receipt me-2"></i> Order Summary</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Amount:</span>
+                        <span id="summaryAmount" class="fw-bold">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3" id="summaryTipRow" style="display: none;">
+                        <span>Tip (10%):</span>
+                        <span id="summaryTip" class="fw-bold">$0.00</span>
+                    </div>
+                    <hr/>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Total:</span>
+                        <span id="summaryTotal" class="fw-bold" style="font-size: 18px; color: var(--accent-color);">$0.00</span>
+                    </div>
                 </div>
                 
                 <!-- Submit Button -->
@@ -713,6 +789,7 @@
                         </div>
                     `;
                     document.getElementById('auctionIdInput').value = selected.id;
+                    displayAuctionDetails(selected);
                     return;
                 }
             }
@@ -752,6 +829,7 @@
                         </div>
                     `;
                     document.getElementById('ticketIdInput').value = selected.id;
+                    displayTicketDetails(selected);
                     return;
                 }
             }
@@ -791,6 +869,7 @@
                         </div>
                     `;
                     document.getElementById('studentIdInput').value = selected.id;
+                    displayStudentDetails(selected);
                     return;
                 }
             }
@@ -806,6 +885,36 @@
             `).join('');
             
             attachSelectionListeners('donation');
+        }
+
+        // Display auction details
+        function displayAuctionDetails(auction) {
+            const section = document.getElementById('auctionDetailsSection');
+            const details = document.getElementById('auctionDetails');
+            details.innerHTML = `
+                <p class="mb-2"><strong>${auction.title}</strong></p>
+                <p class="text-muted small mb-0">Starting Value: <strong>$${parseFloat(auction.value).toFixed(2)}</strong></p>
+            `;
+            section.style.display = 'block';
+        }
+
+        // Display ticket details
+        function displayTicketDetails(ticket) {
+            const details = document.getElementById('ticketList');
+            // Store ticket price for checkout
+            document.getElementById('ticketIdInput').dataset.price = ticket.price;
+            updateOrderSummary();
+        }
+
+        // Display student details
+        function displayStudentDetails(student) {
+            const section = document.getElementById('studentDetailsSection');
+            const details = document.getElementById('studentDetails');
+            details.innerHTML = `
+                <p class="mb-1"><strong>${student.name} ${student.last_name}</strong></p>
+                <p class="text-muted small mb-0">${student.email}</p>
+            `;
+            section.style.display = 'block';
         }
 
         // Attach selection listeners
@@ -868,18 +977,47 @@
                     document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     const amount = this.getAttribute('data-amount');
-                    document.getElementById('donationAmount').value = amount === '1000' ? 1000 : parseInt(amount);
+                    const finalAmount = amount === '1000' ? 1000 : parseInt(amount);
+                    document.getElementById('donationAmount').value = finalAmount;
+                    updateOrderSummary();
                 });
             });
             
             document.getElementById('donationAmount').addEventListener('input', function() {
                 document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+                updateOrderSummary();
             });
+        }
+
+        // Update order summary with amount and tip
+        function updateOrderSummary() {
+            const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
+            const tipInput = document.querySelector('[name="tip_amount"]');
+            const tipAmount = tipInput ? parseFloat(tipInput.value) || 0 : 0;
+            const total = amount + tipAmount;
+            
+            document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
+            document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+            
+            // Show tip row if donation type and tip is selected
+            if (currentType === 'donation' && tipAmount > 0) {
+                document.getElementById('summaryTipRow').style.display = 'flex';
+                document.getElementById('summaryTip').textContent = '$' + tipAmount.toFixed(2);
+            } else {
+                document.getElementById('summaryTipRow').style.display = 'none';
+            }
         }
 
         // Show tipping component
         function showTippingComponent() {
             document.getElementById('tippingContainer').style.display = 'block';
+            // Listen for tip changes to update summary
+            setTimeout(() => {
+                const tipInput = document.querySelector('[name="tip_amount"]');
+                if (tipInput) {
+                    tipInput.addEventListener('change', updateOrderSummary);
+                }
+            }, 500);
         }
 
         // Hide tipping component
