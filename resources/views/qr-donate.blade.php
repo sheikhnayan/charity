@@ -756,14 +756,27 @@
             loadDataForType(currentType);
             setupAmountButtons();
             
+            // Show tipping component for donation type
+            if (currentType === 'donation') {
+                showTippingComponent();
+            }
+            
             // Set preset amount if provided
             if (presetAmount && currentType === 'donation') {
                 document.getElementById('donationAmount').value = parseFloat(presetAmount);
+                // Call updateOrderSummary to display the preset amount
+                setTimeout(function() {
+                    updateOrderSummary();
+                }, 100);
             }
             
             // Auto-select 10% tip for donations
             if (currentType === 'donation') {
                 autoSelectTip();
+                // Call updateOrderSummary after tip is selected
+                setTimeout(function() {
+                    updateOrderSummary();
+                }, 500);
             }
             
             // Setup card number formatting
@@ -812,12 +825,26 @@
         // Auto-select 10% tip
         function autoSelectTip() {
             setTimeout(() => {
-                // Find 10% button in tipping component (usually second button after default)
-                const tipButtons = document.querySelectorAll('[data-tip-percentage="10"]');
-                if (tipButtons.length > 0) {
-                    tipButtons[0].click();
+                // Find 10% button in tipping component
+                const tipButton = document.querySelector('.tip-btn[data-percentage="10"]');
+                if (tipButton) {
+                    tipButton.click();
+                    // Ensure tip change listener is set up
+                    setupTipChangeListener();
                 }
             }, 300);
+        }
+
+        // Setup listener for tip changes
+        function setupTipChangeListener() {
+            setTimeout(() => {
+                const tipAmountInput = document.querySelector('[name="tip_amount"]');
+                if (tipAmountInput && !tipAmountInput._hasListener) {
+                    tipAmountInput._hasListener = true;
+                    tipAmountInput.addEventListener('input', updateOrderSummary);
+                    tipAmountInput.addEventListener('change', updateOrderSummary);
+                }
+            }, 100);
         }
 
         // Switch between types
