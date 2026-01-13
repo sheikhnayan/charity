@@ -17,11 +17,41 @@ class QRCodeDonationController extends Controller
             $url = url()->current();
             $domain = parse_url($url, PHP_URL_HOST);
             $currentWebsite = \App\Models\Website::where('domain', $domain)->first();
+            
+            // Log attempt
+            \Log::info('getCurrentWebsite: Domain lookup', [
+                'domain' => $domain,
+                'found' => $currentWebsite ? $currentWebsite->id : false
+            ]);
+            
             if (!$currentWebsite && auth()->check()) {
-                $currentWebsite = auth()->user()->website;
+                // Try user's assigned website_id
+                if (auth()->user()->website_id) {
+                    $currentWebsite = auth()->user()->website;
+                    \Log::info('getCurrentWebsite: Using user->website_id', ['website_id' => auth()->user()->website_id]);
+                } else {
+                    // Fallback: get first website where user has a role
+                    $userWebsite = auth()->user()->roles()
+                        ->wherePivot('website_id', '!=', null)
+                        ->first()
+                        ?->pivot
+                        ?->website_id;
+                    if ($userWebsite) {
+                        $currentWebsite = \App\Models\Website::find($userWebsite);
+                        \Log::info('getCurrentWebsite: Using user role website', ['website_id' => $userWebsite]);
+                    }
+                }
             }
+            
+            // Final fallback: first website
+            if (!$currentWebsite) {
+                $currentWebsite = \App\Models\Website::first();
+                \Log::warning('getCurrentWebsite: Using first website fallback', ['website_id' => $currentWebsite?->id ?? 'none']);
+            }
+            
             return $currentWebsite;
         } catch (\Exception $e) {
+            \Log::error('getCurrentWebsite error: ' . $e->getMessage());
             return null;
         }
     }
