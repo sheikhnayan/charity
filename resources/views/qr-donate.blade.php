@@ -510,47 +510,176 @@
                 
                 <!-- Payment Section -->
                 <div class="payment-section mt-4 p-3 bg-light rounded">
-                    <h6 class="fw-bold mb-3"><i class="fas fa-credit-card me-2"></i> Payment Details</h6>
+                    <h5 class="fw-bold mb-3"><i class="fas fa-credit-card me-2"></i> Payment Details</h5>
+                    <p class="text-muted small mb-3">All transactions are secure and encrypted.</p>
                     
-                    <!-- Stripe Payment -->
-                    <div id="stripeContainer" style="display: none;">
-                        <div id="card-element" style="border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px 15px;"></div>
-                        <div id="card-errors" class="text-danger mt-2" role="alert"></div>
-                    </div>
-                    
-                    <!-- Authorize.Net Payment (fallback) -->
-                    <div id="authorizeNetContainer" style="display: block;">
-                        <p class="text-muted small mb-3">Enter your card details below</p>
-                        <input type="text" 
-                               id="cardNumber" 
-                               name="card_number" 
-                               class="form-control" 
-                               placeholder="Card Number" 
-                               maxlength="19"
-                               pattern="\d{13,19}"
-                               required>
-                        <div class="row g-2 mt-2">
-                            <div class="col-8">
-                                <input type="text" 
-                                       id="cardExpiry" 
-                                       name="card_expiry" 
-                                       class="form-control" 
-                                       placeholder="MM/YY" 
-                                       maxlength="5"
-                                       pattern="\d{2}/\d{2}"
-                                       required>
-                            </div>
-                            <div class="col-4">
-                                <input type="text" 
-                                       id="cardCvc" 
-                                       name="card_cvc" 
-                                       class="form-control" 
-                                       placeholder="CVC" 
-                                       maxlength="4"
-                                       pattern="\d{3,4}"
-                                       required>
+                    <!-- Card Icons Header -->
+                    <div class="card-icons-header p-3 mb-3" style="border: 1px solid #1773b0; border-radius: 10px; background: #f0f5ff;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-size: 0.95rem;">Credit Card</h5>
+                            <div class="d-flex gap-2">
+                                <img alt="VISA" src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa.sxIq5Dot.svg" width="38" height="24">
+                                <img alt="MASTERCARD" src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/mastercard.1c4_lyMp.svg" width="38" height="24">
+                                <img alt="AMEX" src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/amex.Csr7hRoy.svg" width="38" height="24">
+                                <img alt="DISCOVER" src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/discover.C7UbFpNb.svg" width="38" height="24">
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Card Number -->
+                    <div class="mb-3 position-relative">
+                        <input type="text" 
+                               class="form-control" 
+                               name="card_number" 
+                               id="card_number"
+                               placeholder="Card number" 
+                               maxlength="19"
+                               required>
+                        <i class="fa fa-lock position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+                    </div>
+                    
+                    <!-- Expiry and CVV -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-8">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="expiration_date" 
+                                   id="expiration_date"
+                                   placeholder="Expiration date (MM / YY)" 
+                                   maxlength="7"
+                                   required
+                                   oninput="formatExpiryDate(this)">
+                        </div>
+                        <div class="col-4 position-relative">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="cvv" 
+                                   id="cvv"
+                                   placeholder="Security code" 
+                                   maxlength="4"
+                                   required>
+                            <i class="fa fa-question-circle position-absolute" style="right: 13px; top: 50%; transform: translateY(-50%); color: #888; cursor: help;" 
+                               data-bs-toggle="tooltip" 
+                               title="3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front."></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Name on Card -->
+                    <div class="mb-3 position-relative">
+                        <input type="text" 
+                               class="form-control" 
+                               name="name_on_card" 
+                               id="name_on_card"
+                               placeholder="Name on card" 
+                               required>
+                    </div>
+                    
+                    <!-- Billing Address -->
+                    <h6 class="fw-bold mb-3 mt-4">Billing Address</h6>
+                    
+                    <!-- Country -->
+                    <div class="mb-3">
+                        <select class="form-select" name="billing_country" id="billing_country" required>
+                            <option value="" disabled selected hidden>Country/Region</option>
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <!-- First and Last Name -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="billing_first_name" 
+                                   id="billing_first_name"
+                                   placeholder="First name" 
+                                   required>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="billing_last_name" 
+                                   id="billing_last_name"
+                                   placeholder="Last name" 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" 
+                               class="form-control" 
+                               name="billing_email" 
+                               id="billing_email"
+                               placeholder="Email" 
+                               required>
+                    </div>
+                    
+                    <!-- Address -->
+                    <div class="mb-3 position-relative">
+                        <input type="text" 
+                               class="form-control" 
+                               name="billing_address" 
+                               id="billing_address"
+                               placeholder="Address" 
+                               required>
+                        <i class="fa fa-search position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+                    </div>
+                    
+                    <!-- Apartment/Suite -->
+                    <div class="mb-3">
+                        <input type="text" 
+                               class="form-control" 
+                               name="billing_apartment" 
+                               id="billing_apartment"
+                               placeholder="Apartment, suite, etc. (optional)">
+                    </div>
+                    
+                    <!-- City, State, ZIP -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-4">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="billing_city" 
+                                   id="billing_city"
+                                   placeholder="City" 
+                                   required>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="billing_state" id="billing_state" required>
+                                <option value="" disabled selected hidden>State</option>
+                                <option value="AL">Alabama</option>
+                                <option value="CA">California</option>
+                                <option value="TX">Texas</option>
+                                <option value="NY">New York</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="billing_zipcode" 
+                                   id="billing_zipcode"
+                                   placeholder="ZIP code" 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="mb-3 position-relative">
+                        <input type="tel" 
+                               class="form-control" 
+                               name="billing_phone" 
+                               id="billing_phone"
+                               placeholder="Phone" 
+                               required>
+                        <i class="fa fa-question-circle position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); color: #888; cursor: help;" 
+                           data-bs-toggle="tooltip" 
+                           title="In case we need to contact you about your order"></i>
                     </div>
                 </div>
                 
@@ -572,13 +701,28 @@
                     </div>
                 </div>
                 
-                <!-- Submit Button -->
-                <button type="submit" class="donate-btn" id="submitBtn">
-                    <i class="fas fa-heart me-2"></i> <span id="submitBtnText">Continue to Payment</span>
-                </button>
+                <!-- Payment Options -->
+                <div class="payment-options mt-4">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="authorize_net">
+                        <i class="fas fa-lock me-2"></i> Pay with Card (Authorize.Net)
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-warning w-100 py-3 fw-bold" onclick="handleCryptoPayment()">
+                        <i class="fas fa-bitcoin me-2"></i> Pay with Crypto
+                    </button>
+                </div>
                 
-                <div class="secure-badge">
-                    <i class="fas fa-lock"></i> Secure payment via Stripe & Authorize.Net
+                <!-- Policy Links -->
+                <div class="policy-links text-center mt-4">
+                    <p style="font-size: 0.85rem;">
+                        <a href="#" style="color: #1773b0; text-decoration: underline;">Refund policy</a> • 
+                        <a href="#" style="color: #1773b0; text-decoration: underline;">Privacy</a> • 
+                        <a href="#" style="color: #1773b0; text-decoration: underline;">Terms</a>
+                    </p>
+                </div>
+                
+                <div class="secure-badge mt-3">
+                    <i class="fas fa-lock"></i> Secure payment via Authorize.Net
                 </div>
             </form>
         </div>
@@ -620,6 +764,12 @@
             // Auto-select 10% tip for donations
             if (currentType === 'donation') {
                 autoSelectTip();
+            }
+            
+            // Setup card number formatting
+            const cardNumberInput = document.getElementById('card_number');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', formatCardNumber);
             }
             
             trackFormView();
@@ -1043,6 +1193,50 @@
             }
         }
 
+        // Handle Crypto Payment
+        function handleCryptoPayment() {
+            alert('Crypto payment functionality will be available soon. Please use Card payment for now.');
+        }
+
+        // Format card number with spaces every 4 digits
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '');
+            let formatted = value.match(/.{1,4}/g);
+            input.value = formatted ? formatted.join(' ') : value;
+        }
+
+        // Format expiry date to MM / YY
+        function formatExpiryDate(input) {
+            let value = input.value.replace(/\s/g, '').replace(/\//g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + ' / ' + value.slice(2, 4);
+            }
+            input.value = value;
+        }
+
+        // Populate hidden payment fields on form submit
+        function populatePaymentFields() {
+            const type = document.getElementById('typeInput').value;
+            const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
+            
+            // Get tip values
+            const tipInput = document.querySelector('[name="tip_amount"]');
+            const tipPercInput = document.querySelector('[name="tip_percentage"]');
+            const tipEnabledInput = document.querySelector('[name="tip_enabled"]');
+            
+            // Get selected item IDs
+            if (type === 'donation') {
+                const studentId = document.getElementById('studentIdInput').value || '';
+                // Can set hidden fields here if needed for additional processing
+            } else if (type === 'auction') {
+                const auctionId = document.getElementById('auctionIdInput').value || '';
+                // Can set hidden fields here if needed for additional processing
+            } else if (type === 'sales') {
+                const ticketId = document.getElementById('ticketIdInput').value || '';
+                // Can set hidden fields here if needed for additional processing
+            }
+        }
+
         // Form submission
         document.getElementById('qrDonateForm').addEventListener('submit', function(e) {
             const type = document.getElementById('typeInput').value;
@@ -1078,11 +1272,58 @@
                 }
             }
             
+            // Validate payment fields
+            if (isValid) {
+                const cardNumber = document.getElementById('card_number').value;
+                const expiryDate = document.getElementById('expiration_date').value;
+                const cvv = document.getElementById('cvv').value;
+                const nameOnCard = document.getElementById('name_on_card').value;
+                const billingAddress = document.getElementById('billing_address').value;
+                const billingCity = document.getElementById('billing_city').value;
+                const billingState = document.getElementById('billing_state').value;
+                const billingZip = document.getElementById('billing_zipcode').value;
+                
+                if (!cardNumber || cardNumber.replace(/\s/g, '').length < 13) {
+                    isValid = false;
+                    errorMsg = 'Please enter a valid card number';
+                }
+                if (!expiryDate || !expiryDate.includes('/')) {
+                    isValid = false;
+                    errorMsg = 'Please enter a valid expiration date (MM / YY)';
+                }
+                if (!cvv || cvv.length < 3) {
+                    isValid = false;
+                    errorMsg = 'Please enter a valid security code';
+                }
+                if (!nameOnCard) {
+                    isValid = false;
+                    errorMsg = 'Please enter name on card';
+                }
+                if (!billingAddress) {
+                    isValid = false;
+                    errorMsg = 'Please enter billing address';
+                }
+                if (!billingCity) {
+                    isValid = false;
+                    errorMsg = 'Please enter billing city';
+                }
+                if (!billingState) {
+                    isValid = false;
+                    errorMsg = 'Please select billing state';
+                }
+                if (!billingZip) {
+                    isValid = false;
+                    errorMsg = 'Please enter billing ZIP code';
+                }
+            }
+            
             if (!isValid) {
                 e.preventDefault();
                 if (errorMsg) {
                     alert(errorMsg);
                 }
+            } else {
+                populatePaymentFields();
             }
         });
     </script>
