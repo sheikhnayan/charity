@@ -154,6 +154,9 @@
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
                                                         <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
+                                                        @php
+                                                            dd($item,$item->donaion);
+                                                        @endphp
                                                             <td>{{ $item->donation->user->name }}</td>
                                                         @elseif($item->type == 'general')
                                                             <td>{{ $item->website->name }}</td>
