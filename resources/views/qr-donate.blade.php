@@ -1162,6 +1162,13 @@
         // Update order summary with amount and tip
         function updateOrderSummary() {
             const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
+            
+            // Update tipping component's base amount FIRST (this updates the tip calculation)
+            if (typeof updateBaseAmount === 'function') {
+                updateBaseAmount(amount);
+            }
+            
+            // NOW read the tip amount after updateBaseAmount has calculated it
             const tipInput = document.querySelector('[name="tip_amount"]');
             let tipAmount = tipInput ? parseFloat(tipInput.value) || 0 : 0;
             
@@ -1174,11 +1181,6 @@
             
             document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
             document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
-            
-            // Update tipping component's base amount
-            if (typeof updateBaseAmount === 'function') {
-                updateBaseAmount(amount);
-            }
             
             // Show tip row if donation type and tip is selected
             if (currentType === 'donation' && tipAmount > 0) {
