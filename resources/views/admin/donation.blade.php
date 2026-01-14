@@ -174,7 +174,7 @@
                                                             <td>{{ $item->investment->investor_name }}</td>
                                                         @endif
                                                         @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->group_name }}</td>
+                                                            <td>{{ ($item->donation->user)? $item->donation->user->group_name : '' }}</td>
                                                         @else
                                                             <td></td>
                                                         @endif
