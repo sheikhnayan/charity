@@ -216,11 +216,19 @@ class QRCodeDonationController extends Controller
                 'email' => 'required|email|max:255',
                 'phone' => 'nullable|string|max:20',
                 'qr_identifier' => 'required|string',
-                'type' => 'nullable|string|in:general,student,ticket,auction,investment'
+                'type' => 'required|string|in:donation,auction,sales'
             ]);
 
             // Get website
             $website = Website::findOrFail($request->website_id);
+            
+            // Map frontend type to donation type
+            $typeMapping = [
+                'donation' => 'student',
+                'auction' => 'auction',
+                'sales' => 'ticket'
+            ];
+            $donationType = $typeMapping[$request->type] ?? 'general';
 
             // Create donation record
             $donation = new Donation;
@@ -230,7 +238,7 @@ class QRCodeDonationController extends Controller
             // $donation->phone = $request->phone;
             $donation->amount = $request->amount;
             $donation->website_id = $request->website_id;
-            $donation->type = $request->type ?? 'general';
+            $donation->type = $donationType;
             $donation->status = 0; // Pending
             $donation->hide = $request->anonymous_donation ? 1 : 0;
             $donation->comment = $request->comment;

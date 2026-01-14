@@ -1168,26 +1168,35 @@
                 updateBaseAmount(amount);
             }
             
-            // NOW read the tip amount after updateBaseAmount has calculated it
-            const tipInput = document.querySelector('[name="tip_amount"]');
-            let tipAmount = tipInput ? parseFloat(tipInput.value) || 0 : 0;
-            
-            // Fallback: if tip_amount field is 0, check if currentTipAmount exists (from tipping component)
-            if (tipAmount === 0 && typeof currentTipAmount !== 'undefined') {
-                tipAmount = currentTipAmount || 0;
+            // Read the tip amount - prioritize currentTipAmount global variable
+            let tipAmount = 0;
+            if (typeof currentTipAmount !== 'undefined' && currentTipAmount > 0) {
+                tipAmount = currentTipAmount;
+            } else {
+                // Fallback: read from input field
+                const tipInput = document.querySelector('[name="tip_amount"]');
+                if (tipInput && tipInput.value) {
+                    tipAmount = parseFloat(tipInput.value) || 0;
+                }
             }
             
             const total = amount + tipAmount;
             
-            document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-            document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+            // Update summary display
+            const summaryAmount = document.getElementById('summaryAmount');
+            const summaryTotal = document.getElementById('summaryTotal');
+            const summaryTipRow = document.getElementById('summaryTipRow');
+            const summaryTip = document.getElementById('summaryTip');
+            
+            if (summaryAmount) summaryAmount.textContent = '$' + amount.toFixed(2);
+            if (summaryTotal) summaryTotal.textContent = '$' + total.toFixed(2);
             
             // Show tip row if donation type and tip is selected
             if (currentType === 'donation' && tipAmount > 0) {
-                document.getElementById('summaryTipRow').style.display = 'flex';
-                document.getElementById('summaryTip').textContent = '$' + tipAmount.toFixed(2);
+                if (summaryTipRow) summaryTipRow.style.display = 'flex';
+                if (summaryTip) summaryTip.textContent = '$' + tipAmount.toFixed(2);
             } else {
-                document.getElementById('summaryTipRow').style.display = 'none';
+                if (summaryTipRow) summaryTipRow.style.display = 'none';
             }
         }
 
