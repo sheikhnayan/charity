@@ -228,12 +228,12 @@ class QRCodeDonationController extends Controller
                 'payment_method' => 'required|string|in:authorize_net,coinbase',
                 // Card details for Authorize.Net
                 'card_number' => 'required_if:payment_method,authorize_net',
-                'expiry_date' => 'required_if:payment_method,authorize_net',
+                'expiration_date' => 'required_if:payment_method,authorize_net',
                 'cvv' => 'required_if:payment_method,authorize_net',
                 'billing_address' => 'required_if:payment_method,authorize_net',
                 'billing_city' => 'required_if:payment_method,authorize_net',
                 'billing_state' => 'required_if:payment_method,authorize_net',
-                'billing_zip' => 'required_if:payment_method,authorize_net',
+                'billing_zipcode' => 'required_if:payment_method,authorize_net',
                 'billing_country' => 'required_if:payment_method,authorize_net',
             ]);
 
@@ -353,9 +353,9 @@ class QRCodeDonationController extends Controller
     {
         try {
             // Parse expiry date
-            $expiryParts = explode('/', $request->expiry_date);
-            $expiryMonth = $expiryParts[0] ?? '';
-            $expiryYear = $expiryParts[1] ?? '';
+            $expiryParts = explode('/', $request->expiration_date);
+            $expiryMonth = trim($expiryParts[0] ?? '');
+            $expiryYear = trim($expiryParts[1] ?? '');
 
             // Initialize Authorize.Net
             $merchantAuth = new AnetAPI\MerchantAuthenticationType();
@@ -384,7 +384,7 @@ class QRCodeDonationController extends Controller
             $billTo->setAddress($request->billing_address);
             $billTo->setCity($request->billing_city);
             $billTo->setState($request->billing_state);
-            $billTo->setZip($request->billing_zip);
+            $billTo->setZip($request->billing_zipcode);
             $billTo->setCountry($request->billing_country);
             $billTo->setEmail($request->email);
 
