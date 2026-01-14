@@ -677,8 +677,12 @@
                 <div class="order-summary mt-4 p-3 bg-light rounded">
                     <h6 class="fw-bold mb-3"><i class="fas fa-receipt me-2"></i> Order Summary</h6>
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Base Amount:</span>
+                        <span>Subtotal:</span>
                         <span id="orderSummaryAmount" class="fw-bold">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Processing Fee:</span>
+                        <span id="orderSummaryFee" class="fw-bold">$0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3" id="orderSummaryTipRow" style="display: none;">
                         <span>Tip:</span>
@@ -1188,16 +1192,22 @@
                     }
                 }
                 
-                const total = amount + tipAmount;
-                console.log('[Order Summary] Tip amount:', tipAmount, '| Total:', total);
+                // Calculate processing fee
+                const processingFeePercent = {{ $paymentFee ?? 2.9 }};
+                const processingFee = (amount / 100) * processingFeePercent;
+                const total = amount + processingFee + tipAmount;
+                
+                console.log('[Order Summary] Amount:', amount, '| Fee:', processingFee, '| Tip:', tipAmount, '| Total:', total);
                 
                 // Update ORDER summary display (not tipping component summary)
                 const summaryAmount = document.getElementById('orderSummaryAmount');
+                const summaryFee = document.getElementById('orderSummaryFee');
                 const summaryTotal = document.getElementById('orderSummaryTotal');
                 const summaryTipRow = document.getElementById('orderSummaryTipRow');
                 const summaryTip = document.getElementById('orderSummaryTip');
                 
                 if (summaryAmount) summaryAmount.textContent = '$' + amount.toFixed(2);
+                if (summaryFee) summaryFee.textContent = '$' + processingFee.toFixed(2);
                 if (summaryTotal) summaryTotal.textContent = '$' + total.toFixed(2);
                 
                 // Show tip row if donation type and tip is selected
