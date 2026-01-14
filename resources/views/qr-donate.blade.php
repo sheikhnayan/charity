@@ -753,10 +753,10 @@
             // Auto-select 10% tip for donations
             if (currentType === 'donation') {
                 autoSelectTip();
-                // Call updateOrderSummary after tip is selected
+                // Call updateOrderSummary after tip is selected AND rendered
                 setTimeout(function() {
                     updateOrderSummary();
-                }, 500);
+                }, 800);
             }
             
             // Setup card number formatting
@@ -764,11 +764,6 @@
             if (cardNumberInput) {
                 cardNumberInput.addEventListener('input', formatCardNumber);
             }
-            
-            // Initialize summary display
-            setTimeout(function() {
-                updateOrderSummary();
-            }, 200);
 
             trackFormView();
         });
@@ -839,7 +834,7 @@
                 if (!btn._hasListener) {
                     btn._hasListener = true;
                     btn.addEventListener('click', () => {
-                        setTimeout(updateOrderSummary, 50);
+                        setTimeout(updateOrderSummary, 150);
                     });
                 }
             });
@@ -1168,7 +1163,13 @@
         function updateOrderSummary() {
             const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
             const tipInput = document.querySelector('[name="tip_amount"]');
-            const tipAmount = tipInput ? parseFloat(tipInput.value) || 0 : 0;
+            let tipAmount = tipInput ? parseFloat(tipInput.value) || 0 : 0;
+            
+            // Fallback: if tip_amount field is 0, check if currentTipAmount exists (from tipping component)
+            if (tipAmount === 0 && typeof currentTipAmount !== 'undefined') {
+                tipAmount = currentTipAmount || 0;
+            }
+            
             const total = amount + tipAmount;
             
             document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
