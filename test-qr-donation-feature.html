@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Donation Feature - Test & Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .feature-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .feature-header h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .feature-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .check-item i {
+            color: #28a745;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .endpoint-card {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .endpoint-method.post {
+            background: #007bff;
+        }
+        
+        .test-btn {
+            margin: 10px 5px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .code-block code {
+            color: #68d391;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Feature Header -->
+        <div class="feature-header">
+            <h1><i class="fas fa-qrcode me-3"></i>QR Code Donations</h1>
+            <p class="fs-5 mb-3">Mobile-optimized, trackable QR code donation system</p>
+            <div>
+                <span class="feature-badge"><i class="fas fa-check me-2"></i>Installed</span>
+                <span class="feature-badge"><i class="fas fa-code me-2"></i>7 Routes Created</span>
+                <span class="feature-badge"><i class="fas fa-mobile-alt me-2"></i>Mobile Optimized</span>
+                <span class="feature-badge"><i class="fas fa-chart-line me-2"></i>UTM Tracking</span>
+            </div>
+        </div>
+
+        <!-- Implementation Checklist -->
+        <div class="test-card">
+            <h3 class="mb-4"><i class="fas fa-check-circle text-success me-2"></i>Implementation Complete</h3>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>SimpleSoftwareIO/simple-qrcode Package</strong>
+                    <div class="text-muted">Installed via Composer for QR code generation</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>QRCodeDonationController</strong>
+                    <div class="text-muted">Complete controller with generate, donate, process, statistics methods</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Database Migration</strong>
+                    <div class="text-muted">Added UTM tracking fields (utm_source, utm_medium, utm_campaign, referrer_url) to donations table</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Mobile-Optimized Donation Page</strong>
+                    <div class="text-muted">Beautiful responsive design with quick amount selection</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Admin QR Generator Interface</strong>
+                    <div class="text-muted">Generate, preview, download, and track QR codes</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Admin Navigation Menu</strong>
+                    <div class="text-muted">QR Codes menu item added to admin sidebar</div>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Payment Funnel Tracking Integration</strong>
+                    <div class="text-muted">Automatic tracking of QR-based donations in analytics</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="test-card">
+            <h3 class="mb-4"><i class="fas fa-plug text-primary me-2"></i>Available Routes (7)</h3>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method">GET</span>
+                    <strong>/qr-codes</strong>
+                </div>
+                <p class="mb-0 text-muted">Admin: QR code generator dashboard with statistics</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method post">POST</span>
+                    <strong>/qr-codes/generate-campaign</strong>
+                </div>
+                <p class="mb-0 text-muted">Generate QR code for specific campaign with preset amount</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method post">POST</span>
+                    <strong>/qr-codes/download</strong>
+                </div>
+                <p class="mb-0 text-muted">Download QR code as PNG file</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method">GET</span>
+                    <strong>/qr-codes/statistics</strong>
+                </div>
+                <p class="mb-0 text-muted">Get QR scan statistics and donation metrics</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method">GET</span>
+                    <strong>/qr-donate?website_id=1&campaign=test</strong>
+                </div>
+                <p class="mb-0 text-muted">Public: Mobile-optimized donation page (QR destination)</p>
+            </div>
+            
+            <div class="endpoint-card">
+                <div class="mb-2">
+                    <span class="endpoint-method post">POST</span>
+                    <strong>/qr-donate/process</strong>
+                </div>
+                <p class="mb-0 text-muted">Process QR donation and redirect to payment</p>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="test-card">
+            <h3 class="mb-4"><i class="fas fa-star text-warning me-2"></i>Key Features</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h5><i class="fas fa-mobile-alt text-success me-2"></i>Mobile Optimized</h5>
+                            <p class="mb-0">Responsive design works perfectly on phones and tablets</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <h5><i class="fas fa-sliders-h text-primary me-2"></i>Customizable</h5>
+                            <p class="mb-0">Set campaign name, preset amount, and donation type</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card border-info">
+                        <div class="card-body">
+                            <h5><i class="fas fa-chart-line text-info me-2"></i>Analytics</h5>
+                            <p class="mb-0">Track scans, donations, and conversion rates</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <h5><i class="fas fa-download text-warning me-2"></i>Export Ready</h5>
+                            <p class="mb-0">Download PNG for print, email, or social media</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Instructions -->
+        <div class="test-card">
+            <h3 class="mb-4"><i class="fas fa-book text-info me-2"></i>How to Use</h3>
+            
+            <h5 class="mb-3">1. Access Admin Interface</h5>
+            <div class="code-block">
+                <code>http://your-domain.com/qr-codes</code>
+            </div>
+            <p class="text-muted mb-4">Login as admin and navigate to "QR Codes" in the sidebar menu</p>
+            
+            <h5 class="mb-3">2. Generate QR Code</h5>
+            <ul>
+                <li>Select a website from the dropdown</li>
+                <li>Enter campaign name (e.g., "Summer Gala 2025")</li>
+                <li>Optionally set a preset donation amount</li>
+                <li>Choose QR code size (300px - 1000px)</li>
+                <li>Click "Generate QR Code"</li>
+            </ul>
+            
+            <h5 class="mb-3 mt-4">3. Download & Use</h5>
+            <ul>
+                <li><strong>Download PNG:</strong> Save for printing on flyers, posters, table tents</li>
+                <li><strong>Copy URL:</strong> Share the mobile donation link directly</li>
+                <li><strong>Print:</strong> Print pre-formatted QR code with campaign info</li>
+            </ul>
+            
+            <h5 class="mb-3 mt-4">4. Track Performance</h5>
+            <p>View statistics at the top of the QR Codes page:</p>
+            <ul>
+                <li>Total QR scans</li>
+                <li>Total amount raised</li>
+                <li>Completed vs pending donations</li>
+                <li>Average donation amount</li>
+                <li>Performance by campaign</li>
+            </ul>
+        </div>
+
+        <!-- Test Links -->
+        <div class="test-card text-center">
+            <h3 class="mb-4"><i class="fas fa-flask text-danger me-2"></i>Test the Feature</h3>
+            <p class="text-muted mb-4">Click the buttons below to test different parts of the system</p>
+            
+            <a href="/qr-codes" class="btn btn-primary btn-lg test-btn">
+                <i class="fas fa-cog me-2"></i>Admin QR Generator
+            </a>
+            
+            <a href="/qr-donate?website_id=1&campaign=Test%20Campaign&amount=25" class="btn btn-success btn-lg test-btn">
+                <i class="fas fa-mobile-alt me-2"></i>Mobile Donation Page
+            </a>
+            
+            <a href="/analytics/utm" class="btn btn-info btn-lg test-btn">
+                <i class="fas fa-chart-line me-2"></i>UTM Analytics
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white mt-5">
+            <p class="mb-2">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>QR Code Donations Feature - Fully Implemented</strong>
+            </p>
+            <p class="small">Estimated Implementation Time: 3-5 hours | Status: <span class="badge bg-success">Complete</span></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

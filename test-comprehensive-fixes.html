@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Frontend Fixes Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f9fafb; margin: 0; padding: 20px; }
+        .test-section { margin: 2rem 0; padding: 2rem; background: white; border-radius: 8px; }
+        .test-title { color: #333; margin-bottom: 1rem; }
+        .issue-label { background: #dc3545; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem; }
+        .fix-label { background: #28a745; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem; }
+        
+        /* Simulated page-investment.blade.php styles */
+        html, body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .inner-section-fullwidth {
+            width: 100vw !important;
+            position: relative !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            box-sizing: border-box !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .inner-section-fullwidth,
+        .inner-section-frontend {
+            border: inherit !important;
+            padding: inherit !important;
+            margin: inherit !important;
+        }
+        
+        .inner-section-fullwidth[style],
+        .inner-section-frontend[style] {
+            border: inherit !important;
+            padding: inherit !important;
+            margin: inherit !important;
+            background: inherit !important;
+            background-color: inherit !important;
+            background-image: inherit !important;
+            background-attachment: inherit !important;
+        }
+        
+        .inner-section-fullwidth[style*="background-attachment"],
+        .inner-section-frontend[style*="background-attachment"] {
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            background-size: cover !important;
+        }
+        
+        /* Force parallax for any background image in full-width sections */
+        .inner-section-fullwidth[style*="background"][style*="url"],
+        .inner-section-frontend[style*="background"][style*="url"] {
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            background-size: cover !important;
+        }
+        
+        /* Ensure parallax works by overriding transform conflicts */
+        .inner-section-fullwidth[style*="background-attachment: fixed"] {
+            transform: translateX(-50%) !important;
+            will-change: transform !important;
+        }
+        
+        /* Additional parallax support for webkit browsers */
+        @supports (-webkit-appearance: none) {
+            .inner-section-fullwidth[style*="background-attachment: fixed"],
+            .inner-section-frontend[style*="background-attachment: fixed"] {
+                -webkit-background-attachment: fixed !important;
+            }
+        }
+        
+        .video-component,
+        .video-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .video-component iframe,
+        .video-component video,
+        .video-container iframe,
+        .video-container video {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+            display: block !important;
+        }
+        
+        .video-container[style*="width"],
+        .video-container[style*="height"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .video-container[style*="width"] iframe,
+        .video-container[style*="width"] video,
+        .video-container[style*="height"] iframe,
+        .video-container[style*="height"] video {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100% !important;
+            aspect-ratio: 16/9 !important;
+        }
+        
+        .inner-section-fullwidth .investment-tier a[href*="/invest?amount"],
+        .inner-section-frontend .investment-tier a[href*="/invest?amount"] {
+            pointer-events: auto !important;
+            display: inline-block !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .inner-section-fullwidth {
+                width: 100vw !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                margin-left: calc(-50vw + 50%) !important;
+                margin-right: calc(-50vw + 50%) !important;
+                max-width: none !important;
+            }
+            
+            .inner-section-fullwidth[style*="background-attachment"],
+            .inner-section-frontend[style*="background-attachment"] {
+                background-attachment: scroll !important;
+            }
+            
+            .video-component,
+            .video-container {
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            .video-component iframe,
+            .video-component video,
+            .video-container iframe,
+            .video-container video {
+                width: 100% !important;
+                height: auto !important;
+                min-height: 200px !important;
+                max-height: 300px !important;
+                aspect-ratio: 16/9 !important;
+            }
+            
+            .video-container[style] {
+                width: 100% !important;
+                height: auto !important;
+                padding-bottom: 56.25% !important;
+                position: relative !important;
+            }
+            
+            .video-container[style] iframe,
+            .video-container[style] video {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .inner-section-fullwidth {
+                width: 100vw !important;
+                left: 0 !important;
+                transform: none !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+        }
+        
+        /* Test-specific styles */
+        .investment-tier {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            margin: 0 auto;
+            max-width: 370px;
+        }
+        
+        .investment-tier h3 {
+            color: white;
+            margin: 0 0 1rem 0;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .investment-tier .price {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: white;
+        }
+        
+        .investment-tier a {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .parallax-section {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        .border-test {
+            border: 5px solid #007bff !important;
+            padding: 2rem !important;
+            margin: 1rem 0 !important;
+            background-color: #f8f9fa !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center mb-5">Frontend Fixes Test Suite</h1>
+        
+        <!-- Spacer content to enable scrolling -->
+        <div style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 3rem; border-radius: 10px;">
+            <div class="text-center text-white">
+                <h2>🚀 Scroll Down to Test All Fixes</h2>
+                <p style="font-size: 1.2rem;">This page demonstrates comprehensive frontend issue fixes</p>
+            </div>
+        </div>
+        
+        <!-- Test 1: Auto-placement to amount field in full-width section -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 1: Investment Tier Auto-Amount in Full-Width Section
+            </h2>
+            <p><strong>Issue:</strong> Auto placement to the amount field is not working when the inner-section is in full stretch.</p>
+            <p><strong>Fix:</strong> Added specific CSS to ensure investment tier links work with z-index and pointer-events.</p>
+            
+            <div class="inner-section-fullwidth" style="background: linear-gradient(135deg, #ff6b6b, #4ecdc4); padding: 3rem 0;">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <div class="investment-tier">
+                                <h3>TIER 1</h3>
+                                <div class="price">$2,500</div>
+                                <p>Basic investment package with standard returns</p>
+                                <a href="/invest?amount=2500">INVEST NOW</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="investment-tier">
+                                <h3>TIER 2</h3>
+                                <div class="price">$5,000</div>
+                                <p>Premium investment package with enhanced returns</p>
+                                <a href="/invest?amount=5000">INVEST NOW</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 2: Parallax background image -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 2: Parallax Background Image
+            </h2>
+            <p><strong>Issue:</strong> The parallax background image is not working in the frontend.</p>
+            <p><strong>Fix:</strong> Fixed background syntax and force background-attachment: fixed on desktop, scroll on mobile.</p>
+        </div>
+        
+        <!-- Add some content before parallax to enable scrolling -->
+        <div style="height: 200px; background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%); display: flex; align-items: center; justify-content: center; margin: 2rem 0;">
+            <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Scroll down to see the parallax effect!</h3>
+        </div>
+        
+        <div class="inner-section-fullwidth parallax-section" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800'); background-position: center center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat; min-height: 500px;">
+            <div class="text-center" style="padding: 4rem 2rem;">
+                <h2 style="font-size: 3rem; margin-bottom: 2rem;">PARALLAX BACKGROUND TEST</h2>
+                <p style="font-size: 1.5rem; margin-bottom: 2rem;">This section should have a fixed parallax background on desktop.</p>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;"><strong>🔄 Scroll up and down to see the parallax effect!</strong></p>
+                <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; backdrop-filter: blur(10px);">
+                    <p style="margin: 0; font-size: 1.1rem;">The background image should remain fixed while the content scrolls over it.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add content after parallax to enable scrolling -->
+        <div style="height: 300px; background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%); display: flex; align-items: center; justify-content: center; margin: 2rem 0;">
+            <h3 style="color: #333;">Keep scrolling to test the parallax effect above!</h3>
+        </div>
+        
+        <!-- Test 3: Video component responsiveness -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 3: Video Component Responsiveness
+            </h2>
+            <p><strong>Issue:</strong> Video component is not responsive on mobile when height and width are set from the page-builder.</p>
+            <p><strong>Fix:</strong> Force 100% width and aspect-ratio on all devices, override custom dimensions on mobile.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>YouTube Video (with custom dimensions)</h4>
+                    <div class="video-container" style="width: 600px; height: 400px;">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 600px; height: 400px;"></iframe>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Responsive Video</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 100%; height: auto; aspect-ratio: 16/9;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 4: Border for inner-section -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 4: Border for Inner-Section
+            </h2>
+            <p><strong>Issue:</strong> Border for inner-section is not working in the frontend.</p>
+            <p><strong>Fix:</strong> Remove restrictions and force apply all style attributes with !important.</p>
+            
+            <div class="inner-section-frontend border-test">
+                <h4>This section should have a blue border and gray background</h4>
+                <p>The border and background should be clearly visible, demonstrating that inner-section styling works properly.</p>
+            </div>
+        </div>
+        
+        <!-- Test 5: Padding for inner-section -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 5: Padding for Inner-Section
+            </h2>
+            <p><strong>Issue:</strong> Padding is not working for inner-section in the frontend.</p>
+            <p><strong>Fix:</strong> Apply padding styles with !important and remove default value restrictions.</p>
+            
+            <div class="inner-section-frontend" style="padding: 4rem 2rem !important; background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); border-radius: 8px;">
+                <div style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 8px;">
+                    <h4>Large Padding Test</h4>
+                    <p>This section has 4rem top/bottom padding and 2rem left/right padding. The padding should be clearly visible.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 6: Full-width sections on mobile -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="issue-label">ISSUE</span>
+                <span class="fix-label">FIXED</span>
+                Test 6: Full-Width Sections on Mobile
+            </h2>
+            <p><strong>Issue:</strong> Full stretched sections are not covering full width in mobile view.</p>
+            <p><strong>Fix:</strong> Enhanced mobile CSS with proper vw calculations and transform handling.</p>
+            
+            <div class="inner-section-fullwidth" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); padding: 2rem 0; color: white;">
+                <div class="text-center">
+                    <h3>Full-Width Mobile Test</h3>
+                    <p>This section should extend to the full width of the screen on all devices, including mobile.</p>
+                    <p><strong>Resize your browser or view on mobile to test!</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 7: Combined test - All issues together -->
+        <div class="test-section">
+            <h2 class="test-title">
+                <span class="fix-label">COMPREHENSIVE</span>
+                Test 7: All Issues Combined
+            </h2>
+            <p><strong>Combined Test:</strong> Full-width section with parallax background, borders, padding, video, and investment tiers.</p>
+            
+            <div class="inner-section-fullwidth" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800'); background-position: center center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat; border: 8px solid #ff6b6b; padding: 4rem 1rem; margin: 2rem 0; min-height: 600px;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 style="color: white; margin-bottom: 2rem;">Investment Opportunities</h3>
+                            <div class="investment-tier">
+                                <h3>PREMIUM</h3>
+                                <div class="price">$10,000</div>
+                                <p>Exclusive investment package</p>
+                                <a href="/invest?amount=10000">INVEST NOW</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 style="color: white; margin-bottom: 2rem;">Company Overview</h3>
+                            <div class="video-container" style="width: 500px; height: 300px;">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 500px; height: 300px; border-radius: 8px;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; backdrop-filter: blur(10px);">
+                                <p style="color: white; font-size: 1.2rem; margin: 0;">🌟 This section demonstrates ALL fixes working together!</p>
+                                <p style="color: white; font-size: 1rem; margin: 0.5rem 0 0 0;">Parallax background + Border + Padding + Video responsiveness + Investment tier links</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container mt-5">
+        <div class="alert alert-success">
+            <h4>🎉 All Frontend Issues Should Now Be Fixed!</h4>
+            <ul class="mb-0">
+                <li>✅ Investment tier auto-amount links work in full-width sections</li>
+                <li>✅ Parallax backgrounds work on desktop, scroll on mobile</li>
+                <li>✅ Videos are fully responsive regardless of custom dimensions</li>
+                <li>✅ Inner-section borders display properly</li>
+                <li>✅ Inner-section padding works as expected</li>
+                <li>✅ Full-width sections cover complete screen width on mobile</li>
+            </ul>
+        </div>
+        
+        <!-- Final spacer to enable more scrolling -->
+        <div style="height: 400px; background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%); display: flex; align-items: center; justify-content: center; margin: 3rem 0; border-radius: 10px;">
+            <div class="text-center">
+                <h2 style="color: #333;">🎯 All Tests Complete!</h2>
+                <p style="font-size: 1.2rem; color: #555;">Scroll back up to see the parallax backgrounds in action</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

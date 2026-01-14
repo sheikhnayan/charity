@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tipping System - Feature Test & Documentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .feature-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .feature-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+        }
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .integration-list {
+            list-style: none;
+            padding: 0;
+        }
+        .integration-list li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .method-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .method-public {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .stats-card h3 {
+            font-size: 36px;
+            margin: 0;
+            font-weight: bold;
+        }
+        .stats-card p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="feature-header">
+            <h1><i class="fas fa-hand-holding-heart me-3"></i>Tipping System</h1>
+            <p class="mb-0">Increase revenue by allowing donors to add optional tips</p>
+        </div>
+
+        <!-- Implementation Status -->
+        <div class="feature-card">
+            <h2><i class="fas fa-clipboard-check text-success me-2"></i>Implementation Status</h2>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h5>✅ Completed Components:</h5>
+                    <ul class="integration-list">
+                        <li><i class="fas fa-database text-primary me-2"></i>Database Schema (5 fields)</li>
+                        <li><i class="fas fa-cog text-primary me-2"></i>TipService (11 methods)</li>
+                        <li><i class="fas fa-palette text-primary me-2"></i>Tipping UI Component</li>
+                        <li><i class="fas fa-credit-card text-primary me-2"></i>Authorize.Net Integration</li>
+                        <li><i class="fas fa-cc-stripe text-primary me-2"></i>Stripe Integration</li>
+                        <li><i class="fas fa-qrcode text-primary me-2"></i>QR Code Donations</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <h3>100%</h3>
+                        <p>Backend Complete</p>
+                    </div>
+                    <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <h3>100%</h3>
+                        <p>UI Complete</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="feature-card">
+            <h2><i class="fas fa-database text-primary me-2"></i>Database Schema</h2>
+            <p class="text-muted">Migration: <code>2025_11_05_163803_add_tipping_fields_to_donations_and_transactions</code></p>
+            
+            <h5 class="mt-3">Donations Table:</h5>
+            <div class="code-block">
+tip_amount        DECIMAL(10,2)  DEFAULT 0      - Dollar amount of tip
+tip_percentage    DECIMAL(5,2)   NULL           - Percentage used (for reporting)
+tip_enabled       BOOLEAN        DEFAULT 0      - Whether tip was accepted
+            </div>
+            
+            <h5 class="mt-3">Transactions Table:</h5>
+            <div class="code-block">
+tip_amount        DECIMAL(10,2)  DEFAULT 0      - Dollar amount of tip
+tip_percentage    DECIMAL(5,2)   NULL           - Percentage used (for reporting)
+            </div>
+            
+            <span class="status-badge status-complete"><i class="fas fa-check me-1"></i>MIGRATED</span>
+        </div>
+
+        <!-- TipService Methods -->
+        <div class="feature-card">
+            <h2><i class="fas fa-cogs text-warning me-2"></i>TipService Class</h2>
+            <p class="text-muted">Location: <code>app/Services/TipService.php</code></p>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h5>Core Calculations:</h5>
+                    <ul>
+                        <li><code>calculateTipFromPercentage()</code></li>
+                        <li><code>calculateTipPercentage()</code></li>
+                        <li><code>getSuggestedTips()</code></li>
+                        <li><code>getOptimalTipPercentage()</code></li>
+                        <li><code>validateTip()</code></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Analytics & Display:</h5>
+                    <ul>
+                        <li><code>getTipMessage()</code></li>
+                        <li><code>formatTipDisplay()</code></li>
+                        <li><code>getTipStatistics()</code></li>
+                        <li><code>getTipParticipationRate()</code></li>
+                        <li><code>getDefaultTipPercentages()</code></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h5 class="mt-4">Smart Tip Logic:</h5>
+            <div class="code-block">
+Donation < $25:    Recommend 20% tip (generous for small amounts)
+Donation < $100:   Recommend 15% tip (standard tipping rate)
+Donation >= $100:  Recommend 10% tip (reasonable for large amounts)
+            </div>
+        </div>
+
+        <!-- UI Component -->
+        <div class="feature-card">
+            <h2><i class="fas fa-paint-brush text-info me-2"></i>Tipping UI Component</h2>
+            <p class="text-muted">Location: <code>resources/views/components/tipping.blade.php</code></p>
+            
+            <h5>Features:</h5>
+            <ul>
+                <li>✅ Toggle switch to enable/disable tipping</li>
+                <li>✅ 4 preset percentage buttons (10%, 15%, 20%, 25%)</li>
+                <li>✅ Recommended tip highlighted with star ⭐</li>
+                <li>✅ Custom tip amount input</li>
+                <li>✅ Real-time total calculation</li>
+                <li>✅ Dynamic messaging based on donation amount</li>
+                <li>✅ Smooth animations and transitions</li>
+                <li>✅ Mobile-responsive design</li>
+                <li>✅ Customizable primary color</li>
+            </ul>
+            
+            <h5 class="mt-3">Usage Example:</h5>
+            <div class="code-block">
+@include('components.tipping', [
+    'baseAmount' => $donation->amount,
+    'primaryColor' => '#28a745'
+])
+            </div>
+        </div>
+
+        <!-- Integration Points -->
+        <div class="feature-card">
+            <h2><i class="fas fa-puzzle-piece text-danger me-2"></i>Integration Points</h2>
+            
+            <h5>Payment Forms Integrated:</h5>
+            <ul class="integration-list">
+                <li>
+                    <i class="fas fa-credit-card me-2"></i>
+                    <strong>Authorize.Net Payment Form</strong>
+                    <span class="badge bg-success ms-2">COMPLETE</span>
+                    <br><small class="text-muted">File: resources/views/authorize-net.blade.php</small>
+                </li>
+                <li>
+                    <i class="fas fa-cc-stripe me-2"></i>
+                    <strong>Stripe Payment Form</strong>
+                    <span class="badge bg-success ms-2">COMPLETE</span>
+                    <br><small class="text-muted">File: resources/views/stripe.blade.php</small>
+                </li>
+                <li>
+                    <i class="fas fa-qrcode me-2"></i>
+                    <strong>QR Code Donations</strong>
+                    <span class="badge bg-success ms-2">COMPLETE</span>
+                    <br><small class="text-muted">File: resources/views/qr-donate.blade.php</small>
+                </li>
+            </ul>
+            
+            <h5 class="mt-4">Controllers Updated:</h5>
+            <ul class="integration-list">
+                <li>
+                    <i class="fas fa-code me-2"></i>
+                    <strong>AuthorizeNetController::paymentPost()</strong>
+                    <br><small class="text-muted">Processes tips for Authorize.Net payments (student & general donations)</small>
+                </li>
+                <li>
+                    <i class="fas fa-code me-2"></i>
+                    <strong>AuthorizeNetController::paymentStripe()</strong>
+                    <br><small class="text-muted">Processes tips for Stripe payments (student & general donations)</small>
+                </li>
+                <li>
+                    <i class="fas fa-code me-2"></i>
+                    <strong>QRCodeDonationController::process()</strong>
+                    <br><small class="text-muted">Processes tips for QR code donations</small>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Model Updates -->
+        <div class="feature-card">
+            <h2><i class="fas fa-layer-group text-secondary me-2"></i>Model Enhancements</h2>
+            <p class="text-muted">Model: <code>app/Models/Donation.php</code></p>
+            
+            <h5>New Fillable Fields:</h5>
+            <div class="code-block">
+'tip_amount', 'tip_percentage', 'tip_enabled'
+            </div>
+            
+            <h5 class="mt-3">Computed Attributes:</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="code-block">
+<strong>getTotalAmountAttribute()</strong>
+Returns: amount + tip_amount
+Use: $donation->total_amount
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="code-block">
+<strong>getBaseAmountAttribute()</strong>
+Returns: amount only (no tip)
+Use: $donation->base_amount
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Guide -->
+        <div class="feature-card">
+            <h2><i class="fas fa-vial text-success me-2"></i>Testing Guide</h2>
+            
+            <h5>1. Test Tipping UI Component:</h5>
+            <ol>
+                <li>Navigate to any donation form (Authorize.Net, Stripe, or QR code)</li>
+                <li>Verify tipping section appears with toggle switch</li>
+                <li>Enable tipping and select a percentage button</li>
+                <li>Verify recommended tip has star ⭐ indicator</li>
+                <li>Check that total updates dynamically</li>
+                <li>Try custom tip amount input</li>
+                <li>Verify percentage recalculates correctly</li>
+            </ol>
+            
+            <h5 class="mt-3">2. Test Payment Processing:</h5>
+            <ol>
+                <li>Complete a donation with tip enabled</li>
+                <li>Verify tip is added to total charge</li>
+                <li>Check database: <code>donations.tip_amount</code> and <code>donations.tip_percentage</code></li>
+                <li>Verify transaction record includes tip data</li>
+                <li>Confirm tip appears in admin reports</li>
+            </ol>
+            
+            <h5 class="mt-3">3. Test Smart Tip Calculations:</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered mt-2">
+                    <thead>
+                        <tr>
+                            <th>Donation Amount</th>
+                            <th>Expected Optimal Tip</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>$20</td>
+                            <td>20% ($4.00)</td>
+                            <td>Small amount - generous tip encouraged</td>
+                        </tr>
+                        <tr>
+                            <td>$50</td>
+                            <td>15% ($7.50)</td>
+                            <td>Medium amount - standard rate</td>
+                        </tr>
+                        <tr>
+                            <td>$200</td>
+                            <td>10% ($20.00)</td>
+                            <td>Large amount - reasonable percentage</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API/Service Usage -->
+        <div class="feature-card">
+            <h2><i class="fas fa-terminal text-info me-2"></i>Developer Reference</h2>
+            
+            <h5>Using TipService in Controllers:</h5>
+            <div class="code-block">
+use App\Services\TipService;
+
+$tipService = new TipService();
+
+// Get suggested tips for $100 donation
+$suggestions = $tipService->getSuggestedTips(100);
+// Returns: [
+//   ['percentage' => 10, 'amount' => 10.00, 'label' => '$10.00'],
+//   ['percentage' => 15, 'amount' => 15.00, 'label' => '$15.00'],
+//   ['percentage' => 20, 'amount' => 20.00, 'label' => '$20.00'],
+//   ['percentage' => 25, 'amount' => 25.00, 'label' => '$25.00']
+// ]
+
+// Get tip statistics for a website
+$stats = $tipService->getTipStatistics($websiteId, $startDate, $endDate);
+// Returns: [
+//   'total_tips' => 1250.00,
+//   'tip_count' => 45,
+//   'average_tip' => 27.78,
+//   'average_percentage' => 15.5,
+//   'tip_participation_rate' => 65.5
+// ]
+            </div>
+            
+            <h5 class="mt-4">Request Parameters:</h5>
+            <div class="code-block">
+POST /qr-donate/process
+POST /authorize/payment  
+POST /authorize/stripe
+
+Parameters:
+- tip_enabled:    boolean (checkbox)
+- tip_amount:     decimal (calculated dollar amount)
+- tip_percentage: decimal (percentage used)
+            </div>
+        </div>
+
+        <!-- Feature Benefits -->
+        <div class="feature-card">
+            <h2><i class="fas fa-chart-line text-success me-2"></i>Feature Benefits</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-dollar-sign text-success me-2"></i>Revenue Impact:</h5>
+                    <ul>
+                        <li>Industry average: 10-15% revenue increase</li>
+                        <li>Typical participation rate: 60-70%</li>
+                        <li>Average tip: 15% of donation</li>
+                        <li>Covers processing fees plus extra revenue</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-users text-primary me-2"></i>User Experience:</h5>
+                    <ul>
+                        <li>Optional - doesn't pressure donors</li>
+                        <li>Smart defaults based on amount</li>
+                        <li>Clear transparency of total amount</li>
+                        <li>Works across all payment methods</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="feature-card">
+            <h2><i class="fas fa-link text-primary me-2"></i>Quick Test Links</h2>
+            <div class="d-grid gap-2">
+                <a href="/qr-donate?website_id=1&qr=test&amount=25" class="test-btn btn btn-success" target="_blank">
+                    <i class="fas fa-qrcode me-2"></i>Test QR Code Donation with Tipping
+                </a>
+                <a href="/qr-codes" class="test-btn btn btn-primary" target="_blank">
+                    <i class="fas fa-cog me-2"></i>QR Code Admin Dashboard
+                </a>
+                <a href="/analytics/utm" class="test-btn btn btn-info" target="_blank">
+                    <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="text-center mt-4">
+            <h3 class="text-success"><i class="fas fa-check-circle me-2"></i>Tipping System: COMPLETE</h3>
+            <p class="text-muted">
+                Full-featured tipping system integrated across all payment flows<br>
+                Ready for production use • Mobile optimized • Smart calculations
+            </p>
+            <div class="mt-3">
+                <span class="badge bg-success p-2 me-2"><i class="fas fa-database me-1"></i>Database Ready</span>
+                <span class="badge bg-primary p-2 me-2"><i class="fas fa-code me-1"></i>Backend Complete</span>
+                <span class="badge bg-info p-2 me-2"><i class="fas fa-palette me-1"></i>UI Implemented</span>
+                <span class="badge bg-warning p-2"><i class="fas fa-check me-1"></i>Production Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

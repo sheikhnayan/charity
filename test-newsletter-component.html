@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Component Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-title {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Newsletter Component Test</h1>
+        
+        <div class="test-section">
+            <h2 class="test-title">Newsletter Component - Default Style</h2>
+            
+            <!-- Newsletter component with default styling -->
+            <section class="newsletter-section" style="background-color: #ffffff; color: #000000; padding: 40px 20px; text-align: center;" id="newsletter-test-1">
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="newsletter-title" style="margin-bottom: 10px; font-size: 24px; font-weight: 600; color: #000000;">Newsletter</h3>
+                    <p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: 16px; font-weight: 400; color: #000000;">Subscribe to our newsletter</p>
+                    
+                    <form class="newsletter-form" action="/newsletter/subscribe" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                        <input type="hidden" name="_token" value="test-token">
+                        <input type="hidden" name="website_id" value="1">
+                        
+                        <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="form-control newsletter-email" 
+                                placeholder="Enter your email address" 
+                                required
+                                style="border: 1px solid #ddd; border-radius: 8px; padding: 12px 15px; font-size: 16px; width: 100%; outline: none;"
+                            >
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            class="btn newsletter-submit-btn"
+                            style="background-color: #28a745; color: #ffffff; border: none; border-radius: 8px; padding: 12px 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+                            onmouseover="this.style.opacity='0.9'"
+                            onmouseout="this.style.opacity='1'"
+                        >
+                            SIGN UP
+                        </button>
+                    </form>
+                    
+                    <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                        <!-- Success/Error messages will appear here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Newsletter Component - Green Style</h2>
+            
+            <!-- Newsletter component with green styling to match design -->
+            <section class="newsletter-section" style="background-color: #f8f9fa; color: #333333; padding: 40px 20px; text-align: center;" id="newsletter-test-2">
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="newsletter-title" style="margin-bottom: 10px; font-size: 24px; font-weight: 600; color: #333333;">Stay Updated</h3>
+                    <p class="newsletter-subtitle" style="margin-bottom: 30px; font-size: 16px; font-weight: 400; color: #666666;">Get the latest news and updates delivered to your inbox</p>
+                    
+                    <form class="newsletter-form" action="/newsletter/subscribe" method="POST" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+                        <input type="hidden" name="_token" value="test-token">
+                        <input type="hidden" name="website_id" value="1">
+                        
+                        <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="form-control newsletter-email" 
+                                placeholder="Your email address" 
+                                required
+                                style="border: 1px solid #ccc; border-radius: 4px; padding: 12px 15px; font-size: 16px; width: 100%; outline: none;"
+                            >
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            class="btn newsletter-submit-btn"
+                            style="background-color: #28a745; color: #ffffff; border: none; border-radius: 4px; padding: 12px 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+                            onmouseover="this.style.opacity='0.9'"
+                            onmouseout="this.style.opacity='1'"
+                        >
+                            SIGN UP
+                        </button>
+                    </form>
+                    
+                    <div class="newsletter-message" style="margin-top: 15px; display: none;">
+                        <!-- Success/Error messages will appear here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Component Features</h2>
+            <ul>
+                <li>✅ Responsive design with flexbox layout</li>
+                <li>✅ Mobile-first responsive breakpoints</li>
+                <li>✅ AJAX form submission with feedback</li>
+                <li>✅ Customizable styling via admin properties</li>
+                <li>✅ Email validation and duplicate prevention</li>
+                <li>✅ Admin management interface</li>
+                <li>✅ Bulk email sending functionality</li>
+                <li>✅ CSV export capabilities</li>
+                <li>✅ Newsletter subscription statistics</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">Admin Features</h2>
+            <ul>
+                <li>📊 Newsletter dashboard with subscription statistics</li>
+                <li>📧 Send newsletters to active/all subscribers</li>
+                <li>📥 Export subscribers to CSV</li>
+                <li>🗑️ Delete individual subscriptions</li>
+                <li>🏢 Website-specific subscriber management</li>
+                <li>📈 Real-time subscription tracking</li>
+            </ul>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            .newsletter-form {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            
+            .newsletter-form > div {
+                max-width: 100% !important;
+            }
+            
+            .newsletter-submit-btn {
+                width: 100% !important;
+                margin-top: 10px !important;
+            }
+        }
+        
+        .newsletter-email:focus {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25) !important;
+        }
+    </style>
+
+    <script>
+        // Test form submission (for demo purposes)
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('.newsletter-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const messageDiv = form.parentElement.querySelector('.newsletter-message');
+                    const button = form.querySelector('.newsletter-submit-btn');
+                    const originalText = button.textContent;
+                    
+                    button.textContent = 'Subscribing...';
+                    button.disabled = true;
+                    
+                    // Simulate API call
+                    setTimeout(() => {
+                        messageDiv.style.display = 'block';
+                        messageDiv.innerHTML = '<div style="color: green; font-weight: 500;">✅ Thank you for subscribing to our newsletter! (Test Mode)</div>';
+                        
+                        button.textContent = originalText;
+                        button.disabled = false;
+                        
+                        form.reset();
+                        
+                        // Hide message after 5 seconds
+                        setTimeout(() => {
+                            messageDiv.style.display = 'none';
+                        }, 5000);
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

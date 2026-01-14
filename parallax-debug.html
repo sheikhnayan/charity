@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax Debug Test</title>
+    <style>
+        body { margin: 0; padding: 0; height: 200vh; }
+        .content { height: 50vh; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
+        
+        /* Test 1: Direct inline style */
+        .test1 {
+            height: 50vh;
+            background-image: url('https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        /* Test 2: CSS class with important */
+        .test2 {
+            height: 50vh;
+            background-image: url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200') !important;
+            background-attachment: fixed !important;
+            background-position: center center !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        /* Full-width simulation */
+        .inner-section-fullwidth {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            box-sizing: border-box;
+        }
+        
+        /* Enhanced parallax selectors */
+        [style*="background-attachment: fixed"] {
+            background-attachment: fixed !important;
+            background-position: center center !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+        }
+        
+        div[style*="background-image"][style*="background-attachment"] {
+            background-attachment: fixed !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h2>Scroll down to test parallax effects</h2>
+    </div>
+    
+    <!-- Test 1: CSS Class Parallax -->
+    <div class="test1">
+        <h2>CSS Class Parallax Test</h2>
+    </div>
+    
+    <div class="content">
+        <h2>Middle content - keep scrolling</h2>
+    </div>
+    
+    <!-- Test 2: CSS Class with !important -->
+    <div class="test2">
+        <h2>CSS Class with !important Test</h2>
+    </div>
+    
+    <div class="content">
+        <h2>More content - keep scrolling</h2>
+    </div>
+    
+    <!-- Test 3: Inline style (simulating render-component output) -->
+    <div style="height: 50vh; background-image: linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200'); background-position: center center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+        <h2>Inline Style Parallax Test</h2>
+    </div>
+    
+    <div class="content">
+        <h2>More content</h2>
+    </div>
+    
+    <!-- Test 4: Full-width section simulation -->
+    <div class="inner-section-fullwidth" style="height: 50vh; background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200'); background-position: center center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+        <h2>Full-Width Section Parallax Test</h2>
+    </div>
+    
+    <div class="content">
+        <h2>End of tests - scroll back up to see effects</h2>
+    </div>
+    
+    <script>
+        // Debug script to check computed styles
+        document.addEventListener('DOMContentLoaded', function() {
+            const tests = document.querySelectorAll('[style*="background-attachment"], .test1, .test2');
+            tests.forEach((test, index) => {
+                const computedStyle = window.getComputedStyle(test);
+                console.log(`Test ${index + 1}:`, {
+                    backgroundAttachment: computedStyle.backgroundAttachment,
+                    backgroundImage: computedStyle.backgroundImage ? 'Set' : 'Not set',
+                    backgroundPosition: computedStyle.backgroundPosition,
+                    backgroundSize: computedStyle.backgroundSize
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Complete Component Background Color Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .component-test {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            background: #f8f9fa;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .component-test:hover {
+            border-color: #007bff;
+            box-shadow: 0 8px 25px rgba(0,123,255,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .component-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .status-needed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .test-instructions {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .priority-high { border-left: 8px solid #e74c3c; }
+        .priority-medium { border-left: 8px solid #f39c12; }
+        .priority-low { border-left: 8px solid #27ae60; }
+        
+        .phase-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 40px 0 20px 0;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            .test-container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="text-center mb-4" style="color: #2c3e50; font-size: 2.5rem; font-weight: bold;">
+            🎨 Complete Component Background Color Test
+        </h1>
+        
+        <div class="test-instructions">
+            <h3>📋 Testing Instructions</h3>
+            <ol>
+                <li><strong>✅ Green badges:</strong> Components with background color support implemented</li>
+                <li><strong>🟡 Yellow badges:</strong> Components being worked on (Phase 2)</li>
+                <li><strong>🔴 Red badges:</strong> Components still needing background color support</li>
+                <li><strong>Test Plan:</strong> Go to page builder and add each component, then verify background color option appears</li>
+                <li><strong>Priority:</strong> Complete High Priority → Medium Priority → Low Priority</li>
+            </ol>
+        </div>
+
+        <!-- PHASE 1: HIGH PRIORITY COMPONENTS (COMPLETED) -->
+        <div class="phase-header">
+            🚀 PHASE 1: High Priority Components (8/8 COMPLETED!)
+        </div>
+        
+        <div class="component-grid">
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Text Component</div>
+                <div><strong>Component Type:</strong> <code>text</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Section Title</div>
+                <div><strong>Component Type:</strong> <code>section-title</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Divider</div>
+                <div><strong>Component Type:</strong> <code>divider</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Already had it</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Image</div>
+                <div><strong>Component Type:</strong> <code>image</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Inner Section</div>
+                <div><strong>Component Type:</strong> <code>inner-section</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Already had it (comprehensive)</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Video</div>
+                <div><strong>Component Type:</strong> <code>video</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Gallery</div>
+                <div><strong>Component Type:</strong> <code>gallery</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-high">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Slider</div>
+                <div><strong>Component Type:</strong> <code>slider</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+        </div>
+
+        <!-- PHASE 2: MEDIUM PRIORITY COMPONENTS (IN PROGRESS) -->
+        <div class="phase-header">
+            🔥 PHASE 2: Medium Priority Components (4/13 IN PROGRESS)
+        </div>
+        
+        <div class="component-grid">
+            <div class="component-test priority-medium">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Feature Grid</div>
+                <div><strong>Component Type:</strong> <code>feature-grid</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Numbered Timeline</div>
+                <div><strong>Component Type:</strong> <code>numbered-timeline</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-completed">✅ COMPLETED</span>
+                <div class="component-title">Custom Banner</div>
+                <div><strong>Component Type:</strong> <code>custom-banner</code></div>
+                <div><strong>Background Color Added:</strong> ✅ Yes</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Ready for testing</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Full Width Text & Image</div>
+                <div><strong>Component Type:</strong> <code>full-width-text-image</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Simple Comments</div>
+                <div><strong>Component Type:</strong> <code>simple-comments</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Disqus Comments</div>
+                <div><strong>Component Type:</strong> <code>disqus</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Social Share</div>
+                <div><strong>Component Type:</strong> <code>social-share</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Custom Form</div>
+                <div><strong>Component Type:</strong> <code>custom-form</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Auction List</div>
+                <div><strong>Component Type:</strong> <code>auction-list</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Event Countdown</div>
+                <div><strong>Component Type:</strong> <code>event-countdown</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Event Information</div>
+                <div><strong>Component Type:</strong> <code>event-information</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Sell Tickets</div>
+                <div><strong>Component Type:</strong> <code>sell-tickets</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-medium">
+                <span class="status-badge status-pending">🟡 PENDING</span>
+                <div class="component-title">Who's Coming</div>
+                <div><strong>Component Type:</strong> <code>whos-coming</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+        </div>
+
+        <!-- PHASE 3: LOW PRIORITY COMPONENTS (NOT STARTED) -->
+        <div class="phase-header">
+            📝 PHASE 3: Low Priority Components (0/7 NOT STARTED)
+        </div>
+        
+        <div class="component-grid">
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Donation Form</div>
+                <div><strong>Component Type:</strong> <code>donation-form</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Donor List</div>
+                <div><strong>Component Type:</strong> <code>donor-list</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Student Leaderboard</div>
+                <div><strong>Component Type:</strong> <code>student-leaderboard</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Student Listing</div>
+                <div><strong>Component Type:</strong> <code>student-listing</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Sponsorships</div>
+                <div><strong>Component Type:</strong> <code>sponsorships</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+            
+            <div class="component-test priority-low">
+                <span class="status-badge status-needed">🔴 NEEDED</span>
+                <div class="component-title">Site Goal</div>
+                <div><strong>Component Type:</strong> <code>site-goal</code></div>
+                <div><strong>Background Color Added:</strong> ❌ Not yet</div>
+                <div><strong>Frontend Rendering:</strong> ✅ Working</div>
+                <div><strong>Test Status:</strong> Needs background color option</div>
+            </div>
+        </div>
+
+        <!-- COMPONENTS THAT ALREADY HAVE BACKGROUND COLOR -->
+        <div class="phase-header">
+            ✅ Components That Already Have Background Color Support (10/37)
+        </div>
+        
+        <div class="component-grid">
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Alert Message</div>
+                <div><strong>Component Type:</strong> <code>alert-message</code></div>
+                <div><strong>Background Color:</strong> ✅ Has background_color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Newsletter</div>
+                <div><strong>Component Type:</strong> <code>newsletter</code></div>
+                <div><strong>Background Color:</strong> ✅ Has background_color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Invest CTA</div>
+                <div><strong>Component Type:</strong> <code>invest-cta</code></div>
+                <div><strong>Background Color:</strong> ✅ Has background_color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Investment Tier</div>
+                <div><strong>Component Type:</strong> <code>investment-tier</code></div>
+                <div><strong>Background Color:</strong> ✅ Has backgroundColor option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">FAQ</div>
+                <div><strong>Component Type:</strong> <code>FAQ</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Question & Answer background colors</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Button</div>
+                <div><strong>Component Type:</strong> <code>button</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Background Color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Press Card</div>
+                <div><strong>Component Type:</strong> <code>press-card</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Card Background Color</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Auth Form</div>
+                <div><strong>Component Type:</strong> <code>auth-form</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Form Background Color</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Contact Form</div>
+                <div><strong>Component Type:</strong> <code>contact-form</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Background Color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+            
+            <div class="component-test" style="border-color: #28a745;">
+                <span class="status-badge status-completed">✅ EXISTING</span>
+                <div class="component-title">Text Images</div>
+                <div><strong>Component Type:</strong> <code>text-images</code></div>
+                <div><strong>Background Color:</strong> ✅ Has Background Color option</div>
+                <div><strong>Status:</strong> No changes needed</div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="alert alert-info mt-5">
+            <h4>📊 Implementation Summary</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>✅ Completed:</strong><br>
+                    Phase 1: 8/8<br>
+                    Phase 2: 3/13<br>
+                    Already Had: 10/10<br>
+                    <strong>Total: 21/37</strong>
+                </div>
+                <div class="col-md-3">
+                    <strong>🟡 In Progress:</strong><br>
+                    Phase 2: 10/13<br>
+                    <strong>Total: 10/37</strong>
+                </div>
+                <div class="col-md-3">
+                    <strong>🔴 Remaining:</strong><br>
+                    Phase 3: 7/7<br>
+                    <strong>Total: 7/37</strong>
+                </div>
+                <div class="col-md-3">
+                    <strong>Progress:</strong><br>
+                    57% Complete<br>
+                    17 components left
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-success">
+            <h5>🎯 Next Steps</h5>
+            <ol>
+                <li><strong>Continue Phase 2:</strong> Add background color to remaining 10 medium priority components</li>
+                <li><strong>Complete Phase 3:</strong> Add background color to 7 low priority components</li>
+                <li><strong>Create Test Page:</strong> Build comprehensive test with all 37 components</li>
+                <li><strong>Test Responsiveness:</strong> Verify on desktop and mobile</li>
+                <li><strong>Document Issues:</strong> List all bugs found for user to fix one by one</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

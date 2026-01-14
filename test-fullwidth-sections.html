@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Width Sections Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+        
+        /* Simulate main container like WordPress/Laravel */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Test section styles */
+        .test-section {
+            margin: 40px 0;
+            padding: 30px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+        }
+        
+        .test-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .demo-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .demo-content h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+        
+        .demo-content p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        /* Investment tier component simulation */
+        .investment-tier-component {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .investment-tier-component h4 {
+            color: #155724;
+            margin: 0 0 10px 0;
+        }
+        
+        .investment-tier-component .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Fullwidth section styles (copied from our implementation) */
+        .inner-section-fullwidth {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .inner-section-fullwidth.boxed-content .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .inner-section-fullwidth.boxed-content .row {
+            margin: 0;
+        }
+        
+        .inner-section-fullwidth.full-content .row {
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 767px) {
+            .inner-section-fullwidth {
+                width: 100vw;
+                margin-left: calc(-50vw + 50%);
+                padding-left: 15px;
+                padding-right: 15px;
+                box-sizing: border-box;
+            }
+            
+            .inner-section-fullwidth.boxed-content .content-wrapper {
+                padding: 0 15px;
+            }
+        }
+        
+        /* Background patterns for demonstration */
+        .bg-pattern-1 {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .bg-pattern-2 {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .bg-pattern-3 {
+            background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 class="text-center mb-5">Full Width Sections Test</h1>
+        <p class="text-center text-muted mb-5">
+            This page demonstrates the full-width section functionality with different content width options.
+            Resize your browser window to test responsiveness.
+        </p>
+        
+        <!-- Test 1: Regular Section (Not Full Width) -->
+        <div class="test-section">
+            <h2>1. Regular Section (Not Full Width)</h2>
+            <p class="text-muted mb-3">This section stays within the container boundaries.</p>
+            
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="demo-content">
+                        <h3>Column 1</h3>
+                        <p>Regular container-bound content</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="investment-tier-component">
+                        <h4>Investment Tier</h4>
+                        <div class="price">$1,000</div>
+                        <p>Standard tier pricing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 2: Full Width Section with Full Content -->
+        <div class="test-section">
+            <h2>2. Full Width Section - Full Content Width</h2>
+            <p class="text-muted mb-3">This section breaks out of the container and components spread across the full viewport width.</p>
+        </div>
+        
+        <div class="inner-section-fullwidth full-content bg-pattern-1" style="padding: 40px 0;">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="demo-content">
+                        <h3>Full Width Column 1</h3>
+                        <p>This content spreads across full viewport width</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="investment-tier-component">
+                        <h4>Investment Tier (Full Width)</h4>
+                        <div class="price">$5,000</div>
+                        <p>Full width section pricing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 3: Full Width Section with Boxed Content -->
+        <div class="test-section">
+            <h2>3. Full Width Section - Boxed Content Width</h2>
+            <p class="text-muted mb-3">This section has a full-width background but keeps content centered like a regular container.</p>
+        </div>
+        
+        <div class="inner-section-fullwidth boxed-content bg-pattern-2" style="padding: 40px 0;">
+            <div class="content-wrapper">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="demo-content">
+                            <h3>Boxed Column 1</h3>
+                            <p>Full-width background, but content stays centered</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="investment-tier-component">
+                            <h4>Investment Tier (Boxed)</h4>
+                            <div class="price">$2,500</div>
+                            <p>Centered content with full background</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 4: Three Column Full Width -->
+        <div class="test-section">
+            <h2>4. Three Column Full Width Section</h2>
+            <p class="text-muted mb-3">Testing multi-column layouts in full-width mode.</p>
+        </div>
+        
+        <div class="inner-section-fullwidth full-content bg-pattern-3" style="padding: 40px 0;">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="demo-content">
+                        <h3>Column 1</h3>
+                        <p>First third of viewport</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="investment-tier-component">
+                        <h4>Investment Option</h4>
+                        <div class="price">$750</div>
+                        <p>Middle column investment</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="demo-content">
+                        <h3>Column 3</h3>
+                        <p>Last third of viewport</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Continue with regular content -->
+        <div class="test-section">
+            <h2>5. Back to Regular Section</h2>
+            <p class="text-muted mb-3">This demonstrates that regular sections work normally after full-width sections.</p>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="demo-content">
+                        <h3>Normal Content Flow</h3>
+                        <p>Everything returns to normal container bounds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add window resize info for testing
+        function updateViewportInfo() {
+            const info = document.getElementById('viewport-info');
+            if (info) {
+                info.textContent = `Viewport: ${window.innerWidth}px × ${window.innerHeight}px`;
+            }
+        }
+        
+        // Add viewport info to page
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('h1');
+            const infoDiv = document.createElement('div');
+            infoDiv.id = 'viewport-info';
+            infoDiv.className = 'text-center text-muted small mb-3';
+            header.parentNode.insertBefore(infoDiv, header.nextSibling);
+            updateViewportInfo();
+        });
+        
+        window.addEventListener('resize', updateViewportInfo);
+    </script>
+</body>
+</html>
