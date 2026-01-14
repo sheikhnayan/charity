@@ -678,16 +678,16 @@
                     <h6 class="fw-bold mb-3"><i class="fas fa-receipt me-2"></i> Order Summary</h6>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Base Amount:</span>
-                        <span id="summaryAmount" class="fw-bold">$0.00</span>
+                        <span id="orderSummaryAmount" class="fw-bold">$0.00</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-3" id="summaryTipRow" style="display: none;">
+                    <div class="d-flex justify-content-between mb-3" id="orderSummaryTipRow" style="display: none;">
                         <span>Tip:</span>
-                        <span id="summaryTip" class="fw-bold">$0.00</span>
+                        <span id="orderSummaryTip" class="fw-bold">$0.00</span>
                     </div>
                     <hr/>
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold">Total:</span>
-                        <span id="summaryTotal" class="fw-bold" style="font-size: 18px; color: var(--accent-color);">$0.00</span>
+                        <span id="orderSummaryTotal" class="fw-bold" style="font-size: 18px; color: var(--accent-color);">$0.00</span>
                     </div>
                 </div>
                 
@@ -1191,11 +1191,11 @@
                 const total = amount + tipAmount;
                 console.log('[Order Summary] Tip amount:', tipAmount, '| Total:', total);
                 
-                // Update summary display
-                const summaryAmount = document.getElementById('summaryAmount');
-                const summaryTotal = document.getElementById('summaryTotal');
-                const summaryTipRow = document.getElementById('summaryTipRow');
-                const summaryTip = document.getElementById('summaryTip');
+                // Update ORDER summary display (not tipping component summary)
+                const summaryAmount = document.getElementById('orderSummaryAmount');
+                const summaryTotal = document.getElementById('orderSummaryTotal');
+                const summaryTipRow = document.getElementById('orderSummaryTipRow');
+                const summaryTip = document.getElementById('orderSummaryTip');
                 
                 if (summaryAmount) summaryAmount.textContent = '$' + amount.toFixed(2);
                 if (summaryTotal) summaryTotal.textContent = '$' + total.toFixed(2);
