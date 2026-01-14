@@ -394,7 +394,6 @@
                                placeholder="Enter Amount" 
                                step="0.01" 
                                min="1"
-                               value="{{ $presetAmount ?? '' }}"
                                required>
                     </div>
                 </div>
@@ -503,7 +502,7 @@
                 <!-- Tipping Component (Donation Type Only) -->
                 <div id="tippingContainer" style="display: none;" class="mt-4">
                     @include('components.tipping', [
-                        'baseAmount' => 0,
+                        'baseAmount' => 25,
                         'primaryColor' => '#28a745',
                         'processingFee' => 2.9
                     ])
@@ -733,7 +732,6 @@
         const websiteId = {{ $website->id }};
         const currentType = '{{ $type }}';
         const selectedIdFromUrl = '{{ $selectedId ?? "" }}';
-        const presetAmount = '{{ $presetAmount ?? "" }}';
         const isQRScanned = selectedIdFromUrl !== ''; // True if QR was scanned with pre-selection
         
         // Initialize
@@ -752,15 +750,6 @@
                 showTippingComponent();
             }
             
-            // Set preset amount if provided
-            if (presetAmount && currentType === 'donation') {
-                document.getElementById('donationAmount').value = parseFloat(presetAmount);
-                // Call updateOrderSummary to display the preset amount
-                setTimeout(function() {
-                    updateOrderSummary();
-                }, 100);
-            }
-            
             // Auto-select 10% tip for donations
             if (currentType === 'donation') {
                 autoSelectTip();
@@ -776,6 +765,11 @@
                 cardNumberInput.addEventListener('input', formatCardNumber);
             }
             
+            // Initialize summary display
+            setTimeout(function() {
+                updateOrderSummary();
+            }, 200);
+
             trackFormView();
         });
 
@@ -835,7 +829,20 @@
                     tipAmountInput.addEventListener('input', updateOrderSummary);
                     tipAmountInput.addEventListener('change', updateOrderSummary);
                 }
+                setupTipButtonListeners();
             }, 100);
+        }
+
+        // Ensure tip buttons trigger summary recalculation
+        function setupTipButtonListeners() {
+            document.querySelectorAll('.tip-btn').forEach(btn => {
+                if (!btn._hasListener) {
+                    btn._hasListener = true;
+                    btn.addEventListener('click', () => {
+                        setTimeout(updateOrderSummary, 50);
+                    });
+                }
+            });
         }
 
         // Switch between types

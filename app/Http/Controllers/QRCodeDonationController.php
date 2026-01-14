@@ -178,7 +178,6 @@ class QRCodeDonationController extends Controller
         // Get QR parameters
         $qrIdentifier = $request->query('qr') ?? 'legacy_' . Str::random(8);
         $campaignName = $request->query('campaign');
-        $presetAmount = $request->query('amount');
         $donationType = $request->query('type', 'general');
         
         // Normalize variables for view
@@ -198,7 +197,6 @@ class QRCodeDonationController extends Controller
             'website',
             'qrIdentifier',
             'campaignName',
-            'presetAmount',
             'type',
             'selectedId'
         ));

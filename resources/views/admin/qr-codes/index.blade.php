@@ -151,20 +151,6 @@
                             <select class="form-select" name="reference_id" id="referenceSelect"></select>
                             <small class="text-muted" id="referenceHelp"></small>
                         </div>
-
-                        <div class="mb-3" id="amountGroup">
-                            <label class="form-label fw-semibold">
-                                <i class="fas fa-dollar-sign me-1"></i> Preset Amount
-                            </label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   name="amount" 
-                                   id="presetAmount"
-                                   placeholder="25.00"
-                                   step="0.01"
-                                   min="1">
-                            <small class="text-muted">Optional: Pre-fill donation/auction amount</small>
-                        </div>
                         
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
@@ -278,17 +264,13 @@ function populateReference(type) {
 // Load statistics and initialize form on page load
 document.addEventListener('DOMContentLoaded', function() {
     const typeSelect = document.getElementById('typeSelect');
-    const amountGroup = document.getElementById('amountGroup');
     const websiteSelectEl = document.getElementById('websiteSelect');
 
     // Initial populate
     populateReference(typeSelect.value);
-    amountGroup.style.display = (typeSelect.value === 'ticket') ? 'none' : 'block';
 
     typeSelect.addEventListener('change', function() {
         populateReference(this.value);
-        // Hide amount for tickets
-        amountGroup.style.display = (this.value === 'ticket') ? 'none' : 'block';
     });
 
     if (websiteSelectEl) {
