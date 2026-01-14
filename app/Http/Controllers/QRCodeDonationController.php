@@ -225,6 +225,9 @@ class QRCodeDonationController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'qr_identifier' => 'required|string',
                 'type' => 'required|string|in:donation,auction,sales',
+                'student_id' => 'nullable|exists:users,id',
+                'auction_id' => 'nullable|exists:auctions,id',
+                'ticket_id' => 'nullable|exists:tickets,id',
                 'payment_method' => 'required|string|in:authorize_net,coinbase',
                 // Card details for Authorize.Net
                 'card_number' => 'required_if:payment_method,authorize_net',
@@ -267,6 +270,25 @@ class QRCodeDonationController extends Controller
             $donation->amount = $baseAmount;
             $donation->website_id = $request->website_id;
             $donation->type = $donationType;
+            
+            // Set user_id based on donation type (following FrontendController and AuthorizeNetController pattern)
+            if ($donationType == 'student') {
+                // Student donations: user_id is the student receiving the donation
+                $donation->user_id = $request->filled('student_id') ? $request->student_id : null;
+            } elseif ($donationType == 'auction') {
+                // Auction donations: user_id is the auction owner (creator)
+                if ($request->filled('auction_id')) {
+                    $auction = \App\Models\Auction::find($request->auction_id);
+                    $donation->user_id = $auction ? $auction->user_id : null;
+                }
+            } elseif ($donationType == 'ticket') {
+                // Ticket sales: user_id is the website owner
+                $donation->user_id = $website->user_id;
+            } elseif ($donationType == 'general') {
+                // General donations: user_id is the website owner
+                $donation->user_id = $website->user_id;
+            }
+            
             $donation->status = 0; // Pending
             $donation->hide = $request->anonymous_donation ? 1 : 0;
             $donation->comment = $request->comment;
