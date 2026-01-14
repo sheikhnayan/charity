@@ -762,8 +762,9 @@ class QRCodeDonationController extends Controller
     public function statistics(Request $request)
     {
         $websiteId = $request->query('website_id');
-        $startDate = $request->query('start_date', now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->query('end_date', now()->format('Y-m-d'));
+        // Use full-day ranges so today's donations count
+        $startDate = $request->query('start_date', now()->subDays(30)->startOfDay()->toDateTimeString());
+        $endDate = $request->query('end_date', now()->endOfDay()->toDateTimeString());
 
         $query = Donation::where('utm_source', 'qr_code')
             ->whereBetween('created_at', [$startDate, $endDate]);

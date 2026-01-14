@@ -139,14 +139,14 @@
                             </label>
                             <select class="form-select" name="type" id="typeSelect" required>
                                 <option value="donation" selected>Donation</option>
-                                <option value="auction">Auction</option>
-                                <option value="ticket">Ticket</option>
+                                {{-- <option value="auction">Auction</option>
+                                <option value="ticket">Ticket</option> --}}
                             </select>
                         </div>
 
                         <div class="mb-3" id="referenceGroup" style="display:none;">
                             <label class="form-label fw-semibold">
-                                <i class="fas fa-list me-1"></i> Select Item
+                                <i class="fas fa-list me-1"></i> Select Student
                             </label>
                             <select class="form-select" name="reference_id" id="referenceSelect"></select>
                             <small class="text-muted" id="referenceHelp"></small>
