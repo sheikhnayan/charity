@@ -284,10 +284,8 @@ class QRCodeDonationController extends Controller
             $donation->utm_campaign = $request->campaign_name ?? 'qr_donation';
             $donation->referrer_url = 'qr://' . $request->qr_identifier;
             
-            // Add related IDs
-            if ($request->student_id) $donation->student_id = $request->student_id;
-            if ($request->auction_id) $donation->auction_id = $request->auction_id;
-            if ($request->ticket_id) $donation->ticket_id = $request->ticket_id;
+            // NOTE: Do NOT set student_id, auction_id, ticket_id - these columns don't exist in donations table
+            // The related ID info is tracked via type field and utm params
             
             $donation->save();
 
@@ -318,7 +316,9 @@ class QRCodeDonationController extends Controller
 
             // Process payment based on method
             if ($request->payment_method === 'authorize_net') {
-                return $this->processAuthorizeNetPayment($request, $donation, $totalAmount, $website);
+                return $this->processAuthorizeNetPayment($request, $donation, $totalAmount, $website, $feePercent);
+            } elseif ($request->payment_method === 'stripe') {
+                return $this->processStripePayment($request, $donation, $totalAmount, $website, $feePercent);
             } elseif ($request->payment_method === 'coinbase') {
                 return $this->processCoinbasePayment($request, $donation, $totalAmount, $website);
             }
@@ -349,7 +349,7 @@ class QRCodeDonationController extends Controller
     /**
      * Process Authorize.Net payment
      */
-    private function processAuthorizeNetPayment($request, $donation, $totalAmount, $website)
+    private function processAuthorizeNetPayment($request, $donation, $totalAmount, $website, $feePercent)
     {
         try {
             // Parse expiry date
@@ -357,44 +357,29 @@ class QRCodeDonationController extends Controller
             $expiryMonth = trim($expiryParts[0] ?? '');
             $expiryYear = trim($expiryParts[1] ?? '');
 
-            // Initialize Authorize.Net
-            $merchantAuth = new AnetAPI\MerchantAuthenticationType();
-            $merchantAuth->setName(config('services.authorizenet.login_id'));
-            $merchantAuth->setTransactionKey(config('services.authorizenet.transaction_key'));
+            // Initialize Authorize.Net with website-specific credentials
+            $paymentGatewayService = new \App\Services\PaymentGatewayService();
+            $merchantAuth = $paymentGatewayService->createAuthorizeNetAuth($website);
+            
+            if (!$merchantAuth) {
+                return back()->withInput()->with('error', 'Failed to initialize payment gateway');
+            }
 
             // Create credit card object
             $creditCard = new AnetAPI\CreditCardType();
             $creditCard->setCardNumber(str_replace(' ', '', $request->card_number));
-            $creditCard->setExpirationDate($expiryYear . '-' . $expiryMonth);
+            $creditCard->setExpirationDate('20' . $expiryYear . '-' . $expiryMonth);
             $creditCard->setCardCode($request->cvv);
 
             // Payment data
             $paymentOne = new AnetAPI\PaymentType();
             $paymentOne->setCreditCard($creditCard);
 
-            // Order information
-            $order = new AnetAPI\OrderType();
-            $order->setInvoiceNumber('QR-' . $donation->id);
-            $order->setDescription('QR Code Donation - ' . ucfirst($request->type));
-
-            // Billing address
-            $billTo = new AnetAPI\CustomerAddressType();
-            $billTo->setFirstName($request->first_name);
-            $billTo->setLastName($request->last_name);
-            $billTo->setAddress($request->billing_address);
-            $billTo->setCity($request->billing_city);
-            $billTo->setState($request->billing_state);
-            $billTo->setZip($request->billing_zipcode);
-            $billTo->setCountry($request->billing_country);
-            $billTo->setEmail($request->email);
-
             // Create transaction request
             $transactionRequestType = new AnetAPI\TransactionRequestType();
             $transactionRequestType->setTransactionType("authCaptureTransaction");
-            $transactionRequestType->setAmount($totalAmount);
-            $transactionRequestType->setOrder($order);
+            $transactionRequestType->setAmount(number_format((float)$totalAmount, 2, '.', ''));
             $transactionRequestType->setPayment($paymentOne);
-            $transactionRequestType->setBillTo($billTo);
 
             // Assemble the complete transaction request
             $authRequest = new AnetAPI\CreateTransactionRequest();
@@ -404,29 +389,40 @@ class QRCodeDonationController extends Controller
 
             // Create the controller and get the response
             $controller = new AnetController\CreateTransactionController($authRequest);
-            $response = $controller->executeWithApiResponse(
-                config('services.authorizenet.environment') === 'production' 
-                    ? \net\authorize\api\constants\ANetEnvironment::PRODUCTION 
-                    : \net\authorize\api\constants\ANetEnvironment::SANDBOX
-            );
+            $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
+            $response = $controller->executeWithApiResponse($environment);
 
-            if ($response != null && $response->getMessages()->getResultCode() == "Ok") {
+            if ($response != null) {
                 $tresponse = $response->getTransactionResponse();
 
-                if ($tresponse != null && $tresponse->getMessages() != null) {
-                    // Payment successful
+                if ($tresponse != null && $tresponse->getResponseCode() == "1") {
+                    // Payment successful - update donation
                     $donation->status = 1;
                     $donation->transaction_id = $tresponse->getTransId();
                     $donation->payment_method = 'authorize_net';
                     $donation->save();
                     
-                    // Create transaction record
-                    $tran = new \App\Models\Transaction();
+                    // Create transaction record (exactly like AuthorizeNetController)
+                    $processingFee = ($donation->amount / 100) * $feePercent;
+                    
+                    $tran = new Transaction();
                     $tran->transaction_id = $tresponse->getTransId();
-                    $tran->user_id = null; // QR donations don't have logged-in users
+                    $tran->user_id = null;
                     $tran->website_id = $website->id;
                     $tran->amount = $donation->amount;
-                    $tran->fee = ($donation->amount / 100) * $feePercent;
+                    $tran->type = $donation->type;
+                    $tran->name = $request->first_name;
+                    $tran->last_name = $request->last_name;
+                    $tran->email = $request->email;
+                    $tran->address = $request->billing_address;
+                    $tran->apartment = $request->billing_apartment ?? null;
+                    $tran->city = $request->billing_city;
+                    $tran->state = $request->billing_state;
+                    $tran->zip = $request->billing_zipcode;
+                    $tran->phone = $request->billing_phone ?? $request->phone;
+                    $tran->country = $request->billing_country;
+                    $tran->ip_address = $request->ip();
+                    $tran->fee = $processingFee;
                     $tran->fee_paid = 1;
                     
                     if ($donation->tip_enabled) {
@@ -455,38 +451,153 @@ class QRCodeDonationController extends Controller
                     }
 
                     // Use existing thank-you page with type
-                    $type = $request->type; // donation, auction, sales
+                    $type = $request->type;
                     return view('thank-you', compact('type'));
+                    
                 } else {
-                    // Payment failed
-                    $errorMessages = $tresponse->getErrors();
-                    $errorText = $errorMessages[0]->getErrorText();
+                    // Payment failed - get error message
+                    $errorMessages = $tresponse != null ? $tresponse->getErrors() : [];
+                    $errorText = !empty($errorMessages) ? $errorMessages[0]->getErrorText() : 'Payment failed';
                     
                     \Log::error('Authorize.Net Transaction Error', [
                         'donation_id' => $donation->id,
-                        'error' => $errorText
+                        'error' => $errorText,
+                        'response_code' => $tresponse != null ? $tresponse->getResponseCode() : 'null'
                     ]);
+
+                    // Track payment failure
+                    try {
+                        $funnelService = new PaymentFunnelService();
+                        $funnelService->trackPaymentFailed(
+                            $donation->type,
+                            $totalAmount,
+                            'authorize_net',
+                            $errorText,
+                            null,
+                            $website->id
+                        );
+                    } catch (\Exception $e) {
+                        \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+                    }
 
                     return back()->withInput()->with('error', 'Payment failed: ' . $errorText);
                 }
             } else {
-                // API error
-                $tresponse = $response->getTransactionResponse();
-                if ($tresponse != null && $tresponse->getErrors() != null) {
-                    $errorText = $tresponse->getErrors()[0]->getErrorText();
-                } else {
-                    $errorText = $response->getMessages()->getMessage()[0]->getText();
-                }
+                // API error - no response
+                \Log::error('Authorize.Net No Response', ['donation_id' => $donation->id]);
 
-                \Log::error('Authorize.Net API Error', [
-                    'donation_id' => $donation->id,
-                    'error' => $errorText
-                ]);
-
-                return back()->withInput()->with('error', 'Payment processing error: ' . $errorText);
+                return back()->withInput()->with('error', 'Payment processing error. Please try again.');
             }
+            
         } catch (\Exception $e) {
             \Log::error('QR Donation Payment Processing Error: ' . $e->getMessage(), [
+                'donation_id' => $donation->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withInput()->with('error', 'An error occurred while processing your payment. Please try again.');
+        }
+    }
+
+    /**
+     * Process Stripe payment
+     */
+    private function processStripePayment($request, $donation, $totalAmount, $website, $feePercent)
+    {
+        try {
+            // Get Stripe credentials for this website
+            $paymentGatewayService = new \App\Services\PaymentGatewayService();
+            $paymentData = $paymentGatewayService->getPaymentConfigForWebsite($website);
+            
+            if (!isset($paymentData['config']['secret_key'])) {
+                return back()->withInput()->with('error', 'Stripe payment is not configured for this website');
+            }
+
+            \Stripe\Stripe::setApiKey($paymentData['config']['secret_key']);
+
+            // Create Stripe charge
+            $charge = \Stripe\Charge::create([
+                "amount" => $totalAmount * 100, // Stripe uses cents
+                "currency" => "usd",
+                "source" => $request->stripeToken,
+                "description" => "QR Code Donation - " . ucfirst($request->type)
+            ]);
+            
+            \Log::info('Stripe charge successful', [
+                'charge_id' => $charge->id,
+                'amount' => $charge->amount,
+                'donation_id' => $donation->id
+            ]);
+
+            // Payment successful - update donation
+            $donation->status = 1;
+            $donation->transaction_id = $charge->id;
+            $donation->payment_method = 'stripe';
+            $donation->save();
+            
+            // Create transaction record
+            $processingFee = ($donation->amount / 100) * $feePercent;
+            
+            $tran = new Transaction();
+            $tran->transaction_id = $charge->id;
+            $tran->user_id = null;
+            $tran->website_id = $website->id;
+            $tran->amount = $donation->amount;
+            $tran->type = $donation->type;
+            $tran->name = $request->first_name;
+            $tran->last_name = $request->last_name;
+            $tran->email = $request->email;
+            $tran->address = $request->billing_address ?? null;
+            $tran->apartment = $request->billing_apartment ?? null;
+            $tran->city = $request->billing_city ?? null;
+            $tran->state = $request->billing_state ?? null;
+            $tran->zip = $request->billing_zipcode ?? null;
+            $tran->phone = $request->billing_phone ?? $request->phone;
+            $tran->country = $request->billing_country ?? null;
+            $tran->ip_address = $request->ip();
+            $tran->fee = $processingFee;
+            $tran->fee_paid = 1;
+            
+            if ($donation->tip_enabled) {
+                $tran->tip_amount = $donation->tip_amount;
+                $tran->tip_percentage = $donation->tip_percentage;
+            }
+            
+            $tran->status = 1;
+            $tran->reference_id = $donation->id;
+            $tran->save();
+
+            // Track payment success
+            try {
+                $funnelService = new PaymentFunnelService();
+                $funnelService->trackPaymentCompleted(
+                    $donation->type,
+                    $totalAmount,
+                    'stripe',
+                    $charge->id,
+                    ['qr_donation' => true],
+                    null,
+                    $website->id
+                );
+            } catch (\Exception $e) {
+                \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+            }
+
+            // Use existing thank-you page
+            $type = $request->type;
+            return view('thank-you', compact('type'));
+            
+        } catch (\Stripe\Exception\CardException $e) {
+            // Card was declined
+            \Log::error('Stripe Card Declined', [
+                'donation_id' => $donation->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->withInput()->with('error', 'Card declined: ' . $e->getMessage());
+            
+        } catch (\Exception $e) {
+            \Log::error('Stripe Payment Error: ' . $e->getMessage(), [
                 'donation_id' => $donation->id,
                 'trace' => $e->getTraceAsString()
             ]);
