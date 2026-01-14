@@ -155,7 +155,7 @@
                                                         <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
                                                         @php
-                                                            dd($item,$item->donaion);
+                                                            dd($item,$item->donation);
                                                         @endphp
                                                             <td>{{ $item->donation->user->name }}</td>
                                                         @elseif($item->type == 'general')
