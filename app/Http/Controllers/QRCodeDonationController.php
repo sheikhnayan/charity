@@ -399,7 +399,6 @@ class QRCodeDonationController extends Controller
                     // Payment successful - update donation
                     $donation->status = 1;
                     $donation->transaction_id = $tresponse->getTransId();
-                    $donation->payment_method = 'authorize_net';
                     $donation->save();
                     
                     // Create transaction record (exactly like AuthorizeNetController)
@@ -532,7 +531,6 @@ class QRCodeDonationController extends Controller
             // Payment successful - update donation
             $donation->status = 1;
             $donation->transaction_id = $charge->id;
-            $donation->payment_method = 'stripe';
             $donation->save();
             
             // Create transaction record
