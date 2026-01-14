@@ -200,20 +200,13 @@ class QRCodeDonationController extends Controller
         $paymentSetting = \App\Models\PaymentSetting::find(1);
         $paymentFee = $paymentSetting ? $paymentSetting->fee : 2.9;
         
-        // Get website payment configuration
-        $paymentGatewayService = new \App\Services\PaymentGatewayService();
-        $paymentConfig = $paymentGatewayService->getPaymentConfigForWebsite($website);
-        $paymentMethod = $paymentConfig['payment_method'] ?? 'authorize_net';
-        
         return view('qr-donate', compact(
             'website',
             'qrIdentifier',
             'campaignName',
             'type',
             'selectedId',
-            'paymentFee',
-            'paymentMethod',
-            'paymentConfig'
+            'paymentFee'
         ));
     }
 
@@ -232,7 +225,7 @@ class QRCodeDonationController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'qr_identifier' => 'required|string',
                 'type' => 'required|string|in:donation,auction,sales',
-                'payment_method' => 'required|string|in:authorize_net,stripe,coinbase',
+                'payment_method' => 'required|string|in:authorize_net,coinbase',
                 // Card details for Authorize.Net
                 'card_number' => 'required_if:payment_method,authorize_net',
                 'expiration_date' => 'required_if:payment_method,authorize_net',
@@ -242,8 +235,6 @@ class QRCodeDonationController extends Controller
                 'billing_state' => 'required_if:payment_method,authorize_net',
                 'billing_zipcode' => 'required_if:payment_method,authorize_net',
                 'billing_country' => 'required_if:payment_method,authorize_net',
-                // Stripe token
-                'stripeToken' => 'required_if:payment_method,stripe',
             ]);
 
             // Get website
@@ -324,13 +315,6 @@ class QRCodeDonationController extends Controller
             }
 
             // Process payment based on method
-            \Log::info('QR Donation Payment Processing', [
-                'donation_id' => $donation->id,
-                'payment_method' => $request->payment_method,
-                'amount' => $totalAmount,
-                'website_id' => $website->id
-            ]);
-            
             if ($request->payment_method === 'authorize_net') {
                 return $this->processAuthorizeNetPayment($request, $donation, $totalAmount, $website, $feePercent);
             } elseif ($request->payment_method === 'stripe') {
@@ -506,14 +490,12 @@ class QRCodeDonationController extends Controller
             }
             
         } catch (\Exception $e) {
-            \Log::error('QR Donation Authorize.Net Payment Error: ' . $e->getMessage(), [
+            \Log::error('QR Donation Payment Processing Error: ' . $e->getMessage(), [
                 'donation_id' => $donation->id ?? null,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
             
-            return back()->withInput()->with('error', 'Payment processing error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'An error occurred while processing your payment. Please try again.');
         }
     }
 

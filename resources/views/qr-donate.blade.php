@@ -697,28 +697,13 @@
                 
                 <!-- Payment Options -->
                 <div class="payment-options mt-4">
-                    @if($paymentMethod === 'stripe')
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="stripe">
-                            <i class="fas fa-lock me-2"></i> Pay with Card (Stripe)
-                        </button>
-                        <div class="secure-badge mt-3">
-                            <i class="fas fa-lock"></i> Secure payment via Stripe
-                        </div>
-                    @elseif($paymentMethod === 'coinbase')
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="coinbase">
-                            <i class="fas fa-bitcoin me-2"></i> Pay with Crypto
-                        </button>
-                        <div class="secure-badge mt-3">
-                            <i class="fas fa-lock"></i> Secure payment via Coinbase
-                        </div>
-                    @else
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="authorize_net">
-                            <i class="fas fa-lock me-2"></i> Pay with Card (Authorize.Net)
-                        </button>
-                        <div class="secure-badge mt-3">
-                            <i class="fas fa-lock"></i> Secure payment via Authorize.Net
-                        </div>
-                    @endif
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="authorize_net">
+                        <i class="fas fa-lock me-2"></i> Pay with Card (Authorize.Net)
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-warning w-100 py-3 fw-bold" onclick="handleCryptoPayment()">
+                        <i class="fas fa-bitcoin me-2"></i> Pay with Crypto
+                    </button>
                 </div>
                 
                 <!-- Policy Links -->
@@ -728,6 +713,10 @@
                         <a href="#" style="color: #1773b0; text-decoration: underline;">Privacy</a> • 
                         <a href="#" style="color: #1773b0; text-decoration: underline;">Terms</a>
                     </p>
+                </div>
+                
+                <div class="secure-badge mt-3">
+                    <i class="fas fa-lock"></i> Secure payment via Authorize.Net
                 </div>
             </form>
         </div>
