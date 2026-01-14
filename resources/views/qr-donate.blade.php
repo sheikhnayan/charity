@@ -1162,42 +1162,52 @@
         // Update order summary with amount and tip
         function updateOrderSummary() {
             const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
+            console.log('[Order Summary] Base amount:', amount);
             
             // Update tipping component's base amount FIRST (this updates the tip calculation)
             if (typeof updateBaseAmount === 'function') {
                 updateBaseAmount(amount);
             }
             
-            // Read the tip amount - prioritize currentTipAmount global variable
-            let tipAmount = 0;
-            if (typeof currentTipAmount !== 'undefined' && currentTipAmount > 0) {
-                tipAmount = currentTipAmount;
-            } else {
-                // Fallback: read from input field
-                const tipInput = document.querySelector('[name="tip_amount"]');
-                if (tipInput && tipInput.value) {
-                    tipAmount = parseFloat(tipInput.value) || 0;
+            // WAIT for the tipping component to finish updating
+            setTimeout(() => {
+                // Read the tip amount - prioritize currentTipAmount global variable
+                let tipAmount = 0;
+                
+                console.log('[Order Summary] currentTipAmount:', typeof currentTipAmount !== 'undefined' ? currentTipAmount : 'undefined');
+                console.log('[Order Summary] currentTipPercentage:', typeof currentTipPercentage !== 'undefined' ? currentTipPercentage : 'undefined');
+                
+                if (typeof currentTipAmount !== 'undefined' && currentTipAmount > 0) {
+                    tipAmount = currentTipAmount;
+                } else {
+                    // Fallback: read from input field
+                    const tipInput = document.querySelector('[name="tip_amount"]');
+                    console.log('[Order Summary] Tip input field value:', tipInput ? tipInput.value : 'not found');
+                    if (tipInput && tipInput.value) {
+                        tipAmount = parseFloat(tipInput.value) || 0;
+                    }
                 }
-            }
-            
-            const total = amount + tipAmount;
-            
-            // Update summary display
-            const summaryAmount = document.getElementById('summaryAmount');
-            const summaryTotal = document.getElementById('summaryTotal');
-            const summaryTipRow = document.getElementById('summaryTipRow');
-            const summaryTip = document.getElementById('summaryTip');
-            
-            if (summaryAmount) summaryAmount.textContent = '$' + amount.toFixed(2);
-            if (summaryTotal) summaryTotal.textContent = '$' + total.toFixed(2);
-            
-            // Show tip row if donation type and tip is selected
-            if (currentType === 'donation' && tipAmount > 0) {
-                if (summaryTipRow) summaryTipRow.style.display = 'flex';
-                if (summaryTip) summaryTip.textContent = '$' + tipAmount.toFixed(2);
-            } else {
-                if (summaryTipRow) summaryTipRow.style.display = 'none';
-            }
+                
+                const total = amount + tipAmount;
+                console.log('[Order Summary] Tip amount:', tipAmount, '| Total:', total);
+                
+                // Update summary display
+                const summaryAmount = document.getElementById('summaryAmount');
+                const summaryTotal = document.getElementById('summaryTotal');
+                const summaryTipRow = document.getElementById('summaryTipRow');
+                const summaryTip = document.getElementById('summaryTip');
+                
+                if (summaryAmount) summaryAmount.textContent = '$' + amount.toFixed(2);
+                if (summaryTotal) summaryTotal.textContent = '$' + total.toFixed(2);
+                
+                // Show tip row if donation type and tip is selected
+                if (currentType === 'donation' && tipAmount > 0) {
+                    if (summaryTipRow) summaryTipRow.style.display = 'flex';
+                    if (summaryTip) summaryTip.textContent = '$' + tipAmount.toFixed(2);
+                } else {
+                    if (summaryTipRow) summaryTipRow.style.display = 'none';
+                }
+            }, 200); // Wait 200ms for tipping component to update
         }
 
         // Show tipping component
