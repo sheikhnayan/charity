@@ -7,11 +7,31 @@
     <title>{{ $ticket->name }} | Investment Details</title>
     <meta name="description" content="Invest in {{ $ticket->name }} for as little as ${{ number_format($ticket->price_per_share, 2) }} per share!">
     
+    <!-- Cart Queue Stub - Initialize before any scripts use addToCart -->
+    <script>
+      if (!window._cartQueue) {
+        window._cartQueue = [];
+      }
+      window.addToCart = function(itemData) {
+        if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
+          console.log('Adding item to cart:', itemData);
+          return window.ShoppingCart.addItem(itemData);
+        } else {
+          console.log('Queueing item for cart:', itemData);
+          window._cartQueue.push(itemData);
+          return true;
+        }
+      };
+    </script>
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- jQuery - Required for cart.js -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <link rel="stylesheet" href="{{ asset('auction.css') }}">
     
@@ -823,6 +843,8 @@
         .price,.price-value{color: var(--pd-price) !important;}
         a,.markdown-content a,.btn.ghost{color: {{ $website->property_details_muted_color }} !important;}
     </style>
+    <!-- Shopping Cart System - Load early before components use addToCart -->
+    <script src="{{ asset('js/cart.js') }}"></script>
 </head>
 <body class="property-details-page" style="background-color: {{ $ticket->page_bg_color ?? '#ffffff' }} !important;">
     <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
@@ -1778,14 +1800,19 @@
                     <!-- Action Buttons -->
 
                         <!-- Modal Triggered Form -->
-                        <form action="{{ route('tickets') }}" method="POST" id="buySharesForm">
-                            @csrf
-                            <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
-                            <input type="hidden" name="ticket[{{ $ticket->id }}][quantity]" id="formQuantity" value="1">
-                            <button type="button" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg mb-3" id="buySharesButton">
-                                <i class="fas fa-shopping-cart mr-2"></i>Buy Shares
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <form action="{{ route('tickets') }}" method="POST" id="buySharesForm" style="flex: 1;">
+                                @csrf
+                                <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
+                                <input type="hidden" name="ticket[{{ $ticket->id }}][quantity]" id="formQuantity" value="1">
+                                <button type="button" class="investment-btn w-full text-white py-4 rounded-lg font-semibold text-lg" id="buySharesButton">
+                                    <i class="fas fa-shopping-cart mr-2"></i>Buy Shares
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-outline-primary py-4 rounded-lg font-semibold text-lg" id="addTicketToCartButton" style="flex: 1; border-width: 2px;">
+                                <i class="fas fa-cart-plus mr-2"></i>Add to Cart
                             </button>
-                        </form>
+                        </div>
 
                         @include('partials.ticket-auth-modal')
                         @include('partials.investor-info-modal')
@@ -1887,6 +1914,23 @@
                             console.log('Investor profile skipped, proceeding to checkout');
                             if (window._investorProfilePendingForm) {
                                 window._investorProfilePendingForm.submit();
+                            }
+                        });
+
+                        // Add to Cart button for tickets
+                        document.getElementById('addTicketToCartButton').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (typeof window.addToCart === 'function') {
+                                const quantity = parseInt(document.getElementById('formQuantity').value) || 1;
+                                window.addToCart({
+                                    id: {{ $ticket->id }},
+                                    name: '{{ $ticket->name }}',
+                                    type: 'ticket',
+                                    price: {{ $ticket->price_per_share }},
+                                    quantity: quantity
+                                });
+                            } else {
+                                console.error('addToCart function not available on window');
                             }
                         });
 
@@ -2483,8 +2527,6 @@
         }
     </script>
 
-    <!-- jQuery (must load before scripts that use it) -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     

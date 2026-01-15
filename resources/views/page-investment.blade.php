@@ -12,7 +12,25 @@ if (isset($state['components'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $data && $data->is_homepage ? 'Home' : ($data->name ?? 'Page') }}</title>
+    <title>{{ $data->name ?? 'Page' }}</title>
+    
+    <!-- Cart Queue Stub - Initialize before any scripts use addToCart -->
+    <script>
+      if (!window._cartQueue) {
+        window._cartQueue = [];
+      }
+      window.addToCart = function(itemData) {
+        if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
+          console.log('Adding item to cart:', itemData);
+          return window.ShoppingCart.addItem(itemData);
+        } else {
+          console.log('Queueing item for cart:', itemData);
+          window._cartQueue.push(itemData);
+          return true;
+        }
+      };
+    </script>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('auction.css') }}">
@@ -147,8 +165,6 @@ if (isset($state['components'])) {
         box-sizing: border-box !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
     }
     
     /* Enable borders and padding for inner-sections */
@@ -383,10 +399,6 @@ if (isset($state['components'])) {
             height: 100% !important;
         }
 
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-
     }
     
     @media (max-width: 480px) {
@@ -414,11 +426,6 @@ if (isset($state['components'])) {
         .close-on-mobile{
             display: none;
         }
-
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     /* Base Component Styles */
@@ -573,10 +580,6 @@ if (isset($state['components'])) {
             font-size: 0.75rem !important;
             margin-bottom: 0.25rem !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @media (max-width: 480px) {
@@ -596,10 +599,6 @@ if (isset($state['components'])) {
         .event-countdown p {
             font-size: 0.625rem !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     /* Auction Components Styles - from page-new.blade.php */
@@ -690,10 +689,6 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @media (max-width: 1199px) {
@@ -706,10 +701,6 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @media (max-width: 767px) {
@@ -717,10 +708,6 @@ if (isset($state['components'])) {
             grid-template-columns: 1fr;
             gap: 15px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     /* For when auction is in small containers (col-md-6, col-md-4, etc.) */
@@ -728,20 +715,12 @@ if (isset($state['components'])) {
         .auction-items-grid {
             grid-template-columns: 1fr !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @container (max-width: 900px) {
         .auction-items-grid {
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     .auction-item-wrapper {
@@ -849,10 +828,6 @@ if (isset($state['components'])) {
             flex: none;
             min-width: auto;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     .c-timer {
@@ -907,9 +882,6 @@ if (isset($state['components'])) {
         font-size: 1rem;
         color: #2c3e50;
     }
-    .footer_link_item {
-        height: 24px !important;
-    }
 
     /* Mobile-specific adjustments for auction components */
     @media (max-width: 576px) {
@@ -936,10 +908,6 @@ if (isset($state['components'])) {
         .c-timer__period {
             font-size: 0.65rem;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
 
@@ -1037,10 +1005,6 @@ if (isset($state['components'])) {
         .inner-section-grid.cols-3 {
             grid-template-columns: repeat(2, 1fr);
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @media (max-width: 768px) {
@@ -1052,20 +1016,12 @@ if (isset($state['components'])) {
             grid-template-columns: 1fr;
             gap: 15px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     @media (max-width: 576px) {
         .inner-section-grid {
             gap: 10px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
 
     
@@ -1271,10 +1227,6 @@ if (isset($state['components'])) {
             font-size: 13px;
             padding: 6px 16px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     @media (max-width: 480px) {
@@ -1309,10 +1261,6 @@ if (isset($state['components'])) {
         .ticket-mask .row .col-md-2 img{
             width: 100% !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     /* Contact Top Bar Styles */
@@ -1398,10 +1346,6 @@ if (isset($state['components'])) {
             padding: 4px 12px !important;
             margin-top: 2px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     @media (max-width: 576px) {
@@ -1428,10 +1372,6 @@ if (isset($state['components'])) {
             padding: 3px 10px !important;
             margin-top: 2px;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     /* Adjust navbar when contact top bar is present */
@@ -1447,10 +1387,6 @@ if (isset($state['components'])) {
         .contact-topbar{
             height: 28px !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     /* Adjust main content margin when investor exclusives bar is present */
@@ -1458,67 +1394,18 @@ if (isset($state['components'])) {
         main.with-investor-bar {
             margin-top: 8.5rem !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     
     @media (max-width: 480px) {
         main.with-investor-bar {
             margin-top: 8rem !important;
         }
-
-        .inner-section-frontend {
-                        padding: 0 !important;
-                    }
     }
     </style>
+    <!-- Shopping Cart System - Load early before components use addToCart -->
+    <script src="{{ asset('js/cart.js') }}"></script>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
-    {{-- Registration Success/Error Notification --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 800px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; z-index: 99999;">
-            <div style="display: flex; align-items: start; gap: 15px;">
-                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; margin-top: 2px; flex-shrink: 0;"></i>
-                <div style="flex: 1; padding-right: 30px;">
-                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">Success!</strong>
-                    <div style="line-height: 1.5;">{{ session('success') }}</div>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; top: 20px; right: 20px; font-size: 1rem;"></button>
-        </div>
-        <script>
-            // Auto-scroll to top to ensure notification is visible
-            window.scrollTo({top: 0, behavior: 'smooth'});
-            // Auto-dismiss after 10 seconds
-            setTimeout(function() {
-                const alert = document.querySelector('.alert-success');
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 10000);
-        </script>
-    @endif
-    
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px auto; max-width: 800px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; z-index: 99999;">
-            <div style="display: flex; align-items: start; gap: 15px;">
-                <i class="fa-solid fa-circle-exclamation" style="font-size: 1.5rem; margin-top: 2px; flex-shrink: 0;"></i>
-                <div style="flex: 1; padding-right: 30px;">
-                    <strong style="font-size: 1.1rem; display: block; margin-bottom: 5px;">Error!</strong>
-                    <div style="line-height: 1.5;">{{ session('error') }}</div>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; top: 20px; right: 20px; font-size: 1rem;"></button>
-        </div>
-        <script>
-            // Auto-scroll to top to ensure notification is visible
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        </script>
-    @endif
-    
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -1675,7 +1562,7 @@ if (isset($state['components'])) {
 
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
-                {{ $value }}
+                Purchase Pending
             </div>
         @endsession
 
@@ -1705,7 +1592,7 @@ if (isset($state['components'])) {
                         <h3 style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%);
                             color:{{ $banner['titleColor'] ?? '#fff' }};
                             text-shadow:{{ $banner['titleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                            font-size:{{ $banner['titleFontSize'] ?? '2em' }} !important; width: 90%;
+                            font-size:{{ $banner['titleFontSize'] ?? '2em' }}; width: 90%;
                             text-align:{{ $banner['textAlign'] ?? 'center' }};" class="custom-banner-title">
                             {{ $banner['title'] }}
                         </h3>
@@ -1714,7 +1601,7 @@ if (isset($state['components'])) {
                         <p style="position:absolute; top:45%; left:50%; transform:translate(-50%,-50%);
                             color:{{ $banner['subtitleColor'] ?? '#fff' }};
                             text-shadow:{{ $banner['subtitleShadow'] ?? '0 2px 8px rgba(0,0,0,0.5)' }};
-                            font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }} !important; width: 90%;
+                            font-size:{{ $banner['subtitleFontSize'] ?? '1.2em' }}; width: 90%;
                             text-align:{{ $banner['textAlign'] ?? 'center' }};
                             margin-top: {{ $banner['subtitleMarginTop'] ?? '0px' }}">
                             {{ $banner['subtitle'] }}
@@ -1725,7 +1612,7 @@ if (isset($state['components'])) {
         @endforeach
 
         {{-- Main content area with universal inner-section handling --}}
-        <div id="rendered-page" style="margin-bottom: 3rem;">
+        <div id="rendered-page">
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';
@@ -2239,10 +2126,6 @@ if (isset($state['components'])) {
                 display: none !important;
             }
 
-            .inner-section-frontend {
-                        padding: 0 !important;
-                    }
-
         }
 
         /* Responsive adjustments for smaller screens */
@@ -2261,20 +2144,9 @@ if (isset($state['components'])) {
                 min-width: 120px;
             }
 
-            @if ($check && $check->isInvestment())
-                footer{
-                    margin-bottom: 4.7rem !important;
-                }
-            @else
-                footer{
-                    margin-bottom: 0px !important;
-                }
-            @endif
-
-
-            .inner-section-frontend {
-                        padding: 0 !important;
-                    }
+            footer{
+                margin-bottom: 0px !important;
+            }
         }
     </style>
 
@@ -2433,246 +2305,6 @@ function moveFontClassesToParent() {
 }
 
 </script>
-
-<!-- Confetti Animation Script -->
-@if(isset($data->enable_confetti) && $data->enable_confetti)
-<script>
-    (() => {
-        "use strict";
-
-        // Utility functions grouped into a single object
-        const Utils = {
-            // Parse pixel values to numeric values
-            parsePx: (value) => parseFloat(value.replace(/px/, "")),
-
-            // Generate a random number between two values, optionally with a fixed precision
-            getRandomInRange: (min, max, precision = 0) => {
-                const multiplier = Math.pow(10, precision);
-                const randomValue = Math.random() * (max - min) + min;
-                return Math.floor(randomValue * multiplier) / multiplier;
-            },
-
-            // Pick a random item from an array
-            getRandomItem: (array) => array[Math.floor(Math.random() * array.length)],
-
-            // Scaling factor based on screen width
-            getScaleFactor: () => Math.log(window.innerWidth) / Math.log(1920),
-
-            // Debounce function to limit event firing frequency
-            debounce: (func, delay) => {
-                let timeout;
-                return (...args) => {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func(...args), delay);
-                };
-            },
-        };
-
-        // Precomputed constants
-        const DEG_TO_RAD = Math.PI / 180;
-
-        // Centralized configuration for default values
-        const defaultConfettiConfig = {
-            confettiesNumber: 120,
-            confettiRadius: 4,
-            confettiColors: [
-                "#2e4053", "#b7bcc4"
-            ],
-            emojies: [],
-            svgIcon: null,
-        };
-
-        // Confetti class representing individual confetti pieces
-        class Confetti {
-            constructor({ initialPosition, direction, radius, colors, emojis, svgIcon }) {
-                const speedFactor = Utils.getRandomInRange(0.9, 1.7, 3) * Utils.getScaleFactor();
-                this.speed = { x: speedFactor, y: speedFactor };
-                this.finalSpeedX = Utils.getRandomInRange(0.2, 0.6, 3);
-                this.rotationSpeed = emojis.length || svgIcon ? 0.01 : Utils.getRandomInRange(0.03, 0.07, 3) * Utils.getScaleFactor();
-                this.dragCoefficient = Utils.getRandomInRange(0.0005, 0.0009, 6);
-                this.radius = { x: radius, y: radius };
-                this.initialRadius = radius;
-                this.rotationAngle = direction === "left" ? Utils.getRandomInRange(0, 0.2, 3) : Utils.getRandomInRange(-0.2, 0, 3);
-                this.emojiRotationAngle = Utils.getRandomInRange(0, 2 * Math.PI);
-                this.radiusYDirection = "down";
-
-                const angle = direction === "left" ? Utils.getRandomInRange(82, 15) * DEG_TO_RAD : Utils.getRandomInRange(-15, -82) * DEG_TO_RAD;
-                this.absCos = Math.abs(Math.cos(angle));
-                this.absSin = Math.abs(Math.sin(angle));
-
-                const offset = Utils.getRandomInRange(-150, 0);
-                const position = {
-                    x: initialPosition.x + (direction === "left" ? -offset : offset) * this.absCos,
-                    y: initialPosition.y - offset * this.absSin
-                };
-
-                this.position = { ...position };
-                this.initialPosition = { ...position };
-                this.color = emojis.length || svgIcon ? null : Utils.getRandomItem(colors);
-                this.emoji = emojis.length ? Utils.getRandomItem(emojis) : null;
-                this.svgIcon = null;
-
-                // Preload SVG if provided
-                if (svgIcon) {
-                    this.svgImage = new Image();
-                    this.svgImage.src = svgIcon;
-                    this.svgImage.onload = () => {
-                        this.svgIcon = this.svgImage;
-                    };
-                }
-
-                this.createdAt = Date.now();
-                this.direction = direction;
-            }
-
-            draw(context) {
-                const { x, y } = this.position;
-                const { x: radiusX, y: radiusY } = this.radius;
-                const scale = window.devicePixelRatio;
-
-                if (this.svgIcon) {
-                    context.save();
-                    context.translate(scale * x, scale * y);
-                    context.rotate(this.emojiRotationAngle);
-                    context.drawImage(this.svgIcon, -radiusX, -radiusY, radiusX * 2, radiusY * 2);
-                    context.restore();
-                } else if (this.color) {
-                    context.fillStyle = this.color;
-                    context.beginPath();
-                    context.ellipse(x * scale, y * scale, radiusX * scale, radiusY * scale, this.rotationAngle, 0, 2 * Math.PI);
-                    context.fill();
-                } else if (this.emoji) {
-                    context.font = `${radiusX * scale}px serif`;
-                    context.save();
-                    context.translate(scale * x, scale * y);
-                    context.rotate(this.emojiRotationAngle);
-                    context.textAlign = "center";
-                    context.fillText(this.emoji, 0, radiusY / 2);
-                    context.restore();
-                }
-            }
-
-            updatePosition(deltaTime, currentTime) {
-                const elapsed = currentTime - this.createdAt;
-
-                if (this.speed.x > this.finalSpeedX) {
-                    this.speed.x -= this.dragCoefficient * deltaTime;
-                }
-
-                this.position.x += this.speed.x * (this.direction === "left" ? -this.absCos : this.absCos) * deltaTime;
-                this.position.y = this.initialPosition.y - this.speed.y * this.absSin * elapsed + 0.00125 * Math.pow(elapsed, 2) / 2;
-
-                if (!this.emoji && !this.svgIcon) {
-                    this.rotationSpeed -= 1e-5 * deltaTime;
-                    this.rotationSpeed = Math.max(this.rotationSpeed, 0);
-
-                    if (this.radiusYDirection === "down") {
-                        this.radius.y -= deltaTime * this.rotationSpeed;
-                        if (this.radius.y <= 0) {
-                            this.radius.y = 0;
-                            this.radiusYDirection = "up";
-                        }
-                    } else {
-                        this.radius.y += deltaTime * this.rotationSpeed;
-                        if (this.radius.y >= this.initialRadius) {
-                            this.radius.y = this.initialRadius;
-                            this.radiusYDirection = "down";
-                        }
-                    }
-                }
-            }
-
-            isVisible(canvasHeight) {
-                return this.position.y < canvasHeight + 100;
-            }
-        }
-
-        class ConfettiManager {
-            constructor() {
-                this.canvas = document.createElement("canvas");
-                this.canvas.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; pointer-events: none;";
-                document.body.appendChild(this.canvas);
-                this.context = this.canvas.getContext("2d");
-                this.confetti = [];
-                this.lastUpdated = Date.now();
-                window.addEventListener("resize", Utils.debounce(() => this.resizeCanvas(), 200));
-                this.resizeCanvas();
-                requestAnimationFrame(() => this.loop());
-            }
-
-            resizeCanvas() {
-                this.canvas.width = window.innerWidth * window.devicePixelRatio;
-                this.canvas.height = window.innerHeight * window.devicePixelRatio;
-            }
-
-            addConfetti(config = {}) {
-                const { confettiesNumber, confettiRadius, confettiColors, emojies, svgIcon } = {
-                    ...defaultConfettiConfig,
-                    ...config,
-                };
-
-                const baseY = (5 * window.innerHeight) / 7;
-                for (let i = 0; i < confettiesNumber / 2; i++) {
-                    this.confetti.push(new Confetti({
-                        initialPosition: { x: 0, y: baseY },
-                        direction: "right",
-                        radius: confettiRadius,
-                        colors: confettiColors,
-                        emojis: emojies,
-                        svgIcon,
-                    }));
-                    this.confetti.push(new Confetti({
-                        initialPosition: { x: window.innerWidth, y: baseY },
-                        direction: "left",
-                        radius: confettiRadius,
-                        colors: confettiColors,
-                        emojis: emojies,
-                        svgIcon,
-                    }));
-                }
-            }
-
-            resetAndStart(config = {}) {
-                // Clear existing confetti
-                this.confetti = [];
-                // Add new confetti
-                this.addConfetti(config);
-            }
-
-            loop() {
-                const currentTime = Date.now();
-                const deltaTime = currentTime - this.lastUpdated;
-                this.lastUpdated = currentTime;
-
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                this.confetti = this.confetti.filter((item) => {
-                    item.updatePosition(deltaTime, currentTime);
-                    item.draw(this.context);
-                    return item.isVisible(this.canvas.height);
-                });
-
-                requestAnimationFrame(() => this.loop());
-            }
-        }
-
-        // Trigger confetti 5 times
-        function triggerConfettiMultipleTimes(times, delay) {
-            let count = 0;
-            const intervalId = setInterval(() => {
-                const manager = new ConfettiManager();
-                manager.addConfetti();
-                count++;
-                if (count >= times) {
-                    clearInterval(intervalId);
-                }
-            }, delay);
-        }
-
-        triggerConfettiMultipleTimes(5, 500);
-    })();
-</script>
-@endif
 
 <!-- Payment Funnel Tracking -->
 <script src="{{ asset('js/payment-funnel-tracking.js') }}"></script>

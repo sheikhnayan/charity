@@ -1223,3 +1223,20 @@ Route::post('/ajax/ticket-auth/forgot-reset', function(Request $request) {
 });
 // --- End Ticket Auth/Verification AJAX Endpoints ---
 
+// Shopping Cart Routes
+Route::prefix('api/cart')->group(function () {
+    Route::post('/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.api.add');
+    Route::get('/', [App\Http\Controllers\CartController::class, 'get'])->name('cart.api.get');
+    Route::put('/item/{key}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.api.update');
+    Route::delete('/item/{key}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.api.remove');
+    Route::delete('/clear', [App\Http\Controllers\CartController::class, 'clear'])->name('cart.api.clear');
+    Route::get('/count', [App\Http\Controllers\CartController::class, 'getCount'])->name('cart.api.count');
+    Route::get('/validate', [App\Http\Controllers\CartController::class, 'validate'])->name('cart.api.validate');
+});
+
+// Checkout Routes
+Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+
+

@@ -2881,7 +2881,7 @@ button a:hover {
                 <div class="page-settings-controls">
                     <div class="form-group">
                         <label>Page Background Color</label>
-                        <input type="color" id="pageBackgroundColor" value="{{ $data->background_color ?? '#ffffff' }}" oninput="updatePageBackground(this.value)">
+                        <input type="color" id="pageBackgroundColor" value="{{ $data->background_color ?? '#ffffff' }}" onchange="updatePageBackground(this.value)">
                         <script>
                             // Ensure the color picker reflects the effective page background.
                             function initPageBackgroundPicker() {
@@ -8023,7 +8023,7 @@ break;
                     </div>
                     
                     <div id="imageUrlSection" style="display: ${d.useUrl ? 'block' : 'none'};">
-                        <input type="text" placeholder="Enter image URL (e.g., https://example.com/image.jpg)" value="${d.useUrl ? d.src : ''}" oninput="updateImageUrl(this.value)" style="width: 100%;">
+                        <input type="text" placeholder="Enter image URL (e.g., https://example.com/image.jpg)" value="${d.useUrl ? d.src : ''}" onchange="updateImageUrl(this.value)" style="width: 100%;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">Enter a full URL to an image</small>
                     </div>
                     
@@ -8031,21 +8031,21 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Alt Text</label>
-                    <input type="text" value="${d.alt || ''}" oninput="updateImageField(this.value, 'alt')">
+                    <input type="text" value="${d.alt || ''}" onchange="updateImageField(this.value, 'alt')">
                 </div>
                 <div class="form-group">
                     <label>Width</label>
-                    <input type="text" value="${d.width || '100%'}" oninput="updateImageField(this.value, 'width')" placeholder="e.g. 100%, 300px, auto">
+                    <input type="text" value="${d.width || '100%'}" onchange="updateImageField(this.value, 'width')" placeholder="e.g. 100%, 300px, auto">
                     <small style="color: #666; font-size: 12px;">Use %, px, or auto</small>
                 </div>
                 <div class="form-group">
                     <label>Height</label>
-                    <input type="text" value="${d.height || 'auto'}" oninput="updateImageField(this.value, 'height')" placeholder="e.g. auto, 200px, 50%">
+                    <input type="text" value="${d.height || 'auto'}" onchange="updateImageField(this.value, 'height')" placeholder="e.g. auto, 200px, 50%">
                     <small style="color: #666; font-size: 12px;">Use auto, px, or %</small>
                 </div>
                 <div class="form-group">
                     <label>Object Fit</label>
-                    <select oninput="updateImageField(this.value, 'objectFit')">
+                    <select onchange="updateImageField(this.value, 'objectFit')">
                         <option value="cover" ${d.objectFit==='cover'?'selected':''}>Cover</option>
                         <option value="contain" ${d.objectFit==='contain'?'selected':''}>Contain</option>
                         <option value="fill" ${d.objectFit==='fill'?'selected':''}>Fill</option>
@@ -8053,12 +8053,12 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                     <small style="color: #666; font-size: 12px;">Background behind the image</small>
                 </div>
                 <div class="form-group">
                     <label>Link (optional)</label>
-                    <input type="text" value="${d.link || ''}" oninput="updateImageField(this.value, 'link')">
+                    <input type="text" value="${d.link || ''}" onchange="updateImageField(this.value, 'link')">
                 </div>
                 <div class="form-group">
                     <label>Open in new tab</label>
@@ -8078,19 +8078,19 @@ break;
                         <div class="timeline-item-editor" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
                             <div class="form-group">
                                 <label>Item ${index + 1} - Number</label>
-                                <input type="text" value="${item.number || ''}" oninput="updateTimelineItem(${index}, 'number', this.value)">
+                                <input type="text" value="${item.number || ''}" onchange="updateTimelineItem(${index}, 'number', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
-                                <input type="text" value="${item.title || ''}" oninput="updateTimelineItem(${index}, 'title', this.value)">
+                                <input type="text" value="${item.title || ''}" onchange="updateTimelineItem(${index}, 'title', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
-                                <textarea style="min-height: 80px;" oninput="updateTimelineItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
+                                <textarea style="min-height: 80px;" onchange="updateTimelineItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>Status (optional)</label>
-                                <input type="text" value="${item.status || ''}" placeholder="e.g., Completed, In Progress, Planned" oninput="updateTimelineItem(${index}, 'status', this.value)">
+                                <input type="text" value="${item.status || ''}" placeholder="e.g., Completed, In Progress, Planned" onchange="updateTimelineItem(${index}, 'status', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Completion Status</label>
@@ -8108,46 +8108,46 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                     <small class="text-muted">Background behind the timeline</small>
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Completed State Colors</h4>
                 <div class="form-group">
                     <label>Completed Background</label>
-                    <input type="color" value="${colors.completedBackground || '#22c55e'}" oninput="updateTimelineColor('completedBackground', this.value)">
+                    <input type="color" value="${colors.completedBackground || '#22c55e'}" onchange="updateTimelineColor('completedBackground', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Completed Text</label>
-                    <input type="color" value="${colors.completedText || '#ffffff'}" oninput="updateTimelineColor('completedText', this.value)">
+                    <input type="color" value="${colors.completedText || '#ffffff'}" onchange="updateTimelineColor('completedText', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Completed Line</label>
-                    <input type="color" value="${colors.completedLineColor || '#22c55e'}" oninput="updateTimelineColor('completedLineColor', this.value)">
+                    <input type="color" value="${colors.completedLineColor || '#22c55e'}" onchange="updateTimelineColor('completedLineColor', this.value)">
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Uncompleted State Colors</h4>
                 <div class="form-group">
                     <label>Uncompleted Background</label>
-                    <input type="color" value="${colors.uncompletedBackground || '#e5e7eb'}" oninput="updateTimelineColor('uncompletedBackground', this.value)">
+                    <input type="color" value="${colors.uncompletedBackground || '#e5e7eb'}" onchange="updateTimelineColor('uncompletedBackground', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Uncompleted Text</label>
-                    <input type="color" value="${colors.uncompletedText || '#9ca3af'}" oninput="updateTimelineColor('uncompletedText', this.value)">
+                    <input type="color" value="${colors.uncompletedText || '#9ca3af'}" onchange="updateTimelineColor('uncompletedText', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Uncompleted Line</label>
-                    <input type="color" value="${colors.uncompletedLineColor || '#e5e7eb'}" oninput="updateTimelineColor('uncompletedLineColor', this.value)">
+                    <input type="color" value="${colors.uncompletedLineColor || '#e5e7eb'}" onchange="updateTimelineColor('uncompletedLineColor', this.value)">
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333;">General Colors</h4>
                 <div class="form-group">
                     <label>Title Color</label>
-                    <input type="color" value="${colors.titleColor || '#22c55e'}" oninput="updateTimelineColor('titleColor', this.value)">
+                    <input type="color" value="${colors.titleColor || '#22c55e'}" onchange="updateTimelineColor('titleColor', this.value)">
                 </div>
                 <div class="form-group">
                     <label>Description Color</label>
-                    <input type="color" value="${colors.descriptionColor || '#374151'}" oninput="updateTimelineColor('descriptionColor', this.value)">
+                    <input type="color" value="${colors.descriptionColor || '#374151'}" onchange="updateTimelineColor('descriptionColor', this.value)">
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Timeline Items</h4>
@@ -8170,14 +8170,14 @@ break;
                     <textarea 
                         id="customHtmlCode" 
                         rows="15" 
-                        oninput="updateCustomHtmlField(this.value, 'htmlContent')" 
+                        onchange="updateCustomHtmlField(this.value, 'htmlContent')" 
                         style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 13px;"
                     >${customHtmlData.htmlContent}</textarea>
                     <small class="text-muted">Enter your custom HTML code. It will be rendered in an isolated iframe for safety.</small>
                 </div>
                 <div class="form-group">
                     <label>Height (px)</label>
-                    <input type="number" value="${customHtmlData.height}" min="100" max="2000" oninput="updateCustomHtmlField(this.value, 'height')">
+                    <input type="number" value="${customHtmlData.height}" min="100" max="2000" onchange="updateCustomHtmlField(this.value, 'height')">
                     <small class="text-muted">Set the height of the iframe container</small>
                 </div>
                 <div class="alert alert-info" style="background: #e3f2fd; border: 1px solid #2196f3; padding: 10px; border-radius: 4px; margin-top: 15px;">
@@ -8203,22 +8203,22 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Button Text</label>
-                    <input type="text" value="${buttonData.buttonText}" oninput="updateButtonField(this.value, 'buttonText')">
+                    <input type="text" value="${buttonData.buttonText}" onchange="updateButtonField(this.value, 'buttonText')">
                 </div>
                 <div class="form-group">
                     <label>Button URL</label>
-                    <input type="text" value="${buttonData.buttonUrl}" oninput="updateButtonField(this.value, 'buttonUrl')">
+                    <input type="text" value="${buttonData.buttonUrl}" onchange="updateButtonField(this.value, 'buttonUrl')">
                 </div>
                 <div class="form-group">
                     <label>Open in</label>
-                    <select oninput="updateButtonField(this.value, 'buttonTarget')">
+                    <select onchange="updateButtonField(this.value, 'buttonTarget')">
                         <option value="_self" ${buttonData.buttonTarget === '_self' ? 'selected' : ''}>Same tab</option>
                         <option value="_blank" ${buttonData.buttonTarget === '_blank' ? 'selected' : ''}>New tab</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Text Alignment</label>
-                    <select oninput="updateButtonField(this.value, 'textAlign')">
+                    <select onchange="updateButtonField(this.value, 'textAlign')">
                         <option value="center" ${buttonData.textAlign === 'center' ? 'selected' : ''}>Center</option>
                         <option value="left" ${buttonData.textAlign === 'left' ? 'selected' : ''}>Left</option>
                         <option value="right" ${buttonData.textAlign === 'right' ? 'selected' : ''}>Right</option>
@@ -8226,27 +8226,27 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${buttonData.buttonBgColor}" oninput="updateButtonField(this.value, 'buttonBgColor')">
+                    <input type="color" value="${buttonData.buttonBgColor}" onchange="updateButtonField(this.value, 'buttonBgColor')">
                 </div>
                 <div class="form-group">
                     <label>Text Color</label>
-                    <input type="color" value="${buttonData.buttonTextColor}" oninput="updateButtonField(this.value, 'buttonTextColor')">
+                    <input type="color" value="${buttonData.buttonTextColor}" onchange="updateButtonField(this.value, 'buttonTextColor')">
                 </div>
                 <div class="form-group">
                     <label>Padding</label>
-                    <input type="text" value="${buttonData.buttonPadding}" oninput="updateButtonField(this.value, 'buttonPadding')" placeholder="e.g., 10px 20px">
+                    <input type="text" value="${buttonData.buttonPadding}" onchange="updateButtonField(this.value, 'buttonPadding')" placeholder="e.g., 10px 20px">
                 </div>
                 <div class="form-group">
                     <label>Border Radius</label>
-                    <input type="text" value="${buttonData.borderRadius}" oninput="updateButtonField(this.value, 'borderRadius')" placeholder="e.g., 4px">
+                    <input type="text" value="${buttonData.borderRadius}" onchange="updateButtonField(this.value, 'borderRadius')" placeholder="e.g., 4px">
                 </div>
                 <div class="form-group">
                     <label>Font Size</label>
-                    <input type="text" value="${buttonData.fontSize}" oninput="updateButtonField(this.value, 'fontSize')" placeholder="e.g., 16px">
+                    <input type="text" value="${buttonData.fontSize}" onchange="updateButtonField(this.value, 'fontSize')" placeholder="e.g., 16px">
                 </div>
                 <div class="form-group">
                     <label>Font Weight</label>
-                    <select oninput="updateButtonField(this.value, 'fontWeight')">
+                    <select onchange="updateButtonField(this.value, 'fontWeight')">
                         <option value="300" ${buttonData.fontWeight === '300' ? 'selected' : ''}>Light</option>
                         <option value="400" ${buttonData.fontWeight === '400' ? 'selected' : ''}>Normal</option>
                         <option value="500" ${buttonData.fontWeight === '500' ? 'selected' : ''}>Medium</option>
@@ -8269,7 +8269,7 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${content.style.backgroundColor || '#ffffff'}" oninput="updateStyleProperty('backgroundColor', this.value)">
+                    <input type="color" value="${content.style.backgroundColor || '#ffffff'}" onchange="updateStyleProperty('backgroundColor', this.value)">
                 </div>
             `;
 
@@ -8293,7 +8293,7 @@ break;
                     
                     <div class="mt-3" style="display: ${innerSectionData.addToMenu ? 'block' : 'none'};" id="menuTitleGroup">
                         <label>Menu Title</label>
-                        <input type="text" value="${innerSectionData.menuTitle || ''}" oninput="updateInnerSectionField(this.value, 'menuTitle')" placeholder="e.g., About Us, Services, Contact">
+                        <input type="text" value="${innerSectionData.menuTitle || ''}" onchange="updateInnerSectionField(this.value, 'menuTitle')" placeholder="e.g., About Us, Services, Contact">
                         <small class="text-muted">This text will appear in the navigation menu</small>
                     </div>
                     
@@ -8309,7 +8309,7 @@ break;
                 ${menuOption}
                 <div class="form-group">
                     <label>Number of Columns</label>
-                    <select oninput="updateInnerSectionColumns(this.value)">
+                    <select onchange="updateInnerSectionColumns(this.value)">
                         <option value="1" ${innerSectionData.columns === 1 ? 'selected' : ''}>1 Column</option>
                         <option value="2" ${innerSectionData.columns === 2 ? 'selected' : ''}>2 Columns</option>
                         <option value="3" ${innerSectionData.columns === 3 ? 'selected' : ''}>3 Columns</option>
@@ -8324,7 +8324,7 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Column Gap</label>
-                    <input type="text" value="${innerSectionData.gap || '15px'}" oninput="updateInnerSectionGap(this.value)">
+                    <input type="text" value="${innerSectionData.gap || '15px'}" onchange="updateInnerSectionGap(this.value)">
                     <small>Spacing between columns (e.g., 10px, 1rem, 20px)</small>
                 </div>
                 
@@ -8338,7 +8338,7 @@ break;
                 </div>
                 <div class="form-group" style="display: ${innerSectionData.fullWidth ? 'block' : 'none'};" id="contentWidthGroup">
                     <label>Content Width</label>
-                    <select oninput="updateInnerSectionField(this.value, 'contentWidth')">
+                    <select onchange="updateInnerSectionField(this.value, 'contentWidth')">
                         <option value="full" ${innerSectionData.contentWidth === 'full' ? 'selected' : ''}>Full Width (components spread across full width)</option>
                         <option value="boxed" ${innerSectionData.contentWidth === 'boxed' ? 'selected' : ''}>Boxed (components stay centered)</option>
                     </select>
@@ -8348,7 +8348,7 @@ break;
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Background Settings</h4>
                 <div class="form-group">
                     <label>Background Type</label>
-                    <select oninput="updateInnerSectionField(this.value, 'backgroundType'); toggleInnerSectionBackgroundType(this.value)">
+                    <select onchange="updateInnerSectionField(this.value, 'backgroundType'); toggleInnerSectionBackgroundType(this.value)">
                         <option value="color" ${innerSectionData.backgroundType === 'color' ? 'selected' : ''}>Color</option>
                         <option value="image" ${innerSectionData.backgroundType === 'image' ? 'selected' : ''}>Image</option>
                     </select>
@@ -8356,7 +8356,7 @@ break;
                 
                 <div class="form-group" id="innerSectionBackgroundColor" style="display: ${innerSectionData.backgroundType === 'image' ? 'none' : 'block'};">
                     <label>Background Color</label>
-                    <input type="color" value="${innerSectionData.backgroundColor || '#f8f9fa'}" oninput="updateInnerSectionField(this.value, 'backgroundColor')">
+                    <input type="color" value="${innerSectionData.backgroundColor || '#f8f9fa'}" onchange="updateInnerSectionField(this.value, 'backgroundColor')">
                 </div>
                 
                 <div id="innerSectionBackgroundImageSettings" style="display: ${innerSectionData.backgroundType === 'image' ? 'block' : 'none'};">
@@ -8372,11 +8372,11 @@ break;
                 <h4 style="margin: 20px 0 10px 0; color: #333;">Spacing</h4>
                 <div class="form-group">
                     <label>Padding</label>
-                    <input type="text" value="${innerSectionData.padding || '20px'}" oninput="updateInnerSectionField(this.value, 'padding')">
+                    <input type="text" value="${innerSectionData.padding || '20px'}" onchange="updateInnerSectionField(this.value, 'padding')">
                 </div>
                 <div class="form-group">
                     <label>Margin</label>
-                    <input type="text" value="${innerSectionData.margin || '10px 0'}" oninput="updateInnerSectionField(this.value, 'margin')">
+                    <input type="text" value="${innerSectionData.margin || '10px 0'}" onchange="updateInnerSectionField(this.value, 'margin')">
                 </div>
                 
                 <h4 style="margin: 20px 0 10px 0; color: #333; border-top: 2px solid #667eea; padding-top: 15px;">
@@ -8393,7 +8393,7 @@ break;
                 <div id="animationSettings" style="display: ${innerSectionData.animationEnabled ? 'block' : 'none'}; border-left: 3px solid #667eea; padding-left: 15px; margin-left: 5px;">
                     <div class="form-group">
                         <label>Animation Type</label>
-                        <select oninput="updateInnerSectionField(this.value, 'animationType')">
+                        <select onchange="updateInnerSectionField(this.value, 'animationType')">
                             <option value="none" ${innerSectionData.animationType === 'none' ? 'selected' : ''}>None</option>
                             <optgroup label="Slide Animations">
                                 <option value="slideLeft" ${innerSectionData.animationType === 'slideLeft' ? 'selected' : ''}>Slide In from Left</option>
@@ -8417,7 +8417,7 @@ break;
                     <div class="form-group">
                         <label>Animation Duration (seconds)</label>
                         <input type="range" min="0.3" max="2" step="0.1" value="${innerSectionData.animationDuration || '0.8'}" 
-                               oninput="updateInnerSectionField(this.value, 'animationDuration'); this.nextElementSibling.textContent = this.value + 's'">
+                               onchange="updateInnerSectionField(this.value, 'animationDuration'); this.nextElementSibling.textContent = this.value + 's'">
                         <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.animationDuration || '0.8'}s</span>
                         <small class="text-muted">How long the animation takes to complete</small>
                     </div>
@@ -8425,7 +8425,7 @@ break;
                     <div class="form-group">
                         <label>Section Delay (seconds)</label>
                         <input type="range" min="0" max="2" step="0.1" value="${innerSectionData.animationDelay || '0'}" 
-                               oninput="updateInnerSectionField(this.value, 'animationDelay'); this.nextElementSibling.textContent = this.value + 's'">
+                               onchange="updateInnerSectionField(this.value, 'animationDelay'); this.nextElementSibling.textContent = this.value + 's'">
                         <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.animationDelay || '0'}s</span>
                         <small class="text-muted">Delay before section animation starts</small>
                     </div>
@@ -8433,14 +8433,14 @@ break;
                     <div class="form-group">
                         <label>Column Stagger Delay (seconds)</label>
                         <input type="range" min="0" max="1" step="0.05" value="${innerSectionData.staggerDelay || '0.15'}" 
-                               oninput="updateInnerSectionField(this.value, 'staggerDelay'); this.nextElementSibling.textContent = this.value + 's'">
+                               onchange="updateInnerSectionField(this.value, 'staggerDelay'); this.nextElementSibling.textContent = this.value + 's'">
                         <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.staggerDelay || '0.15'}s</span>
                         <small class="text-muted">Delay between each column animation (creates sequence effect)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Animation Easing</label>
-                        <select oninput="updateInnerSectionField(this.value, 'animationEasing')">
+                        <select onchange="updateInnerSectionField(this.value, 'animationEasing')">
                             <option value="ease" ${innerSectionData.animationEasing === 'ease' ? 'selected' : ''}>Ease (default)</option>
                             <option value="ease-in" ${innerSectionData.animationEasing === 'ease-in' ? 'selected' : ''}>Ease In</option>
                             <option value="ease-out" ${innerSectionData.animationEasing === 'ease-out' ? 'selected' : ''}>Ease Out</option>
@@ -8475,7 +8475,7 @@ break;
                     <div class="form-group">
                         <label>Parallax Speed</label>
                         <input type="range" min="0.1" max="1" step="0.1" value="${innerSectionData.parallaxSpeed || '0.5'}" 
-                               oninput="updateInnerSectionField(this.value, 'parallaxSpeed'); this.nextElementSibling.textContent = this.value">
+                               onchange="updateInnerSectionField(this.value, 'parallaxSpeed'); this.nextElementSibling.textContent = this.value">
                         <span style="margin-left: 10px; font-weight: bold;">${innerSectionData.parallaxSpeed || '0.5'}</span>
                         <small class="text-muted">Lower = slower movement (0.5 = half speed)</small>
                     </div>
@@ -8490,7 +8490,7 @@ break;
             specificControls = `
                 <div class="form-group">
                 <label>Heading Level</label>
-                <select oninput="updateHeadingLevel(this.value)">
+                <select onchange="updateHeadingLevel(this.value)">
                     <option value="h1" ${content.tagName === 'H1' ? 'selected' : ''}>H1</option>
                     <option value="h2" ${content.tagName === 'H2' ? 'selected' : ''}>H2</option>
                     <option value="h3" ${content.tagName === 'H3' ? 'selected' : ''}>H3</option>
@@ -8504,7 +8504,7 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                     <small class="text-muted">Background behind the auction list</small>
                 </div>
                 <div class="form-group">
@@ -8513,7 +8513,7 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Items per Row</label>
-                    <select oninput="updateAuctionListColumns(this.value)">
+                    <select onchange="updateAuctionListColumns(this.value)">
                         <option value="1">1 Column</option>
                         <option value="2">2 Columns</option>
                         <option value="3" selected>3 Columns</option>
@@ -8539,7 +8539,7 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                 </div>
                 <div class="form-group">
                 <small class="text-muted">💡 Use the formatting toolbar above to style your section title with headings (H1-H5), fonts, colors, and more.</small>
@@ -8551,11 +8551,11 @@ break;
             specificControls = `
                 <div class="form-group">
                 <label>Divider Thickness</label>
-                <input type="text" value="${content.style.height || '2px'}" oninput="updateStyle(this, 'height')">
+                <input type="text" value="${content.style.height || '2px'}" onchange="updateStyle(this, 'height')">
                 </div>
                 <div class="form-group">
                 <label>Color</label>
-                <input type="color" value="${rgbToHex(content.style.backgroundColor || '#000000')}" oninput="updateStyle(this, 'backgroundColor')">
+                <input type="color" value="${rgbToHex(content.style.backgroundColor || '#000000')}" onchange="updateStyle(this, 'backgroundColor')">
                 </div>
             `;
             break;
@@ -8577,7 +8577,7 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the banner</small>
                     </div>
                     <div class="form-group">
@@ -8587,41 +8587,41 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Banner Title</label>
-                        <input type="text" value="${bannerData.title || ''}" oninput="updateCustomBannerField(this.value, 'title')">
+                        <input type="text" value="${bannerData.title || ''}" onchange="updateCustomBannerField(this.value, 'title')">
                     </div>
                     <div class="form-group">
                         <label>Title Color</label>
-                        <input type="color" value="${bannerData.titleColor || '#ffffff'}" oninput="updateCustomBannerField(this.value, 'titleColor')">
+                        <input type="color" value="${bannerData.titleColor || '#ffffff'}" onchange="updateCustomBannerField(this.value, 'titleColor')">
                     </div>
                     <div class="form-group">
                         <label>Title Font Size</label>
-                        <input type="text" value="${bannerData.titleFontSize || '2.2em'}" oninput="updateCustomBannerField(this.value, 'titleFontSize')">
+                        <input type="text" value="${bannerData.titleFontSize || '2.2em'}" onchange="updateCustomBannerField(this.value, 'titleFontSize')">
                     </div>
                     <div class="form-group">
                         <label>Banner Subtitle</label>
-                        <input type="text" value="${bannerData.subtitle || ''}" oninput="updateCustomBannerField(this.value, 'subtitle')">
+                        <input type="text" value="${bannerData.subtitle || ''}" onchange="updateCustomBannerField(this.value, 'subtitle')">
                     </div>
                     <div class="form-group">
                         <label>Subtitle Color</label>
-                        <input type="color" value="${bannerData.subtitleColor || '#ffffff'}" oninput="updateCustomBannerField(this.value, 'subtitleColor')">
+                        <input type="color" value="${bannerData.subtitleColor || '#ffffff'}" onchange="updateCustomBannerField(this.value, 'subtitleColor')">
                     </div>
                     <div class="form-group">
                         <label>Subtitle Font Size</label>
-                        <input type="text" value="${bannerData.subtitleFontSize || '1.2em'}" oninput="updateCustomBannerField(this.value, 'subtitleFontSize')">
+                        <input type="text" value="${bannerData.subtitleFontSize || '1.2em'}" onchange="updateCustomBannerField(this.value, 'subtitleFontSize')">
                     </div>
                     <div class="form-group">
                         <label>Title Drop Shadow</label>
-                        <input type="text" value="${bannerData.titleShadow || ''}" oninput="updateCustomBannerField(this.value, 'titleShadow')">
+                        <input type="text" value="${bannerData.titleShadow || ''}" onchange="updateCustomBannerField(this.value, 'titleShadow')">
                         <small>e.g. 0 2px 8px rgba(0,0,0,0.5)</small>
                     </div>
                     <div class="form-group">
                         <label>Subtitle Drop Shadow</label>
-                        <input type="text" value="${bannerData.subtitleShadow || ''}" oninput="updateCustomBannerField(this.value, 'subtitleShadow')">
+                        <input type="text" value="${bannerData.subtitleShadow || ''}" onchange="updateCustomBannerField(this.value, 'subtitleShadow')">
                         <small>e.g. 0 2px 8px rgba(0,0,0,0.5)</small>
                     </div>
                     <div class="form-group">
                         <label>Text Align</label>
-                        <select oninput="updateCustomBannerField(this.value, 'textAlign')">
+                        <select onchange="updateCustomBannerField(this.value, 'textAlign')">
                             <option value="left" ${bannerData.textAlign === 'left' ? 'selected' : ''}>Left</option>
                             <option value="center" ${bannerData.textAlign === 'center' ? 'selected' : ''}>Center</option>
                             <option value="right" ${bannerData.textAlign === 'right' ? 'selected' : ''}>Right</option>
@@ -8643,11 +8643,11 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Columns</label>
-                        <input type="number" min="1" max="6" value="${galleryData.columns}" oninput="updateGalleryColumns(this.value)">
+                        <input type="number" min="1" max="6" value="${galleryData.columns}" onchange="updateGalleryColumns(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the gallery</small>
                     </div>
                 `;
@@ -8666,7 +8666,6 @@ break;
                     <div class="form-group">
                         <label>Slides to Show</label>
                         <input type="number" min="1" max="10" value="${sliderData.slidesToShow}" 
-                               oninput="debouncedUpdateSliderSlidesToShow(this.value)"
                                onchange="updateSliderSlidesToShow(this.value)"
                                onblur="updateSliderSlidesToShow(this.value)"
                                onkeypress="if(event.key==='Enter') { this.blur(); }">
@@ -8674,7 +8673,6 @@ break;
                     <div class="form-group">
                         <label>Slide Speed (ms)</label>
                         <input type="number" min="500" max="10000" value="${sliderData.slideSpeed}" 
-                               oninput="debouncedUpdateSliderSlideSpeed(this.value)"
                                onchange="updateSliderSlideSpeed(this.value)"
                                onblur="updateSliderSlideSpeed(this.value)"
                                onkeypress="if(event.key==='Enter') { this.blur(); }">
@@ -8689,7 +8687,7 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the slider</small>
                     </div>
                 `;
@@ -8723,7 +8721,7 @@ break;
                     <div id="youtubeControls" style="display: ${currentType === 'youtube' ? 'block' : 'none'};">
                         <div class="form-group">
                             <label>YouTube Video URL</label>
-                            <input type="text" value="${currentType === 'youtube' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'youtube')" placeholder="https://www.youtube.com/watch?v=...">
+                            <input type="text" value="${currentType === 'youtube' ? currentUrl : ''}" onchange="updateVideoEmbed(this.value, 'youtube')" placeholder="https://www.youtube.com/watch?v=...">
                             <small class="text-muted">Paste a YouTube video URL</small>
                         </div>
                     </div>
@@ -8733,7 +8731,7 @@ break;
                             <label>Upload Video File</label>
                             <input type="file" accept="video/*" onchange="uploadVideoFile(event)" class="form-control mb-2">
                             <small style="display: block; color: #666; margin-top: 6px;">Accepted: MP4, WebM, OGG • Max: 50MB</small>
-                            <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" oninput="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL" style="margin-top: 8px;">
+                            <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" onchange="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL" style="margin-top: 8px;">
                             <small class="text-muted" style="display: block; margin-top: 4px;">Or enter a direct video file URL</small>
                         </div>
                     </div>
@@ -8748,7 +8746,7 @@ break;
                     
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the video</small>
                     </div>
                     
@@ -8793,7 +8791,7 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the entire FAQ section</small>
                     </div>
                     <h4 style="margin: 20px 0 10px 0; color: #333;">FAQ Questions</h4>
@@ -8811,11 +8809,11 @@ break;
                                 </div>
                                 <div class="form-group">
                                     <label>Question:</label>
-                                    <input type="text" value="${q.question}" oninput="updateFaqQuestion(${index}, 'question', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;">
+                                    <input type="text" value="${q.question}" onchange="updateFaqQuestion(${index}, 'question', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;">
                                 </div>
                                 <div class="form-group">
                                     <label>Answer:</label>
-                                    <textarea oninput="updateFaqQuestion(${index}, 'answer', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; min-height: 60px; resize: vertical;">${q.answer}</textarea>
+                                    <textarea onchange="updateFaqQuestion(${index}, 'answer', this.value)" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; min-height: 60px; resize: vertical;">${q.answer}</textarea>
                                 </div>
                             </div>
                         `).join('')}
@@ -8824,31 +8822,31 @@ break;
                     <h4 style="margin: 20px 0 10px 0; color: #333;">Styling Options</h4>
                     <div class="form-group">
                         <label>Question Background Color</label>
-                        <input type="color" value="${faqData.questionBackgroundColor}" oninput="updateFaqStyle('questionBackgroundColor', this.value)">
+                        <input type="color" value="${faqData.questionBackgroundColor}" onchange="updateFaqStyle('questionBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Question Text Color</label>
-                        <input type="color" value="${faqData.questionTextColor}" oninput="updateFaqStyle('questionTextColor', this.value)">
+                        <input type="color" value="${faqData.questionTextColor}" onchange="updateFaqStyle('questionTextColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Answer Background Color</label>
-                        <input type="color" value="${faqData.answerBackgroundColor}" oninput="updateFaqStyle('answerBackgroundColor', this.value)">
+                        <input type="color" value="${faqData.answerBackgroundColor}" onchange="updateFaqStyle('answerBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Answer Text Color</label>
-                        <input type="color" value="${faqData.answerTextColor}" oninput="updateFaqStyle('answerTextColor', this.value)">
+                        <input type="color" value="${faqData.answerTextColor}" onchange="updateFaqStyle('answerTextColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Icon Color</label>
-                        <input type="color" value="${faqData.iconColor}" oninput="updateFaqStyle('iconColor', this.value)">
+                        <input type="color" value="${faqData.iconColor}" onchange="updateFaqStyle('iconColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Border Radius</label>
-                        <input type="text" value="${faqData.borderRadius}" oninput="updateFaqStyle('borderRadius', this.value)" placeholder="e.g. 8px">
+                        <input type="text" value="${faqData.borderRadius}" onchange="updateFaqStyle('borderRadius', this.value)" placeholder="e.g. 8px">
                     </div>
                     <div class="form-group">
                         <label>Spacing Between Items</label>
-                        <input type="text" value="${faqData.spacing}" oninput="updateFaqStyle('spacing', this.value)" placeholder="e.g. 10px">
+                        <input type="text" value="${faqData.spacing}" onchange="updateFaqStyle('spacing', this.value)" placeholder="e.g. 10px">
                     </div>
                 `;
             break;
@@ -8871,7 +8869,7 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the comments section</small>
                     </div>
                     
@@ -8891,7 +8889,7 @@ break;
                             Comments Section Title
                         </label>
                         <input type="text" value="${simpleCommentsData.title}" 
-                               oninput="updateSimpleCommentsField('title', this.value)" 
+                               onchange="updateSimpleCommentsField('title', this.value)" 
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                     
@@ -8962,7 +8960,7 @@ break;
                             Maximum Comments to Show
                         </label>
                         <input type="number" value="${simpleCommentsData.maxComments}" min="10" max="1000"
-                               oninput="updateSimpleCommentsField('maxComments', parseInt(this.value))" 
+                               onchange="updateSimpleCommentsField('maxComments', parseInt(this.value))" 
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
                             Older comments will be paginated
@@ -8974,28 +8972,28 @@ break;
                     <div class="form-group">
                         <label style="font-weight: 600; color: #333;">Background Color</label>
                         <input type="color" value="${simpleCommentsData.backgroundColor}" 
-                               oninput="updateSimpleCommentsField('backgroundColor', this.value)"
+                               onchange="updateSimpleCommentsField('backgroundColor', this.value)"
                                style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                     
                     <div class="form-group">
                         <label style="font-weight: 600; color: #333;">Border Color</label>
                         <input type="color" value="${simpleCommentsData.borderColor}" 
-                               oninput="updateSimpleCommentsField('borderColor', this.value)"
+                               onchange="updateSimpleCommentsField('borderColor', this.value)"
                                style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                     
                     <div class="form-group">
                         <label style="font-weight: 600; color: #333;">Text Color</label>
                         <input type="color" value="${simpleCommentsData.textColor}" 
-                               oninput="updateSimpleCommentsField('textColor', this.value)"
+                               onchange="updateSimpleCommentsField('textColor', this.value)"
                                style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                     
                     <div class="form-group">
                         <label style="font-weight: 600; color: #333;">Button Color</label>
                         <input type="color" value="${simpleCommentsData.buttonColor}" 
-                               oninput="updateSimpleCommentsField('buttonColor', this.value)"
+                               onchange="updateSimpleCommentsField('buttonColor', this.value)"
                                style="width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                 `;
@@ -9013,7 +9011,7 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the Disqus comments</small>
                     </div>
                     
@@ -9028,7 +9026,7 @@ break;
                             Disqus Shortname <span style="color: #dc3545;">*</span>
                         </label>
                         <input type="text" value="${disqusData.shortname}" 
-                               oninput="updateDisqusField('shortname', this.value)" 
+                               onchange="updateDisqusField('shortname', this.value)" 
                                placeholder="your-site-shortname"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
@@ -9043,7 +9041,7 @@ break;
                             Page Identifier (Optional)
                         </label>
                         <input type="text" value="${disqusData.identifier}" 
-                               oninput="updateDisqusField('identifier', this.value)" 
+                               onchange="updateDisqusField('identifier', this.value)" 
                                placeholder="unique-page-id"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
@@ -9057,7 +9055,7 @@ break;
                             Discussion Title (Optional)
                         </label>
                         <input type="text" value="${disqusData.title}" 
-                               oninput="updateDisqusField('title', this.value)" 
+                               onchange="updateDisqusField('title', this.value)" 
                                placeholder="Custom discussion title"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
@@ -9071,7 +9069,7 @@ break;
                             Canonical URL (Optional)
                         </label>
                         <input type="url" value="${disqusData.url}" 
-                               oninput="updateDisqusField('url', this.value)" 
+                               onchange="updateDisqusField('url', this.value)" 
                                placeholder="https://example.com/page"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
@@ -9135,32 +9133,32 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the full-width text and image</small>
                     </div>
                     <div class="form-group">
                         <label>Title Text</label>
-                        <input type="text" value="${fwti.text1 || ''}" oninput="updateFWTIField(this.value, 'text1')">
+                        <input type="text" value="${fwti.text1 || ''}" onchange="updateFWTIField(this.value, 'text1')">
                     </div>
                     <div class="form-group">
                         <label>Title Font Size</label>
-                        <input type="text" value="${fwti.fontSize1 || '32px'}" oninput="updateFWTIField(this.value, 'fontSize1')">
+                        <input type="text" value="${fwti.fontSize1 || '32px'}" onchange="updateFWTIField(this.value, 'fontSize1')">
                     </div>
                     <div class="form-group">
                         <label>Title Color</label>
-                        <input type="color" value="${fwti.color1 || '#222222'}" oninput="updateFWTIField(this.value, 'color1')">
+                        <input type="color" value="${fwti.color1 || '#222222'}" onchange="updateFWTIField(this.value, 'color1')">
                     </div>
                     <div class="form-group">
                         <label>Subtitle Text</label>
-                        <input type="text" value="${fwti.text2 || ''}" oninput="updateFWTIField(this.value, 'text2')">
+                        <input type="text" value="${fwti.text2 || ''}" onchange="updateFWTIField(this.value, 'text2')">
                     </div>
                     <div class="form-group">
                         <label>Subtitle Font Size</label>
-                        <input type="text" value="${fwti.fontSize2 || '18px'}" oninput="updateFWTIField(this.value, 'fontSize2')">
+                        <input type="text" value="${fwti.fontSize2 || '18px'}" onchange="updateFWTIField(this.value, 'fontSize2')">
                     </div>
                     <div class="form-group">
                         <label>Subtitle Color</label>
-                        <input type="color" value="${fwti.color2 || '#444444'}" oninput="updateFWTIField(this.value, 'color2')">
+                        <input type="color" value="${fwti.color2 || '#444444'}" onchange="updateFWTIField(this.value, 'color2')">
                     </div>
                     <div class="form-group">
                         <label>Image</label>
@@ -9170,19 +9168,19 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Image Alt Text</label>
-                        <input type="text" value="${fwti.imgAlt || ''}" oninput="updateFWTIField(this.value, 'imgAlt')">
+                        <input type="text" value="${fwti.imgAlt || ''}" onchange="updateFWTIField(this.value, 'imgAlt')">
                     </div>
                     <div class="form-group">
                         <label>Image Width</label>
-                        <input type="text" value="${fwti.imgCustomWidth || '100%'}" oninput="updateFWTIField(this.value, 'imgCustomWidth')">
+                        <input type="text" value="${fwti.imgCustomWidth || '100%'}" onchange="updateFWTIField(this.value, 'imgCustomWidth')">
                     </div>
                     <div class="form-group">
                         <label>Image Height</label>
-                        <input type="text" value="${fwti.imgCustomHeight || 'auto'}" oninput="updateFWTIField(this.value, 'imgCustomHeight')">
+                        <input type="text" value="${fwti.imgCustomHeight || 'auto'}" onchange="updateFWTIField(this.value, 'imgCustomHeight')">
                     </div>
                     <div class="form-group">
                         <label>Image Object Fit</label>
-                        <select oninput="updateFWTIField(this.value, 'imgObjectFit')">
+                        <select onchange="updateFWTIField(this.value, 'imgObjectFit')">
                             <option value="cover" ${fwti.imgObjectFit==='cover'?'selected':''}>Cover</option>
                             <option value="contain" ${fwti.imgObjectFit==='contain'?'selected':''}>Contain</option>
                             <option value="fill" ${fwti.imgObjectFit==='fill'?'selected':''}>Fill</option>
@@ -9208,11 +9206,11 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Alert Message</label>
-                    <textarea style="min-height: 80px;" oninput="updateAlertField(this.value, 'message')">${alertData.message}</textarea>
+                    <textarea style="min-height: 80px;" onchange="updateAlertField(this.value, 'message')">${alertData.message}</textarea>
                 </div>
                 <div class="form-group">
                     <label>Alert Type</label>
-                    <select oninput="updateAlertField(this.value, 'type')">
+                    <select onchange="updateAlertField(this.value, 'type')">
                         <option value="info" ${alertData.type === 'info' ? 'selected' : ''}>Info</option>
                         <option value="success" ${alertData.type === 'success' ? 'selected' : ''}>Success</option>
                         <option value="warning" ${alertData.type === 'warning' ? 'selected' : ''}>Warning</option>
@@ -9225,31 +9223,31 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${alertData.backgroundColor}" oninput="updateAlertField(this.value, 'backgroundColor')">
+                    <input type="color" value="${alertData.backgroundColor}" onchange="updateAlertField(this.value, 'backgroundColor')">
                 </div>
                 <div class="form-group">
                     <label>Text Color</label>
-                    <input type="color" value="${alertData.textColor}" oninput="updateAlertField(this.value, 'textColor')">
+                    <input type="color" value="${alertData.textColor}" onchange="updateAlertField(this.value, 'textColor')">
                 </div>
                 <div class="form-group">
                     <label>Border Color</label>
-                    <input type="color" value="${alertData.borderColor}" oninput="updateAlertField(this.value, 'borderColor')">
+                    <input type="color" value="${alertData.borderColor}" onchange="updateAlertField(this.value, 'borderColor')">
                 </div>
                 <div class="form-group">
                     <label>Border Radius</label>
-                    <input type="text" value="${alertData.borderRadius}" oninput="updateAlertField(this.value, 'borderRadius')" placeholder="e.g., 4px">
+                    <input type="text" value="${alertData.borderRadius}" onchange="updateAlertField(this.value, 'borderRadius')" placeholder="e.g., 4px">
                 </div>
                 <div class="form-group">
                     <label>Padding</label>
-                    <input type="text" value="${alertData.padding}" oninput="updateAlertField(this.value, 'padding')" placeholder="e.g., 1rem">
+                    <input type="text" value="${alertData.padding}" onchange="updateAlertField(this.value, 'padding')" placeholder="e.g., 1rem">
                 </div>
                 <div class="form-group">
                     <label>Font Size</label>
-                    <input type="text" value="${alertData.fontSize}" oninput="updateAlertField(this.value, 'fontSize')" placeholder="e.g., 14px">
+                    <input type="text" value="${alertData.fontSize}" onchange="updateAlertField(this.value, 'fontSize')" placeholder="e.g., 14px">
                 </div>
                 <div class="form-group">
                     <label>Font Weight</label>
-                    <select oninput="updateAlertField(this.value, 'fontWeight')">
+                    <select onchange="updateAlertField(this.value, 'fontWeight')">
                         <option value="300" ${alertData.fontWeight === '300' ? 'selected' : ''}>Light</option>
                         <option value="400" ${alertData.fontWeight === '400' ? 'selected' : ''}>Normal</option>
                         <option value="500" ${alertData.fontWeight === '500' ? 'selected' : ''}>Medium</option>
@@ -9298,19 +9296,19 @@ break;
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
-                                <textarea oninput="updatePressCardField('cards.${index}.title', this.value)" placeholder="Article title">${card.title}</textarea>
+                                <textarea onchange="updatePressCardField('cards.${index}.title', this.value)" placeholder="Article title">${card.title}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>URL</label>
-                                <input type="url" value="${card.url}" oninput="updatePressCardField('cards.${index}.url', this.value)">
+                                <input type="url" value="${card.url}" onchange="updatePressCardField('cards.${index}.url', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Date</label>
-                                <input type="text" value="${card.date}" oninput="updatePressCardField('cards.${index}.date', this.value)">
+                                <input type="text" value="${card.date}" onchange="updatePressCardField('cards.${index}.date', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Target</label>
-                                <select oninput="updatePressCardField('cards.${index}.target', this.value)">
+                                <select onchange="updatePressCardField('cards.${index}.target', this.value)">
                                     <option value="_blank" ${card.target === '_blank' ? 'selected' : ''}>New Tab</option>
                                     <option value="_self" ${card.target === '_self' ? 'selected' : ''}>Same Tab</option>
                                 </select>
@@ -9329,7 +9327,7 @@ break;
                     <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Slider Settings</h5>
                     <div class="form-group">
                         <label>Cards to Show</label>
-                        <select oninput="updatePressCardField('slidesToShow', parseInt(this.value))">
+                        <select onchange="updatePressCardField('slidesToShow', parseInt(this.value))">
                             <option value="1" ${pressData.slidesToShow === 1 ? 'selected' : ''}>1</option>
                             <option value="2" ${pressData.slidesToShow === 2 ? 'selected' : ''}>2</option>
                             <option value="3" ${pressData.slidesToShow === 3 ? 'selected' : ''}>3</option>
@@ -9345,21 +9343,21 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Auto Play Speed (ms)</label>
-                        <input type="number" value="${pressData.autoplaySpeed}" min="1000" max="10000" step="500" oninput="updatePressCardField('autoplaySpeed', parseInt(this.value))">
+                        <input type="number" value="${pressData.autoplaySpeed}" min="1000" max="10000" step="500" onchange="updatePressCardField('autoplaySpeed', parseInt(this.value))">
                     </div>
                     
                     <h5 style="margin-top: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Design</h5>
                     <div class="form-group">
                         <label>Card Background</label>
-                        <input type="color" value="${pressData.cardBackgroundColor}" oninput="updatePressCardField('cardBackgroundColor', this.value)">
+                        <input type="color" value="${pressData.cardBackgroundColor}" onchange="updatePressCardField('cardBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Logo Background</label>
-                        <input type="color" value="${pressData.logoBackgroundColor}" oninput="updatePressCardField('logoBackgroundColor', this.value)">
+                        <input type="color" value="${pressData.logoBackgroundColor}" onchange="updatePressCardField('logoBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Logo Overlay Filter</label>
-                        <select oninput="updatePressCardField('logoOverlay', this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <select onchange="updatePressCardField('logoOverlay', this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                             <option value="none" ${pressData.logoOverlay === 'none' ? 'selected' : ''}>None (Original Colors)</option>
                             <option value="brightness(0) invert(1)" ${pressData.logoOverlay === 'brightness(0) invert(1)' ? 'selected' : ''}>White (Inverted)</option>
                             <option value="brightness(0)" ${pressData.logoOverlay === 'brightness(0)' ? 'selected' : ''}>Black</option>
@@ -9370,7 +9368,7 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Border Radius</label>
-                        <select oninput="updatePressCardField('cardBorderRadius', this.value)">
+                        <select onchange="updatePressCardField('cardBorderRadius', this.value)">
                             <option value="0px" ${pressData.cardBorderRadius === '0px' ? 'selected' : ''}>None</option>
                             <option value="8px" ${pressData.cardBorderRadius === '8px' ? 'selected' : ''}>Small</option>
                             <option value="12px" ${pressData.cardBorderRadius === '12px' ? 'selected' : ''}>Medium</option>
@@ -9379,19 +9377,19 @@ break;
                     </div>
                     <div class="form-group">
                         <label>Title Color</label>
-                        <input type="color" value="${pressData.titleColor}" oninput="updatePressCardField('titleColor', this.value)">
+                        <input type="color" value="${pressData.titleColor}" onchange="updatePressCardField('titleColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Date Color</label>
-                        <input type="color" value="${pressData.dateColor}" oninput="updatePressCardField('dateColor', this.value)">
+                        <input type="color" value="${pressData.dateColor}" onchange="updatePressCardField('dateColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Arrow Background</label>
-                        <input type="color" value="${pressData.arrowBackgroundColor}" oninput="updatePressCardField('arrowBackgroundColor', this.value)">
+                        <input type="color" value="${pressData.arrowBackgroundColor}" onchange="updatePressCardField('arrowBackgroundColor', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Arrow Color</label>
-                        <input type="color" value="${pressData.arrowColor}" oninput="updatePressCardField('arrowColor', this.value)">
+                        <input type="color" value="${pressData.arrowColor}" onchange="updatePressCardField('arrowColor', this.value)">
                     </div>
                 `;
             break;
@@ -9411,16 +9409,16 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                     <small class="text-muted">Background behind the countdown timer</small>
                 </div>
                 <div class="form-group">
                     <label>Event Date & Time</label>
-                    <input type="datetime-local" value="${countdownData.date}" oninput="updateCountdownDate(this.value)">
+                    <input type="datetime-local" value="${countdownData.date}" onchange="updateCountdownDate(this.value)">
                 </div>
                 <div class="form-group">
                     <label>Countdown Label</label>
-                    <input type="text" value="${countdownData.label}" oninput="updateCountdownLabel(this.value)">
+                    <input type="text" value="${countdownData.label}" onchange="updateCountdownLabel(this.value)">
                 </div>
                 <div class="form-group">
                     <label>Show Countdown Label</label>
@@ -9431,7 +9429,7 @@ break;
                 <h6>Number Styling</h6>
                 <div class="form-group">
                     <label>Number Color</label>
-                    <input type="color" value="${countdownData.numberColor}" oninput="updateCountdownNumberColor(this.value)">
+                    <input type="color" value="${countdownData.numberColor}" onchange="updateCountdownNumberColor(this.value)">
                     <small>Color for countdown numbers (0, 1, 2, etc.)</small>
                 </div>
                 <div class="form-group">
@@ -9445,7 +9443,7 @@ break;
                 <h6>Label Styling</h6>
                 <div class="form-group">
                     <label>Label Color</label>
-                    <input type="color" value="${countdownData.textColor}" oninput="updateCountdownTextColor(this.value)">
+                    <input type="color" value="${countdownData.textColor}" onchange="updateCountdownTextColor(this.value)">
                     <small>Color for labels (Months, Days, Hours, etc.)</small>
                 </div>
                 <div class="form-group">
@@ -9459,7 +9457,7 @@ break;
                 <h6>Custom Text Styling</h6>
                 <div class="form-group">
                     <label>Custom Text Color</label>
-                    <input type="color" value="${countdownData.remainingVerbiageColor}" oninput="updateCountdownVerbiageColor(this.value)">
+                    <input type="color" value="${countdownData.remainingVerbiageColor}" onchange="updateCountdownVerbiageColor(this.value)">
                     <small>Color for the custom label text at bottom</small>
                 </div>
                 <div class="form-group">
@@ -9476,20 +9474,20 @@ break;
             specificControls = `
                 <div class="form-group">
                     <label>Background Color</label>
-                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                    <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                     <small class="text-muted">Background behind the event information</small>
                 </div>
                 <div class="form-group">
                     <label>Date (When)</label>
-                    <input type="date" value="${eventInfoData.date}" oninput="updateEventInfoField(this, 'date')">
+                    <input type="date" value="${eventInfoData.date}" onchange="updateEventInfoField(this, 'date')">
                 </div>
                 <div class="form-group">
                     <label>Address (Where)</label>
-                    <textarea oninput="updateEventInfoField(this, 'address')">${eventInfoData.address}</textarea>
+                    <textarea onchange="updateEventInfoField(this, 'address')">${eventInfoData.address}</textarea>
                 </div>
                 <div class="form-group">
                     <label>Time</label>
-                    <input type="text" value="${eventInfoData.time}" oninput="updateEventInfoField(this, 'time')">
+                    <input type="text" value="${eventInfoData.time}" onchange="updateEventInfoField(this, 'time')">
                 </div>
                 <div class="form-group">
                     <label>Show Map</label>
@@ -9497,11 +9495,11 @@ break;
                 </div>
                 <div class="form-group">
                     <label>Map Embed URL</label>
-                    <input type="text" value="${eventInfoData.mapEmbed}" oninput="updateEventInfoField(this, 'mapEmbed')">
+                    <input type="text" value="${eventInfoData.mapEmbed}" onchange="updateEventInfoField(this, 'mapEmbed')">
                 </div>
                 <div class="form-group">
                     <label>Map Position</label>
-                    <select oninput="updateEventInfoField(this, 'mapPosition')">
+                    <select onchange="updateEventInfoField(this, 'mapPosition')">
                         <option value="up" ${eventInfoData.mapPosition==='up'?'selected':''}>Up</option>
                         <option value="down" ${eventInfoData.mapPosition==='down'?'selected':''}>Down</option>
                         <option value="left" ${eventInfoData.mapPosition==='left'?'selected':''}>Left</option>
@@ -9524,28 +9522,28 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the ticket selling section</small>
                     </div>
                     <div class="form-group">
                         <label>Title</label>
-                        <input type="text" value="${sellData.title}" oninput="updateSellTicketsField(this.value, 'title')">
+                        <input type="text" value="${sellData.title}" onchange="updateSellTicketsField(this.value, 'title')">
                     </div>
                     <div class="form-group">
                         <label>Button Text</label>
-                        <input type="text" value="${sellData.buttonText}" oninput="updateSellTicketsField(this.value, 'buttonText')">
+                        <input type="text" value="${sellData.buttonText}" onchange="updateSellTicketsField(this.value, 'buttonText')">
                     </div>
                     <div class="form-group">
                         <label>Button Background</label>
-                        <input type="color" value="${sellData.buttonBg}" oninput="updateSellTicketsField(this.value, 'buttonBg')">
+                        <input type="color" value="${sellData.buttonBg}" onchange="updateSellTicketsField(this.value, 'buttonBg')">
                     </div>
                     <div class="form-group">
                         <label>Button Text Color</label>
-                        <input type="color" value="${sellData.buttonColor}" oninput="updateSellTicketsField(this.value, 'buttonColor')">
+                        <input type="color" value="${sellData.buttonColor}" onchange="updateSellTicketsField(this.value, 'buttonColor')">
                     </div>
                     <div class="form-group">
                         <label>Button Padding</label>
-                        <input type="text" value="${sellData.buttonPadding}" oninput="updateSellTicketsField(this.value, 'buttonPadding')">
+                        <input type="text" value="${sellData.buttonPadding}" onchange="updateSellTicketsField(this.value, 'buttonPadding')">
                     </div>
                 `;
             break;
@@ -9553,12 +9551,12 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the attendees list</small>
                     </div>
                     <div class="form-group">
                         <label>Attendees (comma separated)</label>
-                        <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" oninput="updateWhosComing(this.value)">
+                        <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" onchange="updateWhosComing(this.value)">
                     </div>
                 `;
                 break;
@@ -9566,36 +9564,36 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Form Title</label>
-                        <input type="text" value="${getDonationFormValue('formTitle', 'Make a general donation')}" oninput="updateDonationFormTitle(this.value)">
+                        <input type="text" value="${getDonationFormValue('formTitle', 'Make a general donation')}" onchange="updateDonationFormTitle(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Secondary Title</label>
-                        <input type="text" value="${getDonationFormValue('secondaryTitle', 'Donate to the')}" oninput="updateDonationFormSecondaryTitle(this.value)">
+                        <input type="text" value="${getDonationFormValue('secondaryTitle', 'Donate to the')}" onchange="updateDonationFormSecondaryTitle(this.value)">
                         <small class="text-muted">Text before website name (e.g., "Donate to the [Website Name]")</small>
                     </div>
                     <div class="form-group">
                         <label>Button Text</label>
-                        <input type="text" value="${getDonationFormValue('buttonText', 'Donate')}" oninput="updateDonationFormButtonText(this.value)">
+                        <input type="text" value="${getDonationFormValue('buttonText', 'Donate')}" onchange="updateDonationFormButtonText(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Fee Checkbox Text</label>
-                        <input type="text" value="${getDonationFormValue('feeText', 'I elect to pay the fees')}" oninput="updateDonationFormFeeText(this.value)">
+                        <input type="text" value="${getDonationFormValue('feeText', 'I elect to pay the fees')}" onchange="updateDonationFormFeeText(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Fee Tooltip Text</label>
-                        <textarea rows="3" placeholder="Tooltip text for fee info icon" oninput="updateDonationFormFeeTooltip(this.value)">${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}</textarea>
+                        <textarea rows="3" placeholder="Tooltip text for fee info icon" onchange="updateDonationFormFeeTooltip(this.value)">${getDonationFormValue('feeTooltip', 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.')}</textarea>
                     </div>
                     <div class="form-group">
                         <label>Anonymous Checkbox Text</label>
-                        <input type="text" value="${getDonationFormValue('anonymousText', 'Anonymous')}" oninput="updateDonationFormAnonymousText(this.value)">
+                        <input type="text" value="${getDonationFormValue('anonymousText', 'Anonymous')}" onchange="updateDonationFormAnonymousText(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Anonymous Description</label>
-                        <input type="text" value="${getDonationFormValue('anonymousDescription', 'Choose to make your donation anonymous')}" oninput="updateDonationFormAnonymousDescription(this.value)">
+                        <input type="text" value="${getDonationFormValue('anonymousDescription', 'Choose to make your donation anonymous')}" onchange="updateDonationFormAnonymousDescription(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Anonymous Tooltip Text</label>
-                        <textarea rows="2" placeholder="Tooltip text for anonymous info icon" oninput="updateDonationFormAnonymousTooltip(this.value)">${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}</textarea>
+                        <textarea rows="2" placeholder="Tooltip text for anonymous info icon" onchange="updateDonationFormAnonymousTooltip(this.value)">${getDonationFormValue('anonymousTooltip', 'Selecting this option will hide your name from everyone but the organizer.')}</textarea>
                     </div>
                     
                     <h5 class="mt-4 mb-3">Color Settings</h5>
@@ -9604,14 +9602,14 @@ break;
                             <div class="form-group">
                                 <label>Background Color</label>
                                 <small class="text-muted d-block">Color for the form background (white area)</small>
-                                <input type="color" value="${getDonationFormValue('backgroundColor', '#ffffff')}" oninput="updateDonationFormBackgroundColor(this.value)">
+                                <input type="color" value="${getDonationFormValue('backgroundColor', '#ffffff')}" onchange="updateDonationFormBackgroundColor(this.value)">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Header/Button Color</label>
                                 <small class="text-muted d-block">Color for header and button (blue area)</small>
-                                <input type="color" value="${getDonationFormValue('headerColor', '#2e4053')}" oninput="updateDonationFormHeaderColor(this.value)">
+                                <input type="color" value="${getDonationFormValue('headerColor', '#2e4053')}" onchange="updateDonationFormHeaderColor(this.value)">
                             </div>
                         </div>
                     </div>
@@ -9620,14 +9618,14 @@ break;
                             <div class="form-group">
                                 <label>Header Text Color</label>
                                 <small class="text-muted d-block">Text color for header and button</small>
-                                <input type="color" value="${getDonationFormValue('headerTextColor', '#ffffff')}" oninput="updateDonationFormHeaderTextColor(this.value)">
+                                <input type="color" value="${getDonationFormValue('headerTextColor', '#ffffff')}" onchange="updateDonationFormHeaderTextColor(this.value)">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Border Color</label>
                                 <small class="text-muted d-block">Color for form borders and accents</small>
-                                <input type="color" value="${getDonationFormValue('borderColor', '#2e4053')}" oninput="updateDonationFormBorderColor(this.value)">
+                                <input type="color" value="${getDonationFormValue('borderColor', '#2e4053')}" onchange="updateDonationFormBorderColor(this.value)">
                             </div>
                         </div>
                     </div>
@@ -9637,12 +9635,12 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the donor list</small>
                     </div>
                     <div class="form-group">
                         <label>Donors (format: Name - Amount, comma separated)</label>
-                        <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" oninput="updateDonorList(this.value)">
+                        <input type="text" value="${Array.from(content.querySelectorAll('li')).map(li => li.textContent).join(', ')}" onchange="updateDonorList(this.value)">
                     </div>
                 `;
                 break;
@@ -9650,15 +9648,15 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Min Amount</label>
-                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').min : 0}" oninput="content.querySelector('input[type=range]').min = this.value">
+                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').min : 0}" onchange="content.querySelector('input[type=range]').min = this.value">
                     </div>
                     <div class="form-group">
                         <label>Max Amount</label>
-                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').max : 1000}" oninput="content.querySelector('input[type=range]').max = this.value">
+                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').max : 1000}" onchange="content.querySelector('input[type=range]').max = this.value">
                     </div>
                     <div class="form-group">
                         <label>Default Value</label>
-                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').value : 500}" oninput="content.querySelector('input[type=range]').value = this.value">
+                        <input type="number" value="${content.querySelector('input[type=range]') ? content.querySelector('input[type=range]').value : 500}" onchange="content.querySelector('input[type=range]').value = this.value">
                     </div>
                 `;
                 break;
@@ -9667,7 +9665,7 @@ break;
                 specificControls = `
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" oninput="updateStyle(this, 'backgroundColor')">
+                        <input type="color" value="${rgbToHex(content.style.backgroundColor || '#ffffff')}" onchange="updateStyle(this, 'backgroundColor')">
                         <small class="text-muted">Background behind the custom form</small>
                     </div>
                     <div class="form-group">
@@ -9675,7 +9673,7 @@ break;
                         <div id="customFormFieldsPanel">
                             ${customFormFields.map((field, idx) => `
                                 <div class='mb-2'>
-                                    <input type='text' value='${field.label}' placeholder='Label' data-idx='${idx}' oninput='updateCustomFormFieldLabel(this, ${idx})' class='form-control mb-1' />
+                                    <input type='text' value='${field.label}' placeholder='Label' data-idx='${idx}' onchange='updateCustomFormFieldLabel(this, ${idx})' class='form-control mb-1' />
                                     <select data-idx='${idx}' onchange='updateCustomFormFieldType(this, ${idx})' class='form-select mb-1'>
                                         <option value='text' ${field.type==='text'?'selected':''}>Text</option>
                                         <option value='email' ${field.type==='email'?'selected':''}>Email</option>
@@ -9684,7 +9682,7 @@ break;
                                         <option value='textarea' ${field.type==='textarea'?'selected':''}>Textarea</option>
                                     </select>
                                     <input type='checkbox' ${field.required?'checked':''} onchange='updateCustomFormFieldRequired(this, ${idx})' /> Required
-                                    <input type='text' value='${field.value||''}' placeholder='Default Value' data-idx='${idx}' oninput='updateCustomFormFieldDefault(this, ${idx})' class='form-control mb-1' />
+                                    <input type='text' value='${field.value||''}' placeholder='Default Value' data-idx='${idx}' onchange='updateCustomFormFieldDefault(this, ${idx})' class='form-control mb-1' />
                                 </div>
                             `).join('')}
                         </div>
@@ -9717,27 +9715,27 @@ break;
                     
                     <div class="form-group">
                         <label>Form Title</label>
-                        <input type="text" value="${contactData.title}" oninput="updateContactFormField(this.value, 'title')">
+                        <input type="text" value="${contactData.title}" onchange="updateContactFormField(this.value, 'title')">
                     </div>
                     
                     <div class="form-group">
                         <label>Name Field Label</label>
-                        <input type="text" value="${contactData.nameLabel}" oninput="updateContactFormField(this.value, 'nameLabel')">
+                        <input type="text" value="${contactData.nameLabel}" onchange="updateContactFormField(this.value, 'nameLabel')">
                     </div>
                     
                     <div class="form-group">
                         <label>Email Field Label</label>
-                        <input type="text" value="${contactData.emailLabel}" oninput="updateContactFormField(this.value, 'emailLabel')">
+                        <input type="text" value="${contactData.emailLabel}" onchange="updateContactFormField(this.value, 'emailLabel')">
                     </div>
                     
                     <div class="form-group">
                         <label>Message Field Label</label>
-                        <input type="text" value="${contactData.messageLabel}" oninput="updateContactFormField(this.value, 'messageLabel')">
+                        <input type="text" value="${contactData.messageLabel}" onchange="updateContactFormField(this.value, 'messageLabel')">
                     </div>
                     
                     <div class="form-group">
                         <label>Button Text</label>
-                        <input type="text" value="${contactData.buttonText}" oninput="updateContactFormField(this.value, 'buttonText')">
+                        <input type="text" value="${contactData.buttonText}" onchange="updateContactFormField(this.value, 'buttonText')">
                     </div>
                     
                     <div class="form-group">
@@ -9766,39 +9764,39 @@ break;
                     
                     <div class="form-group">
                         <label>Privacy Text</label>
-                        <textarea oninput="updateContactFormField(this.value, 'privacyText')" rows="3">${contactData.privacyText}</textarea>
+                        <textarea onchange="updateContactFormField(this.value, 'privacyText')" rows="3">${contactData.privacyText}</textarea>
                     </div>
                     
                     <h6 class="mt-4 mb-2">Styling Options</h6>
                     
                     <div class="form-group">
                         <label>Background Color</label>
-                        <input type="color" value="${contactData.backgroundColor}" oninput="updateContactFormField(this.value, 'backgroundColor')">
+                        <input type="color" value="${contactData.backgroundColor}" onchange="updateContactFormField(this.value, 'backgroundColor')">
                     </div>
                     
                     <div class="form-group">
                         <label>Button Color</label>
-                        <input type="color" value="${contactData.buttonColor}" oninput="updateContactFormField(this.value, 'buttonColor')">
+                        <input type="color" value="${contactData.buttonColor}" onchange="updateContactFormField(this.value, 'buttonColor')">
                     </div>
                     
                     <div class="form-group">
                         <label>Button Text Color</label>
-                        <input type="color" value="${contactData.buttonTextColor}" oninput="updateContactFormField(this.value, 'buttonTextColor')">
+                        <input type="color" value="${contactData.buttonTextColor}" onchange="updateContactFormField(this.value, 'buttonTextColor')">
                     </div>
                     
                     <div class="form-group">
                         <label>Label Color</label>
-                        <input type="color" value="${contactData.labelColor}" oninput="updateContactFormField(this.value, 'labelColor')">
+                        <input type="color" value="${contactData.labelColor}" onchange="updateContactFormField(this.value, 'labelColor')">
                     </div>
                     
                     <div class="form-group">
                         <label>Border Radius</label>
-                        <input type="text" value="${contactData.borderRadius}" oninput="updateContactFormField(this.value, 'borderRadius')" placeholder="4px">
+                        <input type="text" value="${contactData.borderRadius}" onchange="updateContactFormField(this.value, 'borderRadius')" placeholder="4px">
                     </div>
                     
                     <div class="form-group">
                         <label>Button Padding</label>
-                        <input type="text" value="${contactData.buttonPadding}" oninput="updateContactFormField(this.value, 'buttonPadding')" placeholder="12px 24px">
+                        <input type="text" value="${contactData.buttonPadding}" onchange="updateContactFormField(this.value, 'buttonPadding')" placeholder="12px 24px">
                     </div>
                 `;
             break;
@@ -9808,27 +9806,27 @@ break;
                     <div class="form-group">
                         <label>Form Background Color</label>
                         <small class="text-muted d-block">Background color for the registration form area</small>
-                        <input type="color" value="${getAuthFormValue('backgroundColor', '#ffffff')}" oninput="updateAuthFormBackgroundColor(this.value)">
+                        <input type="color" value="${getAuthFormValue('backgroundColor', '#ffffff')}" onchange="updateAuthFormBackgroundColor(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Button Color</label>
                         <small class="text-muted d-block">Color for Register and Login buttons</small>
-                        <input type="color" value="${getAuthFormValue('buttonColor', '#2e4053')}" oninput="updateAuthFormButtonColor(this.value)">
+                        <input type="color" value="${getAuthFormValue('buttonColor', '#2e4053')}" onchange="updateAuthFormButtonColor(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Button Text Color</label>
                         <small class="text-muted d-block">Text color for button text</small>
-                        <input type="color" value="${getAuthFormValue('buttonTextColor', '#ffffff')}" oninput="updateAuthFormButtonTextColor(this.value)">
+                        <input type="color" value="${getAuthFormValue('buttonTextColor', '#ffffff')}" onchange="updateAuthFormButtonTextColor(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Avatar Icon Color</label>
                         <small class="text-muted d-block">Color for the user avatar icon</small>
-                        <input type="color" value="${getAuthFormValue('avatarIconColor', '#2e4053')}" oninput="updateAuthFormAvatarIconColor(this.value)">
+                        <input type="color" value="${getAuthFormValue('avatarIconColor', '#2e4053')}" onchange="updateAuthFormAvatarIconColor(this.value)">
                     </div>
                     <div class="form-group">
                         <label>Link Color</label>
                         <small class="text-muted d-block">Color for "Login" and "Register" toggle links</small>
-                        <input type="color" value="${getAuthFormValue('linkColor', '#2e4053')}" oninput="updateAuthFormLinkColor(this.value)">
+                        <input type="color" value="${getAuthFormValue('linkColor', '#2e4053')}" onchange="updateAuthFormLinkColor(this.value)">
                     </div>
                 `;
                 break;

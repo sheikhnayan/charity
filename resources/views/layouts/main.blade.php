@@ -12,6 +12,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    <!-- Shopping Cart CSS -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
@@ -77,6 +79,11 @@
 
     @yield('content')
 
+    <!-- Shopping Cart Component -->
+    @include('components.cart-drawer')
+
+    <!-- Shopping Cart JavaScript -->
+    <script src="{{ asset('js/cart.js') }}"></script>
 
 </body>
 </html>

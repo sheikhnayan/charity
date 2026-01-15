@@ -5,9 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{$ticket->name}}</title>
+  
+  <!-- Cart Queue Stub - Initialize before any scripts use addToCart -->
+  <script>
+    if (!window._cartQueue) {
+      window._cartQueue = [];
+    }
+    window.addToCart = function(itemData) {
+      if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
+        console.log('Adding item to cart:', itemData);
+        return window.ShoppingCart.addItem(itemData);
+      } else {
+        console.log('Queueing item for cart:', itemData);
+        window._cartQueue.push(itemData);
+        return true;
+      }
+    };
+  </script>
+  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <!-- Tailwind CSS for modals -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jQuery - Required for cart.js -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts - Outfit -->
@@ -658,6 +678,8 @@
         z-index: 99999 !important;
     }
   </style>
+  <!-- Shopping Cart System - Load early before components use addToCart -->
+  <script src="{{ asset('js/cart.js') }}"></script>
 </head>
 <body class="product-details-page" style="background-color: {{ $ticket->page_bg_color ?? '#f5f6f7' }} !important;">
     <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
@@ -931,8 +953,10 @@
               </div>
               
               <div style="display:flex;gap:8px;margin-bottom:10px">
-                <button type="submit" class="btn primary">Buy It Now</button>
-                {{-- <button class="btn ghost">Add to cart</button> --}}
+                <button type="submit" class="btn primary" style="flex: 1;">Buy It Now</button>
+                <button type="button" class="btn ghost" id="addProductToCartBtn" style="flex: 1;">
+                  <i class="fa fa-cart-plus mr-2"></i>Add to Cart
+                </button>
               </div>
             </form>
 
@@ -1021,6 +1045,29 @@
       const qty  = document.getElementById('qty');
       inc.addEventListener('click', ()=>{qty.value = Math.max(1, parseInt(qty.value||1)+1)});
       dec.addEventListener('click', ()=>{qty.value = Math.max(1, parseInt(qty.value||1)-1)});
+    })();
+
+    // --- Add to Cart button ---
+    (function(){
+      const addBtn = document.getElementById('addProductToCartBtn');
+      if (!addBtn) return;
+      
+      addBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const qty = parseInt(document.getElementById('qty').value) || 1;
+        
+        if (typeof window.addToCart === 'function') {
+          window.addToCart({
+            id: {{ $ticket->id }},
+            name: '{{ $ticket->name }}',
+            type: 'product',
+            price: {{ $ticket->price }},
+            quantity: qty
+          });
+        } else {
+          console.error('addToCart function not available on window');
+        }
+      });
     })();
 
     // --- Similar cards keyboard nav ---

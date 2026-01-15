@@ -4573,79 +4573,134 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
                 </div>
                 <div class="col-12 mt-4">
-                        <table id="studentTable" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div id="studentEntryInfo" style="margin-bottom: 10px; font-size: 14px; color: #666;">
+                            Showing <span id="studentCount">0</span> students
+                        </div>
+                        <div id="studentListContainer" class="row" style="display: flex; flex-wrap: wrap; gap: 20px;">
     @php
         $students = App\Models\User::limit(10)->whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
     @endphp
 
-    @foreach ($students->chunk(2) as $item)
-        <tr>
-            @foreach ($item as $key => $student)
-                <td style="{{ $alertStyleStr }}">
-                    <!-- full student content here -->
-                    <div class="row">
-                        <div class="col-lg-12 klklklk" style="font-size: 12px;">
-                            <div class="position-relative rounded-3 shadow-sm border listingg"
-                                style="width: 100%; max-width: 580px; margin-inline: auto;">
-                                <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
-                                    <div class="row lsls gy-3" style="padding: 0.5rem;">
-                                        <div class="col-lg-2 d-flex align-items-center">
-                                            <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
-                                                <img src="{{ asset($student->photo) }}" style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
-                                            </div>
-                                        </div>
+    @foreach ($students as $student)
+        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" style="flex: 0 0 calc(50% - 10px); min-width: 300px;" class="student-item">
+            <div class="student-card-content" style="background: #fff">
+                <div style="font-size: 12px;">
+                    <div class="position-relative rounded-3 shadow-sm border listingg"
+                        style="width: 100%; max-width: 580px; margin-inline: auto; padding-bottom: 50px;">
+                        <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
+                            <div class="row lsls gy-3" style="padding: 0.5rem;">
+                                <div class="col-lg-2 d-flex align-items-center">
+                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
+                                        <img src="{{ asset($student->photo) }}" style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
+                                    </div>
+                                </div>
 
-                                        <div class="col-lg-8 d-flex flex-column justify-content-center">
-                                            <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
-                                                {{ $student->name }}
-                                            </h2>
-                                            <span class="opacity-75 text-center text-lg-start mt-2"></span>
-                                            <div class="progress mt-3" role="progressbar"
-                                                aria-valuenow="{{ $student->donations->sum('amount') }}"
-                                                aria-valuemin="0"
-                                                aria-valuemax="{{ $student->goal }}"
-                                                data-primary-color="#2e4053"
-                                                data-secondary-color="#b7bcc4"
-                                                data-duration="5"
-                                                data-goal-reached="true"
-                                                style="height: 14px">
-                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
-                                                    style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}@else 0 @endif%;">
-                                                    <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@else 1 @endif%</span>
-                                                </div>
-                                            </div>
-                                            <span class="fw-semibold d-block text-center mt-2">
-                                                @php $to = $student->donations->sum('amount'); @endphp
-                                                ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">raised</small>
-                                            </span>
+                                <div class="col-lg-8 d-flex flex-column justify-content-center">
+                                    <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                        {{ $student->name }}
+                                    </h2>
+                                    <span class="opacity-75 text-center text-lg-start mt-2"></span>
+                                    <div class="progress mt-3" role="progressbar"
+                                        aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="{{ $student->goal }}"
+                                        data-primary-color="#2e4053"
+                                        data-secondary-color="#b7bcc4"
+                                        data-duration="5"
+                                        data-goal-reached="true"
+                                        style="height: 14px">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
+                                            style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}@else 0 @endif%;">
+                                            <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@else 1 @endif%</span>
                                         </div>
                                     </div>
-                                </a>
+                                    <span class="fw-semibold d-block text-center mt-2">
+                                        @php $to = $student->donations->sum('amount'); @endphp
+                                        ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">raised</small>
+                                    </span>
+                                </div>
                             </div>
+                        </a>
+                        <div style="position: absolute; bottom: 10px; left: 0; right: 0; display: flex; gap: 10px; padding: 0 10px; justify-content: center;">
+                            <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" class="btn btn-sm btn-primary" style="flex: 1;" target="_blank">
+                                <i class="fa fa-heart me-2"></i>Donate
+                            </a>
+                            <button class="btn btn-sm btn-outline-primary add-student-to-cart" 
+                                data-item-id="{{ $student->id }}"
+                                data-item-type="student"
+                                data-item-name="{{ $student->name }}"
+                                data-item-price="0"
+                                style="flex: 1;">
+                                <i class="fa fa-shopping-cart me-2"></i>Cart
+                            </button>
                         </div>
                     </div>
-                    {{-- {{ $key }} --}}
-                </td>
-            @endforeach
-
-            {{-- Add one empty <td> only if this is the last row and has only one student --}}
-            @if ($loop->last && count($item) < 2)
-                <td></td>
-            @endif
-        </tr>
-    @endforeach
-</tbody>
-
-                        </table>
                 </div>
             </div>
+        </div>
+    @endforeach
+                        </div>
+                </div>
+            </div>
+        <script>
+            // Fixed student listing counter and search for the refactored layout
+            (function() {
+                const searchInput = document.getElementById('search');
+                const studentListContainer = document.getElementById('studentListContainer');
+                const studentCountEl = document.getElementById('studentCount');
+                const allStudentCards = document.querySelectorAll('.student-card-wrapper');
+                
+                const updateStudentCount = () => {
+                    const visibleCards = Array.from(allStudentCards).filter(card => {
+                        return card.style.display !== 'none';
+                    });
+                    studentCountEl.textContent = visibleCards.length;
+                };
+                
+                const filterStudents = () => {
+                    const keyword = searchInput.value.toLowerCase().trim();
+                    
+                    allStudentCards.forEach(card => {
+                        const studentContent = card.textContent.toLowerCase();
+                        const matches = !keyword || studentContent.includes(keyword);
+                        card.style.display = matches ? '' : 'none';
+                    });
+                    
+                    updateStudentCount();
+                };
+                
+                // Initialize count
+                updateStudentCount();
+                
+                // Add search event listener
+                if (searchInput) {
+                    searchInput.addEventListener('input', filterStudents);
+                }
+                
+                // Add to cart button functionality
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.add-student-to-cart')) {
+                        e.preventDefault();
+                        const btn = e.target.closest('.add-student-to-cart');
+                        const itemId = btn.dataset.itemId;
+                        const itemName = btn.dataset.itemName;
+                        const itemType = btn.dataset.itemType;
+                        
+                        if (typeof window.addToCart === 'function') {
+                            window.addToCart({
+                                id: itemId,
+                                name: itemName,
+                                type: itemType,
+                                price: 0,
+                                quantity: 1
+                            });
+                        } else {
+                            console.error('addToCart function not available');
+                        }
+                    }
+                });
+            })();
+        </script>
 @break
 
         @case('sell-tickets')

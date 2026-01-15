@@ -478,6 +478,8 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         echo generateResponsiveStyles($state);
     @endphp
 </style>
+<!-- Shopping Cart System - Load early before components use addToCart -->
+<script src="{{ asset('js/cart.js') }}"></script>
 </head>
 <body style="overflow-x: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
     @php
@@ -3307,52 +3309,8 @@ setInterval(updateCountdown, 1000);
 <script>
     // Global function to safely initialize DataTables
     function initStudentTable() {
-        // Check if table exists
-        if ($('#studentTable').length === 0) {
-            return;
-        }
-        
-        // Destroy existing DataTable instance if it exists
-        if ($.fn.DataTable.isDataTable('#studentTable')) {
-            $('#studentTable').DataTable().destroy();
-        }
-        
-        // Initialize DataTable with default search disabled
-        const table = $('#studentTable').DataTable({
-            paging: true,
-            searching: false, // disable default search
-            ordering: false,
-            info: false,
-            pageLength: 25
-        });
-
-        // Link the custom search input to the DataTable search
-        $('#search').on('input', function () {
-            const keyword = $(this).val().toLowerCase();
-
-            $('#studentTable tbody tr').each(function () {
-                let visibleTDs = 0;
-
-                $(this).find('td').each(function () {
-                    const text = $(this).text().toLowerCase();
-                    const match = text.includes(keyword);
-
-                    if (match) {
-                        $(this).show();
-                        visibleTDs++;
-                    } else {
-                        $(this).hide();
-                    }
-                });
-
-                // Hide the entire <tr> if no <td> matches
-                if (visibleTDs === 0) {
-                    $(this).hide();
-                } else {
-                    $(this).show();
-                }
-            });
-        });
+        // Student listing search is now handled by inline JavaScript in the component
+        // This function is kept for backwards compatibility but does nothing
     }
 
     $(document).ready(function() {
@@ -3648,6 +3606,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
 
 </html>
