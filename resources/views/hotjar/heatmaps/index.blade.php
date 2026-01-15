@@ -288,9 +288,9 @@
             display.innerHTML = `
                 <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; width: 100%; max-width: ${containerMaxWidth}px; aspect-ratio: ${screenshotDimensions.width || 1920} / ${screenshotDimensions.height || 1080}; background-color: #f5f5f5; ${screenshotUrl ? `background-image: url('${screenshotUrl}'); background-size: 100% 100%; background-repeat: no-repeat;` : ''} overflow: hidden;">
                     ${screenshotUrl ? `
-                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; cursor: crosshair; z-index: 10;"></canvas>
+                        <div id="heatmapCanvasContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
                     ` : `
-                        <div id="heatmapCanvas" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div id="heatmapCanvasContainer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available for this page. Screenshots are captured when pages are saved from the builder.</p>
                         </div>
                     `}
@@ -324,16 +324,15 @@
             window.initHeatmapAfterImageLoad = () => {
                 console.log('🎨 Initializing heatmap overlay...');
                 
-                const canvasEl = document.getElementById('heatmapCanvas');
+                const container = document.getElementById('heatmapCanvasContainer');
                 const wrapper = document.querySelector('.heatmap-wrapper');
                 
-                if (!canvasEl || !canvasEl.tagName || canvasEl.tagName.toUpperCase() !== 'CANVAS') {
-                    console.error('❌ Canvas element not found!');
-                    console.error('canvasEl:', canvasEl, 'tagName:', canvasEl?.tagName);
+                if (!container) {
+                    console.error('❌ Canvas container not found!');
                     return;
                 }
                 
-                console.log('✓ Canvas element found:', canvasEl);
+                console.log('✓ Container element found:', container);
                 
                 // Get wrapper dimensions immediately (aspect-ratio should have been set)
                 let displayWidth = wrapper.offsetWidth;
@@ -341,8 +340,6 @@
                 
                 console.log('Wrapper offsetWidth:', displayWidth);
                 console.log('Wrapper offsetHeight:', displayHeight);
-                console.log('Wrapper clientWidth:', wrapper.clientWidth);
-                console.log('Wrapper clientHeight:', wrapper.clientHeight);
                 
                 if (!displayWidth || !displayHeight) {
                     console.error('❌ Invalid wrapper dimensions:', displayWidth, 'x', displayHeight);
@@ -354,11 +351,22 @@
                 
                 console.log('✓ Display dimensions:', displayWidth, 'x', displayHeight);
                 
+                // Create canvas element
+                const canvasEl = document.createElement('canvas');
+                canvasEl.style.position = 'absolute';
+                canvasEl.style.top = '0';
+                canvasEl.style.left = '0';
+                canvasEl.style.cursor = 'crosshair';
+                canvasEl.style.zIndex = '10';
+                
                 // Set canvas ATTRIBUTES (not CSS) to actual pixel dimensions
                 canvasEl.width = displayWidth;
                 canvasEl.height = displayHeight;
                 
-                console.log('✓ Canvas attributes set - width:', canvasEl.width, 'height:', canvasEl.height);
+                console.log('✓ Canvas created with dimensions:', canvasEl.width, 'x', canvasEl.height);
+                
+                // Add canvas to container
+                container.appendChild(canvasEl);
                 
                 // Verify context is available
                 const ctx = canvasEl.getContext('2d');
@@ -376,7 +384,7 @@
                         return;
                     }
                     
-                    console.log('Creating heatmap.js instance...');
+                    console.log('Creating heatmap.js instance with canvas...');
                     heatmapInstance = h337.create({
                         container: canvasEl,
                         radius: currentType === 'click' ? 25 : 40,
@@ -431,7 +439,7 @@
                             max: maxValue,
                             data: points
                         });
-                        console.log('✅ Heatmap data set successfully!');
+                        console.log('✅ Heatmap data set successfully! Should be visible now!');
                     } catch (e) {
                         console.error('❌ Error setting heatmap data:', e);
                     }
