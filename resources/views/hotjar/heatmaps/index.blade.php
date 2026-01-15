@@ -257,6 +257,7 @@
             
             // Fetch screenshot for this page
             let screenshotUrl = null;
+            let screenshotDimensions = { width: null, height: null };
             try {
                 const response = await fetch(`/api/heatmap/screenshot?website_id=${currentWebsiteId}&page_path=${encodeURIComponent(currentPagePath)}`, {
                     credentials: 'same-origin',
@@ -267,7 +268,13 @@
                 });
                 if (response.ok) {
                     const result = await response.json();
-                    screenshotUrl = result.screenshot_path;
+                    screenshotUrl = result.screenshot_url || result.screenshot_path; // Try both field names
+                    screenshotDimensions = {
+                        width: result.viewport_width,
+                        height: result.viewport_height
+                    };
+                    console.log('Screenshot found:', screenshotUrl);
+                    console.log('Screenshot dimensions:', screenshotDimensions);
                 }
             } catch (e) {
                 console.log('No screenshot available:', e);
@@ -277,11 +284,11 @@
             display.innerHTML = `
                 <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 100%; display: inline-block; background: #f5f5f5;">
                     ${screenshotUrl ? `
-                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto; position: relative; z-index: 1;" onload="window.initHeatmapAfterImageLoad();" onerror="console.error('Screenshot failed to load');" />
+                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto; position: relative; z-index: 1;" onload="window.initHeatmapAfterImageLoad();" onerror="console.error('Screenshot failed to load: ' + this.src);" />
                         <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></canvas>
                     ` : `
                         <div id="heatmapCanvas" style="width: 100%; min-height: 600px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                            <p class="text-muted">No screenshot available. <a href="#" onclick="captureScreenshot(); return false;">Capture now</a></p>
+                            <p class="text-muted">No screenshot available for this page. Screenshots are captured when pages are saved from the builder.</p>
                         </div>
                     `}
                     <div class="heatmap-legend" style="position: absolute; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000; pointer-events: auto;">
@@ -304,11 +311,11 @@
             // Check for empty data
             if (!data || data.length === 0) {
                 console.log('No heatmap data to render');
-                display.innerHTML += '<div class="alert alert-info mt-3">No heatmap data available for this page.</div>';
+                display.innerHTML += '<div class="alert alert-info mt-3">No heatmap data available for this page yet.</div>';
                 return;
             }
 
-            console.log('Processing', data.length, 'data points');
+            console.log('Processing', data.length, 'data points for heatmap');
 
             // Define init function globally so image onload can call it
             window.initHeatmapAfterImageLoad = () => {
@@ -328,45 +335,45 @@
                 const screenshotImg = document.getElementById('screenshotImg');
                 const wrapper = document.querySelector('.heatmap-wrapper');
                 
-                if (!canvasEl) {
-                    console.error('Canvas element not found!');
+                if (!canvasEl || canvasEl.tagName !== 'CANVAS') {
+                    console.error('Canvas element not found or is not a real canvas element!');
                     return;
                 }
 
                 // Get screenshot dimensions
-                let screenshotWidth, screenshotHeight;
+                let displayWidth, displayHeight;
+                let storedWidth = screenshotDimensions.width || 1920;
+                let storedHeight = screenshotDimensions.height || 1080;
                 
                 if (screenshotImg && screenshotImg.complete && screenshotImg.naturalWidth > 0) {
                     // Get actual displayed dimensions of the screenshot
                     const imgRect = screenshotImg.getBoundingClientRect();
-                    screenshotWidth = imgRect.width;
-                    screenshotHeight = imgRect.height;
+                    displayWidth = imgRect.width;
+                    displayHeight = imgRect.height;
                     
                     console.log('Screenshot natural dimensions:', screenshotImg.naturalWidth, 'x', screenshotImg.naturalHeight);
-                    console.log('Screenshot display dimensions:', screenshotWidth, 'x', screenshotHeight);
+                    console.log('Screenshot display dimensions:', displayWidth, 'x', displayHeight);
                     
                     // CRITICAL: Match canvas size exactly to screenshot
-                    canvasEl.width = screenshotWidth;
-                    canvasEl.height = screenshotHeight;
-                    canvasEl.style.width = screenshotWidth + 'px';
-                    canvasEl.style.height = screenshotHeight + 'px';
+                    canvasEl.width = screenshotImg.naturalWidth;
+                    canvasEl.height = screenshotImg.naturalHeight;
+                    canvasEl.style.width = displayWidth + 'px';
+                    canvasEl.style.height = displayHeight + 'px';
                 } else {
                     // No screenshot - use default dimensions
-                    screenshotWidth = canvasEl.offsetWidth || 1440;
-                    screenshotHeight = canvasEl.offsetHeight || 900;
-                    console.log('No screenshot, using default dimensions:', screenshotWidth, 'x', screenshotHeight);
+                    displayWidth = canvasEl.offsetWidth || 1440;
+                    displayHeight = canvasEl.offsetHeight || 900;
+                    canvasEl.width = displayWidth;
+                    canvasEl.height = displayHeight;
+                    console.log('No screenshot, using default dimensions:', displayWidth, 'x', displayHeight);
                 }
-
-                // Get stored screenshot dimensions from database
-                const storedWidth = data[0]?.viewport_width || screenshotWidth;
-                const storedHeight = data[0]?.viewport_height || screenshotHeight;
                 
                 console.log('Stored dimensions from DB:', storedWidth, 'x', storedHeight);
-                console.log('Current display dimensions:', screenshotWidth, 'x', screenshotHeight);
+                console.log('Display dimensions:', displayWidth, 'x', displayHeight);
 
                 // Calculate scale factors: database coordinates → display coordinates
-                const scaleX = screenshotWidth / storedWidth;
-                const scaleY = screenshotHeight / storedHeight;
+                const scaleX = displayWidth / storedWidth;
+                const scaleY = displayHeight / storedHeight;
                 
                 console.log('Scale factors - X:', scaleX.toFixed(4), 'Y:', scaleY.toFixed(4));
 

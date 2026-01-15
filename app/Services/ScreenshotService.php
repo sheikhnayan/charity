@@ -68,9 +68,11 @@ class ScreenshotService
             $storagePath = Storage::disk('public')->url($filename);
 
             // Save to database
+            $pagePath = $page->is_homepage ? '/' : '/page/' . str_replace(' ', '-', strtolower($page->name));
+            
             PageScreenshot::updateOrCreate(
                 [
-                    'page_path' => '/page/' . str_replace(' ', '-', strtolower($page->name)),
+                    'page_path' => $pagePath,
                     'website_id' => $page->website_id
                 ],
                 [
@@ -112,7 +114,13 @@ class ScreenshotService
         // Get the base URL from config or environment
         $baseUrl = rtrim(config('app.url'), '/');
         
-        // Build page path
+        // Check if this is the homepage
+        if ($page->is_homepage) {
+            // Homepage is accessed via root path
+            return $baseUrl . '/';
+        }
+        
+        // Build page path for regular pages
         $pagePath = '/page/' . str_replace(' ', '-', strtolower($page->name));
         
         return $baseUrl . $pagePath;

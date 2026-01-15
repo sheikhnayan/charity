@@ -106,17 +106,25 @@ class HotjarViewController extends Controller
         }
 
         // Get only page-builder pages (dynamic pages from pages table)
-        $pageBuilderPaths = \DB::table('pages')
+        $pages = \DB::table('pages')
             ->where('website_id', $websiteId)
             ->whereNotNull('state') // Has page builder data
-            ->pluck('name')
-            ->map(function($name) {
-                return '/page/' . str_replace(' ', '-', strtolower($name));
-            })
-            ->toArray();
+            ->get();
+
+        // Build paths list - includes homepage as '/' and regular pages as '/page/{name}'
+        $pageBuilderPaths = [];
+        foreach ($pages as $page) {
+            if ($page->is_homepage) {
+                // Homepage is accessed via root path '/'
+                $pageBuilderPaths[] = '/';
+            } else {
+                // Regular pages use '/page/{name}' format
+                $pageBuilderPaths[] = '/page/' . str_replace(' ', '-', strtolower($page->name));
+            }
+        }
 
         // Get pages with heatmap data - ONLY for page-builder pages
-        $pages = \DB::table('heatmap_data')
+        $heatmapPages = \DB::table('heatmap_data')
             ->select('page_path', 'page_url', \DB::raw('COUNT(DISTINCT session_id) as visitors'))
             ->where('website_id', $websiteId)
             ->whereIn('page_path', $pageBuilderPaths) // Filter to only page-builder pages
@@ -125,7 +133,7 @@ class HotjarViewController extends Controller
             ->limit(20)
             ->get();
 
-        return response()->json(['pages' => $pages]);
+        return response()->json(['pages' => $heatmapPages]);
     }
 
     /**
@@ -138,11 +146,7 @@ class HotjarViewController extends Controller
         $days = $request->days ?? 30;
 
         // Verify this is a page-builder page
-        $isPageBuilderPage = \DB::table('pages')
-            ->where('website_id', $websiteId)
-            ->whereNotNull('state')
-            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
-            ->exists();
+        $isPageBuilderPage = $this->isPageBuilderPage($websiteId, $pagePath);
 
         if (!$isPageBuilderPage) {
             return response()->json(['data' => []]);
@@ -173,11 +177,7 @@ class HotjarViewController extends Controller
         $days = $request->days ?? 30;
 
         // Verify this is a page-builder page
-        $isPageBuilderPage = \DB::table('pages')
-            ->where('website_id', $websiteId)
-            ->whereNotNull('state')
-            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
-            ->exists();
+        $isPageBuilderPage = $this->isPageBuilderPage($websiteId, $pagePath);
 
         if (!$isPageBuilderPage) {
             return response()->json(['data' => []]);
@@ -208,11 +208,7 @@ class HotjarViewController extends Controller
         $days = $request->days ?? 30;
 
         // Verify this is a page-builder page
-        $isPageBuilderPage = \DB::table('pages')
-            ->where('website_id', $websiteId)
-            ->whereNotNull('state')
-            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
-            ->exists();
+        $isPageBuilderPage = $this->isPageBuilderPage($websiteId, $pagePath);
 
         if (!$isPageBuilderPage) {
             return response()->json(['scroll_percentages' => []]);
@@ -294,6 +290,9 @@ class HotjarViewController extends Controller
 
         return response()->json([
             'screenshot_path' => $screenshot->screenshot_path,
+            'screenshot_url' => asset($screenshot->screenshot_path), // Full URL for easy access
+            'viewport_width' => $screenshot->viewport_width,
+            'viewport_height' => $screenshot->viewport_height,
             'created_at' => $screenshot->created_at
         ]);
     }
@@ -809,4 +808,37 @@ class HotjarViewController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Helper method to check if a page path belongs to a page-builder page
+     * Handles both homepage (/) and regular pages (/page/{name})
+     *
+     * @param int $websiteId
+     * @param string $pagePath
+     * @return bool
+     */
+    private function isPageBuilderPage($websiteId, $pagePath)
+    {
+        // Check if this is the homepage
+        if ($pagePath === '/' || $pagePath === '') {
+            return \DB::table('pages')
+                ->where('website_id', $websiteId)
+                ->where('is_homepage', true)
+                ->whereNotNull('state')
+                ->exists();
+        }
+
+        // Check if this is a regular page-builder page
+        // Extract page name from path like '/page/about-us' -> 'about us'
+        $pageName = str_replace(['/page/', '/'], '', $pagePath);
+        $pageName = str_replace('-', ' ', $pageName);
+
+        return \DB::table('pages')
+            ->where('website_id', $websiteId)
+            ->where('is_homepage', false)
+            ->whereNotNull('state')
+            ->where('name', $pageName)
+            ->exists();
+    }
 }
+
