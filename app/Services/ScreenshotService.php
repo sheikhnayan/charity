@@ -83,6 +83,18 @@ class ScreenshotService
                 ]
             );
 
+            // Log screenshot capture details
+            \Log::info('Page screenshot captured successfully', [
+                'page_id' => $pageId,
+                'page_name' => $page->name,
+                'page_path' => $pagePath,
+                'website_id' => $page->website_id,
+                'screenshot_url' => $storagePath,
+                'dimensions' => $width . 'x' . $height . 'px',
+                'file_path' => 'storage/app/public/' . $filename,
+                'timestamp' => now()
+            ]);
+
             // Clean up temp file
             if (file_exists($tempPath)) {
                 unlink($tempPath);
