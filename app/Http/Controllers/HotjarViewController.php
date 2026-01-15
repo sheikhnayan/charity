@@ -105,10 +105,21 @@ class HotjarViewController extends Controller
             return response()->json(['pages' => []]);
         }
 
-        // Get pages with heatmap data
+        // Get only page-builder pages (dynamic pages from pages table)
+        $pageBuilderPaths = \DB::table('pages')
+            ->where('website_id', $websiteId)
+            ->whereNotNull('state') // Has page builder data
+            ->pluck('name')
+            ->map(function($name) {
+                return '/page/' . str_replace(' ', '-', strtolower($name));
+            })
+            ->toArray();
+
+        // Get pages with heatmap data - ONLY for page-builder pages
         $pages = \DB::table('heatmap_data')
             ->select('page_path', 'page_url', \DB::raw('COUNT(DISTINCT session_id) as visitors'))
             ->where('website_id', $websiteId)
+            ->whereIn('page_path', $pageBuilderPaths) // Filter to only page-builder pages
             ->groupBy('page_path', 'page_url')
             ->orderBy('visitors', 'desc')
             ->limit(20)
@@ -125,6 +136,17 @@ class HotjarViewController extends Controller
         $websiteId = $request->website_id;
         $pagePath = $request->page_path;
         $days = $request->days ?? 30;
+
+        // Verify this is a page-builder page
+        $isPageBuilderPage = \DB::table('pages')
+            ->where('website_id', $websiteId)
+            ->whereNotNull('state')
+            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
+            ->exists();
+
+        if (!$isPageBuilderPage) {
+            return response()->json(['data' => []]);
+        }
 
         $data = \DB::table('heatmap_data')
             ->select('x', 'y', 'viewport_width', 'viewport_height', \DB::raw('COUNT(*) as click_count'))
@@ -150,6 +172,17 @@ class HotjarViewController extends Controller
         $pagePath = $request->page_path;
         $days = $request->days ?? 30;
 
+        // Verify this is a page-builder page
+        $isPageBuilderPage = \DB::table('pages')
+            ->where('website_id', $websiteId)
+            ->whereNotNull('state')
+            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
+            ->exists();
+
+        if (!$isPageBuilderPage) {
+            return response()->json(['data' => []]);
+        }
+
         $data = \DB::table('heatmap_data')
             ->select('x', 'y', 'viewport_width', 'viewport_height', \DB::raw('COUNT(*) as move_count'))
             ->where('website_id', $websiteId)
@@ -173,6 +206,17 @@ class HotjarViewController extends Controller
         $websiteId = $request->website_id;
         $pagePath = $request->page_path;
         $days = $request->days ?? 30;
+
+        // Verify this is a page-builder page
+        $isPageBuilderPage = \DB::table('pages')
+            ->where('website_id', $websiteId)
+            ->whereNotNull('state')
+            ->where(\DB::raw("CONCAT('/page/', REPLACE(LOWER(name), ' ', '-'))"), $pagePath)
+            ->exists();
+
+        if (!$isPageBuilderPage) {
+            return response()->json(['scroll_percentages' => []]);
+        }
 
         // Calculate scroll percentages
         $scrollData = \DB::table('heatmap_data')

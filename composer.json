@@ -18,6 +18,7 @@
         "laravel/tinker": "^2.10.1",
         "phpoffice/phpspreadsheet": "^5.2",
         "simplesoftwareio/simple-qrcode": "*",
+        "spatie/browsershot": "^5.2",
         "stripe/stripe-php": "^17.4"
     },
     "require-dev": {

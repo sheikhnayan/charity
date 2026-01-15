@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\Website;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\CapturePageScreenshot;
 
 class PageBuilderController extends Controller
 {
@@ -54,6 +55,9 @@ class PageBuilderController extends Controller
                 ]
             );
         }
+        
+        // Dispatch screenshot capture job (async) - captures full page with header/footer
+        CapturePageScreenshot::dispatch($pageId)->delay(now()->addSeconds(5));
         
         return response()->json(['success' => true]);
     }

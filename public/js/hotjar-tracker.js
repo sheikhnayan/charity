@@ -63,7 +63,8 @@
 
             this.startRecording();
             this.setupHeatmapTracking();
-            this.captureScreenshotIfNeeded();
+            // Note: Screenshot capture now handled server-side via PageBuilderController
+            // this.captureScreenshotIfNeeded(); // DISABLED - using server-side Browsershot instead
             this.setupInactivityDetection();
             this.setupBeforeUnload();
         }
