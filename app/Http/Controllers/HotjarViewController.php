@@ -274,11 +274,11 @@ class HotjarViewController extends Controller
         $websiteId = $request->website_id;
         $pagePath = $request->page_path;
 
-        // Get the latest screenshot for this page
+        // Get the latest screenshot for this page (order by updated_at since updateOrCreate updates that)
         $screenshot = \DB::table('page_screenshots')
             ->where('website_id', $websiteId)
             ->where('page_path', $pagePath)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->first();
 
         // If no screenshot found, return 404 so JavaScript knows to capture one
