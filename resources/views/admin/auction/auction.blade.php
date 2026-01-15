@@ -141,6 +141,10 @@
                                                         <td>
                                                             <a href="/admins/auction-edit/{{ $item->id }}" class="btn btn-primary btn-sm">Edit</a>
                                                             
+                                                            <button onclick="viewBids({{ $item->id }}, '{{ $item->title }}')" class="btn btn-info btn-sm">
+                                                                <i class="fas fa-gavel"></i> View Bids
+                                                            </button>
+                                                            
                                                             @if ($item->status != 2)
                                                                 <button onclick="archiveAuction({{ $item->id }})" class="btn btn-warning btn-sm">
                                                                     <i class="fas fa-archive"></i> Archive
@@ -235,4 +239,157 @@
                     table.column(5).search('').draw();
                 }
             </script>
-        @endsection
+
+            <!-- Bids Modal -->
+            <div class="modal fade" id="bidsModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-gavel me-2"></i> Live Bids - <span id="auctionTitle"></span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="bidsContainer" style="max-height: 500px; overflow-y: auto;">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="exportBidsToCSV()">
+                                <i class="fas fa-download me-1"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            let currentBidsData = [];
+            let currentAuctionTitle = '';
+
+            function viewBids(auctionId, auctionTitle) {
+                currentAuctionTitle = auctionTitle;
+                document.getElementById('auctionTitle').textContent = auctionTitle;
+                document.getElementById('bidsContainer').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                
+                const modal = new bootstrap.Modal(document.getElementById('bidsModal'));
+                modal.show();
+
+                // Fetch bids for this auction
+                fetch(`/admins/auction/${auctionId}/bids`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentBidsData = data.bids;
+                        displayBids(data.bids);
+                    } else {
+                        document.getElementById('bidsContainer').innerHTML = '<div class="alert alert-danger">Error loading bids: ' + data.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('bidsContainer').innerHTML = '<div class="alert alert-danger">Error loading bids</div>';
+                });
+            }
+
+            function displayBids(bids) {
+                if (bids.length === 0) {
+                    document.getElementById('bidsContainer').innerHTML = '<div class="alert alert-info text-center"><i class="fas fa-inbox me-2"></i> No bids yet</div>';
+                    return;
+                }
+
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 4%;">Rank</th>
+                                    <th style="width: 16%;">Bidder Name</th>
+                                    <th style="width: 18%;">Email</th>
+                                    <th style="width: 12%;">Bid Amount</th>
+                                    <th style="width: 15%;">Location</th>
+                                    <th style="width: 12%;">Phone</th>
+                                    <th style="width: 14%;">Time</th>
+                                    <th style="width: 9%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                bids.forEach((bid, index) => {
+                    const isHighest = index === 0 ? 'table-success' : '';
+                    const timestamp = new Date(bid.created_at).toLocaleString();
+                    const status = index === 0 ? '<span class="badge bg-success"><i class="fas fa-crown me-1"></i> Highest</span>' : '<span class="badge bg-secondary">Bid #' + (index + 1) + '</span>';
+                    const location = `${bid.city || '-'}, ${bid.state || '-'}`;
+                    const phone = bid.phone ? `<a href="tel:${bid.phone}">${bid.phone}</a>` : '-';
+                    
+                    html += `
+                        <tr class="${isHighest}">
+                            <td><strong>#${index + 1}</strong></td>
+                            <td>${escapeHtml(bid.name || '-')}</td>
+                            <td><a href="mailto:${escapeHtml(bid.email)}" title="${escapeHtml(bid.email)}">${escapeHtml(bid.email)}</a></td>
+                            <td><strong style="color: ${index === 0 ? '#28a745' : '#000'};">$${parseFloat(bid.amount).toFixed(2)}</strong></td>
+                            <td><small>${location}</small></td>
+                            <td>${phone}</td>
+                            <td><small class="text-muted">${timestamp}</small></td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <strong><i class="fas fa-info-circle me-2"></i>Auction Bids Summary:</strong>
+                        <br>Total Bids: <strong>${bids.length}</strong>
+                        <br>Highest Bid: <strong>$${parseFloat(bids[0].amount).toFixed(2)}</strong>
+                        <br>Lowest Bid: <strong>$${parseFloat(bids[bids.length - 1].amount).toFixed(2)}</strong>
+                        <br>Average Bid: <strong>$${(bids.reduce((sum, bid) => sum + parseFloat(bid.amount), 0) / bids.length).toFixed(2)}</strong>
+                    </div>
+                `;
+
+                document.getElementById('bidsContainer').innerHTML = html;
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                return text.replace(/[&<>"']/g, function(m) {
+                    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
+                });
+            }
+
+            function exportBidsToCSV() {
+                if (currentBidsData.length === 0) {
+                    alert('No bids to export');
+                    return;
+                }
+
+                let csv = 'Rank,Bidder Name,Email,Phone,City,State,Zip,Address,Bid Amount,Timestamp,Transaction ID,Status\n';
+                currentBidsData.forEach((bid, index) => {
+                    csv += `${index + 1},"${bid.name || ''}","${bid.email || ''}","${bid.phone || ''}","${bid.city || ''}","${bid.state || ''}","${bid.zip || ''}","${bid.address || ''}",${bid.amount},"${bid.created_at}","${bid.transaction_id || ''}","${bid.status === 1 ? 'Completed' : 'Pending'}"\n`;
+                });
+
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+                element.setAttribute('download', `auction-bids-${currentAuctionTitle}-${Date.now()}.csv`);
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            }
+            </script>
+@endsection

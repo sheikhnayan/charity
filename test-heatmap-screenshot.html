@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="test-token">
+    <title>Heatmap Screenshot Test - NO Auto-Scroll</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 3000px; /* Long page for scrolling */
+        }
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .section:nth-child(even) {
+            background: #f0f9ff;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            z-index: 100;
+        }
+        .test-area {
+            padding: 30px;
+            background: #fef3c7;
+            border: 3px dashed #f59e0b;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .scroll-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #7c3aed;
+            transform: scale(1.05);
+        }
+        .console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            color: #00ff00;
+            padding: 20px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 2000;
+            font-size: 12px;
+            border-top: 3px solid #10b981;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #10b981;
+            padding-left: 10px;
+        }
+        .log-success { color: #10b981; }
+        .log-error { color: #ef4444; border-left-color: #ef4444; }
+        .log-warning { color: #f59e0b; border-left-color: #f59e0b; }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Heatmap Screenshot Test - Full Page Without Scrolling</h1>
+    
+    <div class="scroll-indicator" id="scrollPos">Scroll: 0px</div>
+
+    <div class="section">
+        <h2>✅ Test Objective</h2>
+        <p><strong style="color: #ef4444; font-size: 18px;">Screenshot should capture entire page WITHOUT auto-scrolling!</strong></p>
+        <div class="test-area">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Scroll down to the middle or bottom of this page</li>
+                <li>Wait 15 seconds (or click "Capture Screenshot Now")</li>
+                <li><strong>Watch the scroll indicator</strong> - it should NOT move!</li>
+                <li>Check console logs below for success confirmation</li>
+                <li>Verify screenshot captured full page from top to bottom</li>
+            </ol>
+        </div>
+        <button onclick="manualCapture()">📸 Capture Screenshot Now</button>
+        <button onclick="clearLogs()">🗑️ Clear Logs</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 1 - Top of Page</h2>
+        <div class="highlight-box">
+            <h3>This should appear in screenshot</h3>
+            <p>Even if you scroll past this section!</p>
+        </div>
+        <button onclick="logClick('Section 1')">Click Me (Section 1)</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 2 - Middle Area</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <button onclick="logClick('Section 2')">Click Me (Section 2)</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 3 - More Content</h2>
+        <div class="highlight-box">
+            <h3>Screenshot Test Zone</h3>
+            <p>This entire page (from top to bottom) should be captured!</p>
+            <p><strong>Current Scroll Position:</strong> <span id="currentScroll">0px</span></p>
+        </div>
+        <button onclick="scrollToTop()">⬆️ Scroll to Top</button>
+        <button onclick="scrollToBottom()">⬇️ Scroll to Bottom</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 4 - Lower Area</h2>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <button onclick="logClick('Section 4')">Click Me (Section 4)</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 5 - Near Bottom</h2>
+        <div class="test-area">
+            <h3>Expected Behavior:</h3>
+            <ul>
+                <li>✅ Page should NOT scroll to top automatically</li>
+                <li>✅ Your scroll position should remain unchanged</li>
+                <li>✅ No visual disruption or "jumping"</li>
+                <li>✅ Screenshot captures entire page (3000px height)</li>
+                <li>✅ Heatmap data coordinates are accurate</li>
+            </ul>
+        </div>
+        <button onclick="logClick('Section 5')">Click Me (Section 5)</button>
+    </div>
+
+    <div class="section">
+        <h2>Section 6 - Bottom of Page</h2>
+        <div class="highlight-box">
+            <h3>Bottom Section</h3>
+            <p>This should also appear in the full-page screenshot!</p>
+            <p style="font-size: 24px; font-weight: bold;">🎯 End of Page</p>
+        </div>
+        <button onclick="logClick('Section 6 - Bottom')">Click Me (Bottom)</button>
+    </div>
+
+    <div class="console" id="console">
+        <div class="log-entry log-success">🟢 Console initialized. Waiting for heatmap tracker...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const logs = [];
+        
+        function addLog(message, type = 'success') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logs.push({ message: logEntry, type });
+            
+            const consoleEl = document.getElementById('console');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry log-${type}`;
+            logDiv.textContent = logEntry;
+            consoleEl.appendChild(logDiv);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('console').innerHTML = '<div class="log-entry log-success">🟢 Console cleared</div>';
+        }
+        
+        function logClick(section) {
+            const x = event.clientX + window.scrollX;
+            const y = event.clientY + window.scrollY;
+            addLog(`🖱️ Click in ${section} - Absolute position: (${x}, ${y})`, 'success');
+        }
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+        
+        // Track scroll position
+        window.addEventListener('scroll', () => {
+            const scrollY = Math.round(window.scrollY);
+            document.getElementById('scrollPos').textContent = `Scroll: ${scrollY}px`;
+            document.getElementById('currentScroll').textContent = `${scrollY}px`;
+        });
+        
+        // Manual screenshot capture
+        async function manualCapture() {
+            const scrollBeforeCapture = window.scrollY;
+            addLog(`📸 Starting manual screenshot capture...`, 'warning');
+            addLog(`📍 Current scroll position: ${scrollBeforeCapture}px`, 'warning');
+            
+            try {
+                const fullHeight = Math.max(
+                    document.body.scrollHeight,
+                    document.documentElement.scrollHeight
+                );
+                const fullWidth = Math.max(
+                    document.body.scrollWidth,
+                    document.documentElement.scrollWidth
+                );
+                
+                addLog(`📏 Full page dimensions: ${fullWidth}x${fullHeight}`, 'success');
+                
+                const canvas = await html2canvas(document.documentElement, {
+                    scrollX: -window.scrollX,
+                    scrollY: -window.scrollY,
+                    width: fullWidth,
+                    height: fullHeight,
+                    windowWidth: fullWidth,
+                    windowHeight: fullHeight,
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: false,
+                    onclone: function(clonedDoc) {
+                        clonedDoc.documentElement.style.position = 'absolute';
+                        clonedDoc.documentElement.style.top = '0';
+                        clonedDoc.documentElement.style.left = '0';
+                    }
+                });
+                
+                const scrollAfterCapture = window.scrollY;
+                
+                if (scrollBeforeCapture === scrollAfterCapture) {
+                    addLog(`✅ SUCCESS! Scroll position unchanged: ${scrollAfterCapture}px`, 'success');
+                } else {
+                    addLog(`❌ ERROR! Scroll moved from ${scrollBeforeCapture}px to ${scrollAfterCapture}px`, 'error');
+                }
+                
+                addLog(`✅ Screenshot canvas created: ${canvas.width}x${canvas.height}`, 'success');
+                
+                // Download for inspection
+                const link = document.createElement('a');
+                link.download = 'heatmap-screenshot-test.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                
+                addLog(`💾 Screenshot downloaded! Check the image.`, 'success');
+                addLog(`📊 Verify it shows ENTIRE page from top to bottom`, 'warning');
+                
+            } catch (error) {
+                addLog(`❌ Capture failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Intercept console.log for tracking
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            if (message.includes('Screenshot') || message.includes('scroll')) {
+                if (message.includes('✅') || message.includes('success')) {
+                    addLog(message, 'success');
+                } else if (message.includes('❌') || message.includes('failed')) {
+                    addLog(message, 'error');
+                } else {
+                    addLog(message, 'warning');
+                }
+            }
+        };
+        
+        addLog('🚀 Test page loaded. Scroll down and wait for screenshot!', 'success');
+        addLog('📝 Or click "Capture Screenshot Now" button', 'warning');
+    </script>
+</body>
+</html>

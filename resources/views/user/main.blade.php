@@ -420,6 +420,15 @@
                     </a>
                 </li>
 
+                <li class="menu-item {{ request()->is('users/notifications') ? 'active' : '' }}">
+                    <a
+                    href="/users/notifications"
+                    class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-bell"></i>
+                    <div class="text-truncate" data-i18n="Email">Notifications</div>
+                    </a>
+                </li>
+
                 <li class="menu-item {{ request()->is('users/tax') ? 'active' : '' }}">
                     <a
                     href="/users/tax"

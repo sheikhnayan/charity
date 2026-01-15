@@ -580,80 +580,123 @@
 
             try {
                 // Always capture a new screenshot on every visit
-                console.log('Hotjar Tracker: Capturing new screenshot...');
+                console.log('Hotjar Tracker: Capturing screenshot without scrolling...');
                 
                 // Load html2canvas if not already loaded
                 if (typeof html2canvas === 'undefined') {
                     const script = document.createElement('script');
                     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
                     script.onload = () => this.doScreenshotCapture();
-                    mart scroll handling based on user activity
-                let savedScrollPosition = 0;
-                
-                if (!this.hasUserInteracted) {
-                    // User hasn't interacted - safe to scroll to top directly
-                    console.log('Hotjar Tracker: No user interaction detected, scrolling to top for screenshot');
-                    window.scrollTo(0, 0);
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    document.head.appendChild(script);
                 } else {
-                    // User is actively browsing - save position, scroll, then restore
-                    console.log('Hotjar Tracker: User interaction detected, will restore scroll position after capture');
-                    savedScrollPosition = window.scrollY;
-                    window.scrollTo({ top: 0, behavior: 'instant' }); // Instant scroll to minimize disruption
-                    await new Promise(resolve => setTimeout(resolve, 300)); // Shorter wait
-                }
+                    this.doScreenshotCapture();
                 }
             } catch (error) {
                 console.log('Hotjar Tracker: Screenshot capture failed:', error);
-                // If error occurs, try to capture anyway
-                if (typeof html2canvas !== 'undefined') {
-                    this.doScreenshotCapture();
-                }
             }
         }
 
         async doScreenshotCapture() {
             try {
-                // Wait for any dynamic content to load
-                await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds for content
+                console.log('Hotjar Tracker: Starting full-page screenshot capture (no scrolling)...');
                 
-                // Scroll to top before capturing
-                window.scrollTo(0, 0);
-                await new Promise(resolve => setTimeout(resolve, 500)); // Wait for scroll
+                // Get current scroll position to preserve user's location
+                const currentScrollY = window.scrollY;
+                const currentScrollX = window.scrollX;
                 
-                const canvas = await html2canvas(document.body, {
-                    useCORS: true, // Try to use CORS for images that support it
-                    allowTaint: false, // Don't taint canvas with cross-origin images
+                // Get full page dimensions
+                const fullWidth = Math.max(
+                    document.body.scrollWidth,
+                    document.documentElement.scrollWidth,
+                    document.body.offsetWidth,
+                    document.documentElement.offsetWidth,
+                    document.body.clientWidth,
+                    document.documentElement.clientWidth
+                );
+                
+                const fullHeight = Math.max(
+                    document.body.scrollHeight,
+                    document.documentElement.scrollHeight,
+                    document.body.offsetHeight,
+                    document.documentElement.offsetHeight,
+                    document.body.clientHeight,
+                    document.documentElement.clientHeight
+                );
+                
+                console.log('Full page dimensions:', fullWidth, 'x', fullHeight);
+                console.log('User scroll position preserved:', currentScrollX, currentScrollY);
+                
+                // Capture full page WITHOUT scrolling using html2canvas's scrollY/scrollX features
+                const canvas = await html2canvas(document.documentElement, {
+                    useCORS: true,
+                    allowTaint: false,
                     logging: false,
-                    width: window.innerWidth,
-                    height: document.documentElement.scrollHeight,
-                    windowWidth: window.innerWidth,
-                    windowHeight: document.documentElement.scrollHeight,
-                    scale: 1, // Use 1:1 scale for accuracy
-                    backgroundColor: '#ffffff', // White background
-                    removeContainer: true, // Clean up after capture
-                    imageTimeout: 15000, // 15 second timeout for images
-                    foreignObjectRendering: true, // Use foreignObject rendering for better cross-origin handling
+                    
+                    // CRITICAL: Capture from absolute position 0,0 without scrolling the window
+                    scrollX: -window.scrollX,  // Negative offset to capture from true 0
+                    scrollY: -window.scrollY,  // Negative offset to capture from true 0
+                    
+                    // Full page dimensions
+                    width: fullWidth,
+                    height: fullHeight,
+                    windowWidth: fullWidth,
+                    windowHeight: fullHeight,
+                    
+                    x: 0,  // Start capture from left edge
+                    y: 0,  // Start capture from top edge
+                    
+                    scale: 1,
+                    backgroundColor: '#ffffff',
+                    removeContainer: true,
+                    imageTimeout: 15000,
+                    foreignObjectRendering: false, // Changed to false for better compatibility
+                    
                     onclone: function(clonedDoc) {
-                        // Remove or replace cross-origin images that might cause issues
+                        // Force cloned document to render at top
+                        clonedDoc.documentElement.style.position = 'absolute';
+                        clonedDoc.documentElement.style.top = '0';
+                        clonedDoc.documentElement.style.left = '0';
+                        clonedDoc.body.style.position = 'absolute';
+                        clonedDoc.body.style.top = '0';
+                        clonedDoc.body.style.left = '0';
+                        
+                        // Handle cross-origin images
                         const images = clonedDoc.getElementsByTagName('img');
                         for (let img of images) {
                             if (!img.complete) {
-                                img.style.display = 'none'; // Hide incomplete images
+                                img.style.display = 'none';
                             }
-                            // Remove crossOrigin attribute to avoid CORS issues
                             img.removeAttribute('crossorigin');
                         }
                         
-                        // Remove any iframes that might cause security issues
+                        // Hide iframes
                         const iframes = clonedDoc.getElementsByTagName('iframe');
                         for (let iframe of iframes) {
                             iframe.style.display = 'none';
                         }
+                        
+                        // Remove fixed/sticky elements that might interfere
+                        const fixedElements = clonedDoc.querySelectorAll('[style*="fixed"], [style*="sticky"]');
+                        fixedElements.forEach(el => {
+                            const computedStyle = window.getComputedStyle(el);
+                            if (computedStyle.position === 'fixed' || computedStyle.position === 'sticky') {
+                                el.style.position = 'absolute';
+                            }
+                        });
                     }
                 });
+                
+                console.log('Screenshot canvas created:', canvas.width, 'x', canvas.height);
+                
+                // Verify user's scroll position hasn't changed (it shouldn't!)
+                if (window.scrollY !== currentScrollY || window.scrollX !== currentScrollX) {
+                    console.warn('Scroll position changed during capture! Restoring...');
+                    window.scrollTo(currentScrollX, currentScrollY);
+                } else {
+                    console.log('✅ User scroll position unchanged - no disruption');
+                }
 
-                const screenshotData = canvas.toDataURL('image/png', 0.8); // 80% quality to reduce size
+                const screenshotData = canvas.toDataURL('image/png', 0.8);
                 
                 // Get CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -672,8 +715,8 @@
                         page_url: window.location.href,
                         page_path: window.location.pathname,
                         screenshot_data: screenshotData,
-                        viewport_width: window.innerWidth,
-                        viewport_height: document.documentElement.scrollHeight,
+                        viewport_width: fullWidth,
+                        viewport_height: fullHeight,
                         device_type: this.getDeviceType(),
                     })
                 });
@@ -681,26 +724,15 @@
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Hotjar Tracker: Screenshot save failed:', response.status, errorText);
-                    // Restore scroll position if user was interacting
-                    if (this.hasUserInteracted && savedScrollPosition > 0) {
-                        window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
-                    }
                     return;
                 }
 
-                console.log('Hotjar Tracker: Screenshot captured successfully');
+                const result = await response.json();
+                console.log('✅ Full-page screenshot captured successfully (no scrolling):', result);
+                console.log('Screenshot dimensions:', fullWidth, 'x', fullHeight);
                 
-                // Restore user's scroll position if they were actively browsing
-                if (this.hasUserInteracted && savedScrollPosition > 0) {
-                    console.log('Hotjar Tracker: Restoring scroll position to', savedScrollPosition);
-                    window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
-                }
             } catch (error) {
                 console.error('Hotjar Tracker: Screenshot capture failed:', error);
-                // Restore scroll position even on error
-                if (this.hasUserInteracted && savedScrollPosition > 0) {
-                    window.scrollTo({ top: savedScrollPosition, behavior: 'instant' });
-                }
             }
         }
     }

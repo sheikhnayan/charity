@@ -9,7 +9,7 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_id', 'website_id', 'amount', 'type', 'name', 'last_name', 'email',
         'address', 'apartment', 'city', 'state', 'zip', 'phone', 'country', 'ip_address',
-        'fee', 'fee_paid', 'status', 'reference_id', 'name_on_card', 'tip_amount', 'tip_percentage'
+        'fee', 'fee_paid', 'status', 'reference_id', 'name_on_card', 'tip_amount', 'tip_percentage', 'payment_method'
     ];
     
     public function website()

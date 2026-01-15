@@ -10,6 +10,7 @@ use App\Models\Investment;
 use App\Models\Website;
 use App\Services\CoinbaseCommerceService;
 use App\Services\PaymentFunnelService;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,12 +19,14 @@ class CoinbaseController extends Controller
 {
     protected $coinbaseService;
     protected $funnelService;
+    protected $notificationService;
     protected $website;
 
     public function __construct(CoinbaseCommerceService $coinbaseService, PaymentFunnelService $funnelService)
     {
         $this->coinbaseService = $coinbaseService;
         $this->funnelService = $funnelService;
+        $this->notificationService = new PushNotificationService();
         $this->website = $this->getWebsite();
     }
     
@@ -329,6 +332,28 @@ class CoinbaseController extends Controller
                 $cryptoPayment->charge_code,
                 $cryptoPayment->user_id ?? null
             );
+
+            // Send notification if this is a donation
+            try {
+                if ($cryptoPayment->payment_type === 'donation') {
+                    $donation = Donation::find($cryptoPayment->reference_id);
+                    if ($donation && $donation->user_id) {
+                        $donorName = trim($donation->first_name . ' ' . $donation->last_name);
+                        if (empty($donorName)) {
+                            $donorName = 'Anonymous Donor';
+                        }
+                        
+                        $this->notificationService->sendDonationNotification(
+                            $donation->user_id,
+                            $donation->amount,
+                            $donorName,
+                            $donation->id
+                        );
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Push notification error in Coinbase payment: ' . $e->getMessage());
+            }
 
             Log::info('Crypto payment confirmed', ['payment_id' => $cryptoPayment->id]);
         });

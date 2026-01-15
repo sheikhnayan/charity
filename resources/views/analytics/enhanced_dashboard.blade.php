@@ -538,6 +538,211 @@
         </div>
     </div>
 
+    <!-- GROSS SALES BREAKDOWN SECTION -->
+    <div class="row g-3 mb-4">
+        <!-- Sales by Payment Method -->
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-credit-card me-2 text-primary"></i>Sales by Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    @if(!empty($stats['salesByPaymentMethod']))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Method</th>
+                                        <th class="text-center">Transactions</th>
+                                        <th class="text-end">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $totalByMethod = 0; @endphp
+                                    @foreach($stats['salesByPaymentMethod'] as $method)
+                                        @php $totalByMethod += $method->total; @endphp
+                                        <tr>
+                                            <td><span class="badge bg-info">{{ ucfirst($method->payment_method ?? 'Unknown') }}</span></td>
+                                            <td class="text-center">{{ number_format($method->count ?? 0) }}</td>
+                                            <td class="text-end fw-bold text-success">${{ number_format($method->total ?? 0, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="table-light fw-bold">
+                                        <td colspan="2">Total</td>
+                                        <td class="text-end text-success">${{ number_format($totalByMethod, 2) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted text-center py-3">No payment method data available</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales by Donation Type -->
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list me-2 text-success"></i>Sales by Donation Type</h5>
+                </div>
+                <div class="card-body">
+                    @if(!empty($stats['salesByType']))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th class="text-center">Transactions</th>
+                                        <th class="text-end">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $totalByType = 0; @endphp
+                                    @foreach($stats['salesByType'] as $type)
+                                        @php $totalByType += $type->total; @endphp
+                                        <tr>
+                                            <td><span class="badge bg-warning">{{ ucfirst($type->type ?? 'Unknown') }}</span></td>
+                                            <td class="text-center">{{ number_format($type->count ?? 0) }}</td>
+                                            <td class="text-end fw-bold text-success">${{ number_format($type->total ?? 0, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="table-light fw-bold">
+                                        <td colspan="2">Total</td>
+                                        <td class="text-end text-success">${{ number_format($totalByType, 2) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted text-center py-3">No donation type data available</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAILED TRANSACTION REPORT -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2 text-info"></i>Detailed Transaction Report</h5>
+                    <small class="text-muted">All transactions with dates (newest first)</small>
+                </div>
+                <div class="card-body">
+                    @if(!empty($stats['detailedTransactions']))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Donor</th>
+                                        <th>Email</th>
+                                        <th>Type</th>
+                                        <th>Payment Method</th>
+                                        <th class="text-center">Location</th>
+                                        <th class="text-end">Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($stats['detailedTransactions']->take(50) as $txn)
+                                        <tr>
+                                            <td><small class="text-muted">{{ $txn->created_at->format('M d, Y H:i') }}</small></td>
+                                            <td>{{ $txn->name ?? '-' }}</td>
+                                            <td><a href="mailto:{{ $txn->email }}" class="text-decoration-none">{{ $txn->email ?? '-' }}</a></td>
+                                            <td><span class="badge bg-secondary">{{ ucfirst($txn->type ?? '-') }}</span></td>
+                                            <td><span class="badge bg-info">{{ ucfirst($txn->payment_method ?? '-') }}</span></td>
+                                            <td class="text-center"><small>{{ $txn->city }}{{ $txn->city && $txn->state ? ',' : '' }} {{ $txn->state }}</small></td>
+                                            <td class="text-end fw-bold text-success">${{ number_format($txn->amount ?? 0, 2) }}</td>
+                                            <td><span class="badge {{ ($txn->status ?? '') === 'completed' ? 'bg-success' : 'bg-warning' }}">{{ ucfirst($txn->status ?? '-') }}</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @if($stats['detailedTransactions']->count() > 50)
+                            <div class="alert alert-info m-0 mt-2"><small><i class="fas fa-info-circle me-2"></i>Showing first 50. Download CSV for complete report.</small></div>
+                        @endif
+                    @else
+                        <p class="text-muted text-center py-3">No transactions found</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGES & REFERRERS SECTION -->
+    <div class="row g-3 mb-4">
+        <!-- Top Pages Viewed -->
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2 text-warning"></i>Top Pages Viewed</h5>
+                </div>
+                <div class="card-body">
+                    @if(!empty($stats['pageViewDetails']))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Page URL</th>
+                                        <th class="text-end">Views</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($stats['pageViewDetails'] as $page)
+                                        <tr>
+                                            <td><small>{{ Illuminate\Support\Str::limit($page->url ?? 'Unknown', 40, '...') }}</small></td>
+                                            <td class="text-end"><strong>{{ number_format($page->views ?? 0) }}</strong></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted text-center py-3">No page data available</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Referrers / Traffic Sources -->
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-link me-2 text-danger"></i>Traffic Sources (Referrers)</h5>
+                </div>
+                <div class="card-body">
+                    @if(!empty($stats['referrerDetails']))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Referrer URL</th>
+                                        <th class="text-end">Visitors</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($stats['referrerDetails'] as $referrer)
+                                        <tr>
+                                            <td><small>{{ $referrer->referrer_url ? Illuminate\Support\Str::limit($referrer->referrer_url, 40, '...') : 'Direct' }}</small></td>
+                                            <td class="text-end"><strong>{{ number_format($referrer->count ?? 0) }}</strong></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted text-center py-3">No referrer data available</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Real-time Activity Section -->
     <div class="chart-card">
         <div class="chart-header">
@@ -1115,7 +1320,8 @@ function loadConversionsData() {
         return;
     }
     
-    const timeframe = document.getElementById('conversions-timeframe').value;
+    const timeframeElement = document.getElementById('conversions-timeframe');
+    const timeframe = timeframeElement ? timeframeElement.value : 'day';
     
     fetch(`/analytics/api/conversions?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}&group_by=${timeframe}`)
         .then(response => response.json())
@@ -1128,9 +1334,13 @@ function loadConversionsData() {
             // Update overview stats
             const totalConversions = data.reduce((sum, item) => sum + item.conversions, 0);
             const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
-            document.getElementById('total-conversions').textContent = totalConversions.toLocaleString();
-            document.getElementById('total-revenue').textContent = totalRevenue.toLocaleString();
-            document.getElementById('avg-order-value').textContent = totalConversions > 0 ? '$' + (totalRevenue / totalConversions).toFixed(2) : '$0';
+            const totalConversionsEl = document.getElementById('total-conversions');
+            const totalRevenueEl = document.getElementById('total-revenue');
+            const avgOrderValueEl = document.getElementById('avg-order-value');
+            
+            if (totalConversionsEl) totalConversionsEl.textContent = totalConversions.toLocaleString();
+            if (totalRevenueEl) totalRevenueEl.textContent = totalRevenue.toLocaleString();
+            if (avgOrderValueEl) avgOrderValueEl.textContent = totalConversions > 0 ? '$' + (totalRevenue / totalConversions).toFixed(2) : '$0';
         })
         .catch(error => console.error('Error loading conversions data:', error));
 }
@@ -1141,7 +1351,8 @@ function loadSessionsData() {
         return;
     }
     
-    const timeframe = document.getElementById('sessions-timeframe').value;
+    const timeframeElement = document.getElementById('sessions-timeframe');
+    const timeframe = timeframeElement ? timeframeElement.value : 'day';
     
     fetch(`/analytics/api/sessions?website_id=${currentWebsiteId}&start_date=${currentStartDate}&end_date=${currentEndDate}&group_by=${timeframe}`)
         .then(response => response.json())
@@ -1154,7 +1365,8 @@ function loadSessionsData() {
             
             // Update sessions total
             const totalSessions = data.reduce((sum, item) => sum + item.sessions, 0);
-            document.getElementById('total-sessions').textContent = totalSessions.toLocaleString();
+            const totalSessionsEl = document.getElementById('total-sessions');
+            if (totalSessionsEl) totalSessionsEl.textContent = totalSessions.toLocaleString();
         })
         .catch(error => console.error('Error loading sessions data:', error));
 }
@@ -1172,21 +1384,27 @@ function loadFunnelData() {
             funnelChart.data.datasets[0].data = data.map(item => item.count);
             funnelChart.update();
             
-            // Update funnel breakdown
-            const breakdownHtml = data.map(item => `
-                <div class="funnel-step">
-                    <strong>${item.step}</strong><br>
-                    <span>${item.count.toLocaleString()} (${item.conversion_rate}%)</span><br>
-                    <small>Dropoff: ${item.dropoff_rate}%</small>
-                </div>
-            `).join('');
-            document.getElementById('funnel-breakdown').innerHTML = breakdownHtml;
+            // Update funnel breakdown if element exists
+            const funnelBreakdownEl = document.getElementById('funnel-breakdown');
+            if (funnelBreakdownEl) {
+                const breakdownHtml = data.map(item => `
+                    <div class="funnel-step">
+                        <strong>${item.step}</strong><br>
+                        <span>${item.count.toLocaleString()} (${item.conversion_rate}%)</span><br>
+                        <small>Dropoff: ${item.dropoff_rate}%</small>
+                    </div>
+                `).join('');
+                funnelBreakdownEl.innerHTML = breakdownHtml;
+            }
             
-            // Calculate overall conversion rate
-            const sessions = data[0]?.count || 0;
-            const conversions = data[data.length - 1]?.count || 0;
-            const conversionRate = sessions > 0 ? ((conversions / sessions) * 100).toFixed(2) : '0';
-            document.getElementById('conversion-rate').textContent = conversionRate + '%';
+            // Update conversion rate if element exists
+            const conversionRateEl = document.getElementById('conversion-rate');
+            if (conversionRateEl) {
+                const sessions = data[0]?.count || 0;
+                const conversions = data[data.length - 1]?.count || 0;
+                const conversionRate = sessions > 0 ? ((conversions / sessions) * 100).toFixed(2) : '0';
+                conversionRateEl.textContent = conversionRate + '%';
+            }
         })
         .catch(error => console.error('Error loading funnel data:', error));
 }

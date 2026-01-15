@@ -9,11 +9,19 @@ use App\Models\Donation;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Services\PaymentFunnelService;
+use App\Services\PushNotificationService;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 
 class QRCodeDonationController extends Controller
 {
+    protected $pushNotificationService;
+
+    public function __construct()
+    {
+        $this->pushNotificationService = new PushNotificationService();
+    }
+
     private function getCurrentWebsite()
     {
         try {
@@ -445,6 +453,7 @@ class QRCodeDonationController extends Controller
                     $tran->ip_address = $request->ip();
                     $tran->fee = $processingFee;
                     $tran->fee_paid = 1;
+                    $tran->payment_method = 'authorize_net';
                     
                     if ($donation->tip_enabled) {
                         $tran->tip_amount = $donation->tip_amount;
@@ -472,6 +481,25 @@ class QRCodeDonationController extends Controller
                         );
                     } catch (\Exception $e) {
                         \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+                    }
+
+                    // Send push notification to website owner
+                    try {
+                        if ($donation->user_id) {
+                            $donorName = trim($donation->first_name . ' ' . $donation->last_name);
+                            if (empty($donorName)) {
+                                $donorName = 'Anonymous Donor';
+                            }
+                            
+                            $this->pushNotificationService->sendDonationNotification(
+                                $donation->user_id,
+                                $donation->amount,
+                                $donorName,
+                                $donation->id
+                            );
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Push notification error in QR donation: ' . $e->getMessage());
                     }
 
                     // Use existing thank-you page with type
@@ -580,6 +608,7 @@ class QRCodeDonationController extends Controller
             $tran->ip_address = $request->ip();
             $tran->fee = $processingFee;
             $tran->fee_paid = 1;
+            $tran->payment_method = 'stripe';
             
             if ($donation->tip_enabled) {
                 $tran->tip_amount = $donation->tip_amount;
@@ -607,6 +636,25 @@ class QRCodeDonationController extends Controller
                 );
             } catch (\Exception $e) {
                 \Log::error('Payment funnel tracking error: ' . $e->getMessage());
+            }
+
+            // Send push notification to website owner
+            try {
+                if ($donation->user_id) {
+                    $donorName = trim($donation->first_name . ' ' . $donation->last_name);
+                    if (empty($donorName)) {
+                        $donorName = 'Anonymous Donor';
+                    }
+                    
+                    $this->pushNotificationService->sendDonationNotification(
+                        $donation->user_id,
+                        $donation->amount,
+                        $donorName,
+                        $donation->id
+                    );
+                }
+            } catch (\Exception $e) {
+                \Log::error('Push notification error in QR Stripe donation: ' . $e->getMessage());
             }
 
             // Use existing thank-you page

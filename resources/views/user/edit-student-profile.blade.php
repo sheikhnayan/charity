@@ -78,6 +78,11 @@
                                                             <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
                                                             <span>Copy URL</span>
                                                         </button>
+                                                        
+                                                        <button type="button" class="btn btn-warning btn-hover-info" id="generateQRBtn" onclick="generateStudentQR()">
+                                                            <i class="fa-solid fa-qrcode fa-fw" aria-hidden="true"></i>
+                                                            <span>QR Code</span>
+                                                        </button>
                                                     </div>
                                                     
                                                     <a href="/users/student" class="btn btn-secondary">
@@ -268,6 +273,100 @@
             </div>
         </div>
         <!-- / Content -->
+        
+        <!-- QR Code Modal -->
+        <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-qrcode me-2"></i> Student Donation QR Code
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="text-muted mb-3">Share this QR code with supporters to receive donations for {{ $user->name }}</p>
+                        <div id="qrCodeContainer" style="display: none;">
+                            <img id="qrCodeImage" src="" alt="Student QR Code" style="max-width: 400px; border: 3px solid #28a745; padding: 15px; border-radius: 10px;">
+                            <div id="qrInfo" class="mt-3 text-start">
+                                <small class="text-muted"><strong>Student:</strong> <span id="qrStudentName">-</span></small><br>
+                                <small class="text-muted"><strong>URL:</strong> <code id="qrUrl" style="font-size: 0.75rem;">-</code></small>
+                            </div>
+                        </div>
+                        <div id="qrLoading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Generating QR Code...</span>
+                            </div>
+                            <p class="text-muted mt-2">Generating QR Code...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="downloadStudentQR()">
+                            <i class="fas fa-download me-1"></i> Download QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        let currentStudentQRData = null;
+        
+        async function generateStudentQR() {
+            const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+            modal.show();
+            
+            // Show loading, hide QR
+            document.getElementById('qrLoading').style.display = 'block';
+            document.getElementById('qrCodeContainer').style.display = 'none';
+            
+            try {
+                const response = await fetch('{{ route("users.student-qr.generate", $user->id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        student_id: {{ $user->id }}
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentStudentQRData = result;
+                    document.getElementById('qrCodeImage').src = result.qr_code_base64;
+                    document.getElementById('qrStudentName').textContent = '{{ $user->name }} {{ $user->last_name }}';
+                    document.getElementById('qrUrl').textContent = result.donation_url;
+                    
+                    document.getElementById('qrLoading').style.display = 'none';
+                    document.getElementById('qrCodeContainer').style.display = 'block';
+                } else {
+                    alert('Error: ' + (result.message || 'Failed to generate QR code'));
+                    modal.hide();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating QR code: ' + error.message);
+                modal.hide();
+            }
+        }
+        
+        function downloadStudentQR() {
+            if (!currentStudentQRData) {
+                alert('Please generate QR code first');
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.download = 'student-qr-{{ $user->id }}-' + Date.now() + '.png';
+            link.href = currentStudentQRData.qr_code_base64;
+            link.click();
+        }
+        </script>
         
         <script>
         function copyProfileUrl() {

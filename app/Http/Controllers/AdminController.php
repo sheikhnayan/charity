@@ -785,6 +785,56 @@ class AdminController extends Controller
         return view('admin.auction.auction', compact('data','website'));
     }
 
+    /**
+     * Get all bids for an auction (JSON API)
+     */
+    public function getAuctionBids($auctionId)
+    {
+        try {
+            $auction = Auction::findOrFail($auctionId);
+            
+            // Get all bids from transactions table where type='auction' and reference_id is the auction_id
+            $bids = \App\Models\Transaction::where('type', 'auction')
+                ->where('reference_id', $auctionId)
+                ->orderBy('amount', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'auction' => [
+                    'id' => $auction->id,
+                    'title' => $auction->title,
+                    'value' => $auction->value
+                ],
+                'bids' => $bids->map(function($bid) {
+                    return [
+                        'id' => $bid->id,
+                        'name' => $bid->name,
+                        'email' => $bid->email,
+                        'amount' => $bid->amount,
+                        'created_at' => $bid->created_at,
+                        'transaction_id' => $bid->transaction_id,
+                        'address' => $bid->address,
+                        'city' => $bid->city,
+                        'state' => $bid->state,
+                        'zip' => $bid->zip,
+                        'phone' => $bid->phone,
+                        'status' => $bid->status
+                    ];
+                }),
+                'total_bids' => $bids->count(),
+                'highest_bid' => $bids->first()?->amount,
+                'lowest_bid' => $bids->last()?->amount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching bids: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function auction_edit_auction($id)
     {
         $data = Auction::find($id);

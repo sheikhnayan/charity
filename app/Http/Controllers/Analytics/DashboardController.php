@@ -18,17 +18,26 @@ class DashboardController extends Controller
             $websites = \App\Models\Website::where('user_id', auth()->id())->get();
         }
 
-        // Get selected website - prioritize websites with PaymentFunnelEvent data
+        // Get selected website - prioritize websites with Transaction data for breakdown cards
         $selectedWebsiteId = $request->website_id;
         
         if (!$selectedWebsiteId) {
-            // Find website with most PaymentFunnelEvent data
-            $websiteWithData = PaymentFunnelEvent::select('website_id')
+            // First try to find website with Transaction data
+            $websiteWithTransactions = \App\Models\Transaction::select('website_id')
+                ->where('status', 1)
                 ->groupBy('website_id')
                 ->orderByRaw('COUNT(*) DESC')
                 ->first();
+            
+            // Fall back to PaymentFunnelEvent data if no transactions
+            if (!$websiteWithTransactions) {
+                $websiteWithTransactions = PaymentFunnelEvent::select('website_id')
+                    ->groupBy('website_id')
+                    ->orderByRaw('COUNT(*) DESC')
+                    ->first();
+            }
                 
-            $selectedWebsiteId = $websiteWithData ? $websiteWithData->website_id : ($websites->first()->id ?? null);
+            $selectedWebsiteId = $websiteWithTransactions ? $websiteWithTransactions->website_id : ($websites->first()->id ?? null);
         }
         
         // Get date range - expand default to 90 days to catch more data
@@ -122,6 +131,11 @@ class DashboardController extends Controller
             'topReferrers' => $this->getTopReferrers($websiteId, $startDate, $endDate),
             'deviceBreakdown' => $this->getDeviceBreakdown($websiteId, $startDate, $endDate),
             'locationData' => $this->getLocationData($websiteId, $startDate, $endDate),
+            'salesByPaymentMethod' => $this->getSalesByPaymentMethod($websiteId, $startDate, $endDate),
+            'salesByType' => $this->getSalesByDonationType($websiteId, $startDate, $endDate),
+            'detailedTransactions' => $this->getDetailedTransactions($websiteId, $startDate, $endDate),
+            'pageViewDetails' => $this->getPageViewDetails($websiteId, $startDate, $endDate),
+            'referrerDetails' => $this->getReferrerDetails($websiteId, $startDate, $endDate),
         ];
     }
 
@@ -209,13 +223,13 @@ class DashboardController extends Controller
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
-            
-        \Log::info("Conversions Debug", [
-            'website_id' => $websiteId,
-            'funnel_step' => $completionStep,
-            'count' => $count,
-            'date_range' => [$startDate, $endDate]
-        ]);
+        
+        // Fallback to Transaction count if PaymentFunnelEvent has no conversions
+        if ($count == 0) {
+            $count = \App\Models\Transaction::where('website_id', $websiteId)
+                ->where('status', 1)
+                ->count();
+        }
             
         return $count;
     }
@@ -229,19 +243,13 @@ class DashboardController extends Controller
             ->where('website_id', $websiteId)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount') ?? 0;
-            
-        // Debug: Log revenue calculation
-        \Log::info("Revenue Debug", [
-            'website_id' => $websiteId,
-            'funnel_step' => $completionStep,
-            'revenue_raw' => $revenue,
-            'revenue_formatted' => number_format($revenue, 2),
-            'completed_payments' => \App\Models\PaymentFunnelEvent::where('funnel_step', $completionStep)
-                ->where('website_id', $websiteId)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['amount', 'form_type', 'created_at'])
-                ->toArray()
-        ]);
+        
+        // Fallback to Transaction data if PaymentFunnelEvent has no revenue
+        if ($revenue == 0) {
+            $revenue = \App\Models\Transaction::where('website_id', $websiteId)
+                ->where('status', 1)
+                ->sum('amount') ?? 0;
+        }
             
         return $revenue;
     }
@@ -306,6 +314,74 @@ class DashboardController extends Controller
         }
         
         return $withCountry;
+    }
+
+    /**
+     * Get gross sales breakdown by payment gateway/method
+     */
+    protected function getSalesByPaymentMethod($websiteId, $startDate = null, $endDate = null)
+    {
+        return \App\Models\Transaction::where('website_id', $websiteId)
+            ->where('status', 1)
+            ->groupBy('payment_method')
+            ->selectRaw('COALESCE(payment_method, "Unknown") as payment_method, count(*) as count, sum(amount) as total')
+            ->orderByDesc('total')
+            ->get();
+    }
+
+    /**
+     * Get gross sales breakdown by donation type
+     */
+    protected function getSalesByDonationType($websiteId, $startDate = null, $endDate = null)
+    {
+        return \App\Models\Transaction::where('website_id', $websiteId)
+            ->where('status', 1)
+            ->groupBy('type')
+            ->selectRaw('type, count(*) as count, sum(amount) as total')
+            ->orderByDesc('total')
+            ->get();
+    }
+
+    /**
+     * Get all transactions with detailed information for export
+     */
+    protected function getDetailedTransactions($websiteId, $startDate = null, $endDate = null)
+    {
+        return \App\Models\Transaction::where('website_id', $websiteId)
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    /**
+     * Get page view data with URLs for export
+     */
+    protected function getPageViewDetails($websiteId, $startDate, $endDate)
+    {
+        return \App\Models\AnalyticsEvent::where('event_type', 'page_view')
+            ->where('website_id', $websiteId)
+            ->whereDate('created_at', '>=', $startDate->toDateString())
+            ->whereDate('created_at', '<=', $endDate->toDateString())
+            ->groupBy('url')
+            ->selectRaw('url, count(*) as views')
+            ->orderByDesc('views')
+            ->limit(50)
+            ->get();
+    }
+
+    /**
+     * Get referrer data with details for export
+     */
+    protected function getReferrerDetails($websiteId, $startDate, $endDate)
+    {
+        return \App\Models\AnalyticsEvent::whereNotNull('referrer_url')
+            ->where('website_id', $websiteId)
+            ->whereDate('created_at', '>=', $startDate->toDateString())
+            ->whereDate('created_at', '<=', $endDate->toDateString())
+            ->groupBy('referrer_url')
+            ->selectRaw('referrer_url, count(*) as count')
+            ->orderByDesc('count')
+            ->limit(50)
+            ->get();
     }
 
     protected function getActiveUsers($since, $websiteId = null)
@@ -568,7 +644,7 @@ class DashboardController extends Controller
         $websiteName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $websiteName);
 
         if ($format === 'excel') {
-            // Excel export
+            // Excel export - keep existing implementation
             $excelService = new \App\Services\ExcelExportService();
             $spreadsheet = $excelService->exportAnalyticsDashboard($stats, $websiteName, $startDate, $endDate);
             
@@ -576,83 +652,169 @@ class DashboardController extends Controller
             return $excelService->generateAndDownload($spreadsheet, $filename);
         }
 
-        // CSV export
+        // CSV export - use plain text format
         $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="analytics_dashboard_' . $websiteName . '_' . now()->format('Y-m-d') . '.csv"',
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="Analytics_' . $websiteName . '_' . now()->format('Y-m-d') . '.csv"',
         ];
 
-        $callback = function() use ($stats, $startDate, $endDate) {
-            $file = fopen('php://output', 'w');
+        $callback = function() use ($stats, $startDate, $endDate, $websiteName) {
+            $output = '';
             
-            // Summary section
-            fputcsv($file, ['Analytics Dashboard Export']);
-            fputcsv($file, ['Date Range', $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d')]);
-            fputcsv($file, []);
+            // Helper function to add a line
+            $line = function($data = []) {
+                if (empty($data)) return "\n";
+                return implode(',', array_map(function($v) {
+                    $v = (string)$v;
+                    if (strpos($v, ',') !== false || strpos($v, '"') !== false || strpos($v, "\n") !== false) {
+                        return '"' . str_replace('"', '""', $v) . '"';
+                    }
+                    return $v;
+                }, $data)) . "\n";
+            };
             
-            // Overview Stats
-            fputcsv($file, ['Overview Statistics']);
-            fputcsv($file, ['Metric', 'Value']);
-            fputcsv($file, ['Page Views', number_format($stats['today']['pageViews'] ?? 0)]);
-            fputcsv($file, ['Unique Visitors', number_format($stats['today']['uniqueVisitors'] ?? 0)]);
-            fputcsv($file, ['Conversions', number_format($stats['today']['conversions'] ?? 0)]);
-            fputcsv($file, ['Revenue', '$' . number_format($stats['today']['revenue'] ?? 0, 2)]);
-            fputcsv($file, ['Gross Sales', '$' . number_format($stats['today']['grossSales'] ?? 0, 2)]);
-            fputcsv($file, ['Returning Customer Rate', number_format($stats['today']['returningCustomerRate'] ?? 0, 2) . '%']);
-            fputcsv($file, ['Orders Fulfilled', number_format($stats['today']['ordersFulfilled'] ?? 0)]);
-            fputcsv($file, []);
+            echo $line(['=== ANALYTICS DASHBOARD EXPORT ===']);
+            echo $line(['Website', $websiteName]);
+            echo $line(['Export Date', now()->format('F d, Y h:i A')]);
+            echo $line(['Date Range', $startDate->format('M d, Y') . ' to ' . $endDate->format('M d, Y')]);
+            echo $line();
+            echo $line();
             
-            // Weekly Stats - Fixed key from 'weekly' to 'week'
-            if (!empty($stats['week'])) {
-                fputcsv($file, ['Weekly Performance']);
-                fputcsv($file, ['Date', 'Page Views', 'Unique Visitors', 'Conversions', 'Revenue']);
-                
-                // Get dates and data arrays
-                $dates = $stats['week']['dates'] ?? [];
-                $pageViews = $stats['week']['pageViews'] ?? [];
-                $uniqueVisitors = $stats['week']['uniqueVisitors'] ?? [];
-                $conversions = $stats['week']['conversions'] ?? [];
-                $revenue = $stats['week']['revenue'] ?? [];
-                
-                // Combine arrays into rows
-                for ($i = 0; $i < count($dates); $i++) {
-                    fputcsv($file, [
-                        $dates[$i] ?? '',
-                        number_format($pageViews[$i] ?? 0),
-                        number_format($uniqueVisitors[$i] ?? 0),
-                        number_format($conversions[$i] ?? 0),
-                        '$' . number_format($revenue[$i] ?? 0, 2)
+            // KEY METRICS
+            echo $line(['=== KEY PERFORMANCE METRICS ===']);
+            echo $line();
+            echo $line(['Metric', 'Value']);
+            echo $line(['Gross Sales', '$' . number_format($stats['today']['grossSales'] ?? 0, 2)]);
+            echo $line(['Total Orders', number_format($stats['today']['orders'] ?? 0)]);
+            echo $line(['Orders Fulfilled', number_format($stats['today']['ordersFulfilled'] ?? 0)]);
+            echo $line(['Total Conversions', number_format($stats['today']['conversions'] ?? 0)]);
+            echo $line(['Unique Visitors', number_format($stats['today']['uniqueVisitors'] ?? 0)]);
+            echo $line(['Page Views', number_format($stats['today']['pageViews'] ?? 0)]);
+            echo $line(['Returning Customer Rate', number_format($stats['today']['returningCustomerRate'] ?? 0, 2) . '%']);
+            echo $line();
+            echo $line();
+            
+            // SALES BY PAYMENT METHOD
+            echo $line(['=== SALES BY PAYMENT METHOD ===']);
+            echo $line();
+            if (!empty($stats['salesByPaymentMethod'])) {
+                echo $line(['Payment Method', 'Transactions', 'Total Sales', 'Percentage']);
+                $grandTotal = 0;
+                $totalTxns = 0;
+                foreach ($stats['salesByPaymentMethod'] as $method) {
+                    $grandTotal += $method->total;
+                    $totalTxns += $method->count;
+                }
+                foreach ($stats['salesByPaymentMethod'] as $method) {
+                    $pct = $grandTotal > 0 ? ($method->total / $grandTotal * 100) : 0;
+                    echo $line([
+                        ucfirst($method->payment_method ?? 'Unknown'),
+                        $method->count,
+                        '$' . number_format($method->total, 2),
+                        number_format($pct, 1) . '%'
                     ]);
                 }
-                fputcsv($file, []);
+                echo $line(['TOTAL', $totalTxns, '$' . number_format($grandTotal, 2), '100.0%']);
+            } else {
+                echo $line(['No payment method data available']);
             }
+            echo $line();
+            echo $line();
             
-            // Top Pages
-            if (!empty($stats['topPages'])) {
-                fputcsv($file, ['Top Pages']);
-                fputcsv($file, ['Page', 'Views']);
-                foreach ($stats['topPages'] as $page) {
-                    fputcsv($file, [
-                        $page['page'] ?? 'Unknown',
-                        number_format($page['views'] ?? 0)
+            // SALES BY TYPE
+            echo $line(['=== SALES BY DONATION TYPE ===']);
+            echo $line();
+            if (!empty($stats['salesByType'])) {
+                echo $line(['Type', 'Transactions', 'Total Sales', 'Avg Transaction', 'Percentage']);
+                $grandTotal = 0;
+                $totalTxns = 0;
+                foreach ($stats['salesByType'] as $type) {
+                    $grandTotal += $type->total;
+                    $totalTxns += $type->count;
+                }
+                foreach ($stats['salesByType'] as $type) {
+                    $avg = $type->count > 0 ? ($type->total / $type->count) : 0;
+                    $pct = $grandTotal > 0 ? ($type->total / $grandTotal * 100) : 0;
+                    echo $line([
+                        ucfirst($type->type ?? 'Unknown'),
+                        $type->count,
+                        '$' . number_format($type->total, 2),
+                        '$' . number_format($avg, 2),
+                        number_format($pct, 1) . '%'
                     ]);
                 }
-                fputcsv($file, []);
+                $avgOverall = $totalTxns > 0 ? ($grandTotal / $totalTxns) : 0;
+                echo $line(['TOTAL', $totalTxns, '$' . number_format($grandTotal, 2), '$' . number_format($avgOverall, 2), '100.0%']);
+            } else {
+                echo $line(['No donation type data available']);
             }
+            echo $line();
+            echo $line();
             
-            // Top Referrers
-            if (!empty($stats['topReferrers'])) {
-                fputcsv($file, ['Top Referrers']);
-                fputcsv($file, ['Source', 'Visitors']);
-                foreach ($stats['topReferrers'] as $referrer) {
-                    fputcsv($file, [
-                        $referrer['source'] ?? 'Unknown',
-                        number_format($referrer['visitors'] ?? 0)
+            // ALL TRANSACTIONS
+            echo $line(['=== ALL TRANSACTIONS (DETAILED) ===']);
+            echo $line();
+            if (!empty($stats['detailedTransactions'])) {
+                echo $line(['Date', 'Time', 'ID', 'Type', 'Payment Method', 'Donor Name', 'Email', 'City', 'State', 'Amount', 'Status']);
+                $totalAmount = 0;
+                foreach ($stats['detailedTransactions'] as $txn) {
+                    $totalAmount += $txn->amount;
+                    $status = $txn->status == 1 ? 'Completed' : ($txn->status == 0 ? 'Pending' : 'Unknown');
+                    echo $line([
+                        $txn->created_at->format('Y-m-d'),
+                        $txn->created_at->format('H:i:s'),
+                        $txn->id,
+                        ucfirst($txn->type ?? 'Unknown'),
+                        ucfirst($txn->payment_method ?? 'Not Specified'),
+                        $txn->name ?? 'Anonymous',
+                        $txn->email ?? 'Not Provided',
+                        $txn->city ?? '',
+                        $txn->state ?? '',
+                        '$' . number_format($txn->amount, 2),
+                        $status
                     ]);
                 }
+                echo $line(['', '', '', '', '', '', '', '', 'TOTAL:', '$' . number_format($totalAmount, 2), '']);
+            } else {
+                echo $line(['No transaction data available']);
             }
+            echo $line();
+            echo $line();
             
-            fclose($file);
+            // TOP PAGES
+            echo $line(['=== TOP 50 PAGES VIEWED ===']);
+            echo $line();
+            if (!empty($stats['pageViewDetails'])) {
+                echo $line(['Rank', 'Page URL', 'Views']);
+                $rank = 1;
+                foreach ($stats['pageViewDetails'] as $page) {
+                    echo $line([$rank++, $page->url ?? 'Unknown', $page->views]);
+                }
+            } else {
+                echo $line(['No page view data available']);
+            }
+            echo $line();
+            echo $line();
+            
+            // TOP REFERRERS
+            echo $line(['=== TOP 50 REFERRER SOURCES ===']);
+            echo $line();
+            if (!empty($stats['referrerDetails'])) {
+                echo $line(['Rank', 'Referrer URL', 'Visitors']);
+                $rank = 1;
+                foreach ($stats['referrerDetails'] as $ref) {
+                    echo $line([$rank++, $ref->referrer_url ?? 'Direct Traffic', $ref->count]);
+                }
+            } else {
+                echo $line(['No referrer data available']);
+            }
+            echo $line();
+            echo $line();
+            
+            // FOOTER
+            echo $line(['=== END OF REPORT ===']);
+            echo $line(['Generated by Analytics Dashboard']);
+            echo $line(['Export Time', now()->format('Y-m-d H:i:s')]);
         };
 
         return response()->stream($callback, 200, $headers);

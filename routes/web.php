@@ -554,10 +554,14 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/analytics', [\App\Http\Controllers\User\AnalyticsController::class, 'dashboard'])->name('users.analytics.dashboard');
     Route::get('/analytics/utm', [\App\Http\Controllers\User\AnalyticsController::class, 'utm'])->name('users.analytics.utm');
 
+    // Notifications Routes
+    Route::get('/notifications', [\App\Http\Controllers\User\NotificationController::class, 'settings'])->name('users.notifications.settings');
+
     // QR Codes Routes
     Route::get('/qr-codes', [\App\Http\Controllers\User\QRCodeController::class, 'index'])->name('users.qr-codes.index');
     Route::post('/qr-codes/generate', [\App\Http\Controllers\User\QRCodeController::class, 'generate'])->name('users.qr-codes.generate');
     Route::get('/qr-codes/{id}/download', [\App\Http\Controllers\User\QRCodeController::class, 'download'])->name('users.qr-codes.download');
+    Route::post('/student/{student_id}/qr-code', [\App\Http\Controllers\User\QRCodeController::class, 'generateStudentQR'])->name('users.student-qr.generate');
 
     // User Behavior Routes
     Route::get('/hotjar/heatmaps', [\App\Http\Controllers\User\HotjarController::class, 'heatmaps'])->name('users.hotjar.heatmaps');
@@ -660,6 +664,8 @@ Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], func
     Route::post('/auction/update/{id}',[AdminController::class, 'update_auction'])->name('admin.auction.update');
 
     Route::post('/auction/update-status/{id}',[AdminController::class, 'update_auction_status'])->name('admin.auction.update-status');
+
+    Route::get('/auction/{auctionId}/bids',[AdminController::class, 'getAuctionBids'])->name('admin.auction.bids');
 
     Route::get('/menu/{id}',[AdminController::class, 'menu'])->name('admin.menu');
 
