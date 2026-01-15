@@ -64,6 +64,25 @@
                 </h4>
                 <p class="text-muted mb-0">Create QR codes for donation campaigns and events</p>
             </div>
+            @if(isset($websites))
+                <div style="min-width: 300px;">
+                    <label class="form-label fw-semibold mb-2">
+                        <i class="fas fa-globe me-1"></i> Switch Website (Admin)
+                    </label>
+                    <div class="input-group">
+                        <select class="form-select" id="websiteSwitcher">
+                            @foreach($websites as $w)
+                                <option value="{{ $w->id }}" {{ isset($website) && $website->id === $w->id ? 'selected' : '' }}>
+                                    {{ $w->name }} ({{ $w->domain }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <button class="btn btn-primary" type="button" id="switchWebsiteBtn">
+                            <i class="fas fa-arrow-right me-1"></i> Switch
+                        </button>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- Statistics Row -->
@@ -436,5 +455,28 @@ function showNotification(message, type) {
     
     setTimeout(() => alertDiv.remove(), 3000);
 }
+
+// Website Switcher for Admin
+document.addEventListener('DOMContentLoaded', function() {
+    const switchBtn = document.getElementById('switchWebsiteBtn');
+    const websiteSwitcher = document.getElementById('websiteSwitcher');
+    
+    if (switchBtn && websiteSwitcher) {
+        switchBtn.addEventListener('click', function() {
+            const websiteId = websiteSwitcher.value;
+            if (websiteId) {
+                // Reload page with website_id parameter
+                window.location.href = `/qr-codes?website_id=${websiteId}`;
+            }
+        });
+        
+        // Also allow switching on Enter key
+        websiteSwitcher.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                switchBtn.click();
+            }
+        });
+    }
+});
 </script>
 @endsection

@@ -693,14 +693,22 @@ class QRCodeDonationController extends Controller
     /**
      * Admin: Display QR code generator page
      */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         $user = auth()->user();
         $isSuper = $user && $user->hasRoleForWebsite('admin');
         
-
-        // Resolve website context
-        $currentWebsite = $this->getCurrentWebsite();
+        // Handle website switching for admin users
+        $currentWebsite = null;
+        if ($isSuper && $request->filled('website_id')) {
+            $currentWebsite = Website::find($request->website_id);
+        }
+        
+        // Fallback to inferred website
+        if (!$currentWebsite) {
+            $currentWebsite = $this->getCurrentWebsite();
+        }
+        
         if (!$currentWebsite) {
             $currentWebsite = Website::first();
         }
