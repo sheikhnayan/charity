@@ -95,10 +95,11 @@ class ScreenshotService
                     'website_id' => $page->website_id
                 ],
                 [
+                    'screenshot_path' => $storagePath,
                     'screenshot_url' => $storagePath,
                     'viewport_width' => $width,
                     'viewport_height' => $height,
-                    'captured_at' => now()
+                    'created_at' => now()
                 ]
             );
 
