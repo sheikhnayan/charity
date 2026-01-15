@@ -320,7 +320,7 @@
 
             console.log('Processing', data.length, 'data points for heatmap');
 
-            // Initialize heatmap - canvas positioned absolutely over background image
+            // Initialize heatmap - let heatmap.js create canvas inside div container
             window.initHeatmapAfterImageLoad = () => {
                 console.log('🎨 Initializing heatmap overlay...');
                 
@@ -351,42 +351,22 @@
                 
                 console.log('✓ Display dimensions:', displayWidth, 'x', displayHeight);
                 
-                // Create canvas element
-                const canvasEl = document.createElement('canvas');
-                canvasEl.style.position = 'absolute';
-                canvasEl.style.top = '0';
-                canvasEl.style.left = '0';
-                canvasEl.style.cursor = 'crosshair';
-                canvasEl.style.zIndex = '10';
+                // Set container dimensions - heatmap.js will create canvas inside
+                container.style.width = displayWidth + 'px';
+                container.style.height = displayHeight + 'px';
                 
-                // Set canvas ATTRIBUTES (not CSS) to actual pixel dimensions
-                canvasEl.width = displayWidth;
-                canvasEl.height = displayHeight;
+                console.log('✓ Container dimensions set to:', displayWidth, 'x', displayHeight);
                 
-                console.log('✓ Canvas created with dimensions:', canvasEl.width, 'x', canvasEl.height);
-                
-                // Add canvas to container
-                container.appendChild(canvasEl);
-                
-                // Verify context is available
-                const ctx = canvasEl.getContext('2d');
-                if (!ctx) {
-                    console.error('❌ Could not get canvas 2D context');
-                    return;
-                }
-                
-                console.log('✓ Canvas 2D context available');
-                
-                // Create heatmap instance
+                // Create heatmap instance - pass DIV, not canvas
                 try {
                     if (typeof h337 === 'undefined') {
                         console.error('❌ heatmap.js library not loaded!');
                         return;
                     }
                     
-                    console.log('Creating heatmap.js instance with canvas...');
+                    console.log('Creating heatmap.js instance with DIV container...');
                     heatmapInstance = h337.create({
-                        container: canvasEl,
+                        container: container,  // Pass the DIV, not a canvas!
                         radius: currentType === 'click' ? 25 : 40,
                         maxOpacity: 0.85,
                         minOpacity: 0.05,
@@ -401,6 +381,7 @@
                     });
                     
                     console.log('✓ Heatmap instance created');
+                    console.log('Container children:', container.children.length);
                     
                 } catch (e) {
                     console.error('❌ Error creating heatmap:', e);
@@ -439,7 +420,7 @@
                             max: maxValue,
                             data: points
                         });
-                        console.log('✅ Heatmap data set successfully! Should be visible now!');
+                        console.log('✅ Heatmap data set successfully! Heatmap overlay visible now!');
                     } catch (e) {
                         console.error('❌ Error setting heatmap data:', e);
                     }
