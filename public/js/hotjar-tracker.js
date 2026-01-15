@@ -627,10 +627,10 @@
                 console.log('User scroll position preserved:', currentScrollX, currentScrollY);
                 
                 // Capture full page WITHOUT scrolling using html2canvas's scrollY/scrollX features
-                const canvas = await html2canvas(document.documentElement, {
+                const canvas = await html2canvas(document.body, {
                     useCORS: true,
-                    allowTaint: false,
-                    logging: false,
+                    allowTaint: true,  // Allow cross-origin content to render
+                    logging: true,     // Enable logging to debug issues
                     
                     // CRITICAL: Capture from absolute position 0,0 without scrolling the window
                     scrollX: -window.scrollX,  // Negative offset to capture from true 0
@@ -646,41 +646,37 @@
                     y: 0,  // Start capture from top edge
                     
                     scale: 1,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: null,  // Preserve actual background colors
                     removeContainer: true,
                     imageTimeout: 15000,
-                    foreignObjectRendering: false, // Changed to false for better compatibility
                     
-                    onclone: function(clonedDoc) {
-                        // Force cloned document to render at top
-                        clonedDoc.documentElement.style.position = 'absolute';
-                        clonedDoc.documentElement.style.top = '0';
-                        clonedDoc.documentElement.style.left = '0';
-                        clonedDoc.body.style.position = 'absolute';
-                        clonedDoc.body.style.top = '0';
-                        clonedDoc.body.style.left = '0';
+                    onclone: function(clonedDoc, element) {
+                        // Make sure all content is visible
+                        clonedDoc.body.style.display = 'block';
+                        clonedDoc.body.style.visibility = 'visible';
                         
-                        // Handle cross-origin images
+                        // Don't hide incomplete images - let them try to load
                         const images = clonedDoc.getElementsByTagName('img');
-                        for (let img of images) {
-                            if (!img.complete) {
-                                img.style.display = 'none';
-                            }
+                        for (let i = 0; i < images.length; i++) {
+                            const img = images[i];
+                            // Remove crossorigin to avoid CORS issues
                             img.removeAttribute('crossorigin');
+                            // Ensure images are visible
+                            if (img.style.display === 'none' || img.style.visibility === 'hidden') {
+                                // Only hide if parent wants it hidden
+                                continue;
+                            }
                         }
                         
-                        // Hide iframes
-                        const iframes = clonedDoc.getElementsByTagName('iframe');
-                        for (let iframe of iframes) {
-                            iframe.style.display = 'none';
-                        }
-                        
-                        // Remove fixed/sticky elements that might interfere
-                        const fixedElements = clonedDoc.querySelectorAll('[style*="fixed"], [style*="sticky"]');
+                        // Convert fixed/sticky to absolute (but keep their computed positions)
+                        const fixedElements = clonedDoc.querySelectorAll('*');
                         fixedElements.forEach(el => {
-                            const computedStyle = window.getComputedStyle(el);
-                            if (computedStyle.position === 'fixed' || computedStyle.position === 'sticky') {
+                            const style = window.getComputedStyle(el);
+                            if (style.position === 'fixed' || style.position === 'sticky') {
                                 el.style.position = 'absolute';
+                                // Keep the computed top/left values
+                                if (style.top && style.top !== 'auto') el.style.top = style.top;
+                                if (style.left && style.left !== 'auto') el.style.left = style.left;
                             }
                         });
                     }

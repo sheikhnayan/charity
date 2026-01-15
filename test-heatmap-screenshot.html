@@ -242,7 +242,7 @@
                 
                 addLog(`📏 Full page dimensions: ${fullWidth}x${fullHeight}`, 'success');
                 
-                const canvas = await html2canvas(document.documentElement, {
+                const canvas = await html2canvas(document.body, {
                     scrollX: -window.scrollX,
                     scrollY: -window.scrollY,
                     width: fullWidth,
@@ -252,14 +252,34 @@
                     x: 0,
                     y: 0,
                     scale: 1,
-                    backgroundColor: '#ffffff',
-                    logging: false,
+                    backgroundColor: null,
+                    logging: true,
                     useCORS: true,
-                    allowTaint: false,
-                    onclone: function(clonedDoc) {
-                        clonedDoc.documentElement.style.position = 'absolute';
-                        clonedDoc.documentElement.style.top = '0';
-                        clonedDoc.documentElement.style.left = '0';
+                    allowTaint: true,
+                    onclone: function(clonedDoc, element) {
+                        addLog('🔧 Cloning document for screenshot...', 'warning');
+                        clonedDoc.body.style.display = 'block';
+                        clonedDoc.body.style.visibility = 'visible';
+                        
+                        const images = clonedDoc.getElementsByTagName('img');
+                        addLog(`📸 Found ${images.length} images in clone`, 'success');
+                        
+                        for (let i = 0; i < images.length; i++) {
+                            images[i].removeAttribute('crossorigin');
+                        }
+                        
+                        const fixedElements = clonedDoc.querySelectorAll('*');
+                        let fixedCount = 0;
+                        fixedElements.forEach(el => {
+                            const style = window.getComputedStyle(el);
+                            if (style.position === 'fixed' || style.position === 'sticky') {
+                                el.style.position = 'absolute';
+                                if (style.top && style.top !== 'auto') el.style.top = style.top;
+                                if (style.left && style.left !== 'auto') el.style.left = style.left;
+                                fixedCount++;
+                            }
+                        });
+                        addLog(`🔧 Converted ${fixedCount} fixed/sticky elements`, 'success');
                     }
                 });
                 
