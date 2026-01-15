@@ -142,8 +142,17 @@ class ScreenshotService
      */
     protected function getPageUrl(Page $page)
     {
-        // Get the base URL from config or environment
-        $baseUrl = rtrim(config('app.url'), '/');
+        // Get the website associated with this page
+        $website = $page->website;
+        
+        // Build the base URL from the website's domain
+        if ($website && $website->domain) {
+            // Use the website's domain (e.g., example.com)
+            $baseUrl = 'https://' . rtrim($website->domain, '/');
+        } else {
+            // Fallback to application URL
+            $baseUrl = rtrim(config('app.url'), '/');
+        }
         
         // Check if this is the homepage
         if ($page->is_homepage) {
