@@ -575,12 +575,13 @@
                 return;
             }
 
-            // Additional wait for dynamic content (page builder components, images, etc.)
-            await new Promise(resolve => setTimeout(resolve, 15000));
+            // Wait 30 seconds for all dynamic content, images, fonts, and page builder components to load
+            console.log('Hotjar Tracker: Waiting 30 seconds for content to fully load...');
+            await new Promise(resolve => setTimeout(resolve, 30000));
 
             try {
                 // Always capture a new screenshot on every visit
-                console.log('Hotjar Tracker: Capturing screenshot without scrolling...');
+                console.log('Hotjar Tracker: Starting screenshot capture (30s after page load)...');
                 
                 // Load html2canvas if not already loaded
                 if (typeof html2canvas === 'undefined') {
