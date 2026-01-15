@@ -41,22 +41,14 @@ class ScreenshotService
                 mkdir(dirname($tempPath), 0755, true);
             }
 
-            // Capture screenshot using Browsershot
-            $screenshotArgs = [
-                'type' => 'png',
-                'path' => $tempPath,
-                'args' => [],
-                'viewport' => ['width' => 1920, 'height' => 1080],
-                'delay' => 2000,
-                'fullPage' => true,
-                'dismissDialogs' => true,
-                'waitUntil' => 'networkidle0'
-            ];
+            // Capture screenshot using Browsershot with production-safe flags
+            $args = ['--no-sandbox', '--disable-setuid-sandbox'];
             
-            // Add --no-sandbox flag for production environments (running as root)
-            // This is required when running Chromium as root user
-            if (app()->environment('production') || posix_getuid() === 0) {
-                $screenshotArgs['args'][] = '--no-sandbox';
+            // Additional flags for headless environments
+            if (app()->environment('production')) {
+                $args[] = '--disable-dev-shm-usage'; // Use less memory
+                $args[] = '--disable-gpu'; // Disable GPU acceleration
+                $args[] = '--single-process'; // Run as single process
             }
             
             // Capture screenshot using Browsershot
@@ -66,7 +58,7 @@ class ScreenshotService
                 ->fullPage() // Capture entire page, not just viewport
                 ->dismissDialogs() // Auto-dismiss any alerts/confirms
                 ->waitUntilNetworkIdle() // Wait for network requests to finish
-                ->setOption('args', $screenshotArgs['args']) // Set Chromium arguments
+                ->setOption('args', $args) // Set Chromium arguments
                 ->save($tempPath);
 
             // Read the screenshot file
