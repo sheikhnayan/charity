@@ -282,10 +282,10 @@
             
             // Create container with screenshot as background and canvas on top
             display.innerHTML = `
-                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 100%; display: inline-block; background: #f5f5f5;">
+                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 100%; display: inline-block; background: #f5f5f5; overflow: hidden; width: 100%;">
                     ${screenshotUrl ? `
                         <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto; position: relative; z-index: 1;" onload="window.initHeatmapAfterImageLoad();" onerror="console.error('Screenshot failed to load: ' + this.src);" />
-                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></canvas>
+                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;"></canvas>
                     ` : `
                         <div id="heatmapCanvas" style="width: 100%; min-height: 600px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available for this page. Screenshots are captured when pages are saved from the builder.</p>
@@ -346,19 +346,16 @@
                 let storedHeight = screenshotDimensions.height || 1080;
                 
                 if (screenshotImg && screenshotImg.complete && screenshotImg.naturalWidth > 0) {
-                    // Get actual displayed dimensions of the screenshot
-                    const imgRect = screenshotImg.getBoundingClientRect();
-                    displayWidth = imgRect.width;
-                    displayHeight = imgRect.height;
+                    // Use offsetWidth/offsetHeight instead of getBoundingClientRect for rendered size
+                    displayWidth = screenshotImg.offsetWidth;
+                    displayHeight = screenshotImg.offsetHeight;
                     
                     console.log('Screenshot natural dimensions:', screenshotImg.naturalWidth, 'x', screenshotImg.naturalHeight);
                     console.log('Screenshot display dimensions:', displayWidth, 'x', displayHeight);
                     
-                    // CRITICAL: Match canvas size exactly to screenshot
-                    canvasEl.width = screenshotImg.naturalWidth;
-                    canvasEl.height = screenshotImg.naturalHeight;
-                    canvasEl.style.width = displayWidth + 'px';
-                    canvasEl.style.height = displayHeight + 'px';
+                    // Set canvas size to match screenshot display size
+                    canvasEl.width = displayWidth;
+                    canvasEl.height = displayHeight;
                 } else {
                     // No screenshot - use default dimensions
                     displayWidth = canvasEl.offsetWidth || 1440;
@@ -371,7 +368,7 @@
                 console.log('Stored dimensions from DB:', storedWidth, 'x', storedHeight);
                 console.log('Display dimensions:', displayWidth, 'x', displayHeight);
 
-                // Calculate scale factors: database coordinates → display coordinates
+                // Calculate scale factors: database coordinates (stored at capture time) → display coordinates (now)
                 const scaleX = displayWidth / storedWidth;
                 const scaleY = displayHeight / storedHeight;
                 
@@ -395,6 +392,8 @@
                 });
 
                 console.log('Heatmap.js instance created successfully');
+                console.log('Canvas size:', canvasEl.width, 'x', canvasEl.height);
+                console.log('Canvas position:', canvasEl.style.position, canvasEl.style.top, canvasEl.style.left);
 
                 // Transform data points to match current display
                 const points = data.map(point => {
