@@ -280,13 +280,13 @@
                 console.log('No screenshot available:', e);
             }
             
-            // Create container with canvas that has screenshot as background image
+            // Create container with screenshot as background and canvas on top
             display.innerHTML = `
-                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 100%; display: inline-block; background: #f5f5f5; overflow: hidden; width: 100%;">
+                <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; width: 100%; background-color: #f5f5f5; ${screenshotUrl ? `background-image: url('${screenshotUrl}'); background-size: 100% 100%; background-repeat: no-repeat;` : ''} overflow: auto;">
                     ${screenshotUrl ? `
-                        <canvas id="heatmapCanvas" style="position: relative; display: block; width: 100%; background-image: url('${screenshotUrl}'); background-size: contain; background-repeat: no-repeat; background-color: #f5f5f5; cursor: crosshair;" onload="window.initHeatmapAfterImageLoad();"></canvas>
+                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; cursor: crosshair; z-index: 10;"></canvas>
                     ` : `
-                        <div id="heatmapCanvas" style="width: 100%; min-height: 600px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                        <div id="heatmapCanvas" style="width: 100%; min-height: 600px; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available for this page. Screenshots are captured when pages are saved from the builder.</p>
                         </div>
                     `}
@@ -316,7 +316,7 @@
 
             console.log('Processing', data.length, 'data points for heatmap');
 
-            // Initialize heatmap - canvas is already displayed with background image
+            // Initialize heatmap - canvas positioned absolutely over background image
             window.initHeatmapAfterImageLoad = () => {
                 console.log('🎨 Initializing heatmap overlay...');
                 
@@ -329,25 +329,25 @@
                 }
                 
                 console.log('Canvas element found:', canvasEl);
-                console.log('Canvas tagName:', canvasEl.tagName);
                 
-                // Wait a moment for CSS background to render, then get dimensions
+                // Get wrapper dimensions - this is what the canvas needs to fill
                 setTimeout(() => {
                     let displayWidth = wrapper.offsetWidth;
                     let displayHeight = wrapper.offsetHeight;
                     
-                    console.log('Display dimensions:', displayWidth, 'x', displayHeight);
+                    console.log('Wrapper dimensions:', displayWidth, 'x', displayHeight);
                     
                     if (!displayWidth || !displayHeight) {
-                        console.error('❌ Invalid dimensions:', displayWidth, 'x', displayHeight);
+                        console.error('❌ Invalid wrapper dimensions:', displayWidth, 'x', displayHeight);
                         return;
                     }
                     
-                    // Set canvas actual rendering dimensions (critical for canvas element)
+                    // Set canvas ATTRIBUTES to match wrapper (not CSS, but actual element size)
                     canvasEl.width = displayWidth;
                     canvasEl.height = displayHeight;
                     
-                    console.log('✓ Canvas dimensions set to:', canvasEl.width, 'x', canvasEl.height);
+                    console.log('✓ Canvas attributes set to:', canvasEl.width, 'x', canvasEl.height);
+                    console.log('Canvas style width:', canvasEl.style.width, 'Canvas style height:', canvasEl.style.height);
                     
                     // Verify context is available
                     const ctx = canvasEl.getContext('2d');
@@ -382,24 +382,26 @@
                         });
                         
                         console.log('✓ Heatmap instance created');
+                        console.log('Canvas after heatmap.js creation - width:', canvasEl.width, 'height:', canvasEl.height);
                         
                     } catch (e) {
                         console.error('❌ Error creating heatmap:', e);
                         return;
                     }
                     
-                    // Now transform and set data
+                    // Transform and set data
                     let storedWidth = screenshotDimensions.width || 1920;
                     let storedHeight = screenshotDimensions.height || 1080;
                     
                     console.log('Stored viewport dimensions:', storedWidth, 'x', storedHeight);
+                    console.log('Display viewport dimensions:', displayWidth, 'x', displayHeight);
                     
                     const scaleX = displayWidth / storedWidth;
                     const scaleY = displayHeight / storedHeight;
                     
                     console.log('Scale factors:', scaleX.toFixed(4), '×', scaleY.toFixed(4));
                     
-                    // Transform data
+                    // Transform data points
                     const points = data.map(point => {
                         const x = Math.round(point.x * scaleX);
                         const y = Math.round(point.y * scaleY);
@@ -408,17 +410,22 @@
                     });
                     
                     console.log(`Transformed ${points.length} points`);
+                    console.log('First 3 points:', points.slice(0, 3));
                     
                     if (points.length > 0) {
-                        console.log('First few points:', points.slice(0, 3));
                         const maxValue = Math.max(...points.map(p => p.value));
+                        console.log('Max value:', maxValue);
                         
                         try {
                             heatmapInstance.setData({
                                 max: maxValue,
                                 data: points
                             });
-                            console.log('✅ Heatmap data rendered! Max value:', maxValue);
+                            console.log('✅ Heatmap data set successfully! Rendering now...');
+                            
+                            // Check what's actually in the canvas
+                            console.log('Canvas children count:', canvasEl.children.length);
+                            console.log('Canvas next sibling:', canvasEl.nextElementSibling);
                         } catch (e) {
                             console.error('❌ Error setting heatmap data:', e);
                         }
@@ -426,16 +433,11 @@
                         console.warn('⚠️ No data points to render');
                     }
                     
-                }, 200);
+                }, 50);
             };
             
-            // Call init when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', window.initHeatmapAfterImageLoad);
-            } else {
-                // DOM already ready, call after a small delay to ensure rendering
-                setTimeout(window.initHeatmapAfterImageLoad, 100);
-            }
+            // Call init immediately - DOM is ready
+            setTimeout(window.initHeatmapAfterImageLoad, 50);
             
             // Show stats
             displayStats(data);
