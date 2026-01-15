@@ -280,12 +280,11 @@
                 console.log('No screenshot available:', e);
             }
             
-            // Create container with screenshot as background and canvas on top
+            // Create container with canvas that has screenshot as background image
             display.innerHTML = `
                 <div class="heatmap-wrapper" style="position: relative; margin: 0 auto; max-width: 100%; display: inline-block; background: #f5f5f5; overflow: hidden; width: 100%;">
                     ${screenshotUrl ? `
-                        <img id="screenshotImg" src="${screenshotUrl}" style="display: block; width: 100%; height: auto; position: relative; z-index: 1;" onload="window.initHeatmapAfterImageLoad();" onerror="console.error('Screenshot failed to load: ' + this.src);" />
-                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;"></canvas>
+                        <canvas id="heatmapCanvas" style="position: relative; display: block; width: 100%; background-image: url('${screenshotUrl}'); background-size: contain; background-repeat: no-repeat; background-color: #f5f5f5; cursor: crosshair;" onload="window.initHeatmapAfterImageLoad();"></canvas>
                     ` : `
                         <div id="heatmapCanvas" style="width: 100%; min-height: 600px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                             <p class="text-muted">No screenshot available for this page. Screenshots are captured when pages are saved from the builder.</p>
@@ -317,125 +316,129 @@
 
             console.log('Processing', data.length, 'data points for heatmap');
 
-            // Define init function globally so image onload can call it
+            // Initialize heatmap - canvas is already displayed with background image
             window.initHeatmapAfterImageLoad = () => {
-                console.log('Screenshot image loaded, initializing heatmap overlay...');
-                initHeatmap();
-            };
-
-            const initHeatmap = () => {
-                console.log('=== Initializing Heatmap Overlay ===');
+                console.log('🎨 Initializing heatmap overlay...');
                 
-                // Clear any existing heatmap
-                if (heatmapInstance) {
-                    heatmapInstance.setData({ data: [] });
-                }
-
                 const canvasEl = document.getElementById('heatmapCanvas');
-                const screenshotImg = document.getElementById('screenshotImg');
                 const wrapper = document.querySelector('.heatmap-wrapper');
                 
-                if (!canvasEl || canvasEl.tagName !== 'CANVAS') {
-                    console.error('Canvas element not found or is not a real canvas element!');
+                if (!canvasEl || !canvasEl.tagName || canvasEl.tagName.toUpperCase() !== 'CANVAS') {
+                    console.error('❌ Canvas element not found!');
                     return;
                 }
-
-                // Get screenshot dimensions
-                let displayWidth, displayHeight;
-                let storedWidth = screenshotDimensions.width || 1920;
-                let storedHeight = screenshotDimensions.height || 1080;
                 
-                if (screenshotImg && screenshotImg.complete && screenshotImg.naturalWidth > 0) {
-                    // Use offsetWidth/offsetHeight instead of getBoundingClientRect for rendered size
-                    displayWidth = screenshotImg.offsetWidth;
-                    displayHeight = screenshotImg.offsetHeight;
+                console.log('Canvas element found:', canvasEl);
+                console.log('Canvas tagName:', canvasEl.tagName);
+                
+                // Wait a moment for CSS background to render, then get dimensions
+                setTimeout(() => {
+                    let displayWidth = wrapper.offsetWidth;
+                    let displayHeight = wrapper.offsetHeight;
                     
-                    console.log('Screenshot natural dimensions:', screenshotImg.naturalWidth, 'x', screenshotImg.naturalHeight);
-                    console.log('Screenshot display dimensions:', displayWidth, 'x', displayHeight);
+                    console.log('Display dimensions:', displayWidth, 'x', displayHeight);
                     
-                    // Set canvas size to match screenshot display size
-                    canvasEl.width = displayWidth;
-                    canvasEl.height = displayHeight;
-                } else {
-                    // No screenshot - use default dimensions
-                    displayWidth = canvasEl.offsetWidth || 1440;
-                    displayHeight = canvasEl.offsetHeight || 900;
-                    canvasEl.width = displayWidth;
-                    canvasEl.height = displayHeight;
-                    console.log('No screenshot, using default dimensions:', displayWidth, 'x', displayHeight);
-                }
-                
-                console.log('Stored dimensions from DB:', storedWidth, 'x', storedHeight);
-                console.log('Display dimensions:', displayWidth, 'x', displayHeight);
-
-                // Calculate scale factors: database coordinates (stored at capture time) → display coordinates (now)
-                const scaleX = displayWidth / storedWidth;
-                const scaleY = displayHeight / storedHeight;
-                
-                console.log('Scale factors - X:', scaleX.toFixed(4), 'Y:', scaleY.toFixed(4));
-
-                // Create heatmap instance on the canvas
-                heatmapInstance = h337.create({
-                    container: canvasEl,
-                    radius: currentType === 'click' ? 25 : 40,
-                    maxOpacity: 0.8,
-                    minOpacity: 0.2,
-                    blur: 0.85,
-                    gradient: {
-                        0.0: 'rgba(0, 255, 0, 0)',
-                        0.2: 'rgba(0, 255, 0, 0.5)',
-                        0.4: 'rgba(255, 255, 0, 0.7)',
-                        0.6: 'rgba(255, 165, 0, 0.8)',
-                        0.8: 'rgba(255, 69, 0, 0.9)',
-                        1.0: 'rgba(255, 0, 0, 1)'
+                    if (!displayWidth || !displayHeight) {
+                        console.error('❌ Invalid dimensions:', displayWidth, 'x', displayHeight);
+                        return;
                     }
-                });
-
-                console.log('Heatmap.js instance created successfully');
-                console.log('Canvas size:', canvasEl.width, 'x', canvasEl.height);
-                console.log('Canvas position:', canvasEl.style.position, canvasEl.style.top, canvasEl.style.left);
-
-                // Transform data points to match current display
-                const points = data.map(point => {
-                    const scaledX = Math.round(point.x * scaleX);
-                    const scaledY = Math.round(point.y * scaleY);
-                    const value = point.click_count || point.move_count || 1;
-                    return { x: scaledX, y: scaledY, value };
-                });
-
-                console.log('Transformed', points.length, 'data points');
-                console.log('Sample points:', points.slice(0, 5));
-
-                const maxValue = Math.max(...points.map(p => p.value), 1);
-                console.log('Max click value:', maxValue);
-
-                // Set the heatmap data
-                heatmapInstance.setData({
-                    max: maxValue,
-                    data: points
-                });
-
-                console.log('✅ Heatmap overlay rendered successfully!');
-                console.log('Canvas position:', canvasEl.getBoundingClientRect());
-
-                // Show stats
-                displayStats(data);
+                    
+                    // Set canvas actual rendering dimensions (critical for canvas element)
+                    canvasEl.width = displayWidth;
+                    canvasEl.height = displayHeight;
+                    
+                    console.log('✓ Canvas dimensions set to:', canvasEl.width, 'x', canvasEl.height);
+                    
+                    // Verify context is available
+                    const ctx = canvasEl.getContext('2d');
+                    if (!ctx) {
+                        console.error('❌ Could not get canvas 2D context');
+                        return;
+                    }
+                    
+                    console.log('✓ Canvas 2D context available');
+                    
+                    // Create heatmap instance
+                    try {
+                        if (typeof h337 === 'undefined') {
+                            console.error('❌ heatmap.js library not loaded!');
+                            return;
+                        }
+                        
+                        console.log('Creating heatmap.js instance...');
+                        heatmapInstance = h337.create({
+                            container: canvasEl,
+                            radius: currentType === 'click' ? 25 : 40,
+                            maxOpacity: 0.85,
+                            minOpacity: 0.05,
+                            blur: 0.85,
+                            gradient: {
+                                '.0': 'blue',
+                                '.25': 'cyan',
+                                '.50': 'yellow',
+                                '.75': 'orange',
+                                '1.0': 'red'
+                            }
+                        });
+                        
+                        console.log('✓ Heatmap instance created');
+                        
+                    } catch (e) {
+                        console.error('❌ Error creating heatmap:', e);
+                        return;
+                    }
+                    
+                    // Now transform and set data
+                    let storedWidth = screenshotDimensions.width || 1920;
+                    let storedHeight = screenshotDimensions.height || 1080;
+                    
+                    console.log('Stored viewport dimensions:', storedWidth, 'x', storedHeight);
+                    
+                    const scaleX = displayWidth / storedWidth;
+                    const scaleY = displayHeight / storedHeight;
+                    
+                    console.log('Scale factors:', scaleX.toFixed(4), '×', scaleY.toFixed(4));
+                    
+                    // Transform data
+                    const points = data.map(point => {
+                        const x = Math.round(point.x * scaleX);
+                        const y = Math.round(point.y * scaleY);
+                        const value = point.click_count || point.move_count || 1;
+                        return { x, y, value };
+                    });
+                    
+                    console.log(`Transformed ${points.length} points`);
+                    
+                    if (points.length > 0) {
+                        console.log('First few points:', points.slice(0, 3));
+                        const maxValue = Math.max(...points.map(p => p.value));
+                        
+                        try {
+                            heatmapInstance.setData({
+                                max: maxValue,
+                                data: points
+                            });
+                            console.log('✅ Heatmap data rendered! Max value:', maxValue);
+                        } catch (e) {
+                            console.error('❌ Error setting heatmap data:', e);
+                        }
+                    } else {
+                        console.warn('⚠️ No data points to render');
+                    }
+                    
+                }, 200);
             };
-
-            // Initialize immediately or wait for image
-            const screenshotImg = document.getElementById('screenshotImg');
-            if (screenshotImg) {
-                if (screenshotImg.complete && screenshotImg.naturalWidth > 0) {
-                    console.log('Screenshot already loaded, initializing now');
-                    initHeatmap();
-                } else {
-                    console.log('Waiting for screenshot to load');
-                    // The image onload will call window.initHeatmapAfterImageLoad()
-                }
+            
+            // Call init when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', window.initHeatmapAfterImageLoad);
             } else {
-                console.log('No screenshot, initializing heatmap');
-                initHeatmap();
+                // DOM already ready, call after a small delay to ensure rendering
+                setTimeout(window.initHeatmapAfterImageLoad, 100);
             }
+            
+            // Show stats
+            displayStats(data);
         }
 
         function renderScrollDepth(scrollData) {
