@@ -42,13 +42,20 @@ class ScreenshotService
             }
 
             // Capture screenshot using Browsershot
-            Browsershot::url($pageUrl)
+            $screenshot = Browsershot::url($pageUrl)
                 ->windowSize(1920, 1080) // Desktop viewport
                 ->setDelay(2000) // Wait 2 seconds for page to load
                 ->fullPage() // Capture entire page, not just viewport
                 ->dismissDialogs() // Auto-dismiss any alerts/confirms
-                ->waitUntilNetworkIdle() // Wait for network requests to finish
-                ->save($tempPath);
+                ->waitUntilNetworkIdle(); // Wait for network requests to finish
+            
+            // Add --no-sandbox flag for production environments (running as root)
+            // This is required when running Chromium as root user
+            if (app()->environment('production') || posix_getuid() === 0) {
+                $screenshot->addChromiumArguments(['--no-sandbox']);
+            }
+            
+            $screenshot->save($tempPath);
 
             // Read the screenshot file
             $imageData = file_get_contents($tempPath);
