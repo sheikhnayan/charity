@@ -236,6 +236,103 @@
                                     </div>
                                 @endif
                                 
+                                <!-- Login/Registration Button Section -->
+                                <div class="col-12">
+                                    <hr class="my-4">
+                                    <h5 class="mb-3"><i class="fa-solid fa-sign-in-alt me-2"></i>Login / Registration Button</h5>
+                                    <small class="text-muted">Configure the login/registration button in the header.</small>
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="show_auth_button" class="form-label">
+                                        Show Login/Registration Button
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Login/Registration Button"
+                                        data-description="Enable this to show a login/registration button in the top right corner of the header. When clicked, it will open your authentication modal."></i>
+                                    <select class="form-select" id="show_auth_button" name="show_auth_button">
+                                        <option value="1" {{ ($data->show_auth_button ?? 0) == 1 ? 'selected' : '' }}>
+                                            Yes, show the button
+                                        </option>
+                                        <option value="0" {{ ($data->show_auth_button ?? 0) == 0 ? 'selected' : '' }}>
+                                            No, hide the button
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="auth_button_text" class="form-label">
+                                        Button Text
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Button Text"
+                                        data-description="The text displayed on the login/registration button."></i>
+                                    <input type="text" class="form-control" id="auth_button_text" 
+                                           name="auth_button_text" 
+                                           value="{{ $data->auth_button_text ?? 'Login / Register' }}"
+                                           placeholder="Login / Register">
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="auth_button_bg_color" class="form-label">
+                                        Button Background Color
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Background Color"
+                                        data-description="Choose a background color for the login/registration button."></i>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="auth_button_bg_color_picker" 
+                                               value="{{ $data->auth_button_bg_color ?? '#007bff' }}" title="Choose background color" style="max-width: 3rem;">
+                                        <input type="text" class="form-control" id="auth_button_bg_color" name="auth_button_bg_color" 
+                                               value="{{ $data->auth_button_bg_color ?? '#007bff' }}" placeholder="#007bff">
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const colorInput = document.getElementById('auth_button_bg_color_picker');
+                                            const textInput = document.getElementById('auth_button_bg_color');
+                                            colorInput.addEventListener('input', function() {
+                                                textInput.value = colorInput.value;
+                                            });
+                                            textInput.addEventListener('input', function() {
+                                                const val = textInput.value.trim();
+                                                if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                    colorInput.value = val;
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="auth_button_text_color" class="form-label">
+                                        Button Text Color
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info"
+                                        data-title="Text Color"
+                                        data-description="Choose a text color for the login/registration button."></i>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="auth_button_text_color_picker" 
+                                               value="{{ $data->auth_button_text_color ?? '#ffffff' }}" title="Choose text color" style="max-width: 3rem;">
+                                        <input type="text" class="form-control" id="auth_button_text_color" name="auth_button_text_color" 
+                                               value="{{ $data->auth_button_text_color ?? '#ffffff' }}" placeholder="#ffffff">
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const colorInput = document.getElementById('auth_button_text_color_picker');
+                                            const textInput = document.getElementById('auth_button_text_color');
+                                            colorInput.addEventListener('input', function() {
+                                                textInput.value = colorInput.value;
+                                            });
+                                            textInput.addEventListener('input', function() {
+                                                const val = textInput.value.trim();
+                                                if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                    colorInput.value = val;
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                                
                                 <!-- Investor Exclusives Section -->
                                 <div class="col-12">
                                     <hr class="my-4">

@@ -15,7 +15,8 @@
         gtag('config', '{{ $gaTrackingId }}');
     </script>
     @endif
-
+<!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-xl {{ $header->floating == 1 ? 'fixed-top' : 'non-float'}} bg-primary" style="background-color: {{ $header->background }} !important;">
         <div class="container invest-mobile">
@@ -61,34 +62,62 @@
             </div>
             @if($check && $check->isInvestment())
                 {{-- Investment website buttons --}}
-                @auth
-                <a class="navbar-brand close-on-mobile" href="/users/donation">
-                    <div class="invest-button-section">
-                    <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
-                        DASHBOARD
-                    </button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    {{-- Login/Registration Button (if enabled) --}}
+                    @if($header && $header->show_auth_button == 1)
+                        @guest
+                        <button class="invest-now-btn sssssttttt" 
+                                onclick="openAuthModal()" 
+                                style="background-color: {{ $header->auth_button_bg_color ?? '#007bff' }} !important; color: {{ $header->auth_button_text_color ?? '#ffffff' }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
+                            {{ $header->auth_button_text ?? 'Login / Register' }}
+                        </button>
+                        @endguest
+                    @endif
+                    
+                    {{-- Dashboard/Invest Now Button --}}
+                    @auth
+                    <a class="navbar-brand close-on-mobile" href="/users/donation">
+                        <div class="invest-button-section">
+                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                            DASHBOARD
+                        </button>
+                    </div>
+                    </a>
+                    @else
+                    <a class="navbar-brand close-on-mobile" href="/invest">
+                        <div class="invest-button-section">
+                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                            {{ $header->invest_now_button_text ?? 'INVEST NOW' }}
+                        </button>
+                    </div>
+                    </a>
+                    @endauth
                 </div>
-                </a>
-                @else
-                <a class="navbar-brand close-on-mobile" href="/invest">
-                    <div class="invest-button-section">
-                    <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
-                        {{ $header->invest_now_button_text ?? 'INVEST NOW' }}
-                    </button>
-                </div>
-                </a>
-                @endauth
             @else
                 {{-- Fundraiser website buttons --}}
-                @auth
-                <a class="navbar-brand close-on-mobile" href="/users/donation">
-                    <div class="invest-button-section">
-                    <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
-                        DASHBOARD
-                    </button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    {{-- Login/Registration Button (if enabled) --}}
+                    @if($header && $header->show_auth_button == 1)
+                        @guest
+                        <button class="invest-now-btn sssssttttt" 
+                                onclick="openAuthModal()" 
+                                style="background-color: {{ $header->auth_button_bg_color ?? '#007bff' }} !important; color: {{ $header->auth_button_text_color ?? '#ffffff' }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
+                            {{ $header->auth_button_text ?? 'Login / Register' }}
+                        </button>
+                        @endguest
+                    @endif
+                    
+                    {{-- Dashboard Button (only for authenticated fundraiser users) --}}
+                    @auth
+                    <a class="navbar-brand close-on-mobile" href="/users/donation">
+                        <div class="invest-button-section">
+                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                            DASHBOARD
+                        </button>
+                    </div>
+                    </a>
+                    @endauth
                 </div>
-                </a>
-                @endauth
             @endif
 
         </div>
@@ -166,3 +195,36 @@
     })
 </script>
     @endif
+
+    {{-- Auth Modal Styles - Exact copy from product.blade.php --}}
+    <style>
+        /* Ensure modals are hidden by default and positioned correctly */
+        #authModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999 !important;
+        }
+
+        #authModal.hidden {
+            display: none;
+        }
+
+        #authModal:not(.hidden) {
+            display: flex;
+        }
+
+        /* Ensure Bootstrap modal appears on top */
+        .modal-backdrop {
+            z-index: 99998 !important;
+        }
+
+        .modal {
+            z-index: 99999 !important;
+        }
+    </style>
+
+    {{-- Auth Modal for Header Login Button --}}
+    @include('partials.ticket-auth-modal')

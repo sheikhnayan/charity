@@ -342,6 +342,20 @@ class AdminController extends Controller
             $data->investor_exclusives_font_family = $request->investor_exclusives_font_family;
         }
         
+        // Handle auth button fields
+        if ($request->has('show_auth_button')) {
+            $data->show_auth_button = $request->show_auth_button;
+        }
+        if ($request->has('auth_button_text')) {
+            $data->auth_button_text = $request->auth_button_text;
+        }
+        if ($request->has('auth_button_bg_color')) {
+            $data->auth_button_bg_color = $request->auth_button_bg_color;
+        }
+        if ($request->has('auth_button_text_color')) {
+            $data->auth_button_text_color = $request->auth_button_text_color;
+        }
+        
         $data->update();
 
         if ($request->has('menu_order')) {

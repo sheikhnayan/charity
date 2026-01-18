@@ -34,7 +34,11 @@ class Header extends Model
         'header_font_family',
         'menu_font_family',
         'contact_topbar_font_family',
-        'investor_exclusives_font_family'
+        'investor_exclusives_font_family',
+        'show_auth_button',
+        'auth_button_text',
+        'auth_button_bg_color',
+        'auth_button_text_color'
     ];
 
     public function setting()

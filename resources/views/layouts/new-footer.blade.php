@@ -342,7 +342,7 @@
 .footer_bg_image_mobile {
     z-index: 0;
     aspect-ratio: 2.39;
-    object-fit: contain;
+    object-fit: unset;
     object-position: 50% 0%;
     visibility: hidden;
     width: 100%;
