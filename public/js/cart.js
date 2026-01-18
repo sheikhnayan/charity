@@ -230,8 +230,7 @@ window.ShoppingCart = {
             #cartDrawer.open {
                 right: 0 !important;
             }
-        `;
-            
+
             #cartHeader {
                 padding: 20px;
                 border-bottom: 1px solid #eee;
@@ -550,16 +549,13 @@ window.ShoppingCart = {
                 this.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
             });
 
-            // Click handler to toggle cart drawer
+            // Click handler to navigate to cart page
             cartBtn.addEventListener('click', function(e) {
-                console.log('🛒 Cart button clicked');
+                console.log('🛒 Cart button clicked - navigating to cart page');
                 e.preventDefault();
                 e.stopPropagation();
-                if (typeof window.ShoppingCart.toggleCartDrawer === 'function') {
-                    window.ShoppingCart.toggleCartDrawer();
-                } else {
-                    console.error('❌ toggleCartDrawer method not found on ShoppingCart');
-                }
+                // Navigate to cart page
+                window.location.href = '/cart';
             });
 
             // Append to body

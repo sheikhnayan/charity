@@ -853,13 +853,13 @@ img {
         </div>
         
         @if(!empty($footer->description_text) && strip_tags($footer->description_text) != '')
-        <div class="footer_line_divider"></div>
+        {{-- <div class="footer_line_divider"></div> --}}
         <div class="disclaimer_wrap text-size-tiny text-color-secondary" style="text-align: center;">
            {!! $footer->description_text !!}
         </div>
         @endif
         
-        <div class="footer_line_divider"></div>
+        {{-- <div class="footer_line_divider"></div> --}}
         <div class="footer_bottom_wrapper">
             <ul id="w-node-_1a8f52e2-9bf4-f242-e723-3b1fe0e36600-e0e365c4" role="list" class="footer_link_list">
                 @if ($footer && $footer->privacy == 1)

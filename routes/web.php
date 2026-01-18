@@ -466,6 +466,10 @@ Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::get('/donate', [FrontendController::class, 'donate'])->name('donate');
 
+Route::get('/cart', function() {
+    return view('cart');
+})->name('cart');
+
 Route::get('/invest', [FrontendController::class, 'invest'])->name('invest');
 
 // Investment-related routes
