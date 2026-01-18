@@ -41,6 +41,8 @@ if (isset($state['components'])) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    <!-- Shopping Cart CSS -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     <style>
     body{background:#f9fafb;}
     
@@ -1402,8 +1404,63 @@ if (isset($state['components'])) {
         }
     }
     </style>
-    <!-- Shopping Cart System - Load early before components use addToCart -->
-    <script src="{{ asset('js/cart.js') }}"></script>
+    <!-- Shopping Cart System - Load with explicit completion handler -->
+    <script>
+        // Flag to track if cart.js has loaded
+        window._cartJsLoaded = false;
+        window._cartInitQueue = [];
+        
+        // Define cart loading complete function
+        window._onCartLoaded = function() {
+            console.log('✅ [Page-Investment] cart.js script loaded');
+            window._cartJsLoaded = true;
+            
+            // Try to initialize immediately
+            initCartNow();
+        };
+    </script>
+    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
+    <script>
+        // Initialize cart after verification
+        function initCartNow() {
+            console.log('🛒 [Page-Investment] Cart system initializing...');
+            console.log('🛒 [Page-Investment] cart.js loaded:', window._cartJsLoaded);
+            console.log('🛒 [Page-Investment] jQuery available:', typeof jQuery !== 'undefined');
+            console.log('🛒 [Page-Investment] window.ShoppingCart:', typeof window.ShoppingCart);
+            console.log('🛒 [Page-Investment] All globals:', Object.keys(window).filter(k => k.includes('Cart') || k.includes('cart')));
+            
+            if (window.ShoppingCart && typeof window.ShoppingCart.init === 'function') {
+                try {
+                    console.log('✅ [Page-Investment] ShoppingCart found, initializing...');
+                    const initPromise = window.ShoppingCart.init();
+                    if (initPromise && typeof initPromise.catch === 'function') {
+                        console.log('✅ [Page-Investment] ShoppingCart.init() is async, handling as promise...');
+                        initPromise.catch(error => {
+                            console.error('❌ [Page-Investment] ShoppingCart.init() promise rejected:', error);
+                        });
+                    } else {
+                        console.log('✅ [Page-Investment] ShoppingCart.init() called');
+                    }
+                } catch (error) {
+                    console.error('❌ [Page-Investment] Error calling ShoppingCart.init():', error);
+                    console.log('Stack trace:', error.stack);
+                }
+            } else {
+                if (!window._cartJsLoaded) {
+                    console.warn('⚠️ [Page-Investment] cart.js not loaded yet, will retry...');
+                    setTimeout(initCartNow, 300);
+                } else {
+                    console.error('❌ [Page-Investment] cart.js loaded but ShoppingCart not defined');
+                    console.log('❌ [Page-Investment] Checking window object for cart-related properties...');
+                    const cartKeys = Object.keys(window).filter(k => k.toLowerCase().includes('cart'));
+                    console.log('❌ [Page-Investment] Cart-related keys found:', cartKeys);
+                }
+            }
+        }
+        
+        // Start initialization
+        setTimeout(initCartNow, 100);
+    </script>
 </head>
 <body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
     @php

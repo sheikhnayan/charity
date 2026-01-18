@@ -18,6 +18,8 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
+    <!-- Shopping Cart CSS -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
@@ -478,10 +480,65 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         echo generateResponsiveStyles($state);
     @endphp
 </style>
-<!-- Shopping Cart System - Load early before components use addToCart -->
-<script src="{{ asset('js/cart.js') }}"></script>
 </head>
 <body style="overflow-x: hidden; background-color: {{ $data->background_color ?? '#fff'}};">
+    <!-- Shopping Cart System - Load with explicit completion handler -->
+    <script>
+        // Flag to track if cart.js has loaded
+        window._cartJsLoaded = false;
+        window._cartInitQueue = [];
+        
+        // Define cart loading complete function
+        window._onCartLoaded = function() {
+            console.log('✅ [Page] cart.js script loaded');
+            window._cartJsLoaded = true;
+            
+            // Try to initialize immediately
+            initCartNow();
+        };
+    </script>
+    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
+    <script>
+        // Initialize cart after verification
+        function initCartNow() {
+            console.log('🛒 [Page] Cart system initializing...');
+            console.log('🛒 [Page] cart.js loaded:', window._cartJsLoaded);
+            console.log('🛒 [Page] jQuery available:', typeof jQuery !== 'undefined');
+            console.log('🛒 [Page] window.ShoppingCart:', typeof window.ShoppingCart);
+            console.log('🛒 [Page] All globals:', Object.keys(window).filter(k => k.includes('Cart') || k.includes('cart')));
+            
+            if (window.ShoppingCart && typeof window.ShoppingCart.init === 'function') {
+                try {
+                    console.log('✅ [Page] ShoppingCart found, initializing...');
+                    const initPromise = window.ShoppingCart.init();
+                    if (initPromise && typeof initPromise.catch === 'function') {
+                        console.log('✅ [Page] ShoppingCart.init() is async, handling as promise...');
+                        initPromise.catch(error => {
+                            console.error('❌ [Page] ShoppingCart.init() promise rejected:', error);
+                        });
+                    } else {
+                        console.log('✅ [Page] ShoppingCart.init() called');
+                    }
+                } catch (error) {
+                    console.error('❌ [Page] Error calling ShoppingCart.init():', error);
+                    console.log('Stack trace:', error.stack);
+                }
+            } else {
+                if (!window._cartJsLoaded) {
+                    console.warn('⚠️ [Page] cart.js not loaded yet, will retry...');
+                    setTimeout(initCartNow, 300);
+                } else {
+                    console.error('❌ [Page] cart.js loaded but ShoppingCart not defined');
+                    console.log('❌ [Page] Checking window object for cart-related properties...');
+                    const cartKeys = Object.keys(window).filter(k => k.toLowerCase().includes('cart'));
+                    console.log('❌ [Page] Cart-related keys found:', cartKeys);
+                }
+            }
+        }
+        
+        // Start initialization
+        setTimeout(initCartNow, 100);
+    </script>
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);

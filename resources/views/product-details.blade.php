@@ -36,6 +36,9 @@
     <!-- Custom Fonts CSS -->
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
     
+    <!-- Shopping Cart CSS -->
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+    
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <style>
     /* Custom Fonts @font-face declarations */
@@ -678,8 +681,63 @@
         z-index: 99999 !important;
     }
   </style>
-  <!-- Shopping Cart System - Load early before components use addToCart -->
-  <script src="{{ asset('js/cart.js') }}"></script>
+  <!-- Shopping Cart System - Load with explicit completion handler -->
+  <script>
+    // Flag to track if cart.js has loaded
+    window._cartJsLoaded = false;
+    window._cartInitQueue = [];
+    
+    // Define cart loading complete function
+    window._onCartLoaded = function() {
+        console.log('✅ [Product Details] cart.js script loaded');
+        window._cartJsLoaded = true;
+        
+        // Try to initialize immediately
+        initCartNow();
+    };
+  </script>
+  <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
+  <script>
+    // Initialize cart after verification
+    function initCartNow() {
+        console.log('🛒 [Product Details] Cart system initializing...');
+        console.log('🛒 [Product Details] cart.js loaded:', window._cartJsLoaded);
+        console.log('🛒 [Product Details] jQuery available:', typeof jQuery !== 'undefined');
+        console.log('🛒 [Product Details] window.ShoppingCart:', typeof window.ShoppingCart);
+        console.log('🛒 [Product Details] All globals:', Object.keys(window).filter(k => k.includes('Cart') || k.includes('cart')));
+        
+        if (window.ShoppingCart && typeof window.ShoppingCart.init === 'function') {
+            try {
+                console.log('✅ [Product Details] ShoppingCart found, initializing...');
+                const initPromise = window.ShoppingCart.init();
+                if (initPromise && typeof initPromise.catch === 'function') {
+                    console.log('✅ [Product Details] ShoppingCart.init() is async, handling as promise...');
+                    initPromise.catch(error => {
+                        console.error('❌ [Product Details] ShoppingCart.init() promise rejected:', error);
+                    });
+                } else {
+                    console.log('✅ [Product Details] ShoppingCart.init() called');
+                }
+            } catch (error) {
+                console.error('❌ [Product Details] Error calling ShoppingCart.init():', error);
+                console.log('Stack trace:', error.stack);
+            }
+        } else {
+            if (!window._cartJsLoaded) {
+                console.warn('⚠️ [Product Details] cart.js not loaded yet, will retry...');
+                setTimeout(initCartNow, 300);
+            } else {
+                console.error('❌ [Product Details] cart.js loaded but ShoppingCart not defined');
+                console.log('❌ [Product Details] Checking window object for cart-related properties...');
+                const cartKeys = Object.keys(window).filter(k => k.toLowerCase().includes('cart'));
+                console.log('❌ [Product Details] Cart-related keys found:', cartKeys);
+            }
+        }
+    }
+    
+    // Start initialization
+    setTimeout(initCartNow, 100);
+  </script>
 </head>
 <body class="product-details-page" style="background-color: {{ $ticket->page_bg_color ?? '#f5f6f7' }} !important;">
     <div style="max-width:1180px;margin:12px auto;padding:0 18px;">

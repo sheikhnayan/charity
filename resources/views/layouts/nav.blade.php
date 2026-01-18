@@ -15,8 +15,49 @@
         gtag('config', '{{ $gaTrackingId }}');
     </script>
     @endif
-<!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind CSS with Bootstrap compatibility -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        corePlugins: {
+            preflight: false, // Disable Tailwind's base reset to avoid conflicts with Bootstrap
+        }
+    }
+</script>
+<style>
+    /* Fix Tailwind-Bootstrap conflicts - Tailwind's 'collapse' utility interferes with Bootstrap's collapse component */
+    .navbar-collapse,
+    .collapse {
+        visibility: visible !important;
+    }
+    
+    /* Ensure Bootstrap collapse behavior works correctly */
+    .collapse:not(.show) {
+        display: none;
+    }
+    
+    .collapse.show {
+        display: block;
+    }
+    
+    .collapsing {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.35s ease;
+    }
+    
+    /* Force navbar to display properly at xl breakpoint */
+    @media (min-width: 1200px) {
+        .navbar-expand-xl .navbar-collapse {
+            display: flex !important;
+            flex-basis: auto;
+        }
+        
+        .navbar-expand-xl .navbar-collapse.collapse {
+            display: flex !important;
+        }
+    }
+</style>
 <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-xl {{ $header->floating == 1 ? 'fixed-top' : 'non-float'}} bg-primary" style="background-color: {{ $header->background }} !important;">
         <div class="container invest-mobile">

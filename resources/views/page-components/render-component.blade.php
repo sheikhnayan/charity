@@ -4651,17 +4651,17 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 const studentCountEl = document.getElementById('studentCount');
                 const allStudentCards = document.querySelectorAll('.student-card-wrapper');
                 
-                const updateStudentCount = () => {
-                    const visibleCards = Array.from(allStudentCards).filter(card => {
+                const updateStudentCount = function() {
+                    const visibleCards = Array.from(allStudentCards).filter(function(card) {
                         return card.style.display !== 'none';
                     });
                     studentCountEl.textContent = visibleCards.length;
                 };
                 
-                const filterStudents = () => {
+                const filterStudents = function() {
                     const keyword = searchInput.value.toLowerCase().trim();
                     
-                    allStudentCards.forEach(card => {
+                    allStudentCards.forEach(function(card) {
                         const studentContent = card.textContent.toLowerCase();
                         const matches = !keyword || studentContent.includes(keyword);
                         card.style.display = matches ? '' : 'none';
@@ -4678,26 +4678,75 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Add to cart button functionality
+                // Add to cart button functionality with visual feedback
                 document.addEventListener('click', function(e) {
-                    if (e.target.closest('.add-student-to-cart')) {
-                        e.preventDefault();
-                        const btn = e.target.closest('.add-student-to-cart');
-                        const itemId = btn.dataset.itemId;
-                        const itemName = btn.dataset.itemName;
-                        const itemType = btn.dataset.itemType;
-                        
-                        if (typeof window.addToCart === 'function') {
+                    const btn = e.target.closest('.add-student-to-cart');
+                    if (!btn) return;
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const itemId = btn.dataset.itemId;
+                    const itemName = btn.dataset.itemName;
+                    const itemType = btn.dataset.itemType;
+                    const itemPrice = btn.dataset.itemPrice || '0';
+                    
+                    console.log('🛒 [Student Listing] Add to cart clicked', { itemId: itemId, itemName: itemName, itemType: itemType, itemPrice: itemPrice });
+                    
+                    // Visual feedback - disable button temporarily
+                    const originalHTML = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
+                    
+                    if (typeof window.addToCart === 'function') {
+                        try {
                             window.addToCart({
                                 id: itemId,
                                 name: itemName,
                                 type: itemType,
-                                price: 0,
+                                price: parseFloat(itemPrice),
                                 quantity: 1
                             });
-                        } else {
-                            console.error('addToCart function not available');
+                            
+                            console.log('✅ [Student Listing] Item added to cart');
+                            
+                            // Success feedback
+                            btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                            btn.classList.remove('btn-outline-primary');
+                            btn.classList.add('btn-success');
+                            
+                            // Reset button after 2 seconds
+                            setTimeout(function() {
+                                btn.innerHTML = originalHTML;
+                                btn.classList.remove('btn-success');
+                                btn.classList.add('btn-outline-primary');
+                                btn.disabled = false;
+                            }, 2000);
+                        } catch (error) {
+                            console.error('❌ [Student Listing] Error adding to cart:', error);
+                            
+                            // Error feedback
+                            btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
+                            btn.classList.add('btn-danger');
+                            
+                            setTimeout(function() {
+                                btn.innerHTML = originalHTML;
+                                btn.classList.remove('btn-danger');
+                                btn.disabled = false;
+                            }, 2000);
                         }
+                    } else {
+                        console.error('❌ [Student Listing] addToCart function not available');
+                        
+                        // Error feedback
+                        btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
+                        btn.classList.add('btn-danger');
+                        
+                        setTimeout(function() {
+                            btn.innerHTML = originalHTML;
+                            btn.classList.remove('btn-danger');
+                            btn.disabled = false;
+                        }, 2000);
                     }
                 });
             })();
