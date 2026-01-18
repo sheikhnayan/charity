@@ -210,6 +210,22 @@
                                     </div>
 
                                     <div class="col-12">
+                                        <label for="tshirt_size" class="form-label">T-Shirt Size</label>
+                                        <select class="form-select" id="tshirt_size" name="tshirt_size">
+                                            <option value="">Select a size</option>
+                                            <option value="Youth Extra Small" {{ $user->tshirt_size == 'Youth Extra Small' ? 'selected' : '' }}>Youth Extra Small</option>
+                                            <option value="Extra Small" {{ $user->tshirt_size == 'Extra Small' ? 'selected' : '' }}>Extra Small</option>
+                                            <option value="Medium" {{ $user->tshirt_size == 'Medium' ? 'selected' : '' }}>Medium</option>
+                                            <option value="Large" {{ $user->tshirt_size == 'Large' ? 'selected' : '' }}>Large</option>
+                                            <option value="Adult Small" {{ $user->tshirt_size == 'Adult Small' ? 'selected' : '' }}>Adult Small</option>
+                                            <option value="Adult Medium" {{ $user->tshirt_size == 'Adult Medium' ? 'selected' : '' }}>Adult Medium</option>
+                                            <option value="Adult Large" {{ $user->tshirt_size == 'Adult Large' ? 'selected' : '' }}>Adult Large</option>
+                                            <option value="Extra Large" {{ $user->tshirt_size == 'Extra Large' ? 'selected' : '' }}>Extra Large</option>
+                                            <option value="Extra Extra Large" {{ $user->tshirt_size == 'Extra Extra Large' ? 'selected' : '' }}>Extra Extra Large</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12">
                                         <label for="name" class="form-label required">
                                             Full Name
                                         </label>

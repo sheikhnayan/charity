@@ -709,6 +709,7 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'goal' => 'nullable|numeric|min:0',
+            'tshirt_size' => 'nullable|string|max:50',
             'description' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -717,6 +718,7 @@ class AdminController extends Controller
         $student->name = $request->name;
         // $student->fist_name = $request->name;
         $student->goal = $request->goal ?? 0;
+        $student->tshirt_size = $request->tshirt_size;
         $student->description = $request->description;
         
         if ($request->hasFile('photo')) {

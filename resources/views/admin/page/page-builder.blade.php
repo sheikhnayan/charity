@@ -5602,7 +5602,8 @@ break;
                 isUploadedFile: false,
                 autoplay: false,
                 width: null,
-                height: null
+                height: null,
+                videoFormat: 'mp4'
             };
             
             // Function to update video embed
@@ -5619,17 +5620,16 @@ break;
                 
                 if (url) {
                     console.log('URL is valid, updating video display');
-                    if (type === 'uploaded') {
-                        // Handle uploaded video files - disable interaction in page builder
+                    if (type === 'uploaded' || type === 'custom') {
+                        // Handle uploaded or custom video files - disable interaction in page builder
                         const autoplayAttr = content._videoData.autoplay ? 'autoplay muted' : '';
+                        const videoFormat = content._videoData.videoFormat || 'mp4';
                         const videoHTML = `
                             <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} style="border-radius: 8px; max-width: 100%; pointer-events: none; opacity: 0.8;" preload="metadata">
-                                <source src="${url}" type="video/mp4">
-                                <source src="${url}" type="video/webm">
-                                <source src="${url}" type="video/ogg">
+                                <source src="${url}" type="video/${videoFormat}">
                                 Your browser does not support the video tag.
                             </video>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none;">Video Preview (Click to Edit)</div>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none;">${type === 'custom' ? 'Custom Video' : 'Video'} Preview (Click to Edit)</div>
                         `;
                         console.log('Setting video HTML:', videoHTML);
                         container.innerHTML = videoHTML;
@@ -6952,6 +6952,24 @@ break;
                     @csrf
                     <div class="row justify-content-center">
                         <div class="col-md-4">
+                            <label for="register_as" class="form-label">Register as</label>
+                            <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
+                                <option value="individual">Student / Participant</option>
+                                <option value="parents">Parent / Guardian</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
+                            <label for="teacher_id" class="form-label">Select Teacher</label>
+                            <select class="form-select" id="teacher_id" name="teacher_id">
+                                <option value="">Select a teacher</option>
+                                @foreach($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
                             <label for="first_name" class="form-label">First name</label>
                             <input type="text" class="form-control" id="first_name" name="name">
                         </div>
@@ -6972,24 +6990,6 @@ break;
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="register_as" class="form-label">Register as</label>
-                            <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
-                                <option value="individual">An Individual</option>
-                                <option value="parents">A Parent</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
-                            <label for="teacher_id" class="form-label">Select Teacher</label>
-                            <select class="form-select" id="teacher_id" name="teacher_id">
-                                <option value="">Select a teacher</option>
-                                @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row justify-content-center">
-                        <div class="col-md-4">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password">
                         </div>
@@ -7004,9 +7004,6 @@ break;
                                 <button class="btn btn-lg text-white" type="submit" style="background-color: ${data.buttonColor} !important; border-color: transparent; color: ${data.buttonTextColor} !important;">
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
                                     Register
-                                </button>
-                                <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginFormPreview(this)" style="color: #fff !important; background-color: ${data.buttonColor} !important;">
-                                    Login
                                 </button>
                             </div>
                         </div>
@@ -8715,6 +8712,7 @@ break;
                         <select onchange="switchVideoType(this.value)" id="videoTypeSelect">
                             <option value="youtube" ${currentType === 'youtube' ? 'selected' : ''}>YouTube Video</option>
                             <option value="uploaded" ${currentType === 'uploaded' ? 'selected' : ''}>Upload Video File</option>
+                            <option value="custom" ${currentType === 'custom' ? 'selected' : ''}>Custom Video URL</option>
                         </select>
                     </div>
                     
@@ -8733,6 +8731,23 @@ break;
                             <small style="display: block; color: #666; margin-top: 6px;">Accepted: MP4, WebM, OGG • Max: 50MB</small>
                             <input type="text" value="${currentType === 'uploaded' ? currentUrl : ''}" onchange="updateVideoEmbed(this.value, 'uploaded')" placeholder="Or enter video file URL" style="margin-top: 8px;">
                             <small class="text-muted" style="display: block; margin-top: 4px;">Or enter a direct video file URL</small>
+                        </div>
+                    </div>
+                    
+                    <div id="customControls" style="display: ${currentType === 'custom' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label>Custom Video URL</label>
+                            <input type="text" value="${currentType === 'custom' ? currentUrl : ''}" onchange="updateVideoEmbed(this.value, 'custom')" placeholder="https://example.com/video.mp4">
+                            <small class="text-muted">Enter direct video URL (MP4, WebM, OGG, etc.)</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Video Format</label>
+                            <select onchange="updateVideoFormat(this.value)" id="customVideoFormatSelect">
+                                <option value="mp4" ${content._videoData?.videoFormat === 'mp4' ? 'selected' : ''}>MP4</option>
+                                <option value="webm" ${content._videoData?.videoFormat === 'webm' ? 'selected' : ''}>WebM</option>
+                                <option value="ogg" ${content._videoData?.videoFormat === 'ogg' ? 'selected' : ''}>OGG</option>
+                            </select>
+                            <small class="text-muted">Specify video format for optimal playback</small>
                         </div>
                     </div>
                     
@@ -14053,13 +14068,20 @@ function applyResponsiveStyles() {
         function switchVideoType(type) {
             const youtubeControls = document.getElementById('youtubeControls');
             const uploadControls = document.getElementById('uploadControls');
+            const customControls = document.getElementById('customControls');
             
             if (type === 'youtube') {
                 youtubeControls.style.display = 'block';
                 uploadControls.style.display = 'none';
-            } else {
+                customControls.style.display = 'none';
+            } else if (type === 'uploaded') {
                 youtubeControls.style.display = 'none';
                 uploadControls.style.display = 'block';
+                customControls.style.display = 'none';
+            } else if (type === 'custom') {
+                youtubeControls.style.display = 'none';
+                uploadControls.style.display = 'none';
+                customControls.style.display = 'block';
             }
             
             // Only clear current video if actually switching to a different type
@@ -14084,6 +14106,16 @@ function applyResponsiveStyles() {
             if (content && content._videoData) {
                 content._videoData.autoplay = enabled;
                 // Re-render video with new autoplay setting
+                content.updateVideo(content._videoData.url, content._videoData.type);
+            }
+        }
+
+        function updateVideoFormat(format) {
+            if (!selectedComponent) return;
+            const content = getContentElement(selectedComponent);
+            if (content && content._videoData) {
+                content._videoData.videoFormat = format;
+                // Re-render video with new format
                 content.updateVideo(content._videoData.url, content._videoData.type);
             }
         }
@@ -17099,7 +17131,8 @@ function applyResponsiveStyles() {
                   type: 'youtube',
                   autoplay: false,
                   width: null,
-                  height: null
+                  height: null,
+                  videoFormat: 'mp4'
                 };
               }
               
@@ -17125,17 +17158,16 @@ function applyResponsiveStyles() {
                 // Recreate video functionality if missing
                 const container = content.querySelector('.video-container');
                 if (container && data.videoData.url) {
-                  const { url, type, autoplay, width, height } = data.videoData;
+                  const { url, type, autoplay, width, height, videoFormat } = data.videoData;
                   const customWidth = width && width > 0 ? width + 'px' : '100%';
                   const customHeight = height && height > 0 ? height + 'px' : '200';
+                  const format = videoFormat || 'mp4';
                   
-                  if (type === 'uploaded') {
+                  if (type === 'uploaded' || type === 'custom') {
                     const autoplayAttr = autoplay ? 'autoplay muted' : '';
                     container.innerHTML = `
                       <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} max-width: 100%;">
-                        <source src="${url}" type="video/mp4">
-                        <source src="${url}" type="video/webm">
-                        <source src="${url}" type="video/ogg">
+                        <source src="${url}" type="video/${format}">
                         Your browser does not support the video tag.
                       </video>
                     `;

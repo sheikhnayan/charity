@@ -466,6 +466,11 @@
                                 ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $data->goal ?? 0 }}
                                 <small class="opacity-75 fw-light">raised</small>
                             </span>
+                            @if($data->tshirt_size)
+                            <span class="badge bg-info text-dark d-inline-block mt-3 mx-auto">
+                                <i class="fas fa-shirt me-1"></i>T-Shirt Size: {{ $data->tshirt_size }}
+                            </span>
+                            @endif
                         </div>
                     </div>
                     <span class="position-absolute top-0 end-0 m-2 opacity-50 small">

@@ -98,6 +98,9 @@ class WebsitePaymentController extends Controller
             $paymentSettings->coinbase_webhook_secret = null;
         }
 
+        // Handle Tipping option
+        $paymentSettings->tipping_enabled = $request->has('tipping_enabled');
+
         $paymentSettings->save();
 
         return back()->with('success', 'Payment settings updated successfully');

@@ -1,4 +1,4 @@
-<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden" style="display: none;">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden max-h-[90vh] flex flex-col">
         <!-- Gradient Header -->
         <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-4 text-center flex-shrink-0">
@@ -125,11 +125,16 @@
 
     function openAuthModal() {
         const el = document.getElementById('authModal');
-        if (el) el.classList.remove('hidden');
+        if (!el) return;
+        // Remove tailwind hidden class if present and set inline display for reliability
+        el.classList.remove('hidden');
+        el.style.display = 'flex';
     }
     function closeAuthModal() {
         const el = document.getElementById('authModal');
-        if (el) el.classList.add('hidden');
+        if (!el) return;
+        el.classList.add('hidden');
+        el.style.display = 'none';
     }
     window.openAuthModal = openAuthModal;
     window.closeAuthModal = closeAuthModal;

@@ -500,12 +500,14 @@
                 </div>
                 
                 <!-- Tipping Component (Donation Type Only) -->
-                <div id="tippingContainer" style="display: none;" class="mt-4">
+                <div id="tippingContainer" style="display: {{ $website->paymentSettings?->tipping_enabled ?? true ? 'none' : 'none' }};" class="mt-4">
+                    @if ($website->paymentSettings?->tipping_enabled ?? true)
                     @include('components.tipping', [
                         'baseAmount' => 25,
                         'primaryColor' => '#28a745',
                         'processingFee' => 2.9
                     ])
+                    @endif
                 </div>
                 
                 <!-- Payment Section -->
@@ -698,22 +700,22 @@
                 <!-- Payment Options -->
                 <div class="payment-options mt-4">
                     <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-2" name="payment_method" value="authorize_net">
-                        <i class="fas fa-lock me-2"></i> Pay with Card (Authorize.Net)
+                        <i class="fas fa-lock me-2"></i> Pay with Card
                     </button>
                     
                     <button type="button" class="btn btn-outline-warning w-100 py-3 fw-bold" onclick="handleCryptoPayment()">
-                        <i class="fas fa-bitcoin me-2"></i> Pay with Crypto
+                        <i class="fab fa-bitcoin me-2"></i> Pay with Crypto
                     </button>
                 </div>
                 
                 <!-- Policy Links -->
-                <div class="policy-links text-center mt-4">
+                {{-- <div class="policy-links text-center mt-4">
                     <p style="font-size: 0.85rem;">
                         <a href="#" style="color: #1773b0; text-decoration: underline;">Refund policy</a> • 
                         <a href="#" style="color: #1773b0; text-decoration: underline;">Privacy</a> • 
                         <a href="#" style="color: #1773b0; text-decoration: underline;">Terms</a>
                     </p>
-                </div>
+                </div> --}}
                 
                 <div class="secure-badge mt-3">
                     <i class="fas fa-lock"></i> Secure payment via Authorize.Net
@@ -1453,6 +1455,157 @@
                 });
             }
         }
+        
+        // Add form submit handler to show loader
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrForm = document.getElementById('qrDonateForm');
+            if (qrForm) {
+                qrForm.addEventListener('submit', function() {
+                    showPaymentLoader();
+                });
+            }
+        });
+        
+        // Payment Loader Functions
+        function showPaymentLoader() {
+            const loader = document.getElementById('payment-loader');
+            if (loader) {
+                loader.style.display = 'flex';
+                document.getElementById('qrDonateForm').style.pointerEvents = 'none';
+                document.getElementById('qrDonateForm').style.opacity = '0.5';
+            }
+        }
+        
+        function hidePaymentLoader() {
+            const loader = document.getElementById('payment-loader');
+            if (loader) {
+                loader.style.display = 'none';
+                document.getElementById('qrDonateForm').style.pointerEvents = 'auto';
+                document.getElementById('qrDonateForm').style.opacity = '1';
+            }
+        }
     </script>
+
+<!-- Payment Processing Loader -->
+<div id="payment-loader" style="display: none;">
+    <div class="payment-loader-overlay"></div>
+    <div class="payment-loader-container">
+        <div class="payment-loader-content">
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h3 class="mb-3">Processing Your Payment</h3>
+            <p class="loader-message">Please wait while your transaction is being completed...</p>
+            <div class="loader-warnings mt-4">
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+            </div>
+            <p class="loader-subtext mt-4">This may take a few moments...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    #payment-loader {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+    }
+    
+    .payment-loader-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .payment-loader-container {
+        position: relative;
+        z-index: 10000;
+        width: 90%;
+        max-width: 450px;
+    }
+    
+    .payment-loader-content {
+        background: white;
+        border-radius: 12px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-loader-content h3 {
+        color: #333;
+        font-weight: 600;
+        font-size: 20px;
+        margin: 0 0 10px 0;
+    }
+    
+    .loader-message {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+    
+    .loader-warnings {
+        background: #f8f9fa;
+        border-left: 4px solid #ffc107;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .warning-item {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .warning-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .warning-item i {
+        color: #ffc107;
+    }
+    
+    .loader-subtext {
+        color: #999;
+        font-size: 12px;
+        margin-bottom: 0;
+        font-style: italic;
+    }
+    
+    .spinner-border {
+        width: 50px;
+        height: 50px;
+        border-width: 4px;
+    }
+</style>
+
 </body>
 </html>

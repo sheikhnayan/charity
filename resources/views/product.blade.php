@@ -246,9 +246,7 @@
   </style>
 </head>
 <body class="auction-details-page" style="background-color: {{ $data->page_bg_color ?? '#f5f6f7' }} !important;">
-  <div style="max-width:1180px;margin:12px auto;padding:0 18px;">
-    @include('partials.back-button')
-  </div>
+
     
     @php
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
@@ -358,6 +356,9 @@
     @endif
 
   <main class="container" style="margin-top: 14rem;">
+      <div style="">
+    @include('partials.back-button')
+  </div>
     <div class="grid">
       <div class="row">
         <!-- LEFT: Gallery, description, bid history -->

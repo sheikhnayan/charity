@@ -20,6 +20,7 @@ class WebsitePaymentSetting extends Model
         'coinbase_enabled',
         'coinbase_api_key',
         'coinbase_webhook_secret',
+        'tipping_enabled',
         'is_active',
         'settings'
     ];
@@ -34,6 +35,7 @@ class WebsitePaymentSetting extends Model
         'coinbase_enabled' => 'boolean',
         'coinbase_api_key' => 'encrypted',
         'coinbase_webhook_secret' => 'encrypted',
+        'tipping_enabled' => 'boolean',
         'is_active' => 'boolean',
         'settings' => 'array'
     ];

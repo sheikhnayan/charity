@@ -246,6 +246,29 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <hr class="my-4">
+
+                            <!-- Tipping Option -->
+                            <div class="form-group mb-4">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="mb-1"><i class="fa fa-gift me-2"></i> Tipping Option</h5>
+                                        <p class="text-muted mb-0">Allow donors to add optional tips to their donations</p>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="tipping_enabled" id="tipping_enabled" value="1"
+                                               {{ old('tipping_enabled', $paymentSettings->tipping_enabled ?? true) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="tipping_enabled">
+                                            <strong>Enable Tips</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="bx bx-info-circle me-2"></i>
+                                    <small>When enabled, donors will see a tipping section on all checkout pages (Authorize.Net, Stripe) and QR donation pages. When disabled, the tipping option will be completely hidden from checkout pages.</small>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="card-footer d-flex flex-wrap gap-2">

@@ -319,7 +319,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'ticket')
@@ -340,11 +340,11 @@
                                 @if ($item->ticket->type != 'property')
                                 /* <p style="font-weight: 400">{!! $item->ticket->description !!}</p> */
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ''), '0'), '.') }} per share</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ','), '0'), '.') }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ''), '0'), '.') }}
+                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ','), '0'), '.') }}
                             </div>
                         </div>
                     @endforeach
@@ -360,7 +360,7 @@
                             {!! $data->description !!}
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'investment')
@@ -376,7 +376,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @endif
@@ -385,14 +385,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Processing Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ''), '0'), '.') }}
+                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ','), '0'), '.') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -408,7 +408,7 @@
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;" id="checkout-total">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ''), '0'), '.') }}
+                        <h5 style="font-weight: bold;" id="checkout-total">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ','), '0'), '.') }}
                         </h5>
                     </div>
                 </div>
@@ -469,7 +469,7 @@
                     <input type="hidden" name="donation_id" value="{{ $data->id }}">
                     <input type="hidden" name="type" value="{{ $type }}">
                     <input type="hidden" name="amount" id="total-amount-field"
-                        value="{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ''), '0'), '.') }}">
+                        value="{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ','), '0'), '.') }}">
                     <input type="hidden" name="tip_amount" id="tip-amount-field" value="0">
                     <input type="hidden" name="tip_percentage" id="tip-percentage-field" value="0">
                     <input type="hidden" name="tip_enabled" id="tip-enabled-field" value="0">
@@ -586,7 +586,7 @@
                             </div>
                         </div>
                     </div>
-                    @if ($type == 'donation')
+                    @if ($type == 'donation' && $website->paymentSettings?->tipping_enabled ?? true)
                     {{-- Tipping Component --}}
                     @include('components.tipping', [
                         'baseAmount' => $data->amount,
@@ -656,7 +656,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'ticket')
@@ -677,11 +677,11 @@
                                 @if ($item->ticket->type != 'property')
                                 /* <p style="font-weight: 400">{!! $item->ticket->description !!}</p> */
                                 @else
-                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ''), '0'), '.') }} per share</p>
+                                <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ','), '0'), '.') }} per share</p>
                                 @endif
                             </div>
                             <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ''), '0'), '.') }}
+                                ${{ rtrim(rtrim(number_format($item->amount, 2, '.', ','), '0'), '.') }}
                             </div>
                         </div>
                     @endforeach
@@ -697,7 +697,7 @@
                             {!! $data->description !!}
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @elseif($type == 'investment')
@@ -713,7 +713,7 @@
                             @endif
                         </div>
                         <div class="col-md-2 col-2" style="padding-top: 20px; font-weight: bold;">
-                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                            ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                         </div>
                     </div>
                 @endif
@@ -722,14 +722,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ''), '0'), '.') }}
+                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Processing Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ''), '0'), '.') }}
+                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ','), '0'), '.') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -1134,11 +1134,11 @@
         populateStatesAndFields();
         document.getElementById('country').addEventListener('change', populateStatesAndFields);
         
-        // Add form submit handler to include tip in total amount
+        // Add form submit handler to include tip in total amount and show loader
         const paymentForm = document.getElementById('payment-form');
         if (paymentForm) {
             paymentForm.addEventListener('submit', function(e) {
-                const baseAmountWithFee = parseFloat('{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ''), '0'), '.') }}');
+                const baseAmountWithFee = parseFloat('{{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee) + $data->amount, 2, '.', ','), '0'), '.') }}');
                 const tipAmount = parseFloat(document.getElementById('tip-amount-field')?.value || 0);
                 const totalAmount = baseAmountWithFee + tipAmount;
                 
@@ -1147,14 +1147,159 @@
                 if (amountField) {
                     amountField.value = totalAmount.toFixed(2);
                 }
+                
+                // Show payment processing loader
+                showPaymentLoader();
             });
         }
     });
+    
+    // Payment Loader Functions
+    function showPaymentLoader() {
+        const loader = document.getElementById('payment-loader');
+        if (loader) {
+            loader.style.display = 'flex';
+            // Disable form submission to prevent double-submit
+            document.getElementById('payment-form').style.pointerEvents = 'none';
+            document.getElementById('payment-form').style.opacity = '0.5';
+        }
+    }
+    
+    function hidePaymentLoader() {
+        const loader = document.getElementById('payment-loader');
+        if (loader) {
+            loader.style.display = 'none';
+            document.getElementById('payment-form').style.pointerEvents = 'auto';
+            document.getElementById('payment-form').style.opacity = '1';
+        }
+    }
 </script>
 
 {{-- @if($footer && $website)
     @include('layouts.new-footer')
 @endif --}}
 
+<!-- Payment Processing Loader -->
+<div id="payment-loader" style="display: none;">
+    <div class="payment-loader-overlay"></div>
+    <div class="payment-loader-container">
+        <div class="payment-loader-content">
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h3 class="mb-3">Processing Your Payment</h3>
+            <p class="loader-message">Please wait while your transaction is being completed...</p>
+            <div class="loader-warnings mt-4">
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+            </div>
+            <p class="loader-subtext mt-4">This may take a few moments...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    #payment-loader {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+    }
+    
+    .payment-loader-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .payment-loader-container {
+        position: relative;
+        z-index: 10000;
+        width: 90%;
+        max-width: 450px;
+    }
+    
+    .payment-loader-content {
+        background: white;
+        border-radius: 12px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-loader-content h3 {
+        color: #333;
+        font-weight: 600;
+        font-size: 20px;
+        margin: 0 0 10px 0;
+    }
+    
+    .loader-message {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+    
+    .loader-warnings {
+        background: #f8f9fa;
+        border-left: 4px solid #ffc107;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .warning-item {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .warning-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .warning-item i {
+        color: #ffc107;
+    }
+    
+    .loader-subtext {
+        color: #999;
+        font-size: 12px;
+        margin-bottom: 0;
+        font-style: italic;
+    }
+    
+    .spinner-border {
+        width: 50px;
+        height: 50px;
+        border-width: 4px;
+    }
+</style>
+
 </body>
 </html>
+

@@ -212,13 +212,15 @@
                                                         <td>{{ $item->website->name }}</td>
                                                         <td>{{ $item->type }}</td>
                                                         <td>
-                                                            @if ($item->status == 1)
+                                                            @if ($item->type == 'auction')
+                                                                Pending
+                                                            @elseif ($item->status == 1)
                                                                 Approved
                                                             @else
                                                                 Pending
                                                             @endif
                                                         </td>
-                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-info btn-sm view-btn"
                                                                 data-bs-toggle="modal"
@@ -237,10 +239,10 @@
                                                                 @endif
                                                                 data-fee="${{ number_format($fee, 2) }}"
                                                                 data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
-                                                                data-status="{{ $item->status == 1 ? 'Approved' : 'Pending' }}"
+                                                                data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
-                                                                data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i:s') }}"
+                                                                data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
                                                                 @if($item->type === 'investment' && $item->investment)
                                                                     data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
                                                                     data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"

@@ -259,6 +259,25 @@
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
       }
 
+      .menu-back-home {
+        margin: 8px 12px 12px;
+      }
+
+      .menu-back-home .menu-link {
+        background: rgba(255,255,255,0.14) !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+        border-radius: 10px !important;
+      }
+
+      .menu-back-home .menu-link:hover {
+        transform: translateX(4px);
+        background: rgba(255,255,255,0.22) !important;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      }
+
       /* Layout menu toggle icon */
       .layout-menu-toggle {
         color: rgba(255,255,255,0.9) !important;
@@ -344,6 +363,13 @@
 
           <ul class="menu-inner py-1">
 
+              <li class="menu-item menu-back-home">
+                <a href="{{ url('/') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-globe"></i>
+                  <div class="text-truncate">Back to Website</div>
+                </a>
+              </li>
+
 
               @if (Auth::user()->role != 'user')
                 <!-- Dashboard -->
@@ -380,7 +406,7 @@
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
                         @elseif (Auth::user()->role == 'parents')
-                        Student Profile
+                        Student / Participant
                         @else
                         Group Member
                         @endif

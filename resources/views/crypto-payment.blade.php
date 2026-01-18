@@ -214,7 +214,7 @@
                     </div>
                     <div class="payment-info-row">
                         <span class="payment-info-label">Amount to Pay</span>
-                        <span class="payment-info-value">${{ number_format(request('amount', 0), 2) }}</span>
+                        <span class="payment-info-value">${{ number_format(request('amount', 0), 2, '.', ',') }}</span>
                     </div>
                 </div>
                 

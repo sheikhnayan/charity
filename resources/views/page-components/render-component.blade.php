@@ -3313,6 +3313,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 
                 $videoUrl = $videoData['url'] ?? '';
                 $videoType = $videoData['type'] ?? 'youtube';
+                $videoFormat = $videoData['videoFormat'] ?? 'mp4';
                 $autoplay = $videoData['autoplay'] ?? false;
                 $customWidth = isset($videoData['width']) && $videoData['width'] ? $videoData['width'] . 'px' : '100%';
                 $customHeight = isset($videoData['height']) && $videoData['height'] ? $videoData['height'] . 'px' : 'auto';
@@ -3401,8 +3402,8 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
             
             <div style="{{ $styleStr }}">
                 @if($videoUrl)
-                    @if($videoType === 'uploaded')
-                        <!-- Uploaded video file -->
+                    @if($videoType === 'uploaded' || $videoType === 'custom')
+                        <!-- Uploaded or Custom video file -->
                         <div class="video-container" style="width: {{ $customWidth }}; max-width: 100%; overflow: hidden;">
                             <video 
                                 width="100%" 
@@ -3410,10 +3411,10 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                                 controls 
                                 @if($autoplay) autoplay muted @endif 
                                 style="display: block; {{ $styleStr }}"
-                                preload="metadata">
-                                <source src="{{ $videoUrl }}" type="video/mp4">
-                                <source src="{{ $videoUrl }}" type="video/webm">
-                                <source src="{{ $videoUrl }}" type="video/ogg">
+                                preload="metadata"
+                                playsinline
+                                webkit-playsinline>
+                                <source src="{{ $videoUrl }}" type="video/{{ $videoFormat }}">
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -4760,18 +4761,33 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     </div>
                                 @endforeach
                                 <div class="col-md-12 text-center mt-4 mb-4">
-                                    <button type="submit" class="btn" style="
-                                        background: {{ $buttonBg }};
-                                        color: {{ $buttonColor }};
-                                        padding: {{ $buttonPadding }};
-                                        border-radius: {{ $buttonRadius }};
-                                        border: none;
-                                        font-size: 16px;
-                                        cursor: pointer;
-                                        transition: all 0.3s ease;
-                                    " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                                        {{ $buttonText }}
-                                    </button>
+                                    @guest
+                                        <button type="button" class="btn" style="
+                                            background: {{ $buttonBg }};
+                                            color: {{ $buttonColor }};
+                                            padding: {{ $buttonPadding }};
+                                            border-radius: {{ $buttonRadius }};
+                                            border: none;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                        " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" onclick="window.openAuthModal && window.openAuthModal();">
+                                            {{ $buttonText }}
+                                        </button>
+                                    @else
+                                        <button type="submit" class="btn" style="
+                                            background: {{ $buttonBg }};
+                                            color: {{ $buttonColor }};
+                                            padding: {{ $buttonPadding }};
+                                            border-radius: {{ $buttonRadius }};
+                                            border: none;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                        " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                                            {{ $buttonText }}
+                                        </button>
+                                    @endguest
                                 </div>
                             </form>
                         </div>
