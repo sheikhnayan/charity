@@ -265,6 +265,27 @@
         .modal {
             z-index: 99999 !important;
         }
+        
+        /* Fix auth modal close button positioning (Tailwind classes backup) */
+        #authModal button[onclick="closeAuthModal()"] {
+            position: absolute !important;
+            top: 0.75rem !important;
+            right: 0.75rem !important;
+            color: white !important;
+            font-size: 1.5rem !important;
+            font-weight: bold !important;
+            z-index: 10 !important;
+            background: none !important;
+            border: none !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+        
+        #authModal button[onclick="closeAuthModal()"]:hover {
+            color: #e5e7eb !important;
+            opacity: 0.8 !important;
+        }
     </style>
 
     {{-- Auth Modal for Header Login Button --}}

@@ -1410,18 +1410,7 @@ if (isset($state['components'])) {
         window._cartJsLoaded = false;
         window._cartInitQueue = [];
         
-        // Define cart loading complete function
-        window._onCartLoaded = function() {
-            console.log('✅ [Page-Investment] cart.js script loaded');
-            window._cartJsLoaded = true;
-            
-            // Try to initialize immediately
-            initCartNow();
-        };
-    </script>
-    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
-    <script>
-        // Initialize cart after verification
+        // Initialize cart after verification - DEFINE BEFORE LOADING cart.js
         function initCartNow() {
             console.log('🛒 [Page-Investment] Cart system initializing...');
             console.log('🛒 [Page-Investment] cart.js loaded:', window._cartJsLoaded);
@@ -1458,6 +1447,17 @@ if (isset($state['components'])) {
             }
         }
         
+        // Define cart loading complete function
+        window._onCartLoaded = function() {
+            console.log('✅ [Page-Investment] cart.js script loaded');
+            window._cartJsLoaded = true;
+            
+            // Try to initialize immediately
+            initCartNow();
+        };
+    </script>
+    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
+    <script>
         // Start initialization
         setTimeout(initCartNow, 100);
     </script>

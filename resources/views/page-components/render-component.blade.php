@@ -4583,7 +4583,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
     @endphp
 
     @foreach ($students as $student)
-        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" style="flex: 0 0 calc(50% - 10px);" class="student-item">
+        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" style="flex: 0 0 calc(50% - 10px); padding-left: 0px; padding-right: 0px;" class="student-item">
             <div class="student-card-content" style="background: #fff">
                 <div style="font-size: 12px;">
                     <div class="position-relative rounded-3 shadow-sm border listingg"

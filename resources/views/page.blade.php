@@ -488,18 +488,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
         window._cartJsLoaded = false;
         window._cartInitQueue = [];
         
-        // Define cart loading complete function
-        window._onCartLoaded = function() {
-            console.log('✅ [Page] cart.js script loaded');
-            window._cartJsLoaded = true;
-            
-            // Try to initialize immediately
-            initCartNow();
-        };
-    </script>
-    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
-    <script>
-        // Initialize cart after verification
+        // Initialize cart after verification - DEFINE BEFORE LOADING cart.js
         function initCartNow() {
             console.log('🛒 [Page] Cart system initializing...');
             console.log('🛒 [Page] cart.js loaded:', window._cartJsLoaded);
@@ -536,6 +525,17 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
             }
         }
         
+        // Define cart loading complete function
+        window._onCartLoaded = function() {
+            console.log('✅ [Page] cart.js script loaded');
+            window._cartJsLoaded = true;
+            
+            // Try to initialize immediately
+            initCartNow();
+        };
+    </script>
+    <script src="{{ asset('js/cart.js') }}" onload="window._onCartLoaded()"></script>
+    <script>
         // Start initialization
         setTimeout(initCartNow, 100);
     </script>

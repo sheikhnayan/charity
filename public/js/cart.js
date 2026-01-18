@@ -3,6 +3,8 @@
  * Handles all frontend cart operations
  */
 
+console.log('🛒 [CART.JS] Script starting to execute...');
+
 // Make sure global queue exists
 if (!window._cartQueue) {
     window._cartQueue = [];
@@ -21,6 +23,8 @@ window.addToCart = function(itemData) {
         return true;
     }
 };
+
+console.log('🛒 [CART.JS] About to define window.ShoppingCart...');
 
 window.ShoppingCart = {
     // Configuration
@@ -1099,6 +1103,9 @@ window.ShoppingCart = {
         }, 4000);
     }
 };
+
+console.log('✅ [CART.JS] window.ShoppingCart object defined successfully');
+console.log('🛒 [CART.JS] ShoppingCart methods:', Object.keys(window.ShoppingCart));
 
 // Add CSS animations
 const style = document.createElement('style');
