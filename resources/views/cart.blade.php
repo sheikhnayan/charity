@@ -39,6 +39,12 @@
                         <span id="summaryTax">$0.00</span>
                     </div>
                     
+                    <!-- Donations (if applicable) -->
+                    <div class="d-flex justify-content-between mb-3" id="donationRow" style="display: none;">
+                        <span><i class="fas fa-heart text-danger"></i> Donations:</span>
+                        <span id="summaryDonation" class="text-danger">$0.00</span>
+                    </div>
+                    
                     <!-- Shipping (if applicable) -->
                     <div class="d-flex justify-content-between mb-3" id="shippingRow" style="display: none;">
                         <span>Shipping:</span>
@@ -90,14 +96,30 @@
         <div class="d-flex align-items-center gap-2 mb-3">
             <span class="text-muted">Quantity:</span>
             <button type="button" class="btn-qty btn btn-sm btn-outline-secondary" data-action="decrease">−</button>
-            <input type="number" class="form-control" style="width: 60px; text-align: center;" class="item-quantity" min="1" value="1">
+            <input type="number" class="form-control item-quantity" style="width: 60px; text-align: center;" min="1" value="1">
             <button type="button" class="btn-qty btn btn-sm btn-outline-secondary" data-action="increase">+</button>
+        </div>
+        
+        <!-- Donation Amount (For Student Items) -->
+        <div class="donation-amount-section mb-3" style="display: none;">
+            <label class="form-label text-muted mb-2">
+                <i class="fas fa-heart text-danger"></i> Additional Donation Amount
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control donation-amount" placeholder="0.00" min="0" step="0.01" value="0">
+            </div>
+            <small class="text-muted d-block mt-1">Optional: Add an extra donation to support this student</small>
         </div>
         
         <!-- Item Total -->
         <div class="text-end">
             <span class="text-muted">Subtotal: </span>
             <strong class="item-total text-primary"></strong>
+        </div>
+        <div class="text-end donation-total-section" style="display: none;">
+            <span class="text-muted">Donation: </span>
+            <strong class="donation-total text-danger">$0.00</strong>
         </div>
     </div>
 </template>
@@ -237,6 +259,7 @@ function createCartItemElement(item, index) {
     
     // Get item key (either from item.key or construct it)
     const itemKey = item.key || (item.type + '_' + item.id);
+    const isStudent = item.type === 'student';
     
     // Set item data
     clone.querySelector('.item-name').textContent = item.name || 'Unknown Item';
@@ -244,30 +267,74 @@ function createCartItemElement(item, index) {
     clone.querySelector('.item-price').textContent = '$' + (item.price || item.amount || 0).toFixed(2);
     
     const quantityInput = clone.querySelector('.item-quantity');
+    if (!quantityInput) {
+        console.error('❌ [CART PAGE] Quantity input element not found in template');
+        return clone;
+    }
+    
     quantityInput.value = item.quantity || 1;
     
-    // Calculate and set total
-    const itemTotal = (item.price || item.amount || 0) * (item.quantity || 1);
-    clone.querySelector('.item-total').textContent = '$' + itemTotal.toFixed(2);
+    // Handle donation section for student items
+    const donationSection = clone.querySelector('.donation-amount-section');
+    const donationInput = clone.querySelector('.donation-amount');
+    const donationTotalSection = clone.querySelector('.donation-total-section');
+    const donationTotal = clone.querySelector('.donation-total');
+    
+    if (isStudent) {
+        // Show donation section for student items
+        donationSection.style.display = 'block';
+        donationTotalSection.style.display = 'block';
+        donationInput.value = item.donation_amount || 0;
+    } else {
+        // Hide donation section for non-student items
+        donationSection.style.display = 'none';
+        donationTotalSection.style.display = 'none';
+    }
+    
+    // Function to update item total
+    const updateItemTotal = () => {
+        const basePrice = item.price || item.amount || 0;
+        const quantity = parseInt(quantityInput.value) || 1;
+        const subtotal = basePrice * quantity;
+        const donation = isStudent ? (parseFloat(donationInput.value) || 0) : 0;
+        const total = subtotal + donation;
+        
+        clone.querySelector('.item-total').textContent = '$' + subtotal.toFixed(2);
+        if (isStudent) {
+            donationTotal.textContent = '$' + donation.toFixed(2);
+        }
+        
+        // Update global summary
+        updateSummary();
+        
+        return { subtotal, donation, total };
+    };
+    
+    // Calculate and set initial total
+    updateItemTotal();
     
     // Setup quantity controls
     const decreaseBtn = clone.querySelector('[data-action="decrease"]');
     const increaseBtn = clone.querySelector('[data-action="increase"]');
     const removeBtn = clone.querySelector('.btn-remove');
     
-    decreaseBtn.addEventListener('click', function() {
-        const currentQty = parseInt(quantityInput.value);
-        if (currentQty > 1) {
-            quantityInput.value = currentQty - 1;
-            updateItemQuantity(itemKey, currentQty - 1);
-        }
-    });
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', function() {
+            const currentQty = parseInt(quantityInput.value);
+            if (currentQty > 1) {
+                quantityInput.value = currentQty - 1;
+                updateItemQuantity(itemKey, currentQty - 1);
+            }
+        });
+    }
     
-    increaseBtn.addEventListener('click', function() {
-        const currentQty = parseInt(quantityInput.value);
-        quantityInput.value = currentQty + 1;
-        updateItemQuantity(itemKey, currentQty + 1);
-    });
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', function() {
+            const currentQty = parseInt(quantityInput.value);
+            quantityInput.value = currentQty + 1;
+            updateItemQuantity(itemKey, currentQty + 1);
+        });
+    }
     
     quantityInput.addEventListener('change', function() {
         const newQty = parseInt(this.value) || 1;
@@ -278,9 +345,27 @@ function createCartItemElement(item, index) {
         }
     });
     
-    removeBtn.addEventListener('click', function() {
-        removeCartItem(itemKey);
-    });
+    // Donation amount change handler (for student items)
+    if (isStudent && donationInput) {
+        donationInput.addEventListener('change', function() {
+            const donationAmount = parseFloat(this.value) || 0;
+            console.log('🛒 [CART PAGE] Updating donation amount for student:', itemKey, 'to $' + donationAmount.toFixed(2));
+            
+            // Update the item's donation amount
+            item.donation_amount = donationAmount;
+            
+            // Update display
+            updateItemTotal();
+            
+            // You can add an API call here to persist the donation amount if needed
+        });
+    }
+    
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            removeCartItem(itemKey);
+        });
+    }
     
     return clone;
 }
@@ -333,20 +418,52 @@ function removeCartItem(itemKey) {
 
 function updateSummary(items) {
     let subtotal = 0;
+    let totalDonation = 0;
     
-    if (items && items.length > 0) {
+    // If items not provided, recalculate from DOM
+    if (!items) {
+        const cartItems = document.querySelectorAll('.cart-item');
+        cartItems.forEach(cartItem => {
+            // Get price and quantity
+            const priceText = cartItem.querySelector('.item-price').textContent;
+            const price = parseFloat(priceText.replace('$', ''));
+            const quantity = parseInt(cartItem.querySelector('.item-quantity').value) || 1;
+            subtotal += price * quantity;
+            
+            // Get donation amount if this is a student item
+            const donationInput = cartItem.querySelector('.donation-amount');
+            if (donationInput) {
+                const donation = parseFloat(donationInput.value) || 0;
+                totalDonation += donation;
+            }
+        });
+    } else if (items && items.length > 0) {
         items.forEach(item => {
             subtotal += (item.price || item.amount || 0) * (item.quantity || 1);
+            if (item.type === 'student') {
+                totalDonation += item.donation_amount || 0;
+            }
         });
     }
     
     const tax = 0; // Tax calculation can be added later
     const shipping = 0; // Shipping calculation can be added later
-    const total = subtotal + tax + shipping;
+    const total = subtotal + totalDonation + tax + shipping;
     
     // Update display
     document.getElementById('summarySubtotal').textContent = '$' + subtotal.toFixed(2);
     document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+    
+    // Show/hide donation row
+    const donationRow = document.getElementById('donationRow');
+    if (donationRow) {
+        if (totalDonation > 0) {
+            donationRow.style.display = 'flex';
+            document.getElementById('summaryDonation').textContent = '$' + totalDonation.toFixed(2);
+        } else {
+            donationRow.style.display = 'none';
+        }
+    }
     
     // Show/hide tax and shipping rows
     const taxRow = document.getElementById('taxRow');
