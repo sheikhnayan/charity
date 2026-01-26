@@ -181,7 +181,12 @@
                                                             <td>{{ $item->name }}</td>
                                                         @endif
                                                         @if ($item->type == 'student')
-                                                            <td>{{ ($item->donation->user)? $item->donation->user->group_name : '' }}</td>
+                                                        @if ($item->donation)
+                                                        <td>{{ ($item->donation->user)? $item->donation->user->group_name : '' }}</td>
+                                                            
+                                                        @else
+                                                            <td>NULL</td>
+                                                        @endif
                                                         @else
                                                             <td></td>
                                                         @endif
