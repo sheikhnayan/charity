@@ -368,7 +368,7 @@
             }
         </style>
         @endif
-        <div class="container my-5 mt-4">
+        <div class="container my-5" style="margin-top: 6rem !important;">
             <div class="row">
                 <div class="col-lg-8">
                     <h1 class="mb-4">🛒 Shopping Cart</h1>
