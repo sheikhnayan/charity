@@ -255,6 +255,18 @@ h5, .ql-header-5 {
     flex-shrink: 0;
 }
 
+/* Button components: allow side-by-side placement on desktop */
+.button-component {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-component .custom-button {
+    width: auto;
+}
+
 
 
 /* Global Mobile Fixes */
@@ -362,6 +374,11 @@ h5, .ql-header-5 {
     .button-component {
         margin-left: 5px !important;
         margin-right: 5px !important;
+        display: block !important;
+    }
+    .button-component .custom-button {
+        width: 100% !important;
+        text-align: center;
     }
     
     /* Image components mobile edge behavior */
@@ -1470,7 +1487,7 @@ h5, .ql-header-5 {
                 $boxShadow = $component['properties']['box_shadow'] ?? $style['boxShadow'] ?? 'none';
                 $transition = $component['properties']['transition'] ?? 'all 0.3s ease';
             @endphp
-            <div style="text-align: {{ $textAlign }}; {{ $styleStr }}">
+            <div class="button-component" style="text-align: {{ $textAlign }}; {{ $styleStr }}">
                 <a href="{{ $buttonUrl }}" target="{{ $buttonTarget }}" 
                    style="display: inline-block; background-color: {{ $buttonBgColor }}; color: {{ $buttonTextColor }}; 
                           padding: {{ $buttonPadding }}; border-radius: {{ $borderRadius }}; font-size: {{ $fontSize }}; 
