@@ -16152,6 +16152,12 @@ function applyResponsiveStyles() {
                         compData.customHtmlData = compContent.customHtmlData;
                       }
                       break;
+                    case 'button':
+                      if (compContent._buttonData) {
+                        compData.buttonData = compContent._buttonData;
+                        console.log('Serializing nested button with data:', compContent._buttonData);
+                      }
+                      break;
                     case 'video':
                       if (compContent._videoData) {
                         console.log('Serializing nested video with data:', compContent._videoData);
