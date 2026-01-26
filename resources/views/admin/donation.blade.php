@@ -154,7 +154,12 @@
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
                                                         <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
+                                                            @if ($item->donation)
                                                             <td>{{ ($item->donation->user)? $item->donation->user->name : '' }}</td>
+                                                                
+                                                            @else
+                                                                <td>NULL</td>
+                                                            @endif
                                                         @elseif($item->type == 'general')
                                                             <td>{{ $item->website->name }}</td>
                                                         @elseif($item->type == 'sponsor')
