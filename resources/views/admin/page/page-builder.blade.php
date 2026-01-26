@@ -17771,19 +17771,26 @@ function applyResponsiveStyles() {
             
             // Restore nested components if they exist
             if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
-              console.log('=== RESTORING NESTED COMPONENTS ===');
-              console.log('nestedComponents array:', data.nestedComponents);
-              console.log('nestedComponents structure:', data.nestedComponents.map((col, idx) => `Col ${idx}: ${col.length} items`).join(', '));
+              console.log('=== RESTORING NESTED COMPONENTS START ===');
+              console.log('nestedComponents exists:', !!data.nestedComponents);
+              console.log('is Array:', Array.isArray(data.nestedComponents));
+              console.log('length:', data.nestedComponents.length);
+              console.log('content element:', content);
               const columns = content.querySelectorAll('.inner-column');
-              console.log('Found columns for restoration:', columns.length);
+              console.log('querySelectorAll returned:', columns.length, 'columns');
+              console.log('columns array:', Array.from(columns).map((col, idx) => `[${idx}]: ${col.className}`));
               
+              console.log('About to forEach nestedComponents...');
               data.nestedComponents.forEach((columnData, columnIndex) => {
                 console.log(`=== PROCESSING COLUMN ${columnIndex} ===`);
+                console.log(`columnData:`, columnData);
                 console.log(`columnData type: ${Array.isArray(columnData) ? 'array' : typeof columnData}, length: ${columnData ? columnData.length : 'null'}`);
+                console.log(`columns[${columnIndex}]:`, columns[columnIndex]);
                 console.log(`columns[${columnIndex}] exists: ${!!columns[columnIndex]}`);
+                console.log(`Condition check: columns[${columnIndex}] && Array.isArray(columnData) = ${!!(columns[columnIndex] && Array.isArray(columnData))}`);
                 
                 if (columns[columnIndex] && Array.isArray(columnData)) {
-                  console.log(`Column ${columnIndex} is valid, has ${columnData.length} components to restore`);
+                  console.log(`✅ CONDITION PASSED for column ${columnIndex}, has ${columnData.length} components to restore`);
                   columnData.forEach((compData, compIndex) => {
                     console.log(`  Creating component ${compIndex}: type=${compData.type}`);
                     const nestedComponent = createComponent(compData.type);
