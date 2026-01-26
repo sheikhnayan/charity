@@ -4684,13 +4684,19 @@ break;
                             column.style.backgroundColor = 'transparent';
                             column.style.borderColor = '#adb5bd';
                             const componentType = e.dataTransfer.getData('type');
+                            console.log('DROP INTO COLUMN:', componentType, 'into column:', column);
                             if (componentType) {
                                 const newComponent = createComponent(componentType);
                                 newComponent.style.width = '100%';
+                                console.log('Created component:', newComponent, 'type:', componentType);
+                                console.log('Component parent before append:', newComponent.parentElement);
                                 // Add component to column
                                 column.appendChild(newComponent);
+                                console.log('Component parent after append:', newComponent.parentElement);
+                                console.log('Column children:', column.children);
                                 // Hide dropzone text if column has components
                                 const hasComponents = column.querySelectorAll('.component').length > 0;
+                                console.log('Has components in column:', hasComponents, 'count:', column.querySelectorAll('.component').length);
                                 columnDropzone.style.display = hasComponents ? 'none' : 'block';
                                 // Refresh insertion zones after adding component to column
                                 setTimeout(() => {
@@ -15986,8 +15992,14 @@ function applyResponsiveStyles() {
             data.innerSectionData = content._innerSectionData;
             // Also save the nested components structure
             const columns = content.querySelectorAll('.inner-column');
-            data.nestedComponents = Array.from(columns).map(column => {
+            console.log('=== SERIALIZING INNER-SECTION ===');
+            console.log('Found columns:', columns.length);
+            data.nestedComponents = Array.from(columns).map((column, colIdx) => {
               const columnComponents = Array.from(column.querySelectorAll('.component'));
+              console.log(`Column ${colIdx} components:`, columnComponents.length);
+              columnComponents.forEach((comp, compIdx) => {
+                console.log(`  Component ${compIdx}:`, comp.dataset.type, 'element:', comp);
+              });
               return columnComponents.map(comp => {
                 const compType = comp.dataset.type;
                 const compContent = getContentElement(comp);
