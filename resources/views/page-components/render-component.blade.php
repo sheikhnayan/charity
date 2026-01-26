@@ -256,13 +256,16 @@ h5, .ql-header-5 {
 }
 
 /* Button components: allow side-by-side placement on desktop */
+.nested-component .button-component,
 .button-component {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    width: auto;
 }
 
+.nested-component .button-component .custom-button,
 .button-component .custom-button {
     width: auto;
 }
@@ -371,12 +374,15 @@ h5, .ql-header-5 {
     }
     
     /* Button components mobile spacing */
-    .button-component {
+    .button-component,
+    .nested-component .button-component {
         margin-left: 5px !important;
         margin-right: 5px !important;
         display: block !important;
+        width: 100% !important;
     }
-    .button-component .custom-button {
+    .button-component .custom-button,
+    .nested-component .button-component .custom-button {
         width: 100% !important;
         text-align: center;
     }
