@@ -131,7 +131,11 @@
             <li class="menu-item {{ request()->is('admins/ticket', 'admins/auction', 'admins/sponsor') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-star"></i><div data-i18n="Features">Features</div></a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}"><a href="{{ route('admin.ticket.index') }}" class="menu-link"><div data-i18n="Ticket">Ticket</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/ticket') ? 'active' : '' }}">
+                      <a href="{{ isset($website) ? route('admin.ticket.index', ['websiteId' => $website->id]) : route('admin.ticket.websites') }}" class="menu-link">
+                        <div data-i18n="Ticket">Ticket</div>
+                      </a>
+                    </li>
                     <li class="menu-item {{ request()->is('admins/auction') ? 'active' : '' }}"><a href="{{ route('admin.auction') }}" class="menu-link"><div data-i18n="Auction">Auction</div></a></li>
                     <li class="menu-item {{ request()->is('admins/sponsor') ? 'active' : '' }}"><a href="{{ route('admin.sponsor.index') }}" class="menu-link"><div data-i18n="Sponsor">Sponsor</div></a></li>
                 </ul>
