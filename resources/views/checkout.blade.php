@@ -685,7 +685,7 @@
                 <div style="background:#fff;border:1px solid #dedede;border-radius:10px;overflow:hidden;">
                     <div style="padding:1rem 1rem 0.5rem 1rem;border-bottom:1px solid #dedede;">
                         <div style="display:flex;align-items:center;justify-content:space-between;">
-                            <h5 style="margin:0;font-weight:700;">Pay with card (Authorize.net)</h5>
+                            <h5 style="margin:0;font-weight:700;">Pay with card</h5>
                             <div class="payment-card-logos" style="display:inline-flex;gap:6px;">
                                 <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa.sxIq5Dot.svg" alt="VISA" width="38" height="24">
                                 <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/mastercard.1c4_lyMp.svg" alt="MASTERCARD" width="38" height="24">
@@ -786,7 +786,7 @@
                 <div style="background:#fff;border:1px solid #dedede;border-radius:10px;overflow:hidden;">
                     <div style="padding:1rem 1rem 0.5rem 1rem;border-bottom:1px solid #dedede;">
                         <div style="display:flex;align-items:center;justify-content:space-between;">
-                            <h5 style="margin:0;font-weight:700;">Pay with card (Stripe)</h5>
+                            <h5 style="margin:0;font-weight:700;">Pay with card </h5>
                             <div class="payment-card-logos" style="display:inline-flex;gap:6px;">
                                 <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa.sxIq5Dot.svg" alt="VISA" width="38" height="24">
                                 <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/mastercard.1c4_lyMp.svg" alt="MASTERCARD" width="38" height="24">
