@@ -8,7 +8,10 @@
     $customFonts = \App\Models\CustomFont::get();
     $website = $check;
     // Respect website-specific payment settings (with fallback to global settings)
-    $paymentMethod = $website ? $website->getPaymentMethod() : 'stripe';
+    $rawPaymentMethod = $website ? ($website->getPaymentMethod() ?? 'stripe') : 'stripe';
+    // Normalize legacy values to the template expectation
+    $normalized = strtolower($rawPaymentMethod);
+    $paymentMethod = in_array($normalized, ['authorize', 'authorize.net', 'authorize_net', 'authnet']) ? 'authorize_net' : $rawPaymentMethod;
     $processingFee = $website ? $website->getProcessingFee() : 2.9;
 @endphp
 
