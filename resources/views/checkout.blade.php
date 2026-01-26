@@ -7,7 +7,9 @@
     $setting = $check ? \App\Models\Setting::where('user_id', $check->user_id)->first() : null;
     $customFonts = \App\Models\CustomFont::get();
     $website = $check;
-    $paymentMethod = $website ? ($website->payment_method ?? 'stripe') : 'stripe';
+    // Respect website-specific payment settings (with fallback to global settings)
+    $paymentMethod = $website ? $website->getPaymentMethod() : 'stripe';
+    $processingFee = $website ? $website->getProcessingFee() : 2.9;
 @endphp
 
 <!DOCTYPE html>
@@ -592,7 +594,7 @@
         @endif
     @endif
 
-    <main>
+    <main style="margin-top: 6rem !important">
         @if ($check && ($check->type ?? null) === 'investment')
         <style>
             /* Match page-investment navbar compact padding */
@@ -642,7 +644,7 @@
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
                     <span style="color:#2c3e50;font-weight:500;">Processing Fee</span>
-                    <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($website->paymentSettings?->fee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
+                    <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
                 </div>
                 <!-- Tip row in summary (managed by tipping component) -->
                 <div id="tip-row" style="display:none;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
@@ -651,7 +653,7 @@
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;border-top:2px solid #eee;padding-top:15px;">
                     <span style="font-size:18px;font-weight:700;color:#2c3e50;">Total</span>
-                    <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ rtrim(rtrim(number_format(((($subtotal ?? $total) / 100) * ($website->paymentSettings?->fee ?? 2.9)) + ($subtotal ?? $total), 2, '.', ''), '0'), '.') }}</span>
+                    <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ rtrim(rtrim(number_format(((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9)) + ($subtotal ?? $total), 2, '.', ''), '0'), '.') }}</span>
                 </div>
             </div>
             
@@ -664,7 +666,7 @@
             @include('components.tipping', [
                 'baseAmount' => $total,
                 'primaryColor' => '#667eea',
-                'processingFee' => $website->paymentSettings?->fee ?? 2.9
+                'processingFee' => $processingFee ?? 2.9
             ])
         </div>
     </div>
