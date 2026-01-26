@@ -16242,6 +16242,18 @@ function applyResponsiveStyles() {
                                 return compData;
               });
             });
+            console.log('=== FINAL NESTED COMPONENTS DATA ===');
+            console.log('data.nestedComponents:', data.nestedComponents);
+            console.log('nestedComponents JSON length:', JSON.stringify(data.nestedComponents).length);
+            if (data.nestedComponents && data.nestedComponents.length > 0) {
+              data.nestedComponents.forEach((col, idx) => {
+                console.log(`Column ${idx}: ${col.length} components`);
+                col.forEach((comp, cIdx) => {
+                  console.log(`  Comp ${cIdx} - type: ${comp.type}, hasData: ${Object.keys(comp).length} keys, keys: ${Object.keys(comp).join(', ')}`);
+                });
+              });
+            }
+            console.log('=== END FINAL NESTED COMPONENTS ===');
             break;
           case 'auth-form':
             data.authFormData = content._authFormData;
@@ -18259,6 +18271,23 @@ function applyResponsiveStyles() {
       const state = serializeBuilder();
       console.log('Serialized state:', state);
       console.log('State components count:', state.components ? state.components.length : 'no components');
+      
+      // Log what we're about to save - the ACTUAL inner-section data with buttons
+      if (state.components && state.components.length > 0) {
+        state.components.forEach((comp, idx) => {
+          if (comp.type === 'inner-section' && comp.nestedComponents) {
+            console.log(`=== ABOUT TO SAVE: Component ${idx} (inner-section) ===`);
+            console.log(`nestedComponents length: ${comp.nestedComponents.length}`);
+            comp.nestedComponents.forEach((col, colIdx) => {
+              console.log(`  Column ${colIdx}: ${col.length} components`);
+              col.forEach((nested, nestedIdx) => {
+                console.log(`    Nested ${nestedIdx}: type=${nested.type}`);
+              });
+            });
+            console.log(`=== END SAVE DATA FOR COMPONENT ${idx} ===`);
+          }
+        });
+      }
       
       // Log press card data specifically
       if (state.components) {
