@@ -17773,13 +17773,19 @@ function applyResponsiveStyles() {
             if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
               console.log('=== RESTORING NESTED COMPONENTS ===');
               console.log('nestedComponents array:', data.nestedComponents);
+              console.log('nestedComponents structure:', data.nestedComponents.map((col, idx) => `Col ${idx}: ${col.length} items`).join(', '));
               const columns = content.querySelectorAll('.inner-column');
               console.log('Found columns for restoration:', columns.length);
+              
               data.nestedComponents.forEach((columnData, columnIndex) => {
-                console.log(`Processing column ${columnIndex}, has ${columnData.length} components`);
+                console.log(`=== PROCESSING COLUMN ${columnIndex} ===`);
+                console.log(`columnData type: ${Array.isArray(columnData) ? 'array' : typeof columnData}, length: ${columnData ? columnData.length : 'null'}`);
+                console.log(`columns[${columnIndex}] exists: ${!!columns[columnIndex]}`);
+                
                 if (columns[columnIndex] && Array.isArray(columnData)) {
+                  console.log(`Column ${columnIndex} is valid, has ${columnData.length} components to restore`);
                   columnData.forEach((compData, compIndex) => {
-                    console.log(`Creating nested component type: ${compData.type} at column ${columnIndex} index ${compIndex}`);
+                    console.log(`  Creating component ${compIndex}: type=${compData.type}`);
                     const nestedComponent = createComponent(compData.type);
                     const nestedContent = getContentElement(nestedComponent);
                     
@@ -18189,9 +18195,10 @@ function applyResponsiveStyles() {
                     }
                     
                     // Add to column
-                    console.log(`Before appending nested component to column ${columnIndex}:`, nestedComponent);
+                    console.log(`Before appending to column ${columnIndex}, columns[${columnIndex}] HTML:`, columns[columnIndex].outerHTML.substring(0, 100));
+                    console.log(`Before appending, nestedComponent:`, nestedComponent);
                     columns[columnIndex].appendChild(nestedComponent);
-                    console.log(`After appending nested component, column ${columnIndex} children:`, columns[columnIndex].children);
+                    console.log(`After appending nested ${compData.type} to column ${columnIndex}, children:`, columns[columnIndex].children.length);
                     
                     // Hide dropzone text
                     const dropzone = columns[columnIndex].querySelector('.column-dropzone');
