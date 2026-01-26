@@ -16156,6 +16156,22 @@ function applyResponsiveStyles() {
                       if (compContent._buttonData) {
                         compData.buttonData = compContent._buttonData;
                         console.log('Serializing nested button with data:', compContent._buttonData);
+                        // Also save to properties for front-end compatibility
+                        compData.properties = compData.properties || {};
+                        compData.properties.button_text = compContent._buttonData.buttonText || 'Click Me';
+                        compData.properties.button_url = compContent._buttonData.buttonUrl || '#';
+                        compData.properties.button_target = compContent._buttonData.buttonTarget || '_self';
+                        compData.properties.button_bg_color = compContent._buttonData.buttonBgColor || '#007bff';
+                        compData.properties.button_text_color = compContent._buttonData.buttonTextColor || '#ffffff';
+                        compData.properties.button_padding = compContent._buttonData.buttonPadding || '10px 20px';
+                        compData.properties.border_radius = compContent._buttonData.borderRadius || '4px';
+                        compData.properties.font_size = compContent._buttonData.fontSize || '16px';
+                        compData.properties.font_weight = compContent._buttonData.fontWeight || '400';
+                        compData.properties.text_align = compContent._buttonData.textAlign || 'center';
+                        compData.properties.text_decoration = compContent._buttonData.textDecoration || 'none';
+                        compData.properties.border = compContent._buttonData.border || 'none';
+                        compData.properties.box_shadow = compContent._buttonData.boxShadow || 'none';
+                        compData.properties.transition = compContent._buttonData.transition || 'all 0.3s ease';
                       }
                       break;
                     case 'video':
@@ -18127,7 +18143,7 @@ function applyResponsiveStyles() {
                     }
                     
                     // Restore styles (only if not already handled by component-specific rendering)
-                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image', 'press-card', 'video', 'investment-tier', 'statistics-metric', 'invest-cta'].includes(compData.type)) {
+                    if (nestedContent && compData.style && !['image', 'gallery', 'slider', 'custom-form', 'event-countdown', 'event-information', 'site-goal', 'custom-banner', 'sell-tickets', 'full-width-text-image', 'press-card', 'video', 'investment-tier', 'statistics-metric', 'invest-cta', 'button'].includes(compData.type)) {
                       Object.assign(nestedContent.style, compData.style);
                     }
                     
