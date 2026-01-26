@@ -17759,10 +17759,15 @@ function applyResponsiveStyles() {
             
             // Restore nested components if they exist
             if (data.nestedComponents && Array.isArray(data.nestedComponents)) {
+              console.log('=== RESTORING NESTED COMPONENTS ===');
+              console.log('nestedComponents array:', data.nestedComponents);
               const columns = content.querySelectorAll('.inner-column');
+              console.log('Found columns for restoration:', columns.length);
               data.nestedComponents.forEach((columnData, columnIndex) => {
+                console.log(`Processing column ${columnIndex}, has ${columnData.length} components`);
                 if (columns[columnIndex] && Array.isArray(columnData)) {
                   columnData.forEach((compData, compIndex) => {
+                    console.log(`Creating nested component type: ${compData.type} at column ${columnIndex} index ${compIndex}`);
                     const nestedComponent = createComponent(compData.type);
                     const nestedContent = getContentElement(nestedComponent);
                     
@@ -18053,6 +18058,8 @@ function applyResponsiveStyles() {
                         nestedContent.renderStatisticsMetric();
                         break;
                       case 'button':
+                        console.log('=== DESERIALIZING NESTED BUTTON ===');
+                        console.log('Button compData:', compData);
                         // Restore button data for nested buttons
                         let buttonDefaults = {
                           buttonText: 'Click Me',
@@ -18170,7 +18177,9 @@ function applyResponsiveStyles() {
                     }
                     
                     // Add to column
+                    console.log(`Before appending nested component to column ${columnIndex}:`, nestedComponent);
                     columns[columnIndex].appendChild(nestedComponent);
+                    console.log(`After appending nested component, column ${columnIndex} children:`, columns[columnIndex].children);
                     
                     // Hide dropzone text
                     const dropzone = columns[columnIndex].querySelector('.column-dropzone');
