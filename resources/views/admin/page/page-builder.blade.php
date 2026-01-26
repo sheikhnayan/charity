@@ -17746,6 +17746,12 @@ function applyResponsiveStyles() {
             if (data.responsiveStyles) content._responsiveStyles = data.responsiveStyles;
             break;
           case 'inner-section':
+            console.log('🔵 INNER-SECTION DESERIALIZATION CASE ENTERED 🔵');
+            console.log('Component ID:', component.id);
+            console.log('data object keys:', Object.keys(data));
+            console.log('data.nestedComponents present:', !!data.nestedComponents);
+            console.log('data.nestedComponents value:', data.nestedComponents);
+            
             // Restore inner section data
             content._innerSectionData = data.innerSectionData || {
               backgroundColor: 'transparent',
