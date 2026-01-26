@@ -21,6 +21,7 @@
     $style = $component['style'] ?? [];
     $wrapperStyle = $component['wrapperStyle'] ?? [];
     $responsiveStyles = $component['responsiveStyles'] ?? [];
+    $visibility = $component['visibility'] ?? 'both';
     
     // Temporary debugging - remove after testing
     error_log("RENDER COMPONENT DEBUG: Type={$componentType}, IsNested=" . (isset($isNested) ? ($isNested ? 'true' : 'false') : 'undefined'));
@@ -91,6 +92,13 @@
                 $responsiveCSS .= "}\n";
             }
         }
+    }
+
+    // Device visibility CSS
+    if ($visibility === 'desktop') {
+        $responsiveCSS .= "@media screen and (max-width: 767px) { #{$componentId} { display: none !important; } }\n";
+    } elseif ($visibility === 'mobile') {
+        $responsiveCSS .= "@media screen and (min-width: 768px) { #{$componentId} { display: none !important; } }\n";
     }
 @endphp
 
@@ -559,6 +567,24 @@ h5, .ql-header-5 {
                     $parallaxEnabled = ($parallaxEnabled === '1' || $parallaxEnabled === 'true' || $parallaxEnabled === true);
                 }
                 $parallaxSpeed = $innerSectionData['parallaxSpeed'] ?? '0.5';
+                // Background video support
+                $backgroundType = $innerSectionData['backgroundType'] ?? 'color';
+                $backgroundVideoUrl = $innerSectionData['backgroundVideoUrl'] ?? '';
+                $backgroundVideoType = $innerSectionData['backgroundVideoType'] ?? 'mp4';
+                $backgroundVideoAutoplay = isset($innerSectionData['backgroundVideoAutoplay']) ? (bool)$innerSectionData['backgroundVideoAutoplay'] : true;
+                $backgroundVideoLoop = isset($innerSectionData['backgroundVideoLoop']) ? (bool)$innerSectionData['backgroundVideoLoop'] : true;
+                $backgroundVideoMuted = isset($innerSectionData['backgroundVideoMuted']) ? (bool)$innerSectionData['backgroundVideoMuted'] : true;
+                $hasVideoBackground = ($backgroundType === 'video' && !empty($backgroundVideoUrl));
+                $backgroundVideoEmbed = '';
+                if ($hasVideoBackground && $backgroundVideoType === 'youtube') {
+                    if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/', $backgroundVideoUrl, $matches)) {
+                        $vid = $matches[1];
+                        // ALWAYS autoplay background videos with mute=1 (required for browser autoplay policies)
+                        $backgroundVideoEmbed = "https://www.youtube.com/embed/{$vid}?autoplay=" . ($backgroundVideoAutoplay ? '1' : '0') . "&mute=1&loop=" . ($backgroundVideoLoop ? '1' : '0') . "&playlist={$vid}&controls=0&rel=0&modestbranding=1";
+                    } else {
+                        $backgroundVideoEmbed = $backgroundVideoUrl;
+                    }
+                }
                 
                 // Apply inner-section styling - ENABLE ALL STYLES for frontend
                 $sectionStyle = '';
@@ -577,8 +603,12 @@ h5, .ql-header-5 {
                 }
                 
                 // Background color - always apply if set
-                if (isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== 'transparent') {
+                if (!$hasVideoBackground && isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== 'transparent') {
                     $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']} !important;";
+                }
+
+                if ($hasVideoBackground) {
+                    $sectionStyle .= "position: relative; overflow: hidden;";
                 }
                 
                 // Padding - apply with or without !important based on whether section has slider
@@ -654,6 +684,16 @@ h5, .ql-header-5 {
             @if($fullWidth)
                 {{-- Full Width Section - Use CSS to break out of container --}}
                 <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="margin-top: 25px;" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
+                    @if($hasVideoBackground)
+                        <div class="inner-section-video-layer" aria-hidden="true">
+                            @if($backgroundVideoType === 'youtube')
+                                <iframe src="{{ $backgroundVideoEmbed }}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index: -1;"></iframe>
+                            @else
+                                <video src="{{ $backgroundVideoUrl }}" @if($backgroundVideoAutoplay) autoplay @endif @if($backgroundVideoLoop) loop @endif muted playsinline webkit-playsinline style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index: -1;"></video>
+                            @endif
+                            <div class="inner-section-video-overlay"></div>
+                        </div>
+                    @endif
                     <style>
                         #{{ $componentId }} {
                             width: 100vw;
@@ -829,11 +869,22 @@ h5, .ql-header-5 {
             @else
                 {{-- Regular Section - Stay within container --}}
                 <div class="inner-section-frontend {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="{{ $sectionStyle }}" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
+                    @if($hasVideoBackground)
+                        <div class="inner-section-video-layer" aria-hidden="true">
+                            @if($backgroundVideoType === 'youtube')
+                                <iframe src="{{ $backgroundVideoEmbed }}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index: -1;"></iframe>
+                            @else
+                                <video src="{{ $backgroundVideoUrl }}" @if($backgroundVideoAutoplay) autoplay @endif @if($backgroundVideoLoop) loop @endif muted playsinline webkit-playsinline style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index: -1;"></video>
+                            @endif
+                            <div class="inner-section-video-overlay"></div>
+                        </div>
+                    @endif
                     <style>
                         #{{ $componentId }} {
                             max-width: 1200px;
                             margin: 0 auto;
                             padding: 0 15px;
+                            position: relative;
                         }
                         
                         @if($gap !== '0px' && $gap !== '15px')
@@ -2159,6 +2210,34 @@ h5, .ql-header-5 {
                         padding: 0 !important;
                     }
                 }
+                        @if($hasVideoBackground)
+                        #{{ $componentId }} .inner-section-video-layer {
+                            position: absolute;
+                            inset: 0;
+                            overflow: hidden;
+                            z-index: 0;
+                        }
+                        #{{ $componentId }} .inner-section-video-layer video,
+                        #{{ $componentId }} .inner-section-video-layer iframe {
+                            position: absolute;
+                            inset: 0;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                        #{{ $componentId }} .content-wrapper,
+                        #{{ $componentId }} .row,
+                        #{{ $componentId }} .nested-component,
+                        #{{ $componentId }} .animated-column {
+                            position: relative;
+                            z-index: 1;
+                        }
+                        #{{ $componentId }} .inner-section-video-overlay {
+                            position: absolute;
+                            inset: 0;
+                            background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.35) 100%);
+                        }
+                        @endif
             </style>
             <div class="custom-banner-wrapper" style="text-align:{{ $banner['textAlign'] ?? 'center' }};{{ $styleStr }}">
                 @if(!empty($banner['imgSrc']))
@@ -3315,6 +3394,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                 $videoType = $videoData['type'] ?? 'youtube';
                 $videoFormat = $videoData['videoFormat'] ?? 'mp4';
                 $autoplay = $videoData['autoplay'] ?? false;
+                $showControls = array_key_exists('controls', $videoData) ? (bool)$videoData['controls'] : true;
                 $customWidth = isset($videoData['width']) && $videoData['width'] ? $videoData['width'] . 'px' : '100%';
                 $customHeight = isset($videoData['height']) && $videoData['height'] ? $videoData['height'] . 'px' : 'auto';
                 
@@ -3323,11 +3403,13 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                     if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoUrl, $matches)) {
                         $videoId = $matches[1];
                         $autoplayParam = $autoplay ? '&autoplay=1&mute=1' : '';
-                        $embedUrl = "https://www.youtube.com/embed/{$videoId}?rel=0{$autoplayParam}";
+                        $controlsParam = $showControls ? '&controls=1' : '&controls=0';
+                        $embedUrl = "https://www.youtube.com/embed/{$videoId}?rel=0{$autoplayParam}{$controlsParam}";
                     } elseif (preg_match('/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/', $videoUrl, $matches)) {
                         $videoId = $matches[1];
                         $autoplayParam = $autoplay ? '&autoplay=1&mute=1' : '';
-                        $embedUrl = "https://www.youtube.com/embed/{$videoId}?rel=0{$autoplayParam}";
+                        $controlsParam = $showControls ? '&controls=1' : '&controls=0';
+                        $embedUrl = "https://www.youtube.com/embed/{$videoId}?rel=0{$autoplayParam}{$controlsParam}";
                     } else {
                         $embedUrl = $videoUrl;
                     }
@@ -3408,7 +3490,7 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                             <video 
                                 width="100%" 
                                 height="{{ $customHeight === 'auto' ? 'auto' : $customHeight }}"
-                                controls 
+                                    @if($showControls) controls @endif
                                 @if($autoplay) autoplay muted @endif 
                                 style="display: block; {{ $styleStr }}"
                                 preload="metadata"
@@ -4632,7 +4714,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 data-item-name="{{ $student->name }}"
                                 data-item-price="0"
                                 style="flex: 1;">
-                                <i class="fa fa-shopping-cart me-2"></i>Cart
+                                <i class="fa fa-shopping-cart me-2"></i>Wish to Donate
                             </button>
                         </div>
                     </div>
@@ -5207,6 +5289,34 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         padding: 0 !important;
                     }
                         }
+
+                        @if($hasVideoBackground)
+                        #{{ $componentId }} .inner-section-video-layer {
+                            position: absolute;
+                            inset: 0;
+                            overflow: hidden;
+                            z-index: 0;
+                        }
+                        #{{ $componentId }} .inner-section-video-layer video,
+                        #{{ $componentId }} .inner-section-video-layer iframe {
+                            position: absolute;
+                            inset: 0;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                        #{{ $componentId }} .inner-section-video-overlay {
+                            position: absolute;
+                            inset: 0;
+                            background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.35) 100%);
+                        }
+                        #{{ $componentId }} .row,
+                        #{{ $componentId }} .nested-component,
+                        #{{ $componentId }} .animated-column {
+                            position: relative;
+                            z-index: 1;
+                        }
+                        @endif
                     </style>
                 </section>
             @endif

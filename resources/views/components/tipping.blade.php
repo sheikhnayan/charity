@@ -379,6 +379,16 @@ function updateCheckoutTotal() {
         checkoutTotalDesktop.textContent = '$' + newTotal.toFixed(2);
     }
     
+    // Update Pay Now button amounts
+    const authorizeBtnAmount = document.getElementById('authorize-pay-btn-amount');
+    if (authorizeBtnAmount) {
+        authorizeBtnAmount.textContent = '$' + newTotal.toFixed(2);
+    }
+    const stripeBtnAmount = document.getElementById('stripe-pay-btn-amount');
+    if (stripeBtnAmount) {
+        stripeBtnAmount.textContent = '$' + newTotal.toFixed(2);
+    }
+    
     // Show/hide tip rows
     const tipRow = document.getElementById('tip-row');
     const tipAmountDisplay = document.getElementById('tip-amount-display');

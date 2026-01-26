@@ -17,6 +17,7 @@ use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\Analytics\DashboardController;
 use App\Http\Controllers\Admin\PaymentMethodAnalyticsController;
+use App\Http\Controllers\Admin\WebsiteEmailSettingsController;
 use App\Http\Middleware\admin;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -186,6 +187,13 @@ Route::middleware(['auth', \App\Http\Middleware\admin::class])->group(function (
         Route::post('/generate-campaign', [\App\Http\Controllers\QRCodeDonationController::class, 'generateCampaign'])->name('generate.campaign');
         Route::post('/download', [\App\Http\Controllers\QRCodeDonationController::class, 'download'])->name('download');
         Route::get('/statistics', [\App\Http\Controllers\QRCodeDonationController::class, 'statistics'])->name('statistics');
+    });
+
+    // Website Email/SMTP Settings
+    Route::prefix('admins/websites/{website}/email-settings')->name('admin.website.email.')->group(function () {
+        Route::get('/', [WebsiteEmailSettingsController::class, 'index'])->name('index');
+        Route::post('/', [WebsiteEmailSettingsController::class, 'store'])->name('store');
+        Route::put('/', [WebsiteEmailSettingsController::class, 'update'])->name('update');
     });
 
     // Custom Font Management Routes

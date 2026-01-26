@@ -192,12 +192,12 @@ class CartService
 
             $item = &$cart['items'][$itemKey];
 
-            // Update amount for students
-            if ($item['type'] === 'student' && isset($updates['amount'])) {
+            // Update amount for students (preserve it even when updating quantity)
+            if (isset($updates['amount'])) {
                 $item['amount'] = max(0, (float)$updates['amount']);
             }
 
-            // Update quantity for other items
+            // Update quantity for other items (preserve amount for students)
             if (isset($updates['quantity'])) {
                 $item['quantity'] = max(1, (int)$updates['quantity']);
             }
@@ -207,6 +207,12 @@ class CartService
 
             // Save to session
             Session::put(self::SESSION_KEY, $cart);
+
+            \Log::info('Cart item updated', [
+                'item_key' => $itemKey,
+                'updates' => $updates,
+                'cart_total' => $cart['total']
+            ]);
 
             return true;
 

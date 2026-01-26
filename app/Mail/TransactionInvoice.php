@@ -58,6 +58,9 @@ class TransactionInvoice extends Mailable
 
         return $this->subject($subject)
                     ->from(config('mail.from.address', 'noreply@' . $this->website->domain), $this->website->name)
+                    ->when(config('mail.reply_to.address'), function ($m) {
+                        $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
+                    })
                     ->view('emails.transaction-invoice')
                     ->with(array_merge([
                         'transaction' => $this->transaction,

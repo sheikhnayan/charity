@@ -30,15 +30,40 @@
         <div class="order-items">
             <h3>Items Purchased</h3>
             <div class="items-list">
+                @php
+                    $subtotal = $transaction['subtotal'] ?? 0;
+                @endphp
                 @foreach($transaction['items'] as $item)
                     <div class="item-row">
                         <div>
                             <p class="item-name">{{ $item['name'] }}</p>
                             <p class="item-type">{{ ucfirst($item['type']) }}</p>
                         </div>
-                        <p class="item-amount">${{ number_format($item['amount'], 2) }}</p>
+                        <p class="item-amount">${{ number_format($item['total'] ?? $item['amount'] ?? 0, 2) }}</p>
                     </div>
                 @endforeach
+            </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="payment-summary" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: left;">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>${{ number_format($subtotal, 2) }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Processing Fee:</span>
+                <span>${{ number_format($transaction['processing_fee'] ?? 0, 2) }}</span>
+            </div>
+            @if(($transaction['tip_amount'] ?? 0) > 0)
+            <div class="summary-row">
+                <span>Tip:</span>
+                <span>${{ number_format($transaction['tip_amount'], 2) }}</span>
+            </div>
+            @endif
+            <div class="summary-row highlight" style="border-top: 1px solid #dee2e6; padding-top: 10px; margin-top: 10px; font-weight: bold;">
+                <span>Total Paid:</span>
+                <span>${{ number_format($transaction['total'], 2) }}</span>
             </div>
         </div>
 
@@ -46,9 +71,9 @@
             <a href="/" class="btn btn-primary">
                 <i class="fas fa-home"></i> Back to Home
             </a>
-            <a href="/donate" class="btn btn-secondary">
+            {{-- <a href="/donate" class="btn btn-secondary">
                 <i class="fas fa-heart"></i> Make Another Donation
-            </a>
+            </a> --}}
         </div>
 
         <div class="support-note">
@@ -203,6 +228,38 @@
         font-weight: 700;
         color: #667eea;
         margin: 0;
+    }
+
+    /* Payment Summary */
+    .payment-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        text-align: left;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row span:last-child {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .summary-row.highlight span:last-child {
+        color: #667eea;
+        font-size: 16px;
+        font-weight: 700;
     }
 
     /* Actions */

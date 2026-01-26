@@ -4228,6 +4228,7 @@ button a:hover {
       const component = document.createElement('div');
       component.className = 'component';
       component.dataset.type = type;
+    component.dataset.visibility = 'both';
       
       // Assign unique ID to component
       const existingComponents = document.querySelectorAll('.component').length;
@@ -4741,8 +4742,13 @@ break;
                 fullWidth: false, // Full width stretch option
                 contentWidth: 'full', // 'full' or 'boxed' for full width sections
                 // Background options
-                backgroundType: 'color', // 'color' or 'image'
+                backgroundType: 'color', // 'color', 'image', or 'video'
                 backgroundImage: '',
+                backgroundVideoUrl: '',
+                backgroundVideoType: 'mp4',
+                backgroundVideoAutoplay: true,
+                backgroundVideoLoop: true,
+                backgroundVideoMuted: true,
                 // Menu options for investment websites
                 addToMenu: false,
                 menuTitle: '',
@@ -4752,12 +4758,72 @@ break;
             // Function to update background
             content.updateBackground = function() {
                 const data = content._innerSectionData;
+
+                // Remove any previous video layer
+                const existingVideo = content.querySelector('.inner-section-video-layer');
+                if (existingVideo && existingVideo.parentNode === content) {
+                    existingVideo.remove();
+                }
+
                 if (data.backgroundType === 'color') {
                     content.style.backgroundColor = data.backgroundColor;
                     content.style.backgroundImage = 'none';
                     content.style.backgroundPosition = '';
                     content.style.backgroundSize = '';
                     content.style.backgroundAttachment = '';
+                } else if (data.backgroundType === 'video' && data.backgroundVideoUrl) {
+                    content.style.backgroundColor = 'transparent';
+                    content.style.backgroundImage = 'none';
+                    content.style.backgroundPosition = '';
+                    content.style.backgroundSize = '';
+                    content.style.backgroundAttachment = '';
+
+                    // Ensure positioning for overlay
+                    if (getComputedStyle(content).position === 'static') {
+                        content.style.position = 'relative';
+                    }
+
+                    const layer = document.createElement('div');
+                    layer.className = 'inner-section-video-layer';
+                    layer.style.position = 'absolute';
+                    layer.style.inset = '0';
+                    layer.style.zIndex = '0';
+                    layer.style.overflow = 'hidden';
+                    layer.style.pointerEvents = 'none';
+
+                    const videoEl = document.createElement('video');
+                    videoEl.src = data.backgroundVideoUrl;
+                    
+                    // Use setAttribute for autoplay/loop to ensure proper HTML attributes
+                    if (data.backgroundVideoAutoplay !== false) {
+                        videoEl.setAttribute('autoplay', '');
+                    }
+                    if (data.backgroundVideoLoop !== false) {
+                        videoEl.setAttribute('loop', '');
+                    }
+                    // ALWAYS mute background videos (required for autoplay in modern browsers)
+                    videoEl.setAttribute('muted', '');
+                    
+                    videoEl.playsInline = true;
+                    videoEl.setAttribute('webkit-playsinline', 'true');
+                    videoEl.style.width = '100%';
+                    videoEl.style.height = '100%';
+                    videoEl.style.objectFit = 'cover';
+                    videoEl.style.position = 'absolute';
+                    videoEl.style.top = '0';
+                    videoEl.style.left = '0';
+                    videoEl.style.pointerEvents = 'none';
+
+                    layer.appendChild(videoEl);
+                    content.appendChild(layer);
+                    
+                    // Ensure all content children are positioned above the video layer
+                    Array.from(content.children).forEach((child) => {
+                        if (child !== layer) {
+                            child.style.position = 'relative';
+                            child.style.zIndex = '1';
+                        }
+                    });
                 } else if (data.backgroundType === 'image' && data.backgroundImage) {
                     // Fixed gradient with your exact format
                     content.style.backgroundColor = 'transparent';
@@ -5601,6 +5667,7 @@ break;
                 type: 'youtube',
                 isUploadedFile: false,
                 autoplay: false,
+                controls: true,
                 width: null,
                 height: null,
                 videoFormat: 'mp4'
@@ -5617,6 +5684,8 @@ break;
                 // Get custom dimensions
                 const customWidth = content._videoData.width ? content._videoData.width + 'px' : '100%';
                 const customHeight = content._videoData.height ? content._videoData.height + 'px' : '200';
+                const showControls = content._videoData.controls !== false;
+                const controlsAttr = showControls ? 'controls' : '';
                 
                 if (url) {
                     console.log('URL is valid, updating video display');
@@ -5625,7 +5694,7 @@ break;
                         const autoplayAttr = content._videoData.autoplay ? 'autoplay muted' : '';
                         const videoFormat = content._videoData.videoFormat || 'mp4';
                         const videoHTML = `
-                            <video width="${customWidth}" height="${customHeight}" controls ${autoplayAttr} style="border-radius: 8px; max-width: 100%; pointer-events: none; opacity: 0.8;" preload="metadata">
+                            <video width="${customWidth}" height="${customHeight}" ${controlsAttr} ${autoplayAttr} style="border-radius: 8px; max-width: 100%; pointer-events: none; opacity: 0.8;" preload="metadata">
                                 <source src="${url}" type="video/${videoFormat}">
                                 Your browser does not support the video tag.
                             </video>
@@ -5648,8 +5717,9 @@ break;
                         
                         if (videoId) {
                             const autoplayParam = content._videoData.autoplay ? '&autoplay=1&mute=1' : '';
+                            const controlsParam = showControls ? '&controls=1' : '&controls=0';
                             container.innerHTML = `
-                                <iframe width="${customWidth}" height="${customHeight}" src="https://www.youtube.com/embed/${videoId}?rel=0${autoplayParam}" frameborder="0" allowfullscreen style="max-width: 100%; pointer-events: none; opacity: 0.8;"></iframe>
+                                <iframe width="${customWidth}" height="${customHeight}" src="https://www.youtube.com/embed/${videoId}?rel=0${autoplayParam}${controlsParam}" frameborder="0" allowfullscreen style="max-width: 100%; pointer-events: none; opacity: 0.8;"></iframe>
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none;">YouTube Video Preview (Click to Edit)</div>
                             `;
                             container.style.position = 'relative'; // For overlay positioning
@@ -7984,6 +8054,7 @@ break;
         console.log('Current active device:', document.querySelector('.device-tabs .device-tab.active')?.dataset?.device || 'none');
 
         const type = selectedComponent.dataset.type;
+        const visibility = selectedComponent.dataset.visibility || 'both';
         
         if (!content) {
             propertyControls.innerHTML = '<p>Component content not ready. Please try selecting again.</p>';
@@ -8348,6 +8419,7 @@ break;
                     <select onchange="updateInnerSectionField(this.value, 'backgroundType'); toggleInnerSectionBackgroundType(this.value)">
                         <option value="color" ${innerSectionData.backgroundType === 'color' ? 'selected' : ''}>Color</option>
                         <option value="image" ${innerSectionData.backgroundType === 'image' ? 'selected' : ''}>Image</option>
+                        <option value="video" ${innerSectionData.backgroundType === 'video' ? 'selected' : ''}>Video</option>
                     </select>
                 </div>
                 
@@ -8363,6 +8435,40 @@ break;
                         <small style="display: block; color: #666; margin-top: 6px;">Accepted: JPEG, PNG, GIF, WebP, SVG • Max: 2MB</small>
                         ${innerSectionData.backgroundImage ? `<div style="margin-top: 8px;"><img src="${innerSectionData.backgroundImage}" style="max-width: 100%; max-height: 100px; border-radius: 4px; border: 1px solid #ddd;"></div>` : ''}
                         <small class="text-muted" style="display: block; margin-top: 8px;">Use the parallax component for parallax effects</small>
+                    </div>
+                </div>
+
+                <div id="innerSectionBackgroundVideoSettings" style="display: ${innerSectionData.backgroundType === 'video' ? 'block' : 'none'};}">
+                    <div class="form-group">
+                        <label>Upload Background Video</label>
+                        <input type="file" accept="video/*" onchange="uploadInnerSectionBackgroundVideo(event)">
+                        <small style="display: block; color: #666; margin-top: 6px;">Accepted: MP4, WebM, OGG • Max: 50MB</small>
+                        ${innerSectionData.backgroundVideoUrl && !innerSectionData.backgroundVideoUrl.includes('youtu') ? `<div style="margin-top: 8px; padding: 8px; background:#f0f0f0; border-radius:4px;"><small style="color:#666;">✓ Video uploaded (${innerSectionData.backgroundVideoType.toUpperCase()})</small></div>` : ''}
+                    </div>
+                    <div class="form-group" style="border-top: 1px solid #ddd; padding-top: 10px;">
+                        <label style="font-weight: 600; color: #666;">OR enter Video URL</label>
+                        <input type="text" value="${innerSectionData.backgroundVideoUrl || ''}" onchange="updateInnerSectionField(this.value, 'backgroundVideoUrl'); if (getContentElement(selectedComponent)?.updateBackground) { getContentElement(selectedComponent).updateBackground(); }" placeholder="https://example.com/video.mp4">
+                        <small class="text-muted">Direct video URL (MP4/WebM/OGG). For YouTube, paste the embed or share link.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Video Format</label>
+                        <select onchange="updateInnerSectionField(this.value, 'backgroundVideoType'); if (getContentElement(selectedComponent)?.updateBackground) { getContentElement(selectedComponent).updateBackground(); }">
+                            <option value="mp4" ${innerSectionData.backgroundVideoType === 'mp4' ? 'selected' : ''}>MP4</option>
+                            <option value="webm" ${innerSectionData.backgroundVideoType === 'webm' ? 'selected' : ''}>WebM</option>
+                            <option value="ogg" ${innerSectionData.backgroundVideoType === 'ogg' ? 'selected' : ''}>OGG</option>
+                            <option value="youtube" ${innerSectionData.backgroundVideoType === 'youtube' ? 'selected' : ''}>YouTube Embed URL</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <label style="display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" ${innerSectionData.backgroundVideoAutoplay !== false ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'backgroundVideoAutoplay'); if (getContentElement(selectedComponent)?.updateBackground) { getContentElement(selectedComponent).updateBackground(); }"> Autoplay
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" ${innerSectionData.backgroundVideoLoop !== false ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'backgroundVideoLoop'); if (getContentElement(selectedComponent)?.updateBackground) { getContentElement(selectedComponent).updateBackground(); }"> Loop
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" ${innerSectionData.backgroundVideoMuted !== false ? 'checked' : ''} onchange="updateInnerSectionField(this.checked, 'backgroundVideoMuted'); if (getContentElement(selectedComponent)?.updateBackground) { getContentElement(selectedComponent).updateBackground(); }"> Muted
+                        </label>
                     </div>
                 </div>
                 
@@ -8704,6 +8810,7 @@ break;
                 const currentUrl = content._videoData ? content._videoData.url : '';
                 const currentType = content._videoData ? content._videoData.type : 'youtube';
                 const autoplayEnabled = content._videoData ? content._videoData.autoplay : false;
+                const showControls = content._videoData ? content._videoData.controls !== false : true;
                 const currentWidth = content._videoData ? content._videoData.width : null;
                 const currentHeight = content._videoData ? content._videoData.height : null;
                 specificControls = `
@@ -8757,6 +8864,14 @@ break;
                             Enable Autoplay (Frontend Only)
                         </label>
                         <small class="text-muted">Video will autoplay when loaded on the frontend</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" ${showControls ? 'checked' : ''} onchange="updateVideoControls(this.checked)"> 
+                            Show Video Controls
+                        </label>
+                        <small class="text-muted">Hide this to remove the player's native controls</small>
                     </div>
                     
                     <div class="form-group">
@@ -11010,6 +11125,14 @@ break;
                     ${componentInfo.name}
                 </h5>
             </div>
+            <div class="form-group">
+                <label>Visibility</label>
+                <select onchange="updateComponentVisibility(this.value)">
+                    <option value="both" ${visibility === 'both' ? 'selected' : ''}>Show on desktop & mobile</option>
+                    <option value="desktop" ${visibility === 'desktop' ? 'selected' : ''}>Desktop only</option>
+                    <option value="mobile" ${visibility === 'mobile' ? 'selected' : ''}>Mobile only</option>
+                </select>
+            </div>
             ${specificControls}
             ${commonControls}
             <!-- Responsive Margin Controls -->
@@ -12412,6 +12535,55 @@ function updateInvestCtaField(value, field) {
     }
 }
 
+function uploadInnerSectionBackgroundVideo(event) {
+    if (!selectedComponent) return;
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('video/')) {
+        showUploadNotification('Please select a valid video file.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showUploadNotification('File size exceeds the maximum allowed size of 50MB.', 'error');
+        event.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = getContentElement(selectedComponent);
+        if (!content._innerSectionData) return;
+        
+        content._innerSectionData.backgroundVideoUrl = e.target.result;
+        
+        // Auto-detect format from file type
+        if (file.type.includes('mp4')) {
+            content._innerSectionData.backgroundVideoType = 'mp4';
+        } else if (file.type.includes('webm')) {
+            content._innerSectionData.backgroundVideoType = 'webm';
+        } else if (file.type.includes('ogg')) {
+            content._innerSectionData.backgroundVideoType = 'ogg';
+        }
+        
+        if (content.updateBackground) {
+            content.updateBackground();
+        }
+        updatePropertyPanel();
+        showUploadNotification('Background video uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the video file.', 'error');
+        event.target.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
 function uploadInnerSectionBackgroundImage(event) {
     if (!selectedComponent) return;
     const file = event.target.files[0];
@@ -12432,24 +12604,22 @@ function uploadInnerSectionBackgroundImage(event) {
         return;
     }
     
-    {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const content = getContentElement(selectedComponent);
-            if (!content._innerSectionData) return;
-            content._innerSectionData.backgroundImage = e.target.result;
-            if (content.updateBackground) {
-                content.updateBackground();
-            }
-            updatePropertyPanel();
-            showUploadNotification('Background image uploaded successfully!', 'success');
-        };
-        reader.onerror = function() {
-            showUploadNotification('Failed to read the image file.', 'error');
-            event.target.value = '';
-        };
-        reader.readAsDataURL(file);
-    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = getContentElement(selectedComponent);
+        if (!content._innerSectionData) return;
+        content._innerSectionData.backgroundImage = e.target.result;
+        if (content.updateBackground) {
+            content.updateBackground();
+        }
+        updatePropertyPanel();
+        showUploadNotification('Background image uploaded successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showUploadNotification('Failed to read the image file.', 'error');
+        event.target.value = '';
+    };
+    reader.readAsDataURL(file);
 }
 
 function updateInnerSectionField(value, field) {
@@ -12489,10 +12659,18 @@ function updateInnerSectionField(value, field) {
             break;
         case 'backgroundType':
         case 'backgroundImage':
+        case 'backgroundVideoUrl':
+        case 'backgroundVideoType':
+        case 'backgroundVideoAutoplay':
+        case 'backgroundVideoLoop':
+        case 'backgroundVideoMuted':
             // Update background using the updateBackground function
             if (content.updateBackground) {
                 content.updateBackground();
             }
+            break;
+        case 'visibility':
+            selectedComponent.dataset.visibility = value;
             break;
         case 'addToMenu':
             // Handle menu addition with visual feedback
@@ -12542,13 +12720,20 @@ function updateInnerSectionField(value, field) {
 function toggleInnerSectionBackgroundType(type) {
     const colorGroup = document.getElementById('innerSectionBackgroundColor');
     const imageGroup = document.getElementById('innerSectionBackgroundImageSettings');
+    const videoGroup = document.getElementById('innerSectionBackgroundVideoSettings');
     
     if (type === 'color') {
         if (colorGroup) colorGroup.style.display = 'block';
         if (imageGroup) imageGroup.style.display = 'none';
+        if (videoGroup) videoGroup.style.display = 'none';
     } else if (type === 'image') {
         if (colorGroup) colorGroup.style.display = 'none';
         if (imageGroup) imageGroup.style.display = 'block';
+        if (videoGroup) videoGroup.style.display = 'none';
+    } else if (type === 'video') {
+        if (colorGroup) colorGroup.style.display = 'none';
+        if (imageGroup) imageGroup.style.display = 'none';
+        if (videoGroup) videoGroup.style.display = 'block';
     }
 }
 
@@ -13766,6 +13951,17 @@ function updateResponsiveCSS() {
     document.head.appendChild(style);
 }
 
+// Update device visibility for selected component
+function updateComponentVisibility(value) {
+    if (!selectedComponent) return;
+    selectedComponent.dataset.visibility = value;
+    const content = getContentElement(selectedComponent);
+    // Keep inner-section data in sync so panel reflects persisted choice
+    if (content && content._innerSectionData) {
+        content._innerSectionData.visibility = value;
+    }
+}
+
 // Apply responsive styles when device view changes
 function applyResponsiveStyles() {
     const currentDevice = getCurrentPreviewDevice();
@@ -14106,6 +14302,15 @@ function applyResponsiveStyles() {
             if (content && content._videoData) {
                 content._videoData.autoplay = enabled;
                 // Re-render video with new autoplay setting
+                content.updateVideo(content._videoData.url, content._videoData.type);
+            }
+        }
+
+        function updateVideoControls(showControls) {
+            if (!selectedComponent) return;
+            const content = getContentElement(selectedComponent);
+            if (content && content._videoData) {
+                content._videoData.controls = showControls;
                 content.updateVideo(content._videoData.url, content._videoData.type);
             }
         }
@@ -15469,6 +15674,7 @@ function applyResponsiveStyles() {
         const content = getContentElement(component);
         let data = { type };
         console.log('Initial data object type property:', data.type);
+        data.visibility = component.dataset.visibility || 'both';
         // Save common styles using CSS property names
         if (content && content.style) {
           data.style = {
@@ -15786,6 +15992,7 @@ function applyResponsiveStyles() {
                 const compType = comp.dataset.type;
                 const compContent = getContentElement(comp);
                 let compData = { type: compType };
+                compData.visibility = comp.dataset.visibility || 'both';
                 
                 // Save complete component data (same as main components)
                                     if (compContent) {
@@ -16126,6 +16333,7 @@ function applyResponsiveStyles() {
           
           // Create the actual component and add it to the auto-section
           const actualComponent = createComponent(data.type);
+          actualComponent.dataset.visibility = data.visibility || 'both';
           actualComponent.id = `component-${idx}`;
           const actualContent = getContentElement(actualComponent);
           
@@ -16991,6 +17199,7 @@ function applyResponsiveStyles() {
         } else {
           // This is already an inner-section, create it normally
           component = createComponent(data.type);
+                    component.dataset.visibility = data.visibility || (data.innerSectionData && data.innerSectionData.visibility) || 'both';
           component.id = `component-${idx}`;
         }
         
@@ -17130,6 +17339,7 @@ function applyResponsiveStyles() {
                   url: '',
                   type: 'youtube',
                   autoplay: false,
+                                    controls: true,
                   width: null,
                   height: null,
                   videoFormat: 'mp4'
@@ -17648,8 +17858,10 @@ function applyResponsiveStyles() {
                               url: '',
                               type: 'youtube',
                               autoplay: false,
+                                                            controls: true,
                               width: null,
-                              height: null
+                                                            height: null,
+                                                            videoFormat: 'mp4'
                             };
                           }
                           
@@ -18708,6 +18920,7 @@ function applyResponsiveStyles() {
       
       const type = data.componentType || data.type;
       const component = createComponent(type);
+    component.dataset.visibility = data.visibility || 'both';
       
       if (!component) {
         console.error('Failed to create component of type:', type);
@@ -18734,6 +18947,8 @@ function applyResponsiveStyles() {
           if (data.innerSectionData && content) {
             const sectionData = data.innerSectionData;
             content._innerSectionData = sectionData;
+                        // Ensure visibility is present on data for panel defaults
+                        content._innerSectionData.visibility = data.visibility || sectionData.visibility || 'both';
             
             // Update columns first
             if (content.updateColumns) {
@@ -18745,12 +18960,16 @@ function applyResponsiveStyles() {
               content.style.backgroundColor = sectionData.backgroundColor;
             }
             
-            if (sectionData.backgroundType === 'image' && sectionData.backgroundImage) {
-              content.style.backgroundImage = `linear-gradient(#000,#000c 18%), url(${sectionData.backgroundImage})`;
-              content.style.backgroundPosition = '0 0, 50%';
-              content.style.backgroundSize = 'auto, cover';
-              content.style.backgroundAttachment = 'scroll, scroll';
-            }
+                        if (sectionData.backgroundType === 'image' && sectionData.backgroundImage) {
+                            content.style.backgroundImage = `linear-gradient(#000,#000c 18%), url(${sectionData.backgroundImage})`;
+                            content.style.backgroundPosition = '0 0, 50%';
+                            content.style.backgroundSize = 'auto, cover';
+                            content.style.backgroundAttachment = 'scroll, scroll';
+                        }
+                        // Apply video background via shared helper
+                        if (content.updateBackground) {
+                            content.updateBackground();
+                        }
             
             // Apply padding, margin, borders
             if (sectionData.padding) content.style.padding = sectionData.padding;

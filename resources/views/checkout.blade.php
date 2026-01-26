@@ -1,29 +1,13 @@
 @php
-    // Get website data based on current domain
     $url = url()->current();
     $domain = parse_url($url, PHP_URL_HOST);
     $check = \App\Models\Website::where('domain', $domain)->first();
-
-    if ($check) {
-        $user_id = $check->user_id;
-        $setting = \App\Models\Setting::where('user_id', $user_id)->first();
-        $header = \App\Models\Header::where('user_id', $user_id)->first();
-        $footer = \App\Models\Footer::where('user_id', $user_id)->first();
-        $website = $check;
-        
-        // Load custom fonts for dynamic font support
-        $customFonts = \App\Models\CustomFont::get();
-        
-        // Get payment method from website settings
-        $paymentMethod = $website->payment_method ?? 'stripe'; // stripe or authorize_net
-    } else {
-        $setting = null;
-        $header = null;
-        $footer = null;
-        $website = null;
-        $customFonts = collect();
-        $paymentMethod = 'stripe';
-    }
+    $header = $check ? \App\Models\Header::where('website_id', $check->id)->first() : null;
+    $footer = $check ? \App\Models\Footer::where('website_id', $check->id)->first() : null;
+    $setting = $check ? \App\Models\Setting::where('user_id', $check->user_id)->first() : null;
+    $customFonts = \App\Models\CustomFont::get();
+    $website = $check;
+    $paymentMethod = $website ? ($website->payment_method ?? 'stripe') : 'stripe';
 @endphp
 
 <!DOCTYPE html>
@@ -32,26 +16,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $setting && $setting->company_name ? $setting->company_name . ' | Checkout' : 'Checkout' }}</title>
+    <title>{{ $check->name ?? 'Checkout' }}</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <style>body{background:#f9fafb;}</style>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('auction.css') }}">
     <link rel="stylesheet" href="{{ asset('checkout.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Custom Fonts CSS -->
+    <!-- Google Fonts - Outfit to match page-investment -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="{{ route('fonts.css') }}" rel="stylesheet">
     
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
     <style>
+    body{background:#f9fafb;}
+    .form-control{
+        margin-bottom: 0.5rem;
+        padding: 0.8rem;
+    }
+    @if(isset($customFonts) && $customFonts->count() > 0)
+        @foreach($customFonts as $font)
+        @font-face {
+            font-family: '{{ $font->font_family }}';
+            src: url('{{ asset('storage/' . $font->file_path) }}') format('{{ $font->file_format == 'ttf' ? 'truetype' : ($font->file_format == 'otf' ? 'opentype' : $font->file_format) }}');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        .ql-font-{{ $font->font_family }} { font-family: '{{ $font->font_family }}', sans-serif !important; }
+        @endforeach
+    @endif
+
+    /* System font classes (for Quill editor content) */
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* Quill size classes (align with Quill editor defaults) */
+    .ql-size-small { font-size: 0.75em !important; }
+    .ql-size-large { font-size: 1.5em !important; }
+    .ql-size-huge  { font-size: 2.5em !important; }
+
+    /* Menu Font Family Styling (match page-investment) */
+    @if(isset($header) && $header && $header->menu_font_family)
+    .navbar .nav-link,
+    .navbar .navbar-brand,
+    .navbar .btn {
+        font-family: '{{ $header->menu_font_family }}', sans-serif !important;
+    }
+    @endif
+
+    /* Contact Topbar Font Family Styling */
+    @if(isset($header) && $header && $header->contact_topbar_font_family)
+    .contact-topbar,
+    .contact-topbar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->contact_topbar_font_family }}', sans-serif !important;
+    }
+    @endif
+
+    /* Investor Exclusives Font Family Styling */
+    @if(isset($header) && $header && $header->investor_exclusives_font_family)
+    .investor-exclusives-bar,
+    .investor-exclusives-bar *:not(i):not(.fas):not(.fa):not(.far):not(.fab):not(.fal):not(.fad) {
+        font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
+    }
+    @endif
+    </style>
     <style>
         .checkout-container {
             max-width: 1200px;
@@ -231,26 +269,354 @@
                 position: relative;
                 top: auto;
             }
+            .checkout-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .checkout-left,
+            .checkout-right {
+                padding: 20px !important;
+            }
+            .checkout-right > div {
+                max-width: 100% !important;
+            }
+            /* Prevent price overflow on mobile */
+            .order-item-grid {
+                grid-template-columns: 60px 1fr 90px !important;
+                gap: 8px !important;
+            }
+            .order-item-image {
+                width: 60px !important;
+                height: 60px !important;
+                font-size: 30px !important;
+            }
+            .order-item-content h4 {
+                font-size: 14px !important;
+                line-height: 1.3;
+            }
+            .order-item-content p {
+                font-size: 12px !important;
+            }
+            .order-item-price {
+                font-size: 15px !important;
+                word-break: break-word;
+            }
+            /* Make card logos wrap and scale on mobile */
+            .payment-card-logos {
+                flex-wrap: wrap;
+                gap: 4px !important;
+                max-width: 140px;
+            }
+            .payment-card-logos img {
+                width: 32px !important;
+                height: 20px !important;
+            }
         }
+    </style>
+
+    <style>
+        /* Sticky Bottom Investment CTA Styles */
+        #sticky-investment-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #000000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            /* border-top: 1px solid #e0e0e0; */
+        }
+
+        .sticky-cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            max-width: 100%;
+        }
+
+        .share-price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding-left: 14%;
+
+        }
+
+        .price-value {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .price-label {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        /* Add bottom padding to body to prevent content overlap - Investment websites only */
+        @if($check && $check->isInvestment())
+        body {
+            padding-bottom: 70px;
+        }
+        @endif
+
+        /* Remove bottom padding on desktop */
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+            
+            #sticky-investment-cta {
+                display: none !important;
+            }
+
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 360px) {
+            .sticky-cta-content {
+                padding: 10px 12px;
+            }
+            
+            .price-value {
+                font-size: 16px;
+            }
+            
+            .invest-now-btn {
+                padding: 10px 24px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+
+            footer{
+                margin-bottom: 0px !important;
+            }
+        }
+
+        /* System font classes (for Quill editor content) */
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* Quill size classes (align with Quill editor defaults) */
+    .ql-size-small { font-size: 0.75em !important; }
+    .ql-size-large { font-size: 1.5em !important; }
+    .ql-size-huge  { font-size: 2.5em !important; }
+
+    /* Quill.js Class-based Font Styles for Frontend */
+    .ql-size-6px { font-size: 6px !important; }
+    .ql-size-8px { font-size: 8px !important; }
+    .ql-size-9px { font-size: 9px !important; }
+    .ql-size-10px { font-size: 10px !important; }
+    .ql-size-12px { font-size: 12px !important; }
+    .ql-size-14px { font-size: 14px !important; }
+    .ql-size-16px { font-size: 16px !important; }
+    .ql-size-18px { font-size: 18px !important; }
+    .ql-size-20px { font-size: 20px !important; }
+    .ql-size-24px { font-size: 24px !important; }
+    .ql-size-28px { font-size: 28px !important; }
+    .ql-size-32px { font-size: 32px !important; }
+    .ql-size-36px { font-size: 36px !important; }
+    .ql-size-40px { font-size: 40px !important; }
+    .ql-size-48px { font-size: 48px !important; }
+
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: 'Helvetica Neue', Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', Times, serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* SEO-friendly semantic heading styles for frontend */
+    h1, .ql-header-1 {
+        font-size: 2.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.2 !important;
+        margin: 1rem 0 0.5rem 0 !important;
+    }
+    h2, .ql-header-2 {
+        font-size: 2rem !important;
+        font-weight: bold !important;
+        line-height: 1.3 !important;
+        margin: 0.8rem 0 0.4rem 0 !important;
+    }
+    h3, .ql-header-3 {
+        font-size: 1.75rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.6rem 0 0.3rem 0 !important;
+    }
+    h4, .ql-header-4 {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.5rem 0 0.25rem 0 !important;
+    }
+    h5, .ql-header-5 {
+        font-size: 1.25rem !important;
+        font-weight: bold !important;
+        line-height: 1.5 !important;
+        margin: 0.4rem 0 0.2rem 0 !important;
+    }
     </style>
 </head>
 
-<body>
+<body style="background-color:#f9fafb; margin:0; padding:0;">
+    @if ($header && $header->status == 1)
+        @if($header->show_contact_topbar)
+            <div class="contact-topbar" style="background: {{ $header->contact_topbar_bg_color ?? '#000000' }}; padding: 8px 0; font-size: 14px; height: 35px;">
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        @if($header->contact_phone)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-phone me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="tel:{{ $header->contact_phone }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_phone }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_email)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item me-4 mb-1">
+                                <i class="fas fa-envelope me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <a href="mailto:{{ $header->contact_email }}" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};">
+                                    {{ $header->contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+                        @if($header->contact_cta_text)
+                        <div class="col-3 col-md-auto">
+                            <div class="contact-item mb-1">
+                                <i class="fas fa-map-marker-alt me-2" style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }};"></i>
+                                <span style="color: {{ $header->contact_topbar_text_color ?? '#ffffff' }}; text-decoration : underline !important;">
+                                    {{ $header->contact_cta_text }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:100vh;margin:0;">
+        @if ($check && ($check->is_main_site ?? 0) == 1)
+            @include('layouts.main_header')
+        @else
+            @include('layouts.nav')
+        @endif
+
+        @if($check && $header && $header->show_investor_exclusives)
+            <div class="investor-exclusives-bar" style="background: {{ $header->topbar_background_color ?? '#1e3a8a' }};">
+                <div class="investor-exclusives-content">
+                    <a href="{{ $header->investor_exclusives_url ?? '#' }}" style="text-decoration: none;">
+                        <p class="investor-exclusives-text" style="color: {{ $header->topbar_text_color ?? '#ffffff' }}; font-size: 13px; padding-top: 5px; font-family: Outfit,sans-serif;text-transform: uppercase; padding-bottom: 4px;">
+                            {{ $header->investor_exclusives_text ?? 'Exclusive access for investors' }}
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <script>
+                function updateNavbarHeights() {
+                    const navbar = document.querySelector('.navbar');
+                    const contactTopbar = document.querySelector('.contact-topbar');
+                    const investorBar = document.querySelector('.investor-exclusives-bar');
+                    if (navbar) {
+                        const navbarHeight = navbar.offsetHeight;
+                        const contactTopbarHeight = contactTopbar ? contactTopbar.offsetHeight : 0;
+                        const investorBarHeight = investorBar ? investorBar.offsetHeight : 0;
+                        const totalNavHeight = navbarHeight + contactTopbarHeight;
+                        const totalWithInvestorBar = totalNavHeight + investorBarHeight;
+                        const totalHeightRem = totalNavHeight / 16;
+                        const mainContentMargin = (investorBar ? totalWithInvestorBar : totalNavHeight) / 16 + 0.5;
+                        document.documentElement.style.setProperty('--navbar-total-height', `${totalHeightRem}rem`);
+                        document.documentElement.style.setProperty('--main-content-margin-top', `${mainContentMargin}rem`);
+                    }
+                }
+                document.addEventListener('DOMContentLoaded', () => setTimeout(updateNavbarHeights, 50));
+                window.addEventListener('resize', updateNavbarHeights);
+            </script>
+        @endif
+    @endif
+
+    <main>
+        @if ($check && ($check->type ?? null) === 'investment')
+        <style>
+            /* Match page-investment navbar compact padding */
+            .navbar-expand-xl{
+                padding-top: 0px !important;
+                padding-bottom: 0px !important;
+            }
+        </style>
+        @endif
+
+<div class="checkout-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - var(--main-content-margin-top, 7rem));margin:0;">
     <!-- Left Section: Order Items -->
-    <div style="background:#fff;padding:40px;overflow-y:auto;">
-        <div style="max-width:500px;">
+    <div class="checkout-left" style="background:#fff;padding:40px;overflow-y:auto;">
+        <div style="max-width:100%;">
             <h3 style="font-size:24px;font-weight:700;margin-bottom:30px;color:#2c3e50;">Order Summary</h3>
             
             <div style="border:1px solid #eee;border-radius:8px;padding:20px;margin-bottom:30px;">
                 @foreach($items as $item)
                     <div style="margin-bottom:20px;">
-                        <div style="display:grid;grid-template-columns:80px 1fr 120px;gap:15px;align-items:start;">
-                            <div style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ccc;">
+                        <div class="order-item-grid" style="display:grid;grid-template-columns:80px 1fr 120px;gap:15px;align-items:start;">
+                            <div class="order-item-image" style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ccc;">
                                 <i class="fas fa-image"></i>
                             </div>
-                            <div>
+                            <div class="order-item-content">
                                 <h4 style="margin:0 0 8px 0;font-size:16px;font-weight:600;color:#2c3e50;">{{ $item['name'] }}</h4>
                                 <p style="margin:0;font-size:13px;color:#95a5a6;">{{ ucfirst($item['type']) }}</p>
                                 @if($item['quantity'] > 1)
@@ -258,7 +624,7 @@
                                 @endif
                             </div>
                             <div style="text-align:right;">
-                                <div style="font-size:18px;font-weight:700;color:#667eea;">${{ number_format($item['total'], 2) }}</div>
+                                <div class="order-item-price" style="font-size:18px;font-weight:700;color:#667eea;">${{ number_format($item['total'], 2) }}</div>
                             </div>
                         </div>
                     </div>
@@ -275,140 +641,260 @@
                     <span style="text-align:right;font-weight:600;color:#2c3e50;">${{ number_format($subtotal ?? $total, 2) }}</span>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
-                    <span style="color:#2c3e50;font-weight:500;">Tax</span>
-                    <span style="text-align:right;font-weight:600;color:#2c3e50;">${{ number_format($tax ?? 0, 2) }}</span>
+                    <span style="color:#2c3e50;font-weight:500;">Processing Fee</span>
+                    <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($website->paymentSettings?->fee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
+                </div>
+                <!-- Tip row in summary (managed by tipping component) -->
+                <div id="tip-row" style="display:none;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
+                    <span style="color:#2c3e50;font-weight:500;">Tip</span>
+                    <span id="tip-amount-display" style="text-align:right;font-weight:600;color:#667eea;">$0.00</span>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;border-top:2px solid #eee;padding-top:15px;">
                     <span style="font-size:18px;font-weight:700;color:#2c3e50;">Total</span>
-                    <span style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ number_format($total, 2) }}</span>
+                    <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ rtrim(rtrim(number_format(((($subtotal ?? $total) / 100) * ($website->paymentSettings?->fee ?? 2.9)) + ($subtotal ?? $total), 2, '.', ''), '0'), '.') }}</span>
                 </div>
             </div>
+            
+            <!-- Global hidden tip fields used by tipping component -->
+            <input type="hidden" id="tip-amount-field" value="0">
+            <input type="hidden" id="tip-percentage-field" value="0">
+            <input type="hidden" id="tip-enabled-field" value="0">
+            
+            {{-- Tipping Component (left side) --}}
+            @include('components.tipping', [
+                'baseAmount' => $total,
+                'primaryColor' => '#667eea',
+                'processingFee' => $website->paymentSettings?->fee ?? 2.9
+            ])
         </div>
     </div>
 
-    <!-- Right Section: Payment Form -->
-    <div style="background:#f9fafb;padding:40px;overflow-y:auto;">
-        <div style="max-width:500px;">
-            <h3 style="font-size:24px;font-weight:700;margin-bottom:30px;color:#2c3e50;">Payment Details</h3>
+    <!-- Right Section: Payment Form (matches stripe/authorize sections) -->
+    <div class="checkout-right" style="background:#f9fafb;padding:40px;overflow-y:auto;">
+        <div style="max-width:100%;">
+            <h3 style="font-size:24px;font-weight:700;margin-bottom:20px;color:#2c3e50;">Payment Details</h3>
 
-            <form id="checkoutForm" action="{{ route('checkout.process') }}" method="POST" style="display:flex;flex-direction:column;gap:0;">
-                @csrf
+            @php $payment = \App\Models\PaymentSetting::find(1); @endphp
 
-                <!-- Personal Information -->
-                <div style="margin-bottom:25px;">
-                    <h4 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:15px;color:#2c3e50;">Personal Information</h4>
-                    
-                    @if($requiresEmail)
-                        <div style="margin-bottom:15px;">
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">Email Address *</label>
-                            <input type="email" name="email" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;" required>
-                        </div>
-                    @else
-                        <p style="font-size:13px;color:#95a5a6;margin-bottom:15px;">Logged in as: <strong>{{ Auth::user()->email }}</strong></p>
-                        <input type="hidden" name="email" value="{{ Auth::user()->email }}">
-                    @endif
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                        <div>
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">First Name *</label>
-                            <input type="text" name="first_name" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;" required value="{{ Auth::user()->first_name ?? '' }}">
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">Last Name *</label>
-                            <input type="text" name="last_name" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;" required value="{{ Auth::user()->last_name ?? '' }}">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Billing Address -->
-                <div style="margin-bottom:25px;">
-                    <h4 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:15px;color:#2c3e50;">Billing Address</h4>
-                    
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">Street Address</label>
-                        <input type="text" name="address" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;">
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-bottom:15px;">
-                        <div>
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">City</label>
-                            <input type="text" name="city" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;">
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">State</label>
-                            <input type="text" name="state" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;">
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">ZIP Code</label>
-                            <input type="text" name="zip" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;">
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#2c3e50;">Country</label>
-                        <input type="text" name="country" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box;">
-                    </div>
-                </div>
-
-                <!-- Payment Method -->
-                <div style="margin-bottom:25px;">
-                    <h4 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:15px;color:#2c3e50;">Payment Method</h4>
-                    
-                    <div id="paymentMethodContainer" style="display:grid;gap:15px;">
-                        @if($paymentMethod === 'stripe')
-                            <div style="padding:15px;border:2px solid #667eea;border-radius:8px;cursor:pointer;background:#f9fafb;">
-                                <input type="radio" name="payment_method" value="stripe" checked style="margin-right:10px;">
-                                <label style="font-weight:500;color:#2c3e50;cursor:pointer;display:inline;">Credit/Debit Card (Stripe)</label>
+            @if($paymentMethod === 'authorize_net')
+                <div style="background:#fff;border:1px solid #dedede;border-radius:10px;overflow:hidden;">
+                    <div style="padding:1rem 1rem 0.5rem 1rem;border-bottom:1px solid #dedede;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <h5 style="margin:0;font-weight:700;">Pay with card (Authorize.net)</h5>
+                            <div class="payment-card-logos" style="display:inline-flex;gap:6px;">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa.sxIq5Dot.svg" alt="VISA" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/mastercard.1c4_lyMp.svg" alt="MASTERCARD" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/amex.Csr7hRoy.svg" alt="AMEX" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/discover.C7UbFpNb.svg" alt="DISCOVER" width="38" height="24">
                             </div>
-                        @elseif($paymentMethod === 'authorize_net')
-                            <div style="padding:15px;border:2px solid #667eea;border-radius:8px;cursor:pointer;background:#f9fafb;">
-                                <input type="radio" name="payment_method" value="authorize_net" checked style="margin-right:10px;">
-                                <label style="font-weight:500;color:#2c3e50;cursor:pointer;display:inline;">Credit/Debit Card (Authorize.net)</label>
-                            </div>
-                        @else
-                            <div style="padding:15px;border:2px solid #ddd;border-radius:8px;cursor:pointer;background:#f9fafb;">
-                                <input type="radio" name="payment_method" value="stripe" checked style="margin-right:10px;">
-                                <label style="font-weight:500;color:#2c3e50;cursor:pointer;display:inline;">Credit/Debit Card (Stripe)</label>
-                            </div>
-                            <div style="padding:15px;border:2px solid #ddd;border-radius:8px;cursor:pointer;background:#f9fafb;">
-                                <input type="radio" name="payment_method" value="authorize_net" style="margin-right:10px;">
-                                <label style="font-weight:500;color:#2c3e50;cursor:pointer;display:inline;">Credit/Debit Card (Authorize.net)</label>
-                            </div>
-                        @endif
+                        </div>
                     </div>
-                    
-                    <input type="hidden" id="payment_token" name="payment_token" value="">
+                    <form action="{{ route('checkout.process') }}" method="POST" id="authorize-form" style="padding:1rem;background:#f4f4f4;border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
+                        @csrf
+                        <input type="hidden" name="payment_method" value="authorize_net">
+                        <input type="hidden" name="payment_token" id="authorize_payment_token" value="">
+                        <!-- Per-form tip fields (synced from global on submit) -->
+                        <input type="hidden" name="tip_amount" id="tip-amount-authorize" value="0">
+                        <input type="hidden" name="tip_percentage" id="tip-percentage-authorize" value="0">
+                        <input type="hidden" name="tip_enabled" id="tip-enabled-authorize" value="0">
+                        <div data-testid="form-field-wrapper" class="sc-jnLVoO gJUOyx">
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative" style="width:100%;">
+                                    <input type="text" class="form-control pr-5" name="card_number" autocomplete="off" maxlength="16" placeholder="Card number" required style="padding:0.8rem;height:auto;">
+                                    <span class="position-absolute" style="right:15px;top:50%;transform:translateY(-50%);pointer-events:none;">
+                                        <i class="fa fa-lock" aria-hidden="true" style="color:#888;"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="sc-hUpaCq iQeRTc vvv" style="display:inline-flex;width:100%;gap:11px;">
+                                <div style="width:49%;" class="expiry sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ">
+                                    <input type="text" class="form-control" name="expiration_date" maxlength="15" placeholder="Expiration date (MM / YY)" pattern="^(0[1-9]|1[0-2])\ / \d{2}$" autocomplete="off" required style="padding:0.8rem;height:auto;" oninput="formatExpiryDate(this)">
+                                </div>
+                                <div style="width:49%;" class="security sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative">
+                                    <input type="text" class="form-control pr-5" name="cvv" placeholder="Security code" autocomplete="off" required style="padding:0.8rem;height:auto;padding-right:2.5rem;">
+                                    <span class="position-absolute" style="right:13px;top:42%;transform:translateY(-50%);cursor:pointer;" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" title="3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front.">
+                                        <i class="fa fa-question-circle" aria-hidden="true" style="color:#888;"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative" style="width:100%;">
+                                    <input type="text" class="form-control pr-5" name="name_on_card" autocomplete="off" maxlength="100" placeholder="Name on card" required style="padding:0.8rem;height:auto;">
+                                </div>
+                            </div>
+                            <h3 style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:15px;font-weight:bold;padding:10px 7px 10px 7px;">Billing address</h3>
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="row">
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <div class="form-floating">
+                                            <select class="form-select" name="country" id="country" required aria-label="Country/Region"></select>
+                                            <label for="country">Country/Region</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="First name" name="first_name" id="first_name" value="{{ Auth::user()->first_name ?? ''}}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Last name" name="last_name" id="last_name" value="{{ Auth::user()->last_name ?? ''}}" required>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{ $requiresEmail ? '' : (Auth::user()->email ?? '')}}" {{ $requiresEmail ? 'required' : 'readonly' }}>
+                                    </div>
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <input type="text" class="form-control" placeholder="Address" name="address" id="address" required>
+                                        <span class="position-absolute" style="right:26px;top:45%;transform:translateY(-50%);cursor:pointer;">
+                                            <i class="fa fa-search" aria-hidden="true" style="color:#888;"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <input type="text" class="form-control" placeholder="Apartment, suite, etc. (optional)" name="apartment" id="apartment">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" class="form-control" placeholder="City" name="city" id="city" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2 position-relative">
+                                        <div class="form-floating">
+                                            <select class="form-select" name="state" id="state" required aria-label="State"></select>
+                                            <label for="state">State</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" class="form-control" placeholder="ZIP code" name="zip" id="zipcode" required>
+                                    </div>
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <input type="tel" class="form-control pr-5" placeholder="Phone" name="phone" id="phone" required>
+                                        <span class="position-absolute" style="right:26px;top:45%;transform:translateY(-50%);cursor:pointer;" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" title="In case we need to contact you about your order">
+                                            <i class="fa fa-question-circle" aria-hidden="true" style="color:#888;"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="sc-gyZVQB fWNGEI mt-4">
+                            <div class="sc-cVAmsi cvolSU"><button type="submit" class="btn btn-primary" style="width:100%;height:45px;">Pay Now <span id="authorize-pay-btn-amount" style="margin-left:8px;">${{ number_format($total, 2) }}</span></button></div>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Terms -->
-                <div style="margin-bottom:25px;padding:15px;background:#ecf0f1;border-radius:6px;">
-                    <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#2c3e50;cursor:pointer;">
-                        <input type="checkbox" name="terms" required style="margin-top:3px;cursor:pointer;">
-                        <span>I agree to the terms and conditions and privacy policy</span>
-                    </label>
+            @else
+                <div style="background:#fff;border:1px solid #dedede;border-radius:10px;overflow:hidden;">
+                    <div style="padding:1rem 1rem 0.5rem 1rem;border-bottom:1px solid #dedede;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <h5 style="margin:0;font-weight:700;">Pay with card (Stripe)</h5>
+                            <div class="payment-card-logos" style="display:inline-flex;gap:6px;">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa.sxIq5Dot.svg" alt="VISA" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/mastercard.1c4_lyMp.svg" alt="MASTERCARD" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/amex.Csr7hRoy.svg" alt="AMEX" width="38" height="24">
+                                <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/discover.C7UbFpNb.svg" alt="DISCOVER" width="38" height="24">
+                            </div>
+                        </div>
+                    </div>
+                    <form action="{{ route('checkout.process') }}" method="POST" id="stripe-form" style="padding:1rem;background:#f4f4f4;border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
+                        @csrf
+                        <input type="hidden" name="payment_method" value="stripe">
+                        <input type="hidden" name="payment_token" id="stripe_payment_token" value="">
+                        <!-- Per-form tip fields (synced from global on submit) -->
+                        <input type="hidden" name="tip_amount" id="tip-amount-stripe" value="0">
+                        <input type="hidden" name="tip_percentage" id="tip-percentage-stripe" value="0">
+                        <input type="hidden" name="tip_enabled" id="tip-enabled-stripe" value="0">
+                        <div data-testid="form-field-wrapper" class="sc-jnLVoO gJUOyx">
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative" style="width:100%;">
+                                    <div id="card_number" class="form-control" style="padding:0.8rem;height:auto;background:white;"></div>
+                                    <span class="position-absolute" style="right:15px;top:50%;transform:translateY(-50%);pointer-events:none;">
+                                        <i class="fa fa-lock" aria-hidden="true" style="color:#888;"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="sc-hUpaCq iQeRTc vvv" style="display:inline-flex;width:100%;gap:11px;">
+                                <div style="width:49%;" class="expiry sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ">
+                                    <div id="expiration_date" class="form-control" style="padding:0.8rem;height:auto;background:white;"></div>
+                                </div>
+                                <div style="width:49%;" class="security sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative">
+                                    <div id="cvv" class="form-control" style="padding:0.8rem;height:auto;background:white;padding-right:2.5rem;"></div>
+                                    <span class="position-absolute" style="right:13px;top:42%;transform:translateY(-50%);cursor:pointer;" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" title="3-digit security code usually found on the back of your card. American Express cards have a 4-digit code located on the front.">
+                                        <i class="fa fa-question-circle" aria-hidden="true" style="color:#888;"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative" style="width:100%;">
+                                    <input type="text" class="form-control pr-5" name="name_on_card" autocomplete="off" maxlength="100" placeholder="Name on card" required style="padding:0.8rem;height:auto;">
+                                </div>
+                            </div>
+                            <h3 style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:15px;font-weight:bold;padding:10px 7px 10px 7px;">Billing address</h3>
+                            <div class="sc-hUpaCq iQeRTc">
+                                <div class="row">
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <div class="form-floating">
+                                            <select class="form-select" name="country" id="country" required aria-label="Country/Region"></select>
+                                            <label for="country">Country/Region</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="First name" name="first_name" id="first_name" value="{{ Auth::user()->first_name ?? ''}}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <input type="text" class="form-control" placeholder="Last name" name="last_name" id="last_name" value="{{ Auth::user()->last_name ?? ''}}" required>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{ $requiresEmail ? '' : (Auth::user()->email ?? '')}}" {{ $requiresEmail ? 'required' : 'readonly' }}>
+                                    </div>
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <input type="text" class="form-control" placeholder="Address" name="address" id="address" required>
+                                        <span class="position-absolute" style="right:26px;top:45%;transform:translateY(-50%);cursor:pointer;">
+                                            <i class="fa fa-search" aria-hidden="true" style="color:#888;"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <input type="text" class="form-control" placeholder="Apartment, suite, etc. (optional)" name="apartment" id="apartment">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" class="form-control" placeholder="City" name="city" id="city" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2 position-relative">
+                                        <div class="form-floating">
+                                            <select class="form-select" name="state" id="state" required aria-label="State"></select>
+                                            <label for="state">State</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" class="form-control" placeholder="ZIP code" name="zip" id="zipcode" required>
+                                    </div>
+                                    <div class="col-md-12 mb-2 position-relative">
+                                        <input type="tel" class="form-control pr-5" placeholder="Phone" name="phone" id="phone" required>
+                                        <span class="position-absolute" style="right:26px;top:45%;transform:translateY(-50%);cursor:pointer;" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="left" title="In case we need to contact you about your order">
+                                            <i class="fa fa-question-circle" aria-hidden="true" style="color:#888;"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="sc-gyZVQB fWNGEI mt-4">
+                            <div class="sc-cVAmsi cvolSU"><button type="submit" class="btn btn-primary" id="stripe-pay-btn" style="width:100%;height:45px;">Pay Now <span id="stripe-pay-btn-amount" style="margin-left:8px;">${{ number_format($total, 2) }}</span></button></div>
+                        </div>
+                    </form>
                 </div>
+            @endif
 
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;padding:14px 32px;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;">
-                    <i class="fas fa-lock"></i> 
-                    <span>Complete Purchase - ${{ number_format($total, 2) }}</span>
-                </button>
-            </form>
-
-            <!-- Security Notice -->
             <div style="margin-top:20px;padding:15px;background:#d4edda;border:1px solid #c3e6cb;border-radius:6px;display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#155724;">
                 <i class="fas fa-shield-alt" style="margin-top:2px;font-size:16px;"></i>
                 <p style="margin:0;">Your payment information is secure and encrypted. We never store credit card data.</p>
             </div>
         </div>
     </div>
-</div>
+    </main>
+
+
 
 <!-- Cart Script -->
 <script src="{{ asset('js/cart.js') }}"></script>
 
 <script>
-    // Diagnostic logging for cart
+    // Diagnostic logging for checkout
     console.log('🔍 === CHECKOUT PAGE DIAGNOSTICS ===');
     console.log('🔍 jQuery loaded:', typeof jQuery !== 'undefined' ? '✅ YES' : '❌ NO');
     console.log('🔍 $ available:', typeof $ !== 'undefined' ? '✅ YES' : '❌ NO');
@@ -432,60 +918,293 @@
 </script>
 
 <script>
-    // Payment method selection handler
-    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            // Update border styling on method selection
-            document.querySelectorAll('[style*="border:2px"]').forEach(div => {
-                if (div.contains(radio)) {
-                    div.style.borderColor = '#667eea';
-                    div.style.background = '#f9fafb';
-                } else if (div.querySelector('input[name="payment_method"]')) {
-                    div.style.borderColor = '#ddd';
-                }
-            });
+    function formatExpiryDate(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        if (value.length > 4) value = value.slice(0, 4);
+        if (value.length > 2) {
+            value = value.slice(0, 2) + ' / ' + value.slice(2, 4);
+        }
+        input.value = value;
+    }
+
+    const countryStateData = {
+        "United States": [
+            "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
+        ].sort(),
+        "Canada": [
+            "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"
+        ].sort(),
+        "Australia": [
+            "Australian Capital Territory","New South Wales","Northern Territory","Queensland","South Australia","Tasmania","Victoria","Western Australia"
+        ].sort(),
+        "India": [
+            "Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"
+        ].sort(),
+        "Spain": [
+            "A Coruna","Álava","Ávila","Albacete","Alicante","Almería","Asturias","Badajoz","Balearic Islands","Barcelona","Burgos","Cáceres","Cádiz","Cantabria","Castellón","Ciudad Real","Córdoba","Cuenca","Girona","Granada","Guadalajara","Guipúzcoa","Huelva","Huesca","Jaén","La Coruña","La Rioja","Las Palmas","León","Lérida","Lugo","Madrid","Málaga","Murcia","Navarra","Ourense","Palencia","Pontevedra","Salamanca","Santa Cruz de Tenerife","Segovia","Seville","Soria","Tarragona","Teruel","Toledo","Valencia","Valladolid","Vizcaya","Zamora","Zaragoza"
+        ]
+    };
+    const countryList = Object.keys(countryStateData).concat(["United Kingdom", "Germany", "France", "Spain", "Other"]).filter((v, i, a) => a.indexOf(v) === i);
+
+    function detectCountry() {
+        let country = "United States";
+        if (navigator.language) {
+            if (navigator.language.startsWith('en-GB')) country = "United Kingdom";
+            if (navigator.language.startsWith('en-CA')) country = "Canada";
+            if (navigator.language.startsWith('en-AU')) country = "Australia";
+            if (navigator.language.startsWith('fr-FR')) country = "France";
+            if (navigator.language.startsWith('de-DE')) country = "Germany";
+            if (navigator.language.startsWith('en-IN')) country = "India";
+        }
+        return country;
+    }
+
+    function setCountryValue() {
+        const countrySelect = document.getElementById('country');
+        if (!countrySelect) return;
+        const detected = detectCountry();
+        countrySelect.innerHTML = '<option value="" disabled selected hidden></option>';
+        countryList.forEach(function(country) {
+            const option = document.createElement('option');
+            option.value = country;
+            option.text = country;
+            countrySelect.appendChild(option);
         });
-    });
+        if (detected && countryList.includes(detected)) {
+            countrySelect.value = detected;
+        }
+        countrySelect.dispatchEvent(new Event('change'));
+    }
 
-    // Form submission
-    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.6';
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    function populateStatesAndFields() {
+        const country = document.getElementById('country');
+        if (!country) return;
+        const stateWrapper = document.querySelector('.form-floating select#state')?.closest('.col-md-4, .col-md-12, .col-md-6');
+        const stateSelect = document.getElementById('state');
+        const stateLabel = document.querySelector('label[for="state"]');
+        const zipcodeInput = document.getElementById('zipcode');
+        stateSelect.innerHTML = '<option value="" disabled selected hidden></option>';
 
-        try {
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-            const formData = new FormData(this);
-            formData.set('payment_token', 'tok_visa'); // Placeholder
-
-            const response = await fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {'Accept': 'application/json'}
+        if (country.value === 'United States' || country.value === 'Canada' || country.value === 'Australia' || country.value === 'India' || country.value === 'Spain') {
+            countryStateData[country.value].forEach(function(entry) {
+                const option = document.createElement('option');
+                option.value = entry;
+                option.text = entry;
+                stateSelect.appendChild(option);
             });
+            stateSelect.disabled = false;
+            if (stateWrapper) stateWrapper.style.display = '';
+            if (stateLabel) stateLabel.textContent = country.value === 'Canada' ? 'Province' : (country.value === 'Spain' ? 'Province' : country.value === 'Australia' ? 'State/territory' : 'State');
+        } else {
+            if (stateWrapper) stateWrapper.style.display = 'none';
+            stateSelect.disabled = true;
+        }
 
-            const data = await response.json();
+        if (!zipcodeInput) return;
+        if (country.value === 'United States') {
+            zipcodeInput.placeholder = 'ZIP code';
+            zipcodeInput.pattern = '\\d{5}(-\\d{4})?';
+            zipcodeInput.required = true;
+            zipcodeInput.parentElement.style.display = '';
+        } else if (country.value === 'Canada') {
+            zipcodeInput.placeholder = 'Postal code';
+            zipcodeInput.pattern = '[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d';
+            zipcodeInput.required = true;
+            zipcodeInput.parentElement.style.display = '';
+        } else if (country.value === 'Australia') {
+            zipcodeInput.placeholder = 'Postcode';
+            zipcodeInput.pattern = '\\d{4}';
+            zipcodeInput.required = true;
+            zipcodeInput.parentElement.style.display = '';
+        } else if (country.value === 'United Kingdom') {
+            zipcodeInput.placeholder = 'Postcode';
+            zipcodeInput.pattern = '';
+            zipcodeInput.required = true;
+            zipcodeInput.parentElement.style.display = '';
+        } else if (country.value === 'India') {
+            zipcodeInput.placeholder = 'PIN Code';
+            zipcodeInput.pattern = '\\d{6}';
+            zipcodeInput.required = true;
+            zipcodeInput.parentElement.style.display = '';
+        } else {
+            zipcodeInput.placeholder = 'Postal code';
+            zipcodeInput.pattern = '';
+            zipcodeInput.required = false;
+            zipcodeInput.parentElement.style.display = '';
+        }
+    }
 
-            if (data.success) {
-                window.location.href = data.redirect;
-            } else {
-                alert('Payment failed: ' + (data.message || 'Unknown error'));
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                submitBtn.innerHTML = originalText;
-            }
-        } catch (error) {
-            alert('An error occurred: ' + error.message);
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            submitBtn.innerHTML = originalText;
+    document.addEventListener('DOMContentLoaded', function() {
+        setCountryValue();
+        populateStatesAndFields();
+        const countryField = document.getElementById('country');
+        if (countryField) countryField.addEventListener('change', populateStatesAndFields);
+
+        const authorizeForm = document.getElementById('authorize-form');
+        if (authorizeForm) {
+            authorizeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Sync tip values from global fields into this form
+                const gTipAmount = document.getElementById('tip-amount-field');
+                const gTipPercent = document.getElementById('tip-percentage-field');
+                const gTipEnabled = document.getElementById('tip-enabled-field');
+                const fTipAmount = authorizeForm.querySelector('#tip-amount-authorize');
+                const fTipPercent = authorizeForm.querySelector('#tip-percentage-authorize');
+                const fTipEnabled = authorizeForm.querySelector('#tip-enabled-authorize');
+                if (fTipAmount && gTipAmount) fTipAmount.value = gTipAmount.value;
+                if (fTipPercent && gTipPercent) fTipPercent.value = gTipPercent.value;
+                if (fTipEnabled && gTipEnabled) fTipEnabled.value = gTipEnabled.value;
+
+                const tokenField = document.getElementById('authorize_payment_token');
+                const cardNumber = (authorizeForm.querySelector('input[name="card_number"]')?.value || '').replace(/\s+/g, '');
+                tokenField.value = cardNumber ? `auth_${cardNumber}` : `auth_${Date.now()}`;
+                
+                // AJAX submission to handle JSON response
+                const submitBtn = authorizeForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+                
+                fetch(authorizeForm.action, {
+                    method: 'POST',
+                    body: new FormData(authorizeForm),
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.message || 'Payment failed. Please try again.');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            const authAmount = document.getElementById('authorize-pay-btn-amount');
+                            submitBtn.innerHTML = 'Pay Now <span id="authorize-pay-btn-amount" style="margin-left:8px;">' + (authAmount ? authAmount.textContent : '${{ number_format($total, 2) }}') + '</span>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    alert('An error occurred. Please try again.');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        const authAmount = document.getElementById('authorize-pay-btn-amount');
+                        submitBtn.innerHTML = 'Pay Now <span id="authorize-pay-btn-amount" style="margin-left:8px;">' + (authAmount ? authAmount.textContent : '${{ number_format($total, 2) }}') + '</span>';
+                    }
+                });
+            });
         }
     });
 </script>
+
+<!-- Stripe Elements only when Stripe is active -->
+@if($paymentMethod !== 'authorize_net')
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe("{{ env('STRIPE_KEY') }}");
+    const stripeElements = stripe.elements();
+    const stripeStyle = {
+        base: {
+            fontSize: '14px',
+            color: '#2B2A35',
+            fontFamily: 'Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif',
+            '::placeholder': { color: '#aab7c4' }
+        },
+        invalid: { color: '#fa755a', iconColor: '#fa755a' }
+    };
+
+    const stripeCardNumber = stripeElements.create('cardNumber', { style: stripeStyle, placeholder: 'Card number' });
+    const stripeCardExpiry = stripeElements.create('cardExpiry', { style: stripeStyle, placeholder: 'MM / YY' });
+    const stripeCardCvc = stripeElements.create('cardCvc', { style: stripeStyle, placeholder: 'CVV' });
+
+    stripeCardNumber.mount('#card_number');
+    stripeCardExpiry.mount('#expiration_date');
+    stripeCardCvc.mount('#cvv');
+
+    const stripeForm = document.getElementById('stripe-form');
+    const stripeButton = document.getElementById('stripe-pay-btn');
+
+    if (stripeForm) {
+        stripeForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            if (stripeButton) {
+                stripeButton.disabled = true;
+                stripeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+
+            const {token, error} = await stripe.createToken(stripeCardNumber);
+
+            if (error) {
+                alert(error.message || 'Unable to tokenize card');
+                if (stripeButton) {
+                    stripeButton.disabled = false;
+                    const stripeAmount = document.getElementById('stripe-pay-btn-amount');
+                    stripeButton.innerHTML = `Pay Now <span id="stripe-pay-btn-amount" style="margin-left:8px;">${stripeAmount ? stripeAmount.textContent : '${{ number_format($total, 2) }}'}</span>`;
+                }
+                return;
+            }
+
+            const tokenInput = document.getElementById('stripe_payment_token');
+            if (tokenInput) {
+                tokenInput.value = token.id;
+            }
+
+            // Sync tip values from global fields into this form
+            const gTipAmount = document.getElementById('tip-amount-field');
+            const gTipPercent = document.getElementById('tip-percentage-field');
+            const gTipEnabled = document.getElementById('tip-enabled-field');
+            const fTipAmount = stripeForm.querySelector('#tip-amount-stripe');
+            const fTipPercent = stripeForm.querySelector('#tip-percentage-stripe');
+            const fTipEnabled = stripeForm.querySelector('#tip-enabled-stripe');
+            if (fTipAmount && gTipAmount) fTipAmount.value = gTipAmount.value;
+            if (fTipPercent && gTipPercent) fTipPercent.value = gTipPercent.value;
+            if (fTipEnabled && gTipEnabled) fTipEnabled.value = gTipEnabled.value;
+
+            // AJAX submission to handle JSON response
+            fetch(stripeForm.action, {
+                method: 'POST',
+                body: new FormData(stripeForm),
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    alert(data.message || 'Payment failed. Please try again.');
+                    if (stripeButton) {
+                        stripeButton.disabled = false;
+                        const stripeAmount = document.getElementById('stripe-pay-btn-amount');
+                        stripeButton.innerHTML = `Pay Now <span id="stripe-pay-btn-amount" style="margin-left:8px;">${stripeAmount ? stripeAmount.textContent : '${{ number_format($total, 2) }}'}</span>`;
+                    }
+                }
+            })
+            .catch(error => {
+                alert('An error occurred. Please try again.');
+                if (stripeButton) {
+                    stripeButton.disabled = false;
+                    const stripeAmount = document.getElementById('stripe-pay-btn-amount');
+                    stripeButton.innerHTML = `Pay Now <span id="stripe-pay-btn-amount" style="margin-left:8px;">${stripeAmount ? stripeAmount.textContent : '${{ number_format($total, 2) }}'}</span>`;
+                }
+            });
+        });
+    }
+</script>
+@endif
+
+    @if ($check && ($check->is_main_site ?? 0) == 1)
+        @include('layouts.main_footer')
+    @else
+        @if ($footer && $footer->status == 1)
+            @include('layouts.new-footer')
+        @endif
+    @endif
 
 </body>
 </html>

@@ -132,6 +132,14 @@ class Website extends Model
     }
 
     /**
+     * Get the email/SMTP settings for this website
+     */
+    public function emailSettings()
+    {
+        return $this->hasOne(\App\Models\WebsiteEmailSetting::class);
+    }
+
+    /**
      * Get the active payment configuration for this website
      * Falls back to settings table if no website-specific payment settings exist
      */

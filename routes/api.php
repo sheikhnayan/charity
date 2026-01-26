@@ -357,113 +357,88 @@ Route::prefix('qr')->group(function () {
         return response()->json(['success' => true, 'students' => $students]);
     });
 });  // Close Route::prefix('qr')->group()
-// Shopping Cart API Routes - NO AUTH REQUIRED (public cart)
+// Shopping Cart API Routes - NO AUTH REQUIRED (public cart) - USING CartService
 Route::prefix('cart')->group(function () {
     // Get current cart
     Route::get('/', function (Request $request) {
-        $sessionId = $request->getSession()->getId();
-        $cart = session()->get('shopping_cart_' . $sessionId, []);
+        $cartService = app(\App\Services\CartService::class);
+        $cart = $cartService->getCart();
         
         return response()->json([
             'success' => true,
-            'cart' => [
-                'items' => $cart,
-                'total' => array_sum(array_map(function($item) {
-                    return ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
-                }, $cart)),
-                'itemCount' => count($cart)
-            ]
+            'cart' => $cart
         ]);
     });
     
     // Add item to cart
     Route::post('/add', function (Request $request) {
-        $sessionId = $request->getSession()->getId();
+        $cartService = app(\App\Services\CartService::class);
         $item = $request->all();
         
         // Validate required fields
-        if (!$item['id'] || !$item['name']) {
+        if (empty($item['id']) || empty($item['name'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Item ID and name are required'
             ], 400);
         }
         
-        $key = 'item_' . $item['id'];
-        $cart = session()->get('shopping_cart_' . $sessionId, []);
+        // Determine type (default to 'product' if not specified)
+        $type = $item['type'] ?? 'product';
         
-        // Check if item already exists and update quantity
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] = ($cart[$key]['quantity'] ?? 1) + ($item['quantity'] ?? 1);
+        // Add item using CartService
+        $success = $cartService->addItem($type, $item);
+        
+        if ($success) {
+            $cart = $cartService->getCart();
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added to cart',
+                'cart' => $cart
+            ]);
         } else {
-            $cart[$key] = [
-                'id' => $item['id'],
-                'name' => $item['name'],
-                'price' => $item['price'] ?? 0,
-                'quantity' => $item['quantity'] ?? 1,
-                'type' => $item['type'] ?? 'product',
-                'image' => $item['image'] ?? null,
-                'description' => $item['description'] ?? null
-            ];
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add item to cart'
+            ], 400);
         }
-        
-        session()->put('shopping_cart_' . $sessionId, $cart);
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Item added to cart',
-            'item' => $cart[$key],
-            'cart' => [
-                'items' => $cart,
-                'itemCount' => count($cart)
-            ]
-        ]);
     });
     
     // Remove item from cart
     Route::delete('/item/{key}', function (Request $request, $key) {
-        $sessionId = $request->getSession()->getId();
-        $cart = session()->get('shopping_cart_' . $sessionId, []);
+        $cartService = app(\App\Services\CartService::class);
         
-        if (isset($cart[$key])) {
-            unset($cart[$key]);
-            session()->put('shopping_cart_' . $sessionId, $cart);
+        $success = $cartService->removeItem($key);
+        
+        if ($success) {
+            $cart = $cartService->getCart();
+            return response()->json([
+                'success' => true,
+                'message' => 'Item removed from cart',
+                'cart' => $cart
+            ]);
         }
         
         return response()->json([
-            'success' => true,
-            'message' => 'Item removed from cart',
-            'cart' => [
-                'items' => $cart,
-                'itemCount' => count($cart)
-            ]
-        ]);
+            'success' => false,
+            'message' => 'Item not found in cart'
+        ], 404);
     });
     
-    // Update item quantity
+    // Update item in cart
     Route::put('/item/{key}', function (Request $request, $key) {
-        $sessionId = $request->getSession()->getId();
-        $quantity = $request->input('quantity', 1);
+        $cartService = app(\App\Services\CartService::class);
+        $updates = $request->all();
         
-        $cart = session()->get('shopping_cart_' . $sessionId, []);
+        $success = $cartService->updateItem($key, $updates);
         
-        if (isset($cart[$key])) {
-            if ($quantity <= 0) {
-                unset($cart[$key]);
-                session()->put('shopping_cart_' . $sessionId, $cart);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Item removed from cart'
-                ]);
-            } else {
-                $cart[$key]['quantity'] = $quantity;
-                session()->put('shopping_cart_' . $sessionId, $cart);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Item quantity updated',
-                    'item' => $cart[$key]
-                ]);
-            }
+        if ($success) {
+            $cart = $cartService->getCart();
+            return response()->json([
+                'success' => true,
+                'message' => 'Item updated',
+                'cart' => $cart
+            ]);
         }
         
         return response()->json([
@@ -473,13 +448,23 @@ Route::prefix('cart')->group(function () {
     });
     
     // Clear entire cart
-    Route::post('/clear', function (Request $request) {
-        $sessionId = $request->getSession()->getId();
-        session()->put('shopping_cart_' . $sessionId, []);
+    Route::delete('/clear', function (Request $request) {
+        $cartService = app(\App\Services\CartService::class);
+        $cartService->clearCart();
+        $cart = $cartService->getCart();
         
         return response()->json([
             'success' => true,
-            'message' => 'Cart cleared'
+            'message' => 'Cart cleared',
+            'cart' => $cart
         ]);
+    });
+    
+    // Validate cart for checkout
+    Route::get('/validate', function (Request $request) {
+        $cartService = app(\App\Services\CartService::class);
+        $validation = $cartService->validateForCheckout();
+        
+        return response()->json($validation);
     });
 });

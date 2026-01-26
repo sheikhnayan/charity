@@ -167,6 +167,8 @@
                                                             {{-- <td>{{ $item->ticket->details[0]->ticket->name }}</td> --}}
                                                         @elseif ($item->type == 'investment')
                                                             <td>{{ $item->investment->investor_name }}</td>
+                                                        @elseif ($item->type == 'product')
+                                                            <td>{{ $item->name }}</td>
                                                         @endif
                                                         @if ($item->type == 'student')
                                                             <td>{{ $item->donation->user->group_name ?? null}}</td>

@@ -12,6 +12,7 @@ class EmailTestController extends Controller
         $testEmail = $request->get('email', 'nman0171@gmail.com');
         
         try {
+                if ($transaction && $transaction->website) { \App\Services\WebsiteMailService::applyForWebsite($transaction->website); }
             Mail::raw('Test email from Laravel application. This is to verify SMTP configuration is working correctly.', function ($message) use ($testEmail) {
                 $message->to($testEmail)
                        ->subject('Laravel SMTP Test - ' . now()->format('Y-m-d H:i:s'))
@@ -57,6 +58,7 @@ class EmailTestController extends Controller
         }
         
         try {
+                if ($transaction && $transaction->website) { \App\Services\WebsiteMailService::applyForWebsite($transaction->website); }
             Mail::to($testEmail)->send(new \App\Mail\TransactionInvoice($transaction, $transaction->website));
             
             return response()->json([

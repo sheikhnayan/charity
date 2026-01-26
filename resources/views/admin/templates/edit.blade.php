@@ -183,7 +183,7 @@
                         <i class="bx bx-duplicate me-1"></i>Duplicate Template
                     </button>
                     
-                    <a href="{{ route('admin.page.index') }}" class="btn btn-outline-secondary w-100">
+                    <a href="{{ route('admin.page.websites') }}" class="btn btn-outline-secondary w-100">
                         <i class="bx bx-file me-1"></i>Browse Pages
                     </a>
                 </div>

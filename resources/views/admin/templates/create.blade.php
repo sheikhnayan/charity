@@ -155,7 +155,7 @@
                     <h6 class="card-title">Quick Actions</h6>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('admin.page.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                    <a href="{{ route('admin.page.websites') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="bx bx-file me-1"></i>Browse Existing Pages
                     </a>
                     <button type="button" class="btn btn-outline-info w-100" onclick="loadSampleJSON()">

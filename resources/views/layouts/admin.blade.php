@@ -114,7 +114,11 @@
                 <a href="javascript:void(0);" class="menu-link menu-toggle"><i class="menu-icon tf-icons bx bx-globe"></i><div data-i18n="Website">Website</div></a>
                 <ul class="menu-sub">
                     <li class="menu-item {{ request()->is('admins/website') ? 'active' : '' }}"><a href="{{ route('admin.website.index') }}" class="menu-link"><div data-i18n="Website">Home</div></a></li>
-                    <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}"><a href="{{ route('admin.page.index') }}" class="menu-link"><div data-i18n="Page">Page</div></a></li>
+                    <li class="menu-item {{ request()->is('admins/page') ? 'active' : '' }}">
+                      <a href="{{ isset($website) ? route('admin.page.index', ['websiteId' => $website->id]) : route('admin.page.websites') }}" class="menu-link">
+                        <div data-i18n="Page">Page</div>
+                      </a>
+                    </li>
                     <li class="menu-item {{ request()->is('admins/templates*') ? 'active' : '' }}"><a href="{{ route('admin.templates.index') }}" class="menu-link"><div data-i18n="Page Templates">Page Template</div></a></li>
                     <li class="menu-item {{ request()->is('admins/menu') ? 'active' : '' }}"><a href="{{ url('/admins/menu') }}" class="menu-link"><div data-i18n="Header">Header</div></a></li>
                     <li class="menu-item {{ request()->is('admins/footer') ? 'active' : '' }}"><a href="{{ url('/admins/footer') }}" class="menu-link"><div data-i18n="Footer">Footer</div></a></li>
@@ -171,6 +175,13 @@
                     <li class="menu-item {{ request()->is('admins/student') ? 'active' : '' }}"><a href="{{ route('admin.student') }}" class="menu-link"><div data-i18n="Registrations">Registrations</div></a></li>
                 </ul>
             </li>
+              <!-- Website Email Settings (quick access) -->
+              <li class="menu-item {{ request()->is('admins/websites/*/email-settings') ? 'active' : '' }}">
+                <a href="{{ isset($website) ? route('admin.website.email.index', ['website' => $website->id]) : '#' }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-mail-send"></i>
+                  <div data-i18n="Website Email">Website Email</div>
+                </a>
+              </li>
           </ul>
         </aside>
         <!-- / Menu -->

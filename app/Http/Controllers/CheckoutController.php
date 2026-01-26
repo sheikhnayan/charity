@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Services\CartService;
 use App\Services\PaymentFunnelService;
+use App\Services\PaymentGatewayService;
+use App\Models\Transaction;
+use App\Models\Website;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,8 +67,8 @@ class CheckoutController extends Controller
             'email' => 'required|email',
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'payment_method' => 'required|in:stripe,authorize_net',
-            'payment_token' => 'required|string',
+            'payment_method' => 'required|in:stripe,authorize_net,coinbase',
+            'payment_token' => 'required_unless:payment_method,coinbase|string|nullable',
             // Optional: address fields
             'address' => 'nullable|string',
             'city' => 'nullable|string',
@@ -97,6 +100,20 @@ class CheckoutController extends Controller
             // Transform cart to checkout data
             $checkoutData = $this->cartService->getCheckoutData();
 
+            // Normalize totals and attach formatted items for downstream processing
+            $checkoutData['total'] = $checkoutData['total_amount'] ?? $cart['total'];
+            $checkoutData['items'] = $this->formatCheckoutItems($cart['items']);
+
+            // Guard against zero/negative totals
+            if (($checkoutData['total'] ?? 0) <= 0) {
+                return $this->handlePaymentFailure('Cart total must be greater than zero', $checkoutData);
+            }
+
+            // Carry optional tip data if present
+            $checkoutData['tip_amount'] = (float)$request->input('tip_amount', 0);
+            $checkoutData['tip_percentage'] = (float)$request->input('tip_percentage', 0);
+            $checkoutData['tip_enabled'] = (bool)$request->input('tip_enabled', false);
+
             // Add user/payer information
             $checkoutData['email'] = $validated['email'];
             $checkoutData['first_name'] = $validated['first_name'];
@@ -126,9 +143,12 @@ class CheckoutController extends Controller
             // Route to appropriate payment processor based on payment method
             if ($validated['payment_method'] === 'stripe') {
                 return $this->processStripePayment($checkoutData, $validated['payment_token']);
-            } else {
+            } elseif ($validated['payment_method'] === 'authorize_net') {
                 return $this->processAuthorizeNetPayment($checkoutData, $validated['payment_token']);
             }
+
+            // Coinbase branch (cart)
+            return $this->processCoinbasePayment($checkoutData);
 
         } catch (\Exception $e) {
             \Log::error('Cart Checkout Error', [
@@ -149,14 +169,22 @@ class CheckoutController extends Controller
     protected function processStripePayment($checkoutData, $paymentToken)
     {
         try {
-            // Call AuthorizeNetController payment logic for Stripe
-            // Or directly process with Stripe API
-            
-            $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+            // Resolve Stripe secret (website-specific if available)
+            $website = Website::where('domain', request()->getHost())->first();
+            $gatewayService = new PaymentGatewayService();
+            $paymentConfig = $website ? $gatewayService->getPaymentConfigForWebsite($website) : null;
+            $secretKey = $paymentConfig['config']['secret_key'] ?? config('services.stripe.secret');
+
+            if (!$secretKey) {
+                return $this->handlePaymentFailure('Stripe is not configured for this website.', $checkoutData);
+            }
+
+            // Use resolved secret
+            $stripe = new \Stripe\StripeClient($secretKey);
 
             // Create charge
             $charge = $stripe->charges->create([
-                'amount' => (int)($checkoutData['total'] * 100), // Convert to cents
+                'amount' => (int)(($checkoutData['total'] ?? 0) * 100), // Convert to cents
                 'currency' => 'usd',
                 'source' => $paymentToken,
                 'description' => $this->buildChargeDescription($checkoutData),
@@ -198,7 +226,19 @@ class CheckoutController extends Controller
                 'amount' => $checkoutData['total'],
                 'email' => $checkoutData['email'],
                 'first_name' => $checkoutData['first_name'],
-                'last_name' => $checkoutData['last_name']
+                'last_name' => $checkoutData['last_name'],
+                'card_number' => request()->input('card_number'),
+                'expiration_date' => request()->input('expiration_date'),
+                'cvv' => request()->input('cvv'),
+                'name_on_card' => request()->input('name_on_card'),
+                'address' => $checkoutData['address'] ?? null,
+                'city' => $checkoutData['city'] ?? null,
+                'state' => $checkoutData['state'] ?? null,
+                'zip' => $checkoutData['zip'] ?? null,
+                'country' => $checkoutData['country'] ?? null,
+                'tip_amount' => $checkoutData['tip_amount'] ?? 0,
+                'tip_percentage' => $checkoutData['tip_percentage'] ?? 0,
+                'tip_enabled' => $checkoutData['tip_enabled'] ?? false,
             ]);
 
             $authorizeNetController = new AuthorizeNetController();
@@ -236,13 +276,26 @@ class CheckoutController extends Controller
                 );
             }
 
+            // Persist itemized transactions sharing the same transaction id
+            $transactionId = $paymentResponse->id ?? $paymentResponse['transaction_id'] ?? $paymentResponse['id'] ?? null;
+            $this->recordCartTransactions($checkoutData, $transactionId, $paymentMethod);
+
             // Clear cart after successful payment
             $this->cartService->clearCart();
 
+            // Calculate grand total including processing fee and tip
+            $processingFeePercentage = $this->getProcessingFeePercentage($checkoutData['website_id'] ?? $this->resolveWebsiteId());
+            $processingFee = ($checkoutData['total'] / 100) * $processingFeePercentage;
+            $tipAmount = $checkoutData['tip_amount'] ?? 0;
+            $grandTotal = $checkoutData['total'] + $processingFee + $tipAmount;
+            
             // Store transaction info for order/receipt
             session(['last_transaction' => [
                 'payment_method' => $paymentMethod,
-                'total' => $checkoutData['total'],
+                'total' => $grandTotal,
+                'subtotal' => $checkoutData['total'],
+                'processing_fee' => $processingFee,
+                'tip_amount' => $tipAmount,
                 'items' => $checkoutData['items'],
                 'email' => $checkoutData['email'],
                 'timestamp' => now()
@@ -384,5 +437,150 @@ class CheckoutController extends Controller
         }
 
         return $description;
+    }
+
+    /**
+     * Persist per-item transaction records sharing a single transaction id
+     * Distributes tip and processing fee proportionally across items
+     */
+    protected function recordCartTransactions(array $checkoutData, $transactionId, string $paymentMethod)
+    {
+        if (empty($checkoutData['items'])) {
+            return;
+        }
+
+        $websiteId = $this->resolveWebsiteId();
+        $tipAmount = $checkoutData['tip_amount'] ?? 0;
+        $tipPercentage = $checkoutData['tip_percentage'] ?? 0;
+        $tipEnabled = $checkoutData['tip_enabled'] ?? false;
+
+        // Calculate total and processing fee for distribution
+        $totalAmount = $checkoutData['total'] ?? 0;
+        $processingFeePercentage = $this->getProcessingFeePercentage($websiteId);
+        $totalFee = ($totalAmount / 100) * $processingFeePercentage;
+
+        // Calculate total item amount (before fee/tip) for proportional distribution
+        $itemTotalAmount = 0;
+        foreach ($checkoutData['items'] as $item) {
+            $itemTotalAmount += ($item['total'] ?? $item['amount'] ?? 0);
+        }
+
+        // Prevent division by zero
+        if ($itemTotalAmount <= 0) {
+            $itemTotalAmount = $totalAmount;
+        }
+
+        // Distribute tip and fee proportionally across items
+        foreach ($checkoutData['items'] as $index => $item) {
+            $itemAmount = $item['total'] ?? $item['amount'] ?? 0;
+            
+            // Calculate proportional share of fee and tip
+            $proportionRatio = $itemTotalAmount > 0 ? $itemAmount / $itemTotalAmount : 0;
+            $itemFee = round($totalFee * $proportionRatio, 2);
+            $itemTip = $tipEnabled ? round($tipAmount * $proportionRatio, 2) : 0;
+
+            $transaction = new Transaction();
+            $transaction->transaction_id = $transactionId;
+            $transaction->website_id = $websiteId;
+            $transaction->amount = $itemAmount;
+            $transaction->type = $item['type'] ?? 'general';
+            $transaction->name = $checkoutData['first_name'] ?? null;
+            $transaction->last_name = $checkoutData['last_name'] ?? null;
+            $transaction->email = $checkoutData['email'] ?? null;
+            $transaction->address = $checkoutData['address'] ?? null;
+            $transaction->city = $checkoutData['city'] ?? null;
+            $transaction->state = $checkoutData['state'] ?? null;
+            $transaction->zip = $checkoutData['zip'] ?? null;
+            $transaction->country = $checkoutData['country'] ?? null;
+            $transaction->ip_address = request()->ip();
+            $transaction->fee = $itemFee; // Proportional fee
+            $transaction->fee_paid = 1;
+            $transaction->status = 1;
+            $transaction->reference_id = $item['id'] ?? null;
+            $transaction->payment_method = $paymentMethod;
+
+            // Attach proportional tip
+            if ($tipEnabled && $itemTip > 0) {
+                $transaction->tip_amount = $itemTip;
+                $transaction->tip_percentage = $tipPercentage;
+            }
+
+            $transaction->save();
+        }
+    }
+
+    /**
+     * Get processing fee percentage for website
+     */
+    protected function getProcessingFeePercentage($websiteId)
+    {
+        try {
+            if ($websiteId) {
+                $website = Website::find($websiteId);
+                if ($website && method_exists($website, 'getProcessingFee')) {
+                    return $website->getProcessingFee();
+                }
+            }
+            // Fallback to default
+            return 2.9;
+        } catch (\Exception $e) {
+            return 2.9;
+        }
+    }
+
+    /**
+     * Resolve website id from current domain
+     */
+    protected function resolveWebsiteId()
+    {
+        try {
+            $domain = request()->getHost();
+            $website = Website::where('domain', $domain)->first();
+            return $website?->id;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Process cart payment via Coinbase (creates hosted charge)
+     */
+    protected function processCoinbasePayment($checkoutData)
+    {
+        try {
+            $websiteId = $this->resolveWebsiteId();
+            $service = app(\App\Services\CoinbaseCommerceService::class);
+
+            $chargeData = [
+                'name' => 'Cart Purchase',
+                'description' => $this->buildChargeDescription($checkoutData),
+                'amount' => number_format($checkoutData['total'] ?? 0, 2, '.', ''),
+                'currency' => 'USD',
+                'metadata' => [
+                    'type' => 'cart',
+                    'item_count' => count($checkoutData['items'] ?? []),
+                    'website_id' => $websiteId,
+                    'session_id' => session()->getId(),
+                ],
+            ];
+
+            $result = $service->createCharge($chargeData);
+
+            if (!$result['success']) {
+                return $this->handlePaymentFailure($result['error'] ?? 'Coinbase payment failed', $checkoutData);
+            }
+
+            $charge = $result['data'];
+
+            // Do not clear cart yet; rely on webhook for final confirmation.
+            return response()->json([
+                'success' => true,
+                'redirect' => $service->getCheckoutUrl($charge['code']),
+                'message' => 'Redirecting to Coinbase',
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->handlePaymentFailure('Coinbase payment error: ' . $e->getMessage(), $checkoutData);
+        }
     }
 }

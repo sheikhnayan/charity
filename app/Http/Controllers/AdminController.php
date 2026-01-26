@@ -1211,6 +1211,8 @@ class AdminController extends Controller
 
         foreach ($subscribers as $subscriber) {
             try {
+                // Apply per-website email settings
+                if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
                 \Mail::raw($request->message, function ($message) use ($subscriber, $request, $website) {
                     $message->to($subscriber->email)
                            ->subject($request->subject)
@@ -1390,6 +1392,7 @@ class AdminController extends Controller
         $website = $transaction->website;
         
         try {
+            if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
             \Mail::to($transaction->email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
             return response()->json(['success' => true, 'message' => 'Invoice email sent successfully!']);
         } catch (\Exception $e) {

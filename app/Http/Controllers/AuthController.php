@@ -72,6 +72,8 @@ class AuthController extends Controller
         // Send registration confirmation email for parents and individual registrations
         if (in_array($request->register_as, ['parents', 'individual'])) {
             try {
+                // Apply website-specific mail configuration
+                \App\Services\WebsiteMailService::applyForWebsite($check);
                 Mail::to($user->email)->send(new RegistrationConfirmation($user, $check));
             } catch (\Exception $e) {
                 // Log error but don't stop registration process

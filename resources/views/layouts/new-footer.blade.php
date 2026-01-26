@@ -356,7 +356,7 @@
 /* Supporting Classes */
 .text-style-eyebrow {
     text-transform: uppercase;
-    font-family: "Acumin Pro Condensed 2", Arial, sans-serif;
+    font-family: "Acumin Pro Condensed 2", Arial, sans-serif !important;
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1;
@@ -371,7 +371,7 @@
     flex: 0 auto;
     justify-content: flex-start;
     align-items: center;
-    font-family: Acumin Bdpro, Arial, sans-serif;
+    font-family: Acumin Bdpro, Arial, sans-serif !important;
     font-size: .875rem;
     font-weight: 400;
     line-height: 1;

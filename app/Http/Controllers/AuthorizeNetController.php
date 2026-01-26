@@ -958,6 +958,85 @@ class AuthorizeNetController extends Controller
         }
     }
 
+    /**
+     * Process a cart checkout with a single Authorize.Net transaction
+     * Returns a simple payload used by CheckoutController to finish the flow.
+     */
+    public function processCartPayment(Request $request)
+    {
+        try {
+            $cartData = $request->input('cart_data', []);
+            $amount = (float)$request->input('amount', 0);
+
+            if ($amount <= 0 || empty($cartData)) {
+                return ['success' => false, 'message' => 'Invalid cart data or amount'];
+            }
+
+            // Resolve website by domain
+            $url = url()->current();
+            $domain = parse_url($url, PHP_URL_HOST);
+            $website = Website::where('domain', $domain)->first();
+            if (!$website) {
+                return ['success' => false, 'message' => 'Website not found'];
+            }
+
+            $paymentGatewayService = new PaymentGatewayService();
+            $merchantAuthentication = $paymentGatewayService->createAuthorizeNetAuth($website);
+            if (!$merchantAuthentication) {
+                return ['success' => false, 'message' => 'Payment gateway not configured'];
+            }
+
+            // Build card payload
+            $expirationInput = $request->input('expiration_date') ?? $request->input('date');
+            $digits = preg_replace('/[^0-9]/', '', (string)$expirationInput);
+            $month = substr($digits, 0, 2);
+            $year = substr($digits, 2, 2);
+            $expirationDate = $month . '/' . $year;
+
+            $creditCard = new AnetAPI\CreditCardType();
+            $creditCard->setCardNumber($request->input('card_number'));
+            $creditCard->setExpirationDate($expirationDate);
+            $creditCard->setCardCode($request->input('cvv'));
+
+            $paymentType = new AnetAPI\PaymentType();
+            $paymentType->setCreditCard($creditCard);
+
+            $transactionRequest = new AnetAPI\TransactionRequestType();
+            $transactionRequest->setTransactionType('authCaptureTransaction');
+            $transactionRequest->setAmount(number_format($amount, 2, '.', ''));
+            $transactionRequest->setPayment($paymentType);
+
+            $transactionReq = new AnetAPI\CreateTransactionRequest();
+            $transactionReq->setMerchantAuthentication($merchantAuthentication);
+            $transactionReq->setRefId('cart' . time());
+            $transactionReq->setTransactionRequest($transactionRequest);
+
+            $controller = new AnetController\CreateTransactionController($transactionReq);
+            $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
+            $response = $controller->executeWithApiResponse($environment);
+
+            if ($response && $response->getMessages()->getResultCode() === 'Ok') {
+                $tresponse = $response->getTransactionResponse();
+                if ($tresponse && $tresponse->getResponseCode() == "1") {
+                    return [
+                        'success' => true,
+                        'transaction_id' => $tresponse->getTransId(),
+                        'auth_code' => $tresponse->getAuthCode(),
+                    ];
+                }
+            }
+
+            $errorResponse = $response ? $response->getTransactionResponse() : null;
+            $errors = $errorResponse ? $errorResponse->getErrors() : [];
+            $error = (!empty($errors) && isset($errors[0])) ? $errors[0]->getErrorText() : 'Payment failed';
+            return ['success' => false, 'message' => $error];
+
+        } catch (\Exception $e) {
+            \Log::error('Authorize.Net cart payment error', ['message' => $e->getMessage()]);
+            return ['success' => false, 'message' => 'Authorize.Net cart payment error'];
+        }
+    }
+
     public function setting()
     {
         $data = PaymentSetting::first();
@@ -982,6 +1061,7 @@ class AuthorizeNetController extends Controller
     private function sendInvoiceEmail($transaction, $website)
     {
         try {
+            \App\Services\WebsiteMailService::applyForWebsite($website);
             Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
         } catch (\Exception $e) {
             \Log::error('Failed to send transaction invoice', [

@@ -434,10 +434,20 @@ class FrontendController extends Controller
         ';
 
         foreach ($emails as $to) {
+            // Apply per-website email settings if available (based on domain)
+            try {
+                $host = request()->getHost();
+                $w = \App\Models\Website::where('domain', $host)->first();
+                if ($w) { \App\Services\WebsiteMailService::applyForWebsite($w); }
+            } catch (\Exception $e) { /* ignore */ }
             \Mail::send([], [], function ($message) use ($to, $subject, $html) {
                 $message->to($to)
                     ->subject($subject)
                     ->html($html);
+                // Optional reply-to from config
+                if (config('mail.reply_to.address')) {
+                    $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
+                }
             });
         }
 
@@ -487,10 +497,15 @@ class FrontendController extends Controller
         ';
 
         foreach ($emails as $to) {
+            // Apply per-website email settings (explicit website context)
+            if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
             \Mail::send([], [], function ($message) use ($to, $subject, $html) {
                 $message->to($to)
                     ->subject($subject)
                     ->html($html); // <-- use html() instead of setBody()
+                if (config('mail.reply_to.address')) {
+                    $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
+                }
             });
         }
 

@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\Website;
 use App\Mail\TransactionInvoice;
 use Illuminate\Support\Facades\Mail;
+use App\Services\WebsiteMailService;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceTestController extends Controller
@@ -65,6 +66,8 @@ class InvoiceTestController extends Controller
         $testEmail = $request->get('email', 'test@example.com');
         
         try {
+            // Apply website-specific SMTP configuration
+            WebsiteMailService::applyForWebsite($transaction->website);
             Mail::to($testEmail)->send(new TransactionInvoice($transaction, $transaction->website));
             return response()->json(['success' => 'Test email sent to ' . $testEmail]);
         } catch (\Exception $e) {
