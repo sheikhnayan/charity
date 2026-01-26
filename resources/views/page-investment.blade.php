@@ -1126,7 +1126,7 @@ if (isset($state['components'])) {
         padding: 0px 0px;
         text-align: center;
         position: fixed;
-        top: calc(var(--navbar-total-height, 6rem) - 0.23rem); /* Dynamic position minus gap adjustment */
+        top: calc(var(--navbar-total-height, 6rem) - 2.1rem); /* Dynamic position minus gap adjustment */
         left: 0;
         right: 0;
         width: 100%;
@@ -1211,7 +1211,7 @@ if (isset($state['components'])) {
     @media (max-width: 768px) {
         .investor-exclusives-bar {
             position: fixed;
-            top: calc(var(--navbar-total-height-mobile, 9.5rem) - 0.23rem); /* Dynamic mobile position minus gap adjustment */
+            top: calc(var(--navbar-total-height-mobile, 9.5rem) - 2.1rem); /* Dynamic mobile position minus gap adjustment */
             padding-bottom: 0px;
         }
         
@@ -1234,7 +1234,7 @@ if (isset($state['components'])) {
     @media (max-width: 480px) {
         .investor-exclusives-bar {
             padding: 10px 0;
-            top: calc(var(--navbar-total-height-small, 1.7rem) - 0.23rem); /* Dynamic small mobile position minus gap adjustment */
+            top: calc(var(--navbar-total-height-small, 1.7rem) - 2.1rem); /* Dynamic small mobile position minus gap adjustment */
             /* margin-top: 4rem; */
             padding-bottom: 0px;
 
