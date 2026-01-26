@@ -18018,6 +18018,46 @@ function applyResponsiveStyles() {
                         }
                         nestedContent.renderStatisticsMetric();
                         break;
+                      case 'button':
+                        // Restore button data for nested buttons
+                        let buttonDefaults = {
+                          buttonText: 'Click Me',
+                          buttonUrl: '#',
+                          buttonTarget: '_self',
+                          buttonBgColor: '#007bff',
+                          buttonTextColor: '#ffffff',
+                          buttonPadding: '10px 20px',
+                          borderRadius: '4px',
+                          fontSize: '16px',
+                          fontWeight: '400',
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          border: 'none',
+                          boxShadow: 'none',
+                          transition: 'all 0.3s ease'
+                        };
+                        
+                        // If we have properties from front-end, map them back to builder format
+                        if (compData.properties) {
+                          buttonDefaults.buttonText = compData.properties.button_text || buttonDefaults.buttonText;
+                          buttonDefaults.buttonUrl = compData.properties.button_url || buttonDefaults.buttonUrl;
+                          buttonDefaults.buttonTarget = compData.properties.button_target || buttonDefaults.buttonTarget;
+                          buttonDefaults.buttonBgColor = compData.properties.button_bg_color || buttonDefaults.buttonBgColor;
+                          buttonDefaults.buttonTextColor = compData.properties.button_text_color || buttonDefaults.buttonTextColor;
+                          buttonDefaults.buttonPadding = compData.properties.button_padding || buttonDefaults.buttonPadding;
+                          buttonDefaults.borderRadius = compData.properties.border_radius || buttonDefaults.borderRadius;
+                          buttonDefaults.fontSize = compData.properties.font_size || buttonDefaults.fontSize;
+                          buttonDefaults.fontWeight = compData.properties.font_weight || buttonDefaults.fontWeight;
+                          buttonDefaults.textAlign = compData.properties.text_align || buttonDefaults.textAlign;
+                          buttonDefaults.textDecoration = compData.properties.text_decoration || buttonDefaults.textDecoration;
+                          buttonDefaults.border = compData.properties.border || buttonDefaults.border;
+                          buttonDefaults.boxShadow = compData.properties.box_shadow || buttonDefaults.boxShadow;
+                          buttonDefaults.transition = compData.properties.transition || buttonDefaults.transition;
+                        }
+                        
+                        nestedContent._buttonData = compData.buttonData || buttonDefaults;
+                        nestedContent.renderButton();
+                        break;
                       case 'invest-cta':
                         if (compData.investCtaData && Object.keys(compData.investCtaData).length > 0) {
                           nestedContent._investCtaData = compData.investCtaData;

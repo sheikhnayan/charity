@@ -338,7 +338,7 @@
                             <div class="col-md-6 col-6 text-start" style="padding-top: 7px; font-weight: bold;">
                                 {{ $item->ticket->name }}
                                 @if ($item->ticket->type != 'property')
-                                /* <p style="font-weight: 400">{!! $item->ticket->description !!}</p> */
+
                                 @else
                                 <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ rtrim(rtrim(number_format($item->ticket->price_per_share, 2, '.', ','), '0'), '.') }} per share</p>
                                 @endif

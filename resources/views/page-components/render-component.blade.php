@@ -256,14 +256,6 @@ h5, .ql-header-5 {
 }
 
 /* Button components: allow side-by-side placement on desktop */
-.nested-component:has(.button-component) {
-    display: inline-flex;
-    align-items: center;
-    vertical-align: top;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-
 .nested-component .button-component,
 .button-component {
     display: inline-flex;
@@ -382,12 +374,6 @@ h5, .ql-header-5 {
     }
     
     /* Button components mobile spacing */
-    .nested-component:has(.button-component) {
-        display: block !important;
-        width: 100% !important;
-        margin-right: 0 !important;
-        margin-bottom: 10px !important;
-    }
     .button-component,
     .nested-component .button-component {
         margin-left: 5px !important;
