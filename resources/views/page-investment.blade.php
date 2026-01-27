@@ -143,19 +143,30 @@ if (isset($state['components'])) {
         padding: 0;
         width: 100%;
         height: 100%;
+        height: 100dvh;
+        height: 100vh;
+        -webkit-fill-available: 100%;
     }
     
     body {
         display: flex;
         flex-direction: column;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        height: 100dvh;
     }
     
     main {
         flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     footer {
         margin-top: auto;
+        flex-shrink: 0;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
 
     nav{
