@@ -48,6 +48,77 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 
     <style>
+         /* System font classes (for Quill editor content) */
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* Quill size classes (align with Quill editor defaults) */
+    .ql-size-small { font-size: 0.75em !important; }
+    .ql-size-large { font-size: 1.5em !important; }
+    .ql-size-huge  { font-size: 2.5em !important; }
+
+    /* Quill.js Class-based Font Styles for Frontend */
+    .ql-size-6px { font-size: 6px !important; }
+    .ql-size-8px { font-size: 8px !important; }
+    .ql-size-9px { font-size: 9px !important; }
+    .ql-size-10px { font-size: 10px !important; }
+    .ql-size-12px { font-size: 12px !important; }
+    .ql-size-14px { font-size: 14px !important; }
+    .ql-size-16px { font-size: 16px !important; }
+    .ql-size-18px { font-size: 18px !important; }
+    .ql-size-20px { font-size: 20px !important; }
+    .ql-size-24px { font-size: 24px !important; }
+    .ql-size-28px { font-size: 28px !important; }
+    .ql-size-32px { font-size: 32px !important; }
+    .ql-size-36px { font-size: 36px !important; }
+    .ql-size-40px { font-size: 40px !important; }
+    .ql-size-48px { font-size: 48px !important; }
+
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: 'Helvetica Neue', Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', Times, serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* SEO-friendly semantic heading styles for frontend */
+    h1, .ql-header-1 {
+        font-size: 2.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.2 !important;
+        margin: 1rem 0 0.5rem 0 !important;
+    }
+    h2, .ql-header-2 {
+        font-size: 2rem !important;
+        font-weight: bold !important;
+        line-height: 1.3 !important;
+        margin: 0.8rem 0 0.4rem 0 !important;
+    }
+    h3, .ql-header-3 {
+        font-size: 1.75rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.6rem 0 0.3rem 0 !important;
+    }
+    h4, .ql-header-4 {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.5rem 0 0.25rem 0 !important;
+    }
+    h5, .ql-header-5 {
+        font-size: 1.25rem !important;
+        font-weight: bold !important;
+        line-height: 1.5 !important;
+        margin: 0.4rem 0 0.2rem 0 !important;
+    }
+
         .form-control{
             margin-bottom: 0.5rem;
             padding: 0.8rem;
