@@ -625,8 +625,11 @@ h5, .ql-header-5 {
                     }
                 }
                 
-                // Background color - always apply if set
-                if (!$hasVideoBackground && isset($innerSectionData['backgroundColor']) && $innerSectionData['backgroundColor'] !== '' && $innerSectionData['backgroundColor'] !== 'transparent') {
+                // Background color - apply when backgroundType is 'color' or not set (with a color value)
+                if (($backgroundType === 'color' || !isset($innerSectionData['backgroundType'])) && 
+                    isset($innerSectionData['backgroundColor']) && 
+                    $innerSectionData['backgroundColor'] !== '' && 
+                    $innerSectionData['backgroundColor'] !== 'transparent') {
                     $sectionStyle .= "background-color: {$innerSectionData['backgroundColor']} !important;";
                 }
 
