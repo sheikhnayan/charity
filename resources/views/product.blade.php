@@ -395,7 +395,7 @@
                   @foreach ($similar as $item)
                   @if ($item->id != $data->id)
                       <a href="/product/{{ Str::slug($item->title) }}">
-                        <div class="card"><img src="{{ asset('uploads/'.$item->images[0]->image) }}" alt="{{$item->title}}" style="width: 100%"><div class="meta">{{$item->title}}<br><strong>Current: ${{ number_format($item->starting_price, 2) }}</strong></div></div>
+                        <div class="card" style="max-width: 178px;"><img src="{{ asset('uploads/'.$item->images[0]->image) }}" alt="{{$item->title}}" style="width: 100%"><div class="meta">{{$item->title}}<br><strong>Current: ${{ number_format($item->starting_price, 2) }}</strong></div></div>
                       </a>
                   @endif
                   @endforeach
