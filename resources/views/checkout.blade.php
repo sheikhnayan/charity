@@ -1401,6 +1401,44 @@
     
 @endif
 
+<script>
+// Payment loader helpers shared by all payment methods
+function showPaymentLoader() {
+    const loader = document.getElementById('payment-loader');
+    if (loader) {
+        loader.style.display = 'flex';
+        // Disable forms to prevent double-submit while processing
+        const authorizeForm = document.getElementById('authorize-form');
+        const stripeForm = document.getElementById('stripe-form');
+        if (authorizeForm) {
+            authorizeForm.style.pointerEvents = 'none';
+            authorizeForm.style.opacity = '0.5';
+        }
+        if (stripeForm) {
+            stripeForm.style.pointerEvents = 'none';
+            stripeForm.style.opacity = '0.5';
+        }
+    }
+}
+
+function hidePaymentLoader() {
+    const loader = document.getElementById('payment-loader');
+    if (loader) {
+        loader.style.display = 'none';
+        const authorizeForm = document.getElementById('authorize-form');
+        const stripeForm = document.getElementById('stripe-form');
+        if (authorizeForm) {
+            authorizeForm.style.pointerEvents = 'auto';
+            authorizeForm.style.opacity = '1';
+        }
+        if (stripeForm) {
+            stripeForm.style.pointerEvents = 'auto';
+            stripeForm.style.opacity = '1';
+        }
+    }
+}
+</script>
+
 <!-- Payment Processing Loader -->
 <div id="payment-loader" style="display: none;">
     <div class="payment-loader-overlay"></div>
