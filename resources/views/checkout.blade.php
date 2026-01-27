@@ -637,7 +637,7 @@
                                     } elseif ($item['type'] === 'student' || $item['type'] === 'donation') {
                                         // Student/Donation: use website logo
                                         $imagePath = $check && $check->user && $check->user->setting && $check->user->setting->logo
-                                            ? asset('/uploads/' . $check->user->setting->logo)
+                                            ? asset('/uploads/' . $check->user->photo)
                                             : null;
                                     } elseif ($item['type'] === 'product') {
                                         // Product: fetch from database
