@@ -14,7 +14,6 @@ class Donation extends Model
         'first_name',
         'last_name',
         'email',
-        'phone',
         'amount',
         'tip_amount',
         'tip_percentage',

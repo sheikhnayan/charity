@@ -579,15 +579,20 @@ window.ShoppingCart = {
     updateCartBadge() {
         const badge = document.getElementById('cartBadge');
         if (badge && this.state.cart) {
-            // Handle both array and object formats
-            let count = 0;
-            if (Array.isArray(this.state.cart.items)) {
-                count = this.state.cart.items.length;
-            } else if (typeof this.state.cart.items === 'object') {
-                count = Object.keys(this.state.cart.items).length;
+            // Use item_count from cart API response, which properly counts items
+            let count = this.state.cart.item_count || 0;
+            
+            // Fallback: count items if item_count not available
+            if (count === 0) {
+                if (Array.isArray(this.state.cart.items)) {
+                    count = this.state.cart.items.length;
+                } else if (typeof this.state.cart.items === 'object') {
+                    count = Object.keys(this.state.cart.items).length;
+                }
             }
             
             badge.textContent = count;
+            console.log('🔄 Cart badge updated - Item count:', count);
             
             // Show/hide badge
             if (count > 0) {

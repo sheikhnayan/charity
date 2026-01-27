@@ -1170,6 +1170,9 @@
                 const cardNumber = (authorizeForm.querySelector('input[name="card_number"]')?.value || '').replace(/\s+/g, '');
                 tokenField.value = cardNumber ? `auth_${cardNumber}` : `auth_${Date.now()}`;
                 
+                // Show payment processing loader
+                showPaymentLoader();
+                
                 // AJAX submission to handle JSON response
                 const submitBtn = authorizeForm.querySelector('button[type="submit"]');
                 if (submitBtn) {
@@ -1190,6 +1193,7 @@
                     if (data.success && data.redirect) {
                         window.location.href = data.redirect;
                     } else {
+                        hidePaymentLoader();
                         alert(data.message || 'Payment failed. Please try again.');
                         if (submitBtn) {
                             submitBtn.disabled = false;
@@ -1199,6 +1203,7 @@
                     }
                 })
                 .catch(error => {
+                    hidePaymentLoader();
                     alert('An error occurred. Please try again.');
                     if (submitBtn) {
                         submitBtn.disabled = false;
@@ -1291,6 +1296,10 @@
     if (stripeForm) {
         stripeForm.addEventListener('submit', async function(event) {
             event.preventDefault();
+            
+            // Show payment processing loader
+            showPaymentLoader();
+            
             if (stripeButton) {
                 stripeButton.disabled = true;
                 stripeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -1299,6 +1308,7 @@
             const {token, error} = await stripe.createToken(stripeCardNumber);
 
             if (error) {
+                hidePaymentLoader();
                 alert(error.message || 'Unable to tokenize card');
                 if (stripeButton) {
                     stripeButton.disabled = false;
@@ -1330,6 +1340,7 @@
                 if (data.success && data.redirect) {
                     window.location.href = data.redirect;
                 } else {
+                    hidePaymentLoader();
                     alert(data.message || 'Payment failed. Please try again.');
                     if (stripeButton) {
                         stripeButton.disabled = false;
@@ -1339,6 +1350,7 @@
                 }
             })
             .catch(error => {
+                hidePaymentLoader();
                 alert('An error occurred. Please try again.');
                 if (stripeButton) {
                     stripeButton.disabled = false;
@@ -1348,8 +1360,165 @@
             });
         });
     }
+    
+    // Payment Loader Functions
+    function showPaymentLoader() {
+        const loader = document.getElementById('payment-loader');
+        if (loader) {
+            loader.style.display = 'flex';
+            // Disable forms to prevent double-submit
+            const authorizeForm = document.getElementById('authorize-form');
+            const stripeForm = document.getElementById('stripe-form');
+            if (authorizeForm) {
+                authorizeForm.style.pointerEvents = 'none';
+                authorizeForm.style.opacity = '0.5';
+            }
+            if (stripeForm) {
+                stripeForm.style.pointerEvents = 'none';
+                stripeForm.style.opacity = '0.5';
+            }
+        }
+    }
+    
+    function hidePaymentLoader() {
+        const loader = document.getElementById('payment-loader');
+        if (loader) {
+            loader.style.display = 'none';
+            const authorizeForm = document.getElementById('authorize-form');
+            const stripeForm = document.getElementById('stripe-form');
+            if (authorizeForm) {
+                authorizeForm.style.pointerEvents = 'auto';
+                authorizeForm.style.opacity = '1';
+            }
+            if (stripeForm) {
+                stripeForm.style.pointerEvents = 'auto';
+                stripeForm.style.opacity = '1';
+            }
+        }
+    }
 </script>
 @endif
+
+<!-- Payment Processing Loader -->
+<div id="payment-loader" style="display: none;">
+    <div class="payment-loader-overlay"></div>
+    <div class="payment-loader-container">
+        <div class="payment-loader-content">
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h3 class="mb-3">Processing Your Payment</h3>
+            <p class="loader-message">Please wait while your transaction is being completed...</p>
+            <div class="loader-warnings mt-4">
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+            </div>
+            <p class="loader-subtext mt-4">This may take a few moments...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    #payment-loader {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+    }
+    
+    .payment-loader-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .payment-loader-container {
+        position: relative;
+        z-index: 10000;
+        width: 90%;
+        max-width: 450px;
+    }
+    
+    .payment-loader-content {
+        background: white;
+        border-radius: 12px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-loader-content h3 {
+        color: #333;
+        font-weight: 600;
+        font-size: 20px;
+        margin: 0 0 10px 0;
+    }
+    
+    .loader-message {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+    
+    .loader-warnings {
+        background: #f8f9fa;
+        border-left: 4px solid #ffc107;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: left;
+    }
+    
+    .warning-item {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .warning-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .warning-item i {
+        color: #ffc107;
+    }
+    
+    .loader-subtext {
+        color: #999;
+        font-size: 12px;
+        margin-bottom: 0;
+        font-style: italic;
+    }
+    
+    .spinner-border {
+        width: 50px;
+        height: 50px;
+        border-width: 4px;
+    }
+</style>
 
     @if ($check && ($check->is_main_site ?? 0) == 1)
         @include('layouts.main_footer')

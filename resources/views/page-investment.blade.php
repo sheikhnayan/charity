@@ -1636,24 +1636,7 @@ if (isset($state['components'])) {
         }}">
     @endif
 
-        @session('success')
-            <div class="alert alert-success mt-4" role="alert">
-                Purchase Pending
-            </div>
-        @endsession
-
-        @session('error')
-            <div class="alert alert-danger mt-4" role="alert">
-                {{ $value }}
-            </div>
-        @endsession
-        @session('errors')
-            <div class="alert alert-danger mt-4" role="alert">
-                @foreach($errors->all() as $value)
-                    <div>{{ $value }}</div>
-                @endforeach
-            </div>
-        @endsession
+        
 
         {{-- Handle banner components that need special positioning --}}
         @foreach($state as $key => $component)
@@ -1689,6 +1672,24 @@ if (isset($state['components'])) {
 
         {{-- Main content area with universal inner-section handling --}}
         <div id="rendered-page">
+            @session('success')
+                <div class="alert alert-success mt-4" role="alert">
+                    {{ $value }}
+                </div>
+            @endsession
+
+            @session('error')
+                <div class="alert alert-danger mt-4" role="alert">
+                    {{ $value }}
+                </div>
+            @endsession
+            @session('errors')
+                <div class="alert alert-danger mt-4" role="alert">
+                    @foreach($errors->all() as $value)
+                        <div>{{ $value }}</div>
+                    @endforeach
+                </div>
+            @endsession
             @foreach($state as $index => $component)
                 @php 
                     $componentType = $component['type'] ?? '';

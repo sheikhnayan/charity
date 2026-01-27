@@ -341,7 +341,7 @@
     <div class="container mb-4">
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
-                Purchase Pending
+                {{ $value }}
             </div>
         @endsession
 

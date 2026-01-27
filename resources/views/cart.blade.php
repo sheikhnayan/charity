@@ -388,7 +388,7 @@
         <div class="container my-5" style="margin-top: 6rem !important;">
             <div class="row">
                 <div class="col-lg-8">
-                    <h1 class="mb-4">🛒 Shopping Cart</h1>
+                    <h1 class="mb-4">🛒 Cart</h1>
                     <div id="cartItemsContainer" class="card shadow-sm">
                         <div id="cartEmpty" class="card-body p-5 text-center">
                             <i class="fas fa-shopping-cart" style="font-size: 48px; color: #999; margin-bottom: 20px;"></i>
@@ -579,13 +579,26 @@ function createCartItemElement(item, index) {
         quantityInput.addEventListener('change', function() { const newQty = parseInt(this.value) || 1; if (newQty > 0) { updateItemQuantity(itemKey, newQty); } else { this.value = 1; } });
     }
     if (isStudent && donationInput) {
-        donationInput.addEventListener('change', function() { 
+        donationInput.addEventListener('change', function() {
+            // Restrict to 2 decimal places
+            const value = parseFloat(this.value) || 0;
+            this.value = value.toFixed(2);
             updateItemTotal(); 
             // Save amount to API
             const amount = parseFloat(this.value) || 0;
             updateItemAmount(itemKey, amount);
         });
-        donationInput.addEventListener('input', function() { updateItemTotal(); });
+        donationInput.addEventListener('input', function() { 
+            // Prevent more than 2 decimal places during input
+            const value = this.value;
+            if (value.includes('.')) {
+                const parts = value.split('.');
+                if (parts[1] && parts[1].length > 2) {
+                    this.value = parseFloat(value).toFixed(2);
+                }
+            }
+            updateItemTotal(); 
+        });
     }
     if (removeBtn) { removeBtn.addEventListener('click', function() { removeCartItem(itemKey); }); }
     updateItemTotal();
@@ -615,10 +628,8 @@ function updateItemAmount(itemKey, amount) {
     .then(response => response.json())
     .then(data => {
         console.log('Amount updated:', data);
-        // Don't reload - just update summary
-        if (data.success && data.cart) {
-            updateSummary(Object.values(data.cart.items || {}));
-        }
+        // Don't reload - just update summary from DOM (which already has the updated value)
+        updateSummary();
     })
     .catch(error => console.error('Error updating amount:', error));
 }

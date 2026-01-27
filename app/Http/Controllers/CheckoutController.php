@@ -266,6 +266,12 @@ class CheckoutController extends Controller
     protected function handlePaymentSuccess($checkoutData, $paymentResponse, $paymentMethod)
     {
         try {
+            \Log::info('Payment Success - Starting transaction recording', [
+                'payment_method' => $paymentMethod,
+                'items_count' => count($checkoutData['items'] ?? []),
+                'total' => $checkoutData['total'] ?? 0
+            ]);
+
             // Track each item in payment funnel
             foreach ($checkoutData['items'] as $item) {
                 $this->paymentFunnelService->trackEvent(
@@ -283,7 +289,15 @@ class CheckoutController extends Controller
 
             // Persist itemized transactions sharing the same transaction id
             $transactionId = $paymentResponse->id ?? $paymentResponse['transaction_id'] ?? $paymentResponse['id'] ?? null;
+            
+            \Log::info('Recording cart transactions', [
+                'transaction_id' => $transactionId,
+                'items_count' => count($checkoutData['items'] ?? [])
+            ]);
+            
             $this->recordCartTransactions($checkoutData, $transactionId, $paymentMethod);
+
+            \Log::info('Transactions recorded successfully');
 
             // Clear cart after successful payment
             $this->cartService->clearCart();
@@ -306,6 +320,8 @@ class CheckoutController extends Controller
                 'timestamp' => now()
             ]]);
 
+            \Log::info('Payment Success - Complete', ['redirect_url' => route('checkout.success')]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Payment successful!',
@@ -315,7 +331,8 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             \Log::error('Payment Success Handler Error', [
                 'error' => $e->getMessage(),
-                'checkout_data' => $checkoutData
+                'trace' => $e->getTraceAsString(),
+                'items_count' => count($checkoutData['items'] ?? [])
             ]);
 
             // Even if logging fails, payment succeeded
@@ -380,7 +397,8 @@ class CheckoutController extends Controller
                 'quantity' => $item['quantity'] ?? 1,
                 'amount' => $item['amount'] ?? $item['price'] ?? 0,
                 'total' => $this->calculateItemTotal($item),
-                'description' => $this->getItemDescription($item)
+                'description' => $this->getItemDescription($item),
+                'student_id' => $item['student_id'] ?? null // Preserve student_id for student donations
             ];
         }
 
@@ -501,7 +519,6 @@ class CheckoutController extends Controller
             $transaction->fee = $itemFee; // Proportional fee
             $transaction->fee_paid = 1;
             $transaction->status = 1;
-            $transaction->reference_id = $item['id'] ?? null;
             $transaction->payment_method = $paymentMethod;
 
             // Attach proportional tip
@@ -510,7 +527,61 @@ class CheckoutController extends Controller
                 $transaction->tip_percentage = $tipPercentage;
             }
 
-            $transaction->save();
+            // Create Donation record for donations (student or general)
+            if ($item['type'] === 'student' || $item['type'] === 'general') {
+                try {
+                    $donation = new \App\Models\Donation();
+                    $donation->amount = $itemAmount;
+                    $donation->type = $item['type'];
+                    $donation->website_id = $websiteId;
+                    $donation->first_name = $checkoutData['first_name'] ?? null;
+                    $donation->last_name = $checkoutData['last_name'] ?? null;
+                    $donation->email = $checkoutData['email'] ?? null;
+                    $donation->status = 1;
+                    $donation->transaction_id = $transactionId;
+                    
+                    // For student donations, store student_id as user_id
+                    if ($item['type'] === 'student') {
+                        $donation->user_id = $item['id'];
+                    }
+                    
+                    // Add tip info to donation
+                    if ($tipEnabled && $itemTip > 0) {
+                        $donation->tip_amount = $itemTip;
+                        $donation->tip_percentage = $tipPercentage;
+                        $donation->tip_enabled = true;
+                    }
+                    
+                    $donation->save();
+                    
+                    // Set reference_id to donation id for donations
+                    $transaction->reference_id = $donation->id;
+                } catch (\Exception $e) {
+                    \Log::error('Failed to create Donation record in cart checkout', [
+                        'error' => $e->getMessage(),
+                        'item_type' => $item['type'],
+                        'item_id' => $item['id'] ?? null,
+                        'stack_trace' => $e->getTraceAsString()
+                    ]);
+                    // Continue with transaction even if donation creation fails
+                    $transaction->reference_id = $item['id'] ?? null;
+                }
+            } else {
+                // For non-donation items (tickets, auction, etc.), reference_id is the item id
+                $transaction->reference_id = $item['id'] ?? null;
+            }
+
+            try {
+                $transaction->save();
+            } catch (\Exception $e) {
+                \Log::error('Failed to save Transaction in cart checkout', [
+                    'error' => $e->getMessage(),
+                    'transaction_id' => $transactionId,
+                    'item_type' => $item['type'],
+                    'stack_trace' => $e->getTraceAsString()
+                ]);
+                throw $e; // Re-throw to be caught by outer handler
+            }
         }
     }
 

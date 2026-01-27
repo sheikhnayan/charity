@@ -558,7 +558,7 @@ $state = $data && $data->state ? (is_string($data->state) ? json_decode($data->s
     <main style="margin-top: 6.9rem;">
         @session('success')
             <div class="alert alert-success mt-4" role="alert">
-                Purchase Pending
+                {{ $value }}
             </div>
         @endsession
 
