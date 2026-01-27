@@ -709,7 +709,7 @@ h5, .ql-header-5 {
             
             @if($fullWidth)
                 {{-- Full Width Section - Use CSS to break out of container --}}
-                <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="margin-top: 25px;" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
+                     <div class="inner-section-fullwidth {{ $animationEnabled ? 'animated-section' : '' }}" id="{{ $componentId }}" style="margin-top: 25px; {{ $sectionStyle }}" data-animation="{{ $animationType }}" data-duration="{{ $animationDuration }}" data-delay="{{ $animationDelay }}">
                     @if($hasVideoBackground)
                         <div class="inner-section-video-layer" aria-hidden="true">
                             @if($backgroundVideoType === 'youtube')
