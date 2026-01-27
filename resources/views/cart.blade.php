@@ -276,8 +276,21 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-</head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+        }
+        footer {
+            margin-top: auto;
+        }
+    </style></head>
 <body style="background-color:#f9fafb; margin:0; padding:0;">
     @if ($header && $header->status == 1)
         @if($header->show_contact_topbar)
@@ -446,7 +459,7 @@
                 </div>
                 <div class="donation-amount-section mb-3" style="display: none;">
                     <label class="form-label text-muted mb-2">
-                        <i class="fas fa-heart text-danger"></i> Additional Donation Amount
+                        <i class="fas fa-heart text-danger"></i> Donation Amount
                     </label>
                     <div class="input-group">
                         <span class="input-group-text">$</span>
