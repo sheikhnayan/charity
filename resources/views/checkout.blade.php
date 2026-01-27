@@ -637,7 +637,7 @@
                                     } elseif ($item['type'] === 'student' || $item['type'] === 'donation') {
                                         // Student/Donation: use website logo
                                         $imagePath = $check && $check->user && $check->user->setting && $check->user->setting->logo
-                                            ? asset('/uploads/' . $check->user->photo)
+                                            ? asset('/uploads/' . \App\Models\User::where('id',$item['id'])->first()->photo)
                                             : null;
                                     } elseif ($item['type'] === 'product') {
                                         // Product: fetch from database
@@ -665,9 +665,6 @@
                             </div>
                         </div>
                     </div>
-                    @php
-                        dd(\App\Models\User::where('id',$item['id'])->first());
-                    @endphp
                     @if(!$loop->last)
                         <div style="height:1px;background:#eee;margin:20px 0;"></div>
                     @endif
