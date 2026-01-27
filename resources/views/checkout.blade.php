@@ -666,7 +666,7 @@
                         </div>
                     </div>
                     @php
-                        dd($check);
+                        dd($item);
                     @endphp
                     @if(!$loop->last)
                         <div style="height:1px;background:#eee;margin:20px 0;"></div>
