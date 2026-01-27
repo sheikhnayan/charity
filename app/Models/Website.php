@@ -147,7 +147,7 @@ class Website extends Model
     {
         $websitePaymentSettings = $this->paymentSettings;
         
-        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+        if ($websitePaymentSettings) {
             return $websitePaymentSettings->getPaymentConfig();
         }
         
@@ -178,7 +178,7 @@ class Website extends Model
     {
         $websitePaymentSettings = $this->paymentSettings;
         
-        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+        if ($websitePaymentSettings) {
             return $websitePaymentSettings->payment_method;
         }
         
@@ -195,7 +195,7 @@ class Website extends Model
     {
         $websitePaymentSettings = $this->paymentSettings;
         
-        if ($websitePaymentSettings && $websitePaymentSettings->is_active) {
+        if ($websitePaymentSettings) {
             return $websitePaymentSettings->getProcessingFee();
         }
         
