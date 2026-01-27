@@ -6091,35 +6091,56 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         {!! $component['html'] !!}
 
                         <script>
-         // Add global onclick functions for page builder preview
-            if (!window.showLoginFormPreview) {
-                window.showLoginFormPreview = function(button) {
-                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
-                    
-                    const registerForm = document.getElementsByClassName('register');
-                    console.log(registerForm);
-                    const loginForm = document.getElementsByClassName('login');
-                    const titleElement = document.getElementsByClassName('tit');
+                        // Populate teachers list dynamically
+                        (function() {
+                            const teachers = @json($teachers ?? []);
+                            const teacherSelects = document.querySelectorAll('select[name="teacher_id"], select#teacher_id');
+                            
+                            teacherSelects.forEach(function(select) {
+                                // Clear existing options except the first one
+                                while (select.options.length > 1) {
+                                    select.remove(1);
+                                }
+                                
+                                // Add teacher options
+                                teachers.forEach(function(teacher) {
+                                    const option = document.createElement('option');
+                                    option.value = teacher.id;
+                                    option.textContent = teacher.name;
+                                    select.appendChild(option);
+                                });
+                            });
+                        })();
+                        
+                        // Add global onclick functions for page builder preview
+                            if (!window.showLoginFormPreview) {
+                                window.showLoginFormPreview = function(button) {
+                                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                                    
+                                    const registerForm = document.getElementsByClassName('register');
+                                    console.log(registerForm);
+                                    const loginForm = document.getElementsByClassName('login');
+                                    const titleElement = document.getElementsByClassName('tit');
 
-                    if (registerForm) registerForm[0].style.display = 'none';
-                    if (loginForm) loginForm[0].style.display = 'block';
-                    if (titleElement) titleElement[0].textContent = 'Login';
-                };
-            }
-            
-            if (!window.showRegisterFormPreview) {
-                window.showRegisterFormPreview = function(button) {
-                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
-                    const registerForm = document.getElementsByClassName('register');
-                    const loginForm = document.getElementsByClassName('login');
-                    const titleElement = document.getElementsByClassName('tit');
+                                    if (registerForm) registerForm[0].style.display = 'none';
+                                    if (loginForm) loginForm[0].style.display = 'block';
+                                    if (titleElement) titleElement[0].textContent = 'Login';
+                                };
+                            }
+                            
+                            if (!window.showRegisterFormPreview) {
+                                window.showRegisterFormPreview = function(button) {
+                                    const container = button.closest('.auth-form-container') || button.closest('[style*="auth-form"]') || button.closest('div');
+                                    const registerForm = document.getElementsByClassName('register');
+                                    const loginForm = document.getElementsByClassName('login');
+                                    const titleElement = document.getElementsByClassName('tit');
 
-                    if (loginForm) loginForm[0].style.display = 'none';
-                    if (registerForm) registerForm[0].style.display = 'block';
-                    if (titleElement) titleElement.textContent = 'Register';
-                };
-            }
-    </script>
+                                    if (loginForm) loginForm[0].style.display = 'none';
+                                    if (registerForm) registerForm[0].style.display = 'block';
+                                    if (titleElement) titleElement.textContent = 'Register';
+                                };
+                            }
+                    </script>
                     @else
                         {{-- Default auth form using dynamic properties from component --}}
                         <style>
