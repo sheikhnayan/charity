@@ -787,7 +787,22 @@
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" value="1" id="terms-authorize" required>
                             <label class="form-check-label" for="terms-authorize">
-                                I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                                I agree to the
+                                @if($footer && $footer->terms_page_id && $footer->terms_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->terms_page->name)) }}" target="_blank">Terms of Service</a>
+                                @else
+                                    <a href="/terms-of-service" target="_blank">Terms of Service</a>
+                                @endif,
+                                @if($footer && $footer->privacy_page_id && $footer->privacy_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->privacy_page->name)) }}" target="_blank">Privacy Policy</a>
+                                @else
+                                    <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+                                @endif, and
+                                @if($footer && $footer->refund_page_id && $footer->refund_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->refund_page->name)) }}" target="_blank">Refund Policy</a>
+                                @else
+                                    <a href="/refund-policy" target="_blank">Refund Policy</a>
+                                @endif.
                             </label>
                         </div>
                         <div class="sc-gyZVQB fWNGEI mt-4">
@@ -900,7 +915,22 @@
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" value="1" id="terms-stripe" required>
                             <label class="form-check-label" for="terms-stripe">
-                                I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                                I agree to the
+                                @if($footer && $footer->terms_page_id && $footer->terms_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->terms_page->name)) }}" target="_blank">Terms of Service</a>
+                                @else
+                                    <a href="/terms-of-service" target="_blank">Terms of Service</a>
+                                @endif,
+                                @if($footer && $footer->privacy_page_id && $footer->privacy_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->privacy_page->name)) }}" target="_blank">Privacy Policy</a>
+                                @else
+                                    <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+                                @endif, and
+                                @if($footer && $footer->refund_page_id && $footer->refund_page)
+                                    <a href="/page/{{ str_replace(' ', '-', strtolower($footer->refund_page->name)) }}" target="_blank">Refund Policy</a>
+                                @else
+                                    <a href="/refund-policy" target="_blank">Refund Policy</a>
+                                @endif.
                             </label>
                         </div>
                         

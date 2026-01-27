@@ -587,7 +587,22 @@
                     <div class="form-check mt-3">
                         <input class="form-check-input" type="checkbox" value="1" id="terms-stripe" required>
                         <label class="form-check-label" for="terms-stripe">
-                            I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                            I agree to the
+                            @if($footer && $footer->terms_page_id && $footer->terms_page)
+                                <a href="/page/{{ str_replace(' ', '-', strtolower($footer->terms_page->name)) }}" target="_blank">Terms of Service</a>
+                            @else
+                                <a href="/terms-of-service" target="_blank">Terms of Service</a>
+                            @endif,
+                            @if($footer && $footer->privacy_page_id && $footer->privacy_page)
+                                <a href="/page/{{ str_replace(' ', '-', strtolower($footer->privacy_page->name)) }}" target="_blank">Privacy Policy</a>
+                            @else
+                                <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+                            @endif, and
+                            @if($footer && $footer->refund_page_id && $footer->refund_page)
+                                <a href="/page/{{ str_replace(' ', '-', strtolower($footer->refund_page->name)) }}" target="_blank">Refund Policy</a>
+                            @else
+                                <a href="/refund-policy" target="_blank">Refund Policy</a>
+                            @endif.
                         </label>
                     </div>
                     
@@ -610,22 +625,6 @@
                             </a>
                         </div>
                     </div>
-                    
-                    /* <div class="row">
-                        <div class="col-md-12">
-                            <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->refund ? $setting->refund_page->name : '#')) }}">Refund policy</a>
-                                </li>
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->privacy ? $setting->privacy_page->name : '#')) }}">Privacy policy</a>
-                                </li>
-                                <li style="margin-right: 1rem;">
-                                    <a style="color: #1773b0; text-decoration: underline;" href="/page/{{ str_replace(' ', '-', strtolower($setting->terms ? $setting->terms_page->name : '#')) }}">Terms of service</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div> */
                 </form>
             </div>
             <div class="col-md-6 desktop">
