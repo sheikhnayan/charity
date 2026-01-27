@@ -1145,6 +1145,16 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Pay Now button amounts with processing fee
+        const checkoutTotal = document.getElementById('checkout-total');
+        if (checkoutTotal) {
+            const totalText = checkoutTotal.textContent;
+            const authorizeBtnAmount = document.getElementById('authorize-pay-btn-amount');
+            const stripeBtnAmount = document.getElementById('stripe-pay-btn-amount');
+            if (authorizeBtnAmount) authorizeBtnAmount.textContent = totalText;
+            if (stripeBtnAmount) stripeBtnAmount.textContent = totalText;
+        }
+
         setCountryValue();
         populateStatesAndFields();
         const countryField = document.getElementById('country');
