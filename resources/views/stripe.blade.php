@@ -583,6 +583,13 @@
                         'processingFee' => $payment->fee
                     ])
                     @endif
+
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="terms-stripe" required>
+                        <label class="form-check-label" for="terms-stripe">
+                            I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                        </label>
+                    </div>
                     
                     <div class="sc-gyZVQB fWNGEI mt-4">
                         <div class="sc-cVAmsi cvolSU"><button type="submit"
@@ -604,7 +611,7 @@
                         </div>
                     </div>
                     
-                    <div class="row">
+                    /* <div class="row">
                         <div class="col-md-12">
                             <ul style="display: inline-flex; list-style: none; margin-left: 0px; margin-top: 20px; margin-bottom: 5px;">
                                 <li style="margin-right: 1rem;">
@@ -618,7 +625,7 @@
                                 </li>
                             </ul>
                         </div>
-                    </div>
+                    </div> */
                 </form>
             </div>
             <div class="col-md-6 desktop">

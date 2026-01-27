@@ -13,6 +13,9 @@
     $normalized = strtolower($rawPaymentMethod);
     $paymentMethod = in_array($normalized, ['authorize', 'authorize.net', 'authorize_net', 'authnet']) ? 'authorize_net' : $rawPaymentMethod;
     $processingFee = $website ? $website->getProcessingFee() : 2.9;
+    $paymentSettings = $website?->paymentSettings ?? \App\Models\PaymentSetting::find(1);
+    $tippingEnabled = $paymentSettings?->tipping_enabled ?? true;
+    $coinbaseEnabled = $paymentSettings?->coinbase_enabled ?? false;
 @endphp
 
 <!DOCTYPE html>
@@ -649,11 +652,13 @@
                     <span style="color:#2c3e50;font-weight:500;">Processing Fee</span>
                     <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
                 </div>
+                @if($tippingEnabled)
                 <!-- Tip row in summary (managed by tipping component) -->
                 <div id="tip-row" style="display:none;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
                     <span style="color:#2c3e50;font-weight:500;">Tip</span>
                     <span id="tip-amount-display" style="text-align:right;font-weight:600;color:#667eea;">$0.00</span>
                 </div>
+                @endif
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;border-top:2px solid #eee;padding-top:15px;">
                     <span style="font-size:18px;font-weight:700;color:#2c3e50;">Total</span>
                     <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ rtrim(rtrim(number_format(((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9)) + ($subtotal ?? $total), 2, '.', ''), '0'), '.') }}</span>
@@ -665,12 +670,14 @@
             <input type="hidden" id="tip-percentage-field" value="0">
             <input type="hidden" id="tip-enabled-field" value="0">
             
+            @if($tippingEnabled)
             {{-- Tipping Component (left side) --}}
             @include('components.tipping', [
                 'baseAmount' => $total,
                 'primaryColor' => '#667eea',
                 'processingFee' => $processingFee ?? 2.9
             ])
+            @endif
         </div>
     </div>
 
@@ -777,9 +784,22 @@
                         </div>
                         
                         
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="terms-authorize" required>
+                            <label class="form-check-label" for="terms-authorize">
+                                I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                            </label>
+                        </div>
                         <div class="sc-gyZVQB fWNGEI mt-4">
                             <div class="sc-cVAmsi cvolSU"><button type="submit" class="btn btn-primary" style="width:100%;height:45px;">Pay Now <span id="authorize-pay-btn-amount" style="margin-left:8px;">${{ number_format($total, 2) }}</span></button></div>
                         </div>
+                        @if($coinbaseEnabled)
+                        <div class="sc-gyZVQB fWNGEI mt-3">
+                            <div class="sc-cVAmsi cvolSU">
+                                <button type="button" class="btn btn-outline-warning" id="coinbase-pay-btn" style="width:100%;height:45px;border-width:2px;">Pay with Crypto</button>
+                            </div>
+                        </div>
+                        @endif
                     </form>
                 </div>
             @else
@@ -877,10 +897,23 @@
                             </div>
                         </div>
                         
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="terms-stripe" required>
+                            <label class="form-check-label" for="terms-stripe">
+                                I agree to the <a href="/terms-of-service" target="_blank">Terms of Service</a>, <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and <a href="/refund-policy" target="_blank">Refund Policy</a>.
+                            </label>
+                        </div>
                         
                         <div class="sc-gyZVQB fWNGEI mt-4">
                             <div class="sc-cVAmsi cvolSU"><button type="submit" class="btn btn-primary" id="stripe-pay-btn" style="width:100%;height:45px;">Pay Now <span id="stripe-pay-btn-amount" style="margin-left:8px;">${{ number_format($total, 2) }}</span></button></div>
                         </div>
+                        @if($coinbaseEnabled)
+                        <div class="sc-gyZVQB fWNGEI mt-3">
+                            <div class="sc-cVAmsi cvolSU">
+                                <button type="button" class="btn btn-outline-warning" id="coinbase-pay-btn" style="width:100%;height:45px;border-width:2px;">Pay with Crypto</button>
+                            </div>
+                        </div>
+                        @endif
                     </form>
                 </div>
             @endif
@@ -981,6 +1014,19 @@
         countrySelect.dispatchEvent(new Event('change'));
     }
 
+    function syncTipFields(targetForm) {
+        if (!targetForm) return;
+        const gTipAmount = document.getElementById('tip-amount-field');
+        const gTipPercent = document.getElementById('tip-percentage-field');
+        const gTipEnabled = document.getElementById('tip-enabled-field');
+        const fTipAmount = targetForm.querySelector('[id^="tip-amount-"]');
+        const fTipPercent = targetForm.querySelector('[id^="tip-percentage-"]');
+        const fTipEnabled = targetForm.querySelector('[id^="tip-enabled-"]');
+        if (fTipAmount && gTipAmount) fTipAmount.value = gTipAmount.value;
+        if (fTipPercent && gTipPercent) fTipPercent.value = gTipPercent.value;
+        if (fTipEnabled && gTipEnabled) fTipEnabled.value = gTipEnabled.value;
+    }
+
     function populateStatesAndFields() {
         const country = document.getElementById('country');
         if (!country) return;
@@ -1049,16 +1095,7 @@
         if (authorizeForm) {
             authorizeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                // Sync tip values from global fields into this form
-                const gTipAmount = document.getElementById('tip-amount-field');
-                const gTipPercent = document.getElementById('tip-percentage-field');
-                const gTipEnabled = document.getElementById('tip-enabled-field');
-                const fTipAmount = authorizeForm.querySelector('#tip-amount-authorize');
-                const fTipPercent = authorizeForm.querySelector('#tip-percentage-authorize');
-                const fTipEnabled = authorizeForm.querySelector('#tip-enabled-authorize');
-                if (fTipAmount && gTipAmount) fTipAmount.value = gTipAmount.value;
-                if (fTipPercent && gTipPercent) fTipPercent.value = gTipPercent.value;
-                if (fTipEnabled && gTipEnabled) fTipEnabled.value = gTipEnabled.value;
+                syncTipFields(authorizeForm);
 
                 const tokenField = document.getElementById('authorize_payment_token');
                 const cardNumber = (authorizeForm.querySelector('input[name="card_number"]')?.value || '').replace(/\s+/g, '');
@@ -1100,6 +1137,56 @@
                         submitBtn.innerHTML = 'Pay Now <span id="authorize-pay-btn-amount" style="margin-left:8px;">' + (authAmount ? authAmount.textContent : '${{ number_format($total, 2) }}') + '</span>';
                     }
                 });
+            });
+        }
+
+        const coinbaseButton = document.getElementById('coinbase-pay-btn');
+        if (coinbaseButton) {
+            coinbaseButton.addEventListener('click', async function() {
+                const activeForm = document.getElementById('authorize-form') || document.getElementById('stripe-form');
+                if (!activeForm) return;
+
+                syncTipFields(activeForm);
+
+                const formData = new FormData(activeForm);
+                formData.set('payment_method', 'coinbase');
+                formData.delete('payment_token');
+                formData.delete('card_number');
+                formData.delete('expiration_date');
+                formData.delete('cvv');
+
+                const requiredFields = ['email', 'first_name', 'last_name'];
+                for (const field of requiredFields) {
+                    const value = formData.get(field);
+                    if (!value) {
+                        alert('Please complete your contact information before paying with crypto.');
+                        return;
+                    }
+                }
+
+                coinbaseButton.disabled = true;
+                coinbaseButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+
+                try {
+                    const response = await fetch(activeForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        throw new Error(data.message || 'Unable to start crypto payment.');
+                    }
+                } catch (err) {
+                    alert(err.message || 'Unable to start crypto payment.');
+                    coinbaseButton.disabled = false;
+                    coinbaseButton.innerHTML = 'Pay with Crypto';
+                }
             });
         }
     });
@@ -1158,15 +1245,7 @@
             }
 
             // Sync tip values from global fields into this form
-            const gTipAmount = document.getElementById('tip-amount-field');
-            const gTipPercent = document.getElementById('tip-percentage-field');
-            const gTipEnabled = document.getElementById('tip-enabled-field');
-            const fTipAmount = stripeForm.querySelector('#tip-amount-stripe');
-            const fTipPercent = stripeForm.querySelector('#tip-percentage-stripe');
-            const fTipEnabled = stripeForm.querySelector('#tip-enabled-stripe');
-            if (fTipAmount && gTipAmount) fTipAmount.value = gTipAmount.value;
-            if (fTipPercent && gTipPercent) fTipPercent.value = gTipPercent.value;
-            if (fTipEnabled && gTipEnabled) fTipEnabled.value = gTipEnabled.value;
+            syncTipFields(stripeForm);
 
             // AJAX submission to handle JSON response
             fetch(stripeForm.action, {
