@@ -646,7 +646,6 @@
                                             ? asset($product->image)
                                             : null;
                                     }
-                                    dd($check);
                                 @endphp
                                 @if($imagePath)
                                     <img src="{{ $imagePath }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
@@ -666,6 +665,9 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        dd($check);
+                    @endphp
                     @if(!$loop->last)
                         <div style="height:1px;background:#eee;margin:20px 0;"></div>
                     @endif
