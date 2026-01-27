@@ -761,6 +761,20 @@ function updateSummary(items) {
 
     // Update total
     document.getElementById('summaryTotal').textContent = '$' + totalAmount.toFixed(2);
+    
+    // Disable/enable checkout button based on total
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        if (totalAmount > 0) {
+            checkoutBtn.disabled = false;
+            checkoutBtn.style.opacity = '1';
+            checkoutBtn.style.cursor = 'pointer';
+        } else {
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.opacity = '0.5';
+            checkoutBtn.style.cursor = 'not-allowed';
+        }
+    }
 }
 
 function handleCheckout() {
@@ -775,7 +789,13 @@ function handleCheckout() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const checkoutBtn = document.getElementById('checkoutBtn');
-    if (checkoutBtn) { checkoutBtn.addEventListener('click', handleCheckout); }
+    if (checkoutBtn) { 
+        // Initialize as disabled
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = '0.5';
+        checkoutBtn.style.cursor = 'not-allowed';
+        checkoutBtn.addEventListener('click', handleCheckout); 
+    }
 });
 </script>
 
