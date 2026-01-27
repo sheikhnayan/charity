@@ -407,7 +407,7 @@
         </div>
 
         <div class="order-items">
-            <h3>Items Purchased</h3>
+            <h3>Summary</h3>
             <div class="items-list">
                 @php
                     $subtotal = $transaction['subtotal'] ?? 0;

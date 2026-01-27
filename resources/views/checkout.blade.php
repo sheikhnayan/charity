@@ -646,6 +646,7 @@
                                             ? asset($product->image)
                                             : null;
                                     }
+                                    dd($check);
                                 @endphp
                                 @if($imagePath)
                                     <img src="{{ $imagePath }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
