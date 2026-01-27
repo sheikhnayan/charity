@@ -621,8 +621,37 @@
                 @foreach($items as $item)
                     <div style="margin-bottom:20px;">
                         <div class="order-item-grid" style="display:grid;grid-template-columns:80px 1fr 120px;gap:15px;align-items:start;">
-                            <div class="order-item-image" style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ccc;">
-                                <i class="fas fa-image"></i>
+                            <div class="order-item-image" style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ccc;overflow:hidden;">
+                                @php
+                                    $imagePath = null;
+                                    if ($item['type'] === 'ticket') {
+                                        // Ticket: fetch from database
+                                        $ticket = \App\Models\Ticket::find($item['id']);
+                                        $imagePath = $ticket ? asset($ticket->image) : null;
+                                    } elseif ($item['type'] === 'auction') {
+                                        // Auction: fetch first image
+                                        $auctionItem = \App\Models\Auction::find($item['id']);
+                                        $imagePath = $auctionItem && $auctionItem->images->count() > 0 
+                                            ? asset('/uploads/' . $auctionItem->images[0]->image) 
+                                            : null;
+                                    } elseif ($item['type'] === 'student' || $item['type'] === 'donation') {
+                                        // Student/Donation: use website logo
+                                        $imagePath = $check && $check->user && $check->user->setting && $check->user->setting->logo
+                                            ? asset('/uploads/' . $check->user->setting->logo)
+                                            : null;
+                                    } elseif ($item['type'] === 'product') {
+                                        // Product: fetch from database
+                                        $product = \App\Models\Product::find($item['id']);
+                                        $imagePath = $product && $product->image 
+                                            ? asset($product->image)
+                                            : null;
+                                    }
+                                @endphp
+                                @if($imagePath)
+                                    <img src="{{ $imagePath }}" alt="{{ $item['name'] }}" style="width:100%;height:100%;object-fit:cover;">
+                                @else
+                                    <i class="fas fa-image"></i>
+                                @endif
                             </div>
                             <div class="order-item-content">
                                 <h4 style="margin:0 0 8px 0;font-size:16px;font-weight:600;color:#2c3e50;">{{ $item['name'] }}</h4>
