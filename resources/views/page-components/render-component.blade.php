@@ -5529,9 +5529,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $url = url()->current();
                 $domain = parse_url($url, PHP_URL_HOST);
                 $currentWebsite = \App\Models\Website::where('domain', $domain)->first();
-                $teachers = $currentWebsite ? \App\Models\User::where('website_id', $currentWebsite->id)->where('role','teacher')->get() : collect();
-
-                dd(\App\Models\User::where('role','teacher')->get());
+                $teachers = $currentWebsite ? \App\Models\Teacher::where('website_id', $currentWebsite->id)->where('is_active',1)->get() : collect();
                 
                 // Check if this is a new auth-form with authFormData or old one with hardcoded HTML
                 $authFormData = $component['authFormData'] ?? [];
