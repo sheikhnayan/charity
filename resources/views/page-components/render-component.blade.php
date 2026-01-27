@@ -1424,11 +1424,21 @@ h5, .ql-header-5 {
 
         @case('text')
             @php
-                $text = $component['html'] ?? 'Text content';
+                // Check all possible keys where text content might be stored
+                $text = '';
+                if (isset($component['html']) && !empty($component['html'])) {
+                    $text = $component['html'];
+                } elseif (isset($component['content']) && !empty($component['content'])) {
+                    $text = $component['content'];
+                } elseif (isset($component['text']) && !empty($component['text'])) {
+                    $text = $component['text'];
+                } else {
+                    $text = '<p style="color: #666; font-style: italic;">Text content will appear here. Configure this component in the admin panel.</p>';
+                }
                 // Remove border-related styles from $styleStr
                 $noBorderStyleStr = preg_replace('/border(-[a-z]+)?\s*:[^;]+;?/i', '', $styleStr);
             @endphp
-            <div style="{{ $noBorderStyleStr }}">
+            <div class="text-component" style="{{ $noBorderStyleStr }}">
                 {!! $text !!}
             </div>
         @break
@@ -6056,7 +6066,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             @else
                 {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
                 <div style="{{ $styleStr }} margin-top: 3rem;">
-                    @if(isset($component['html']))
+                    @if(isset($component['html']) && !empty($component['html']))
                         {!! $component['html'] !!}
 
                         <script>
@@ -6090,7 +6100,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             }
     </script>
                     @else
-                        {{-- Default auth form if no HTML is available --}}
+                        {{-- Default auth form using exact HTML from page builder --}}
                         <div class="auth-form-container" style="background-color: {{ $backgroundColor }}; padding: 2rem; border-radius: 0.5rem;">
                             <div class="row">
                                 <div class="col-md-12 mt-4 mb-4 text-center">
@@ -6098,8 +6108,136 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <h2 class="display-6 tit">Register</h2>
                                 </div>
                             </div>
-                            <p class="text-center">Please configure this auth form component in the admin panel.</p>
+                            <div class="register">
+                                <div class="container">
+                                    <form action="/register" method="POST">
+                                        @csrf
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <label for="register_as" class="form-label">Register as</label>
+                                                <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
+                                                    <option value="individual">Student / Participant</option>
+                                                    <option value="parents">Parent / Guardian</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
+                                                <label for="teacher_id" class="form-label">Select Teacher</label>
+                                                <select class="form-select" id="teacher_id" name="teacher_id">
+                                                    <option value="">Select a teacher</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <label for="first_name" class="form-label">First name</label>
+                                                <input type="text" class="form-control" id="first_name" name="name">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="last_name" class="form-label">Last name</label>
+                                                <input type="text" class="form-control" id="last_name" name="last_name">
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <label for="email" class="form-label">Email address</label>
+                                                <input type="email" class="form-control" id="email" name="email">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="confirm_email" class="form-label">Confirm email address</label>
+                                                <input type="email" class="form-control" id="confirm_email" name="confirm_email">
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <label for="password" class="form-label">Password</label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="confirm_password" class="form-label">Confirm password</label>
+                                                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-8">
+                                                <div class="d-grid gap-3 mt-2">
+                                                    <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
+                                                        <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                                        Register
+                                                    </button>
+                                                    <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginForm(this)" style="color: #fff !important; background-color: {{ $linkColor }} !important;">
+                                                        Already have an account? Login
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="login" style="display: none;">
+                                <div class="container">
+                                    <form action="/login" method="POST">
+                                        @csrf
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-4">
+                                                <label for="login_email" class="form-label">Email address</label>
+                                                <input type="email" class="form-control" id="login_email" name="email">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="login_password" class="form-label">Password</label>
+                                                <input type="password" class="form-control" id="login_password" name="password">
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col-8">
+                                                <div class="d-grid gap-3 mt-2">
+                                                    <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
+                                                        <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
+                                                        Login
+                                                    </button>
+                                                    <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterForm(this)" style="color: #fff !important; background-color: {{ $linkColor }} !important;">
+                                                        Register
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                        
+                        <script>
+                        function showLoginForm(button) {
+                            const container = button.closest('.auth-form-container');
+                            const registerForm = container.querySelector('.register');
+                            const loginForm = container.querySelector('.login');
+                            const titleElement = container.querySelector('.tit');
+                            if (registerForm) registerForm.style.display = 'none';
+                            if (loginForm) loginForm.style.display = 'block';
+                            if (titleElement) titleElement.textContent = 'Login';
+                        }
+                        
+                        function showRegisterForm(button) {
+                            const container = button.closest('.auth-form-container');
+                            const registerForm = container.querySelector('.register');
+                            const loginForm = container.querySelector('.login');
+                            const titleElement = container.querySelector('.tit');
+                            if (loginForm) loginForm.style.display = 'none';
+                            if (registerForm) registerForm.style.display = 'block';
+                            if (titleElement) titleElement.textContent = 'Register';
+                        }
+                        
+                        function toggleRegistrationFields(selectElement) {
+                            const teacherWrapper = document.getElementById('teacher_select_wrapper');
+                            if (teacherWrapper) {
+                                if (selectElement.value === 'individual') {
+                                    teacherWrapper.style.display = 'block';
+                                } else {
+                                    teacherWrapper.style.display = 'none';
+                                }
+                            }
+                        }
+                        </script>
                     @endif
                 </div>
             @endif
@@ -6507,12 +6645,131 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
         @case('donation-form')
             <div style="{{ $styleStr }}">
-                @if(isset($component['html']))
+                @if(isset($component['html']) && !empty($component['html']))
                     {!! $component['html'] !!}
                 @else
-                    {{-- Fallback if no HTML is set --}}
-                    <div style="padding: 20px; border: 2px dashed #ccc; text-align: center; color: #666;">
-                        Donation Form Component (No HTML Available)
+                    {{-- Use exact donation form structure from page.blade.php --}}
+                    @php
+                        $formTitle = 'Make a general donation';
+                        $borderColor = '#2e4053';
+                        $headerColor = '#2e4053';
+                        $headerTextColor = '#ffffff';
+                        $backgroundColor = '#ffffff';
+                        $feeText = 'I elect to pay the fees';
+                        $feeTooltip = 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.';
+                        $anonymousText = 'Anonymous';
+                        $anonymousTooltip = 'Selecting this option will hide your name from everyone but the organizer.';
+                        $anonymousDescription = 'Choose to make your donation anonymous';
+                        $buttonText = 'Donate';
+                    @endphp
+                    <div class="donation-form-component" style="margin-top: 3rem;">
+                        <form method="POST" action="/donation-general" class="donation-form-block">
+                            @csrf
+                            <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
+                                <div class="card shadow" style="border-width: 3px; border-color: {{ $borderColor }} !important;">
+                                    <div class="card-header rounded-0 text-center fs-2"
+                                        style="border-width: 3px !important; border-color: {{ $headerColor }} !important; background-color: {{ $headerColor }} !important; color: {{ $headerTextColor }} !important;">
+                                        {{ $formTitle }}
+                                    </div>
+                                    <div class="card-body" style="background-color: {{ $backgroundColor }} !important;">
+                                        <input type="hidden" name="profile_uuid" value="">
+                                        <input type="hidden" name="team_uuid" value="">
+
+                                        <div class="row gy-3">
+                                            <div class="col-12">
+                                                <div class="input-group input-group-lg">
+                                                    <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                                        style="border-width: 2px; border-right-width: 0; border-color: {{ $borderColor }} !important;">$</span>
+                                                    <input type="number" placeholder="0"
+                                                        class="form-control fs-2 fs-lg-4 text-center border-primary"
+                                                        style="border-width: 2px; border-color: {{ $borderColor }} !important;" name="donation_amount" value="" required>
+                                                    <span class="input-group-text fw-light fs-1.5 fs-lg-2 border-primary"
+                                                        style="border-width: 2px; border-left-width: 0; border-color: {{ $borderColor }} !important;">.00</span>
+                                                </div>
+                                                <input type="hidden" name="amount" value="">
+                                                <div class="text-center">
+                                                    <small class="form-text text-muted">
+                                                        * The minimum donation amount is 8.
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 d-flex justify-content-center align-items-center">
+                                                <div class="card border-primary shadow p-2" style="border-width: 2px; border-color: {{ $borderColor }} !important;">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="pay_fees" name="pay_fees" checked="">
+                                                        <label class="form-check-label fw-semibold" for="pay_fees">
+                                                            {{ $feeText }}
+                                                        </label>
+                                                        <i role="button"
+                                                            class="fa-solid fa-circle-info text-info btn-modal-info ms-2"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="{{ $feeTooltip }}"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label for="first_name" class="form-label fw-semibold required">
+                                                    First name
+                                                </label>
+                                                <input type="text" class="form-control" id="first_name"
+                                                    name="first_name" value="" required>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label for="last_name" class="form-label fw-semibold required">
+                                                    Last name
+                                                </label>
+                                                <input type="text" class="form-control" id="last_name"
+                                                    name="last_name" value="" required>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label for="email" class="form-label fw-semibold required">
+                                                    Email address
+                                                </label>
+                                                <input type="email" class="form-control" id="email" name="email"
+                                                    value="" required>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch"
+                                                        id="anonymous_donation" name="anonymous_donation">
+                                                    <label class="form-check-label fw-semibold" for="anonymous_donation">
+                                                        {{ $anonymousText }}
+                                                    </label>
+                                                    <i role="button"
+                                                        class="fa-solid fa-circle-info text-info btn-modal-info ms-2"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="{{ $anonymousTooltip }}"></i>
+                                                    <small class="text-muted d-block mt-1">{{ $anonymousDescription }}</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label for="leave_comment" class="form-label fw-semibold text-capitalize">
+                                                    comment
+                                                </label>
+                                                <textarea class="form-control" id="leave_comment" name="leave_comment" rows="6"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer rounded-0 p-0"
+                                        style="border-width: 3px !important; border-color: {{ $headerColor }} !important; background-color: {{ $headerColor }} !important;">
+                                        <button type="submit"
+                                            class="btn btn-lg w-100 h-100 rounded-0 shadow-none" 
+                                            style="background: {{ $headerColor }} !important; border-color: {{ $headerColor }} !important; color: {{ $headerTextColor }} !important;">
+                                            {{ $buttonText }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 @endif
             </div>

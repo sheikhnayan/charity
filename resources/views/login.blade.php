@@ -45,7 +45,7 @@
     .form-panel .subtitle { color: #6b7280; margin-bottom: 24px; }
     .form-control { padding: 0.8rem 0.9rem; }
     .btn-brand { background: var(--brand-color); border-color: var(--brand-color); color: #fff; }
-    .btn-brand:hover { filter: brightness(1.05); color: #fff; }
+    .btn-brand:hover { filter: brightness(1.05); color: #000; }
     .helper-links { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 0.9rem; }
     .footer-note { margin-top: 24px; font-size: 0.85rem; color: #6b7280; }
     @media (max-width: 992px) { .brand-panel { display: none; } }
@@ -75,7 +75,7 @@
             <div class="d-flex gap-2 flex-wrap">
               <span class="badge rounded-pill text-bg-light">SSL Secured</span>
               <span class="badge rounded-pill text-bg-light">Encrypted</span>
-              <span class="badge rounded-pill text-bg-light">Trusted by communities</span>
+              <span class="badge rounded-pill text-bg-light">Safe & Secure</span>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@
       <div class="col-lg-7">
         <div class="form-panel">
           <h1 class="title">Sign in</h1>
-          <p class="subtitle">Access your dashboard and continue checkout.</p>
+          <p class="subtitle">To access your dashboard</p>
           @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
           @endif
@@ -107,7 +107,7 @@
             <button type="submit" class="btn btn-brand btn-lg w-100">Login</button>
             <div class="helper-links">
               <a href="#" id="forgotLink">Forgot your password?</a>
-              <span class="text-muted">No registration on this page</span>
+              {{-- <span class="text-muted">No registration on this page</span> --}}
             </div>
           </form>
           <div id="forgotCard" class="card mt-3 d-none">
