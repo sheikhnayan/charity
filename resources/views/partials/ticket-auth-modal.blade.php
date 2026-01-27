@@ -29,6 +29,16 @@
                     <i class="fas fa-user-plus mr-1"></i>Go to Registration Page
                 </a>
             </div>
+            
+            <!-- Login Info Message for Fundraiser -->
+            <div id="fundraiserLoginMessage" class="mb-4 p-4 bg-purple-50 border-l-4 border-purple-500 rounded hidden">
+                <p class="text-sm text-purple-800 font-semibold mb-2">
+                    <i class="fas fa-user-shield mr-2"></i>Account Required
+                </p>
+                <p class="text-xs text-purple-700">
+                    You must <strong>register through the website first</strong> before you can login here. If you don't have an account yet, please visit the registration page to create one.
+                </p>
+            </div>
             @endif
 
             <div class="mb-3" id="nameFieldContainer">
@@ -191,6 +201,12 @@
         if (registrationMessage) {
             registrationMessage.classList.add('hidden');
         }
+        
+        // Hide fundraiser login message
+        const fundraiserLoginMessage = document.getElementById('fundraiserLoginMessage');
+        if (fundraiserLoginMessage) {
+            fundraiserLoginMessage.classList.add('hidden');
+        }
 
         const submitBtn = document.getElementById('authSubmitBtn');
 
@@ -222,7 +238,17 @@
         } else {
             submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
             submitBtn.style.display = 'block';
-            document.getElementById('registerLoginLinks').style.display = 'flex';
+            
+            // For fundraiser websites, show the info message and hide register/login links
+            if (isFundraiserWebsite) {
+                if (fundraiserLoginMessage) {
+                    fundraiserLoginMessage.classList.remove('hidden');
+                }
+                document.getElementById('registerLoginLinks').style.display = 'none';
+            } else {
+                document.getElementById('registerLoginLinks').style.display = 'flex';
+            }
+            
             document.getElementById('switchToForgot').style.display = 'block';
         }
     }

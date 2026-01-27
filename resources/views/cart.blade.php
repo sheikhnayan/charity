@@ -452,7 +452,7 @@
                         <span class="input-group-text">$</span>
                         <input type="number" class="form-control donation-amount" placeholder="0.00" min="0" step="0.01" value="0">
                     </div>
-                    <small class="text-muted d-block mt-1">Optional: Add an extra donation to support this student</small>
+                    /* <small class="text-muted d-block mt-1">Optional: Add an extra donation to support this student</small> */
                 </div>
                 <div class="text-end donation-total-section" style="display: none;">
                     <span class="text-muted">Donation: </span>

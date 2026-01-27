@@ -1,270 +1,187 @@
+@php
+  // Resolve website by current domain for dynamic branding
+  $url = url()->current();
+  $domain = parse_url($url, PHP_URL_HOST);
+  $website = \App\Models\Website::where('domain', $domain)->first();
+  $companyName = null;
+  $logoPath = null;
+  $primaryColor = '#1773b0';
+
+  if ($website) {
+    $setting = \App\Models\Setting::where('user_id', $website->user_id)->first();
+    $companyName = $setting?->company_name ?? $website->name;
+    $logoPath = $setting?->logo ? asset('/uploads/' . $setting->logo) : null;
+    $header = \App\Models\Header::where('website_id', $website->id)->first();
+    if ($header && $header->background_color) { $primaryColor = $header->background_color; }
+  }
+@endphp
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta http-equiv="content-language" content="tr">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{{ $companyName ? $companyName . ' | Login' : 'Login' }}</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="{{ route('fonts.css') }}" rel="stylesheet">
+
+  <style>
+    :root { --brand-color: {{ $primaryColor }}; }
+    html, body { height: 100%; }
+    body { display: flex; align-items: center; justify-content: center; background: #f5f7fb; }
+    .login-wrapper { max-width: 960px; width: 100%; background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
+    .brand-panel { background: linear-gradient(135deg, var(--brand-color), #4c6fff); color: #fff; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100%; }
+    .brand-logo { display: flex; align-items: center; gap: 12px; }
+    .brand-logo img { height: 48px; width: auto; border-radius: 8px; background: #fff; padding: 4px; }
+    .brand-logo .title { font-weight: 700; letter-spacing: 0.2px; }
+    .brand-copy { margin-top: 20px; font-size: 0.95rem; opacity: 0.95; }
+    .trust { margin-top: 24px; font-size: 0.85rem; opacity: 0.9; }
+    .trust .badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); }
+    .form-panel { padding: 32px; }
+    .form-panel .title { font-weight: 700; margin-bottom: 8px; color: #111; }
+    .form-panel .subtitle { color: #6b7280; margin-bottom: 24px; }
+    .form-control { padding: 0.8rem 0.9rem; }
+    .btn-brand { background: var(--brand-color); border-color: var(--brand-color); color: #fff; }
+    .btn-brand:hover { filter: brightness(1.05); color: #fff; }
+    .helper-links { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 0.9rem; }
+    .footer-note { margin-top: 24px; font-size: 0.85rem; color: #6b7280; }
+    @media (max-width: 992px) { .brand-panel { display: none; } }
+  </style>
 </head>
 
-<style>
-    *{
-  font-family: arial;
-  margin: 0; padding: 0;
-  outline: none;
-}
-
-input::-moz-placeholder {
-  color: white;
-}
-input:-ms-input-placeholder {
-  color: white;
-}
-input::-webkit-input-placeholder {
-  color: white;
-}
-
-body{
-  display: flex;
-  flex-direction: olumn;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  overflow: hidden;
-  background-image: radial-gradient(circle at 50% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  transition: all .5s;
-  animation: bg-anm 60s infinite;
-}
-
-@keyframes bg-anm {
-  0%{
-    background-image: radial-gradient(circle at 50% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  10%{
-    background-image: radial-gradient(circle at 45% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  20%{
-    background-image: radial-gradient(circle at 40% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  30%{
-    background-image: radial-gradient(circle at 35% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  40%{
-    background-image: radial-gradient(circle at 30% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  50%{
-    background-image: radial-gradient(circle at 25% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  60%{
-    background-image: radial-gradient(circle at 20% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  70%{
-    background-image: radial-gradient(circle at 15% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  80%{
-    background-image: radial-gradient(circle at 20% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-
-  100%{
-    background-image: radial-gradient(circle at 50% -20.71%, #0098ba 0, #0097c8 5%, #0096d5 10%, #0095e0 15%, #0093e9 20%, #0090f0 25%, #008cf5 30%, #0088f8 35%, #0084f8 40%, #007ef6 45%, #3c78f2 50%, #6871ec 55%, #8669e3 60%, #9d61d9 65%, #b159cd 70%, #c050c0 75%, #cd47b2 80%, #d840a3 85%, #df3993 90%, #e43683 95%, #e73573 100%);
-  }
-}
-
-.container{
-  padding: 40px;
-  background: #ffffff15;
-  border-radius: 10px;
-  transition: all .5s;
-  transform: scale(.3);
-  animation: container 1s forwards;
-}
-
-@keyframes container{
-  from{transform: scale(.3);}
-  to{transform: scale(1);}
-}
-
-.user{
-  text-align: center;
-  position: relative;
-}
-
-.img-group{
-  text-align: center !important;
-}
-
-img{
-  width: 120px;
-  margin-bottom: -10px;
-  text-align: center;
-  transition: all .5s;
-}
-
-img:hover{transform: scale(1.1);}
-
-.img-1{width: 120px; animation: img1 13s infinite; animation-delay: 3s;}
-.img-2{width: 100px; margin-bottom: 20px; display: none;}
-.img-3{width: 120px; display: none; animation: img1 13s infinite; animation-delay: 0s;}
-.img-4{width: 100px; margin-bottom: 20px; display: none;}
-
-@keyframes img1{
-  0%{transform: scale(1)}
-  10%{transform: scale(1.1)}
-  50%{transform: scale(1) rotate(-10deg);}
-  60%{transform: scale(1) rotate(5deg);}
-  70%{transform: rotate(0);}
-  90%{transform: scale(1.1)}
-  100%{transform: scale(1)}
-}
-
-input{
-  padding: 5px;
-  background-color: transparent;
-  color: white;
-  border: none;
-}
-
-.name, .password{
-  color: white;
-  border-radius: 20px;
-  border: 1px solid #ffffff22;
-  backdrop-filter: blur(100px);
-  padding: 5px 15px;
-  margin: 7px;
-  transition: all .5s;
-}
-
-.name:hover, .password:hover{
-  border: 1px dotted #ffffff88;
-}
-
-.button{
-  margin: 0 auto;
-  text-align: center;
-  position: relative;
-  transition: all .5s;
-}
-
-button{
-  padding: 10px 15px;
-  border: 1px solid #ffffff11;
-  background: #ffffff11;
-  color: white;
-  width: 100px;
-  text-align: center;
-  cursor: pointer;
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: all .5s;
-}
-
-button:hover{
-  border: 1px solid #ffffff22;
-  background: #ffffff33;
-}
-
-button::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -10px;
-  width: 5px;
-  height: 40px;
-  background: #ffffff33;
-  transition: all .5s;
-  transition-delay: .2s;
-}
-
-.button:hover button::before{
-  left: 100px;
-  width: 20px;
-  background-color: white;
-}
-
-@media screen and (max-width: 370px) {
-  .container{
-    padding: 40px 20px;
-  }
-}
-
-@media screen and (max-width: 300px) {
-  .name, .password{
-    padding: 5px 10px;
-  }
-  .bi{display: none;}
-}
-
-@media screen and (max-width: 270px) {
-  img{
-    width: 100px !important;
-  }
-}
-</style>
-
-<div class="container">
-  @if(session('success'))
-    <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb; text-align: center;">
-      <strong>{{ session('success') }}</strong>
-    </div>
-  @endif
-  
-  @if(session('error'))
-    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb; text-align: center;">
-      <strong>{{ session('error') }}</strong>
-    </div>
-  @endif
-  
-  <div class="user">
-    <div class="img-group">
-      <img src="https://i.hizliresim.com/h8hx8o4.png" alt="Welcome Back" class="img-1">
-      <img src="https://i.hizliresim.com/owqdcfp.png" alt="Welcome Back" class="img-2">
-      <img src="https://i.hizliresim.com/js3kci3.png" alt="Welcome Back" class="img-3">
-      <img src="https://i.hizliresim.com/rfuga6m.png" alt="Welcome Back" class="img-4">
+<body>
+  <div class="login-wrapper">
+    <div class="row g-0">
+      <div class="col-lg-5 brand-panel">
+        <div>
+          <div class="brand-logo">
+            @if($logoPath)
+              <img src="{{ $logoPath }}" alt="{{ $companyName ?? 'Brand' }} Logo">
+            @else
+              <span class="fs-3 fw-bold">{{ $companyName ?? 'Welcome' }}</span>
+            @endif
+            @if($companyName)
+              <span class="title">{{ $companyName }}</span>
+            @endif
+          </div>
+          <div class="brand-copy">
+            <p class="mb-2">Secure access to your account.</p>
+            <p class="mb-0">Use your email and password to sign in. Your data is protected using industry-standard encryption.</p>
+          </div>
+          <div class="trust">
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="badge rounded-pill text-bg-light">SSL Secured</span>
+              <span class="badge rounded-pill text-bg-light">Encrypted</span>
+              <span class="badge rounded-pill text-bg-light">Trusted by communities</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 small">Need help? Contact support or your site administrator.</div>
+      </div>
+      <div class="col-lg-7">
+        <div class="form-panel">
+          <h1 class="title">Sign in</h1>
+          <p class="subtitle">Access your dashboard and continue checkout.</p>
+          @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+          @endif
+          @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+          @endif
+          <form method="POST" action="/login" novalidate>
+            @csrf
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword" aria-label="Show password"><i class="fa fa-eye"></i></button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-brand btn-lg w-100">Login</button>
+            <div class="helper-links">
+              <a href="#" id="forgotLink">Forgot your password?</a>
+              <span class="text-muted">No registration on this page</span>
+            </div>
+          </form>
+          <div id="forgotCard" class="card mt-3 d-none">
+            <div class="card-body">
+              <h5 class="card-title">Reset your password</h5>
+              <p class="text-muted mb-3">Enter your email to receive a verification code.</p>
+              <div id="forgotStep1">
+                <div class="mb-3">
+                  <label for="forgotEmail" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="forgotEmail" placeholder="you@example.com">
+                </div>
+                <button class="btn btn-brand" id="forgotRequestBtn">Send code</button>
+              </div>
+              <div id="forgotStep2" class="d-none">
+                <div class="mb-3">
+                  <label for="forgotCode" class="form-label">Verification code</label>
+                  <input type="text" class="form-control" id="forgotCode" placeholder="Enter code">
+                </div>
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label">New password</label>
+                  <input type="password" class="form-control" id="newPassword" placeholder="New password">
+                </div>
+                <button class="btn btn-brand" id="forgotResetBtn">Reset password</button>
+              </div>
+              <div id="forgotAlert" class="mt-3"></div>
+            </div>
+          </div>
+          <div class="footer-note">By continuing, you agree to the site's Terms and Privacy Policy.</div>
+        </div>
+      </div>
     </div>
   </div>
-  <form action="/login" method="POST">
-    @csrf
-    <div class="name">
-      <i class="bi bi-person-fill"></i>
-      <input type="text" placeholder="Enter Email" class="name-input" name="email" required>
-    </div>
-    <div class="password">
-      <i class="bi bi-key-fill"></i>
-      <input type="password" placeholder="Enter Password" class="pass-input" name="password" required>
-    </div>
-    <div class="button">
-      <button>Login</button>
-    </div>
-  </form>
-</div>
-
-<script>
-    var nameInput = document.querySelector(".name-input");
-var passInput = document.querySelector(".pass-input");
-var nameDiv = document.querySelector(".name");
-var passDiv = document.querySelector(".password");
-
-var passControl = document.querySelector(".pass-control");
-var passOn = document.querySelector(".bi-eye");
-var passOff = document.querySelector(".bi-eye-slash");
-
-var img1 = document.querySelector(".img-1");
-var img2 = document.querySelector(".img-2");
-var img3 = document.querySelector(".img-3");
-var img4 = document.querySelector(".img-4");
-
-nameInput.addEventListener("click", function(){
-  img3.style.display="none";
-  img1.style.display="inline";
-})
-
-passInput.addEventListener("click", function(){
-  img1.style.display="none";
-  img3.style.display="inline";
-})
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    togglePassword?.addEventListener('click', () => {
+      const isText = passwordInput.type === 'text';
+      passwordInput.type = isText ? 'password' : 'text';
+      togglePassword.innerHTML = isText ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
+    });
+    const forgotLink = document.getElementById('forgotLink');
+    const forgotCard = document.getElementById('forgotCard');
+    const forgotStep1 = document.getElementById('forgotStep1');
+    const forgotStep2 = document.getElementById('forgotStep2');
+    const forgotAlert = document.getElementById('forgotAlert');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotCode = document.getElementById('forgotCode');
+    const newPassword = document.getElementById('newPassword');
+    const csrfToken = document.querySelector('meta[name=csrf-token]')?.content;
+    function showAlert(type, message) { forgotAlert.innerHTML = `<div class="alert alert-${type}">${message}</div>`; }
+    forgotLink?.addEventListener('click', (e) => { e.preventDefault(); forgotCard.classList.toggle('d-none'); forgotAlert.innerHTML = ''; });
+    document.getElementById('forgotRequestBtn')?.addEventListener('click', async () => {
+      const email = (forgotEmail.value || '').trim();
+      if (!email) { showAlert('warning', 'Please enter your email.'); return; }
+      try {
+        const res = await fetch('/ajax/ticket-auth/forgot-request', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ email }) });
+        const data = await res.json();
+        if (data.success) { showAlert('success', 'Verification code sent to your email.'); forgotStep1.classList.add('d-none'); forgotStep2.classList.remove('d-none'); }
+        else { showAlert('danger', data.message || 'Failed to send code.'); }
+      } catch (e) { showAlert('danger', 'Network error. Please try again.'); }
+    });
+    document.getElementById('forgotResetBtn')?.addEventListener('click', async () => {
+      const email = (forgotEmail.value || '').trim();
+      const code = (forgotCode.value || '').trim();
+      const password = (newPassword.value || '').trim();
+      if (!email || !code || !password) { showAlert('warning', 'Please fill all fields.'); return; }
+      try {
+        const res = await fetch('/ajax/ticket-auth/forgot-reset', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ email, code, password }) });
+        const data = await res.json();
+        if (data.success) { showAlert('success', 'Password reset successful. You can now log in.'); forgotCard.classList.add('d-none'); }
+        else { showAlert('danger', data.message || 'Failed to reset password.'); }
+      } catch (e) { showAlert('danger', 'Network error. Please try again.'); }
+    });
+  </script>
+</body>
+</html>

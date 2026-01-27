@@ -87,6 +87,46 @@
 .introjs-progressbar {
     background-color: #007bff;
 }
+
+/* Safari-specific fixes for Intro.js */
+@supports (-webkit-appearance:none) {
+    .introjs-tooltip {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform, opacity;
+    }
+    
+    .introjs-helperLayer {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    
+    .introjs-overlay {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+    
+    /* Ensure tooltips are always visible in Safari */
+    .introjs-tooltipReferenceLayer {
+        visibility: visible !important;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+    
+    /* Fix for centered tooltips without elements in Safari */
+    .introjs-tooltip.introjs-floating {
+        position: fixed !important;
+        left: 50% !important;
+        top: 50% !important;
+        -webkit-transform: translate(-50%, -50%) translateZ(0) !important;
+        transform: translate(-50%, -50%) translateZ(0) !important;
+        margin: 0 !important;
+    }
+}
 </style>
 @php
         $payment = \App\Models\PaymentSetting::first();
@@ -990,11 +1030,13 @@
                                 },
                                 {
                                     title: 'Adding Students 🎓',
-                                    intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account'
+                                    intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
+                                    tooltipClass: 'introjs-floating'
                                 },
                                 {
                                     title: 'Managing Students',
-                                    intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page'
+                                    intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                    tooltipClass: 'introjs-floating'
                                 },
                                 {
                                     element: document.querySelector('#tutorialBtn'),
@@ -1004,7 +1046,8 @@
                                 },
                                 {
                                     title: 'You\'re All Set! 🎉',
-                                    intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!'
+                                    intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!',
+                                    tooltipClass: 'introjs-floating'
                                 }
                             ],
                             showProgress: true,
@@ -1013,7 +1056,30 @@
                             exitOnEsc: true,
                             nextLabel: 'Next →',
                             prevLabel: '← Back',
-                            doneLabel: 'Finish'
+                            doneLabel: 'Finish',
+                            scrollToElement: true,
+                            scrollPadding: 30,
+                            disableInteraction: true,
+                            overlayOpacity: 0.7
+                        });
+                        
+                        // Safari-specific: Force visibility of floating tooltips
+                        intro.onbeforechange(function(targetElement) {
+                            if (!targetElement) {
+                                // For steps without elements, ensure tooltip is centered
+                                setTimeout(function() {
+                                    const tooltip = document.querySelector('.introjs-tooltip');
+                                    if (tooltip && !targetElement) {
+                                        tooltip.classList.add('introjs-floating');
+                                        tooltip.style.position = 'fixed';
+                                        tooltip.style.left = '50%';
+                                        tooltip.style.top = '50%';
+                                        tooltip.style.transform = 'translate(-50%, -50%)';
+                                        tooltip.style.margin = '0';
+                                        tooltip.style.zIndex = '2147483647';
+                                    }
+                                }, 10);
+                            }
                         });
                         
                         intro.oncomplete(function() {
