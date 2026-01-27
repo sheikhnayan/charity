@@ -292,7 +292,134 @@
             top: 1.7rem;
         }
     }
+
+     /* Sticky Bottom Investment CTA Styles */
+        #sticky-investment-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #000000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            /* border-top: 1px solid #e0e0e0; */
+        }
+
+        .sticky-cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            max-width: 100%;
+        }
+
+        .share-price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding-left: 14%;
+
+        }
+
+        .price-value {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .price-label {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        /* Add bottom padding to body to prevent content overlap - Investment websites only */
+        @if($check && $check->isInvestment())
+        body {
+            padding-bottom: 70px;
+        }
+        @endif
+
+        /* Remove bottom padding on desktop */
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+            
+            #sticky-investment-cta {
+                display: none !important;
+            }
+
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 360px) {
+            .sticky-cta-content {
+                padding: 10px 12px;
+            }
+            
+            .price-value {
+                font-size: 16px;
+            }
+            
+            .invest-now-btn {
+                padding: 10px 24px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+
+            footer{
+                margin-bottom: 0px !important;
+            }
+        }
 </style>
+
+
 </head>
 <body>
     

@@ -574,6 +574,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::post('/qr-codes/generate', [\App\Http\Controllers\User\QRCodeController::class, 'generate'])->name('users.qr-codes.generate');
     Route::get('/qr-codes/{id}/download', [\App\Http\Controllers\User\QRCodeController::class, 'download'])->name('users.qr-codes.download');
     Route::post('/student/{student_id}/qr-code', [\App\Http\Controllers\User\QRCodeController::class, 'generateStudentQR'])->name('users.student-qr.generate');
+    Route::post('/profile/qr-code', [\App\Http\Controllers\User\QRCodeController::class, 'generateProfileQR'])->name('users.profile-qr.generate');
 
     // User Behavior Routes
     Route::get('/hotjar/heatmaps', [\App\Http\Controllers\User\HotjarController::class, 'heatmaps'])->name('users.hotjar.heatmaps');
@@ -611,6 +612,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::post('/parent/add-student',[
         AdminController::class, 'addStudentByParent'
     ])->name('parent.add-student');
+    
+    // Parent tutorial route
+    Route::post('/parent/tutorial/seen', [
+        AdminController::class, 'markTutorialSeen'
+    ])->name('parent.tutorial.seen');
     
     Route::get('/student/profile/{id}', [
         AdminController::class, 'editStudentProfile'
@@ -1170,6 +1176,12 @@ Route::post('/ajax/ticket-auth/check', function(Request $request) {
 Route::get('/refresh-csrf', function() {
     return response()->json(['token' => csrf_token()]);
 });
+
+Route::post('/clear-intended-url', function(Request $request) {
+    $request->session()->forget('url.intended');
+    return response()->json(['success' => true]);
+});
+
 // --- Forgot Password AJAX Endpoints ---
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;

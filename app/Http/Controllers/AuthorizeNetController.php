@@ -39,6 +39,11 @@ class AuthorizeNetController extends Controller
      */
     public function index(Request $request, $type, $id): View
     {
+        // Store intended URL for redirect after login if guest accesses checkout directly
+        if (!\Auth::check()) {
+            session(['url.intended' => url()->current()]);
+        }
+        
         if ($type == 'donation') {
             # code...
             $data = Donation::find($id);

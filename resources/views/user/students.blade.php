@@ -112,6 +112,7 @@
                                                 <th>Email</th>
                                                 <th>Role</th>
                                                 <th>Teacher</th>
+                                                <th>Parent</th>
                                                 <th>Goal</th>
                                                 @if(Auth::user()->role == 'parents')
                                                 <th>Raised</th>
@@ -123,7 +124,7 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="{{ Auth::user()->role == 'parents' ? '9' : '8' }}" class="text-center">No student found.</td>
+                                                    <td colspan="{{ Auth::user()->role == 'parents' ? '10' : '9' }}" class="text-center">No student found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
@@ -139,6 +140,15 @@
                                                             <span class="badge bg-info">{{ ucfirst($item->role) }}</span>
                                                         </td>
                                                         <td>{{ $item->teacher->name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if($item->parent)
+                                                                <a href="/users/student/profile/{{ $item->parent->id }}" class="text-decoration-none text-primary fw-semibold">
+                                                                    {{ $item->parent->fist_name }} {{ $item->parent->last_name }}
+                                                                </a>
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
+                                                        </td>
                                                         <td>${{ number_format($item->goal ?? 0, 2) }}</td>
                                                         @if(Auth::user()->role == 'parents')
                                                         <td>

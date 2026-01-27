@@ -94,4 +94,57 @@ class QRCodeController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Generate QR code for user's profile page
+     */
+    public function generateProfileQR(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+            }
+
+            // Get user's website
+            $website = $user->website;
+            if (!$website) {
+                return response()->json(['success' => false, 'message' => 'Website not found for user'], 422);
+            }
+
+            // Build profile URL
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+                        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') 
+                        ? 'https://' : 'http://';
+            
+            $domainBase = $website->domain ? ($protocol . $website->domain) : (request()->getScheme() . '://' . request()->getHost());
+            
+            $profileUrl = $domainBase . '/profile/' . $user->id . '-' . str_replace(' ', '-', $user->name) . '-' . str_replace(' ', '-', $user->last_name);
+
+            // Generate QR code
+            $qrCode = base64_encode(
+                QrCode::format('png')
+                    ->size(500)
+                    ->margin(2)
+                    ->errorCorrection('H')
+                    ->generate($profileUrl)
+            );
+
+            return response()->json([
+                'success' => true,
+                'qr_code_base64' => 'data:image/png;base64,' . $qrCode,
+                'profile_url' => $profileUrl,
+                'user_name' => $user->name . ' ' . $user->last_name,
+                'website' => $website->name
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error generating profile QR: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating QR code: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

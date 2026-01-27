@@ -532,8 +532,11 @@ class AdminController extends Controller
             
             // Get donations from those students (donations table has user_id)
             $data = Donation::whereIn('user_id', $studentIds)->where('status',1)->latest()->get();
+            
+            // Check if parent has seen tutorial
+            $showTutorial = !$user->parent_tutorial_seen;
 
-            return view('user.donation', compact('data'));
+            return view('user.donation', compact('data', 'showTutorial'));
         }elseif($user->role == 'customer'){ 
             $data = Transaction::where('email',$user->email)->get();
 
@@ -622,12 +625,12 @@ class AdminController extends Controller
 
             return view('admin.students', compact('data', 'websites'));
         }elseif(Auth::user()->role == 'group_leader'){
-            $data = User::where('group_id',Auth::user()->id)->where('id','!=',Auth::user()->id)->get();
+            $data = User::with(['parent', 'teacher'])->where('group_id',Auth::user()->id)->where('id','!=',Auth::user()->id)->get();
 
             return view('user.students', compact('data'));
         }elseif(Auth::user()->role == 'parents'){
             // For parents, show only their children
-            $data = User::where('parent_id', Auth::user()->id)->get();
+            $data = User::with(['parent', 'teacher'])->where('parent_id', Auth::user()->id)->get();
             
             // Get teachers for the parent's website from teachers table
             $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
@@ -637,7 +640,7 @@ class AdminController extends Controller
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
 
-            $data = User::where('role', '!=','user')->whereIn('website_id', $websites)->get();
+            $data = User::with(['parent', 'teacher'])->where('role', '!=','user')->whereIn('website_id', $websites)->get();
 
             return view('user.students', compact('data'));
         }
@@ -679,7 +682,7 @@ class AdminController extends Controller
 
     public function userProfile($id)
     {
-        $user = User::with(['website', 'teacher', 'parent', 'children'])->findOrFail($id);
+        $user = User::with(['website', 'teacher', 'parent', 'children', 'donations'])->findOrFail($id);
         
         // Check if the current user is a parent (not admin)
         if (Auth::user()->role == 'parents') {
@@ -1403,6 +1406,29 @@ class AdminController extends Controller
             ]);
             return response()->json(['success' => false, 'message' => 'Failed to send invoice email.']);
         }
+    }
+    
+    /**
+     * Mark parent tutorial as seen
+     */
+    public function markTutorialSeen()
+    {
+        $user = Auth::user();
+        
+        if ($user && $user->role == 'parents') {
+            $user->parent_tutorial_seen = true;
+            $user->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Tutorial marked as seen'
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid user or role'
+        ], 400);
     }
 
 }

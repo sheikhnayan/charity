@@ -26,6 +26,11 @@ class CheckoutController extends Controller
      */
     public function show()
     {
+        // Store intended URL for redirect after login if guest accesses checkout directly
+        if (!Auth::check()) {
+            session(['url.intended' => url()->current()]);
+        }
+        
         // Get current cart
         $cart = $this->cartService->getCart();
 

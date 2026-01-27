@@ -388,7 +388,7 @@
                 <li class="menu-header small text-uppercase ">
                     <span class="menu-header-text">Information</span>
                 </li>
-                <li class="menu-item {{ request()->is('users/profile') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->is('users/profile') ? 'active' : '' }}" id="profile-menu-item">
                     <a
                     href="/users/profile"
                     class="menu-link">
@@ -397,7 +397,7 @@
                     </a>
                 </li>
                 @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent' || Auth::user()->role == 'Parents' || Auth::user()->role == 'parents')
-                <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->is('users/student') ? 'active' : '' }}" id="students-menu-item">
                     <a
                     href="/users/student"
                     class="menu-link">

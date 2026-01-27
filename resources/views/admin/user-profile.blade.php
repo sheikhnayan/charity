@@ -174,7 +174,7 @@
                         @if($user->teacher)
                         <div class="info-card">
                             <div class="info-label">
-                                <i class="fas fa-chalkboard-teacher text-primary"></i> Teacher
+                                <i class="fas fa-users-class text-primary"></i> Team
                             </div>
                             <div class="info-value">{{ $user->teacher->name }}</div>
                         </div>
@@ -185,7 +185,23 @@
                             <div class="info-label">
                                 <i class="fas fa-user-friends text-primary"></i> Parent
                             </div>
-                            <div class="info-value">{{ $user->parent->fist_name }} {{ $user->parent->last_name }}</div>
+                            <div class="info-value">
+                                <a href="{{ route('admin.user.profile', $user->parent->id) }}" class="text-decoration-none">
+                                    {{ $user->parent->fist_name }} {{ $user->parent->last_name }}
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(($user->role === 'student' || $user->role === 'parents') && $user->donations->count() > 0)
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-hand-holding-heart text-success"></i> Amount Raised
+                            </div>
+                            <div class="info-value">
+                                ${{ number_format($user->donations->sum('amount') + $user->donations->sum('tip_amount'), 2) }}
+                            </div>
+                            <small class="text-muted">Total from {{ $user->donations->count() }} donation(s)</small>
                         </div>
                         @endif
 

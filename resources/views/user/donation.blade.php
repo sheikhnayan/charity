@@ -1,6 +1,9 @@
 @extends('user.main')
 
 @section('content')
+<!-- Intro.js for Tutorial -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 <link rel="stylesheet" href="{{ asset('user/extra.css') }}">
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -30,6 +33,59 @@
 
 .paginate_buttons a {
   color: #000 !important;
+}
+
+/* Intro.js Custom Styling */
+.introjs-tooltip {
+    max-width: 450px;
+    border-radius: 8px;
+}
+
+.introjs-tooltip-title {
+    font-size: 20px;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+.introjs-tooltiptext {
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 15px 20px;
+}
+
+.introjs-button {
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: 500;
+    text-shadow: none;
+}
+
+.introjs-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.introjs-nextbutton {
+    background: #007bff;
+    border: 1px solid #007bff;
+}
+
+.introjs-prevbutton {
+    background: #6c757d;
+    border: 1px solid #6c757d;
+}
+
+.introjs-donebutton {
+    background: #28a745;
+    border: 1px solid #28a745;
+}
+
+.introjs-skipbutton {
+    color: #dc3545;
+}
+
+.introjs-progressbar {
+    background-color: #007bff;
 }
 </style>
 @php
@@ -67,6 +123,11 @@
 
                                 </div>
                                 <div class="page-title-actions">
+                                    @if(Auth::user()->role == 'parents')
+                                    <button type="button" class="btn btn-info" onclick="startParentTutorial()" id="tutorialBtn">
+                                        <i class="fas fa-graduation-cap me-2"></i>View Tutorial
+                                    </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -902,4 +963,91 @@
                     }
                 });
                 </script>
+                
+                <!-- Parent Tutorial Script -->
+                @if(Auth::user()->role == 'parents')
+                <script>
+                    function startParentTutorial() {
+                        const intro = introJs();
+                        
+                        intro.setOptions({
+                            steps: [
+                                {
+                                    title: 'Welcome Parents! 👋',
+                                    intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
+                                },
+                                {
+                                    element: document.querySelector('#students-menu-item'),
+                                    title: 'Students / Participants',
+                                    intro: 'Click here to view and manage all your students or participants. This is where you\'ll spend most of your time!',
+                                    position: 'right'
+                                },
+                                {
+                                    element: document.querySelector('#profile-menu-item'),
+                                    title: 'Your Profile',
+                                    intro: 'Update your personal information and profile settings here.',
+                                    position: 'right'
+                                },
+                                {
+                                    title: 'Adding Students 🎓',
+                                    intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account'
+                                },
+                                {
+                                    title: 'Managing Students',
+                                    intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page'
+                                },
+                                {
+                                    element: document.querySelector('#tutorialBtn'),
+                                    title: 'Need Help Later?',
+                                    intro: 'You can always replay this tutorial by clicking this button anytime!',
+                                    position: 'left'
+                                },
+                                {
+                                    title: 'You\'re All Set! 🎉',
+                                    intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!'
+                                }
+                            ],
+                            showProgress: true,
+                            showBullets: false,
+                            exitOnOverlayClick: false,
+                            exitOnEsc: true,
+                            nextLabel: 'Next →',
+                            prevLabel: '← Back',
+                            doneLabel: 'Finish'
+                        });
+                        
+                        intro.oncomplete(function() {
+                            markTutorialAsSeen();
+                        });
+                        
+                        intro.onexit(function() {
+                            markTutorialAsSeen();
+                        });
+                        
+                        intro.start();
+                    }
+                    
+                    function markTutorialAsSeen() {
+                        fetch('{{ route("parent.tutorial.seen") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        }).then(response => response.json())
+                          .then(data => console.log('Tutorial marked as seen'))
+                          .catch(error => console.error('Error:', error));
+                    }
+                    
+                    // Auto-start tutorial on first visit for parents
+                    @if(isset($showTutorial) && $showTutorial)
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Small delay to ensure page is fully loaded
+                        setTimeout(function() {
+                            startParentTutorial();
+                        }, 500);
+                    });
+                    @endif
+                </script>
+                @endif
         @endsection

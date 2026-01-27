@@ -1006,7 +1006,50 @@ window.ShoppingCart = {
             return;
         }
 
-        // Redirect to checkout
+        // Check if user is authenticated
+        try {
+            const authCheck = await fetch('/ajax/ticket-auth/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+            const authStatus = await authCheck.json();
+            
+            console.log('Auth status:', authStatus);
+            
+            if (!authStatus.authenticated) {
+                // User NOT authenticated - open auth modal and STOP
+                console.log('🔐 User NOT authenticated, opening auth modal on current page...');
+                
+                // Store the checkout URL for redirect after successful login
+                window.checkoutRedirectUrl = '/checkout';
+                
+                // Open the auth modal (prefer custom handler, fallback to Bootstrap or inline display)
+                const authModal = document.getElementById('authModal');
+                if (typeof window.openAuthModal === 'function') {
+                    window.openAuthModal();
+                } else if (authModal && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    const modal = new bootstrap.Modal(authModal);
+                    modal.show();
+                } else if (authModal) {
+                    authModal.classList.remove('hidden');
+                    authModal.style.display = 'flex';
+                }
+                // IMPORTANT: Return here to prevent redirect
+                return;
+            } else {
+                // User IS authenticated, safe to proceed
+                console.log('✅ User authenticated, proceeding to checkout...');
+            }
+        } catch (error) {
+            console.error('❌ Error checking authentication:', error);
+            this.showNotification('Error checking authentication. Please try again.', 'error');
+            return;
+        }
+
+        // User is authenticated - redirect to checkout
         console.log('🎯 Redirecting to checkout page...');
         window.location.href = '/checkout';
     },
@@ -1099,6 +1142,9 @@ window.ShoppingCart = {
         }, 4000);
     }
 };
+
+// Expose ShoppingCart as both window.cart and window.ShoppingCart for easier access
+window.cart = window.ShoppingCart;
 
 console.log('✅ [CART.JS] window.ShoppingCart object defined successfully');
 console.log('🛒 [CART.JS] ShoppingCart methods:', Object.keys(window.ShoppingCart));

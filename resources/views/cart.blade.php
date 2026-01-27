@@ -752,18 +752,13 @@ function updateSummary(items) {
 }
 
 function handleCheckout() {
-    fetch('/api/cart')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.cart && data.cart.items) {
-                let itemsArray = [];
-                if (typeof data.cart.items === 'object' && !Array.isArray(data.cart.items)) { itemsArray = Object.values(data.cart.items); }
-                else if (Array.isArray(data.cart.items)) { itemsArray = data.cart.items; }
-                if (itemsArray.length > 0) { window.location.href = '{{ route('checkout.show') }}'; return; }
-            }
-            alert('Your cart is empty!');
-        })
-        .catch(() => alert('An error occurred while processing checkout.'));
+    // Use the Cart class's proceedToCheckout method which handles authentication
+    if (typeof cart !== 'undefined' && cart.proceedToCheckout) {
+        cart.proceedToCheckout();
+    } else {
+        console.error('Cart object not found');
+        alert('Error: Cart system not initialized');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -771,5 +766,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (checkoutBtn) { checkoutBtn.addEventListener('click', handleCheckout); }
 });
 </script>
+
+<!-- Include Auth Modal for checkout -->
+@include('partials.ticket-auth-modal')
+
+<!-- Load Cart JavaScript -->
+<script src="{{ asset('js/cart.js') }}"></script>
+
 </body>
 </html>

@@ -85,9 +85,14 @@
                                                             </a>
 
                                                             <button type="button" class="btn btn-success btn-hover-info"
-                                                                data-bs-toggle="modal" data-bs-target="#modal-share">
+                                                                data-bs-toggle="modal" data-bs-target="#shareModal">
                                                                 <i class="fa-solid fa-share-nodes fa-fw" aria-hidden="true"></i>
                                                                 <span>Share</span>
+                                                            </button>
+                                                            
+                                                            <button type="button" class="btn btn-warning btn-hover-info" id="generateQRBtn" onclick="generateProfileQR()">
+                                                                <i class="fa-solid fa-qrcode fa-fw" aria-hidden="true"></i>
+                                                                <span>QR Code</span>
                                                             </button>
                                                             
                                                             <button type="button" class="btn btn-primary btn-hover-info" onclick="copyProfileUrl()">
@@ -639,6 +644,204 @@
             }
             
             document.body.removeChild(textarea);
+        }
+        </script>
+        
+        <!-- Share Modal -->
+        <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-share-nodes me-2"></i> Share Your Profile
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-4">Share your fundraising profile with supporters using:</p>
+                        
+                        <div class="d-flex gap-3 justify-content-center mb-4">
+                            <a id="shareWhatsApp" href="" target="_blank" class="share-btn-circle btn btn-success" title="Share on WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a id="shareTwitter" href="" target="_blank" class="share-btn-circle btn btn-info" title="Share on Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a id="shareFacebook" href="" target="_blank" class="share-btn-circle btn btn-primary" title="Share on Facebook">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a id="shareEmail" href="" class="share-btn-circle btn btn-secondary" title="Share via Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Or copy your profile URL:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="profileUrl" readonly value="">
+                                <button class="btn btn-outline-primary" type="button" onclick="copyProfileUrlFromModal()">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .share-btn-circle {
+                width: 60px !important;
+                height: 60px !important;
+                padding: 0 !important;
+                border-radius: 50% !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 24px !important;
+            }
+            .share-btn-circle i {
+                line-height: 1 !important;
+            }
+        </style>
+        
+        <!-- QR Code Modal -->
+        <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-qrcode me-2"></i> Your Profile QR Code
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="text-muted mb-3">Share this QR code with supporters to visit your profile</p>
+                        <div id="qrCodeContainer" style="display: none;">
+                            <img id="qrCodeImage" src="" alt="Profile QR Code" style="max-width: 400px; border: 3px solid #ffc107; padding: 15px; border-radius: 10px;">
+                            <div id="qrInfo" class="mt-3 text-start">
+                                <small class="text-muted"><strong>Profile:</strong> <span id="qrProfileName">-</span></small><br>
+                                <small class="text-muted"><strong>URL:</strong> <code id="qrUrl" style="font-size: 0.75rem;">-</code></small>
+                            </div>
+                        </div>
+                        <div id="qrLoading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Generating QR Code...</span>
+                            </div>
+                            <p class="text-muted mt-2">Generating QR Code...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-warning" onclick="downloadProfileQR()">
+                            <i class="fas fa-download me-1"></i> Download QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        let currentProfileQRData = null;
+        
+        // Initialize share modal with URLs
+        document.getElementById('shareModal').addEventListener('show.bs.modal', function () {
+            const profileUrl = window.location.origin + '/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}';
+            
+            // Set the URL in the input field
+            document.getElementById('profileUrl').value = profileUrl;
+            
+            // WhatsApp share
+            document.getElementById('shareWhatsApp').href = `https://wa.me/?text=Check out my fundraising profile: ${profileUrl}`;
+            
+            // Twitter share
+            document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?text=Support my fundraising: &url=${profileUrl}`;
+            
+            // Facebook share
+            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${profileUrl}`;
+            
+            // Email share
+            document.getElementById('shareEmail').href = `mailto:?subject=Check out my fundraising profile&body=Hi,%0A%0APlease visit my fundraising profile here: ${profileUrl}%0A%0AThanks for your support!`;
+        });
+        
+        function copyProfileUrlFromModal() {
+            const urlInput = document.getElementById('profileUrl');
+            urlInput.select();
+            
+            try {
+                document.execCommand('copy');
+                const btn = event.target;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy URL. Please copy manually from the field.');
+            }
+        }
+        
+        function generateProfileQR() {
+            const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+            modal.show();
+            
+            // Show loading, hide QR
+            document.getElementById('qrLoading').style.display = 'block';
+            document.getElementById('qrCodeContainer').style.display = 'none';
+            
+            try {
+                const response = fetch('{{ route("users.profile-qr.generate") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                response.then(res => res.json()).then(result => {
+                    if (result.success) {
+                        currentProfileQRData = result;
+                        document.getElementById('qrCodeImage').src = result.qr_code_base64;
+                        document.getElementById('qrProfileName').textContent = '{{ Auth::user()->name }} {{ Auth::user()->last_name }}';
+                        document.getElementById('qrUrl').textContent = result.profile_url;
+                        
+                        document.getElementById('qrLoading').style.display = 'none';
+                        document.getElementById('qrCodeContainer').style.display = 'block';
+                    } else {
+                        alert('Error: ' + (result.message || 'Failed to generate QR code'));
+                        modal.hide();
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Error generating QR code: ' + error.message);
+                    modal.hide();
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating QR code: ' + error.message);
+                modal.hide();
+            }
+        }
+        
+        function downloadProfileQR() {
+            if (!currentProfileQRData) {
+                alert('QR Code not generated yet');
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.href = currentProfileQRData.qr_code_base64;
+            link.download = `profile-qr-code-{{ Auth::user()->id }}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         </script>
 

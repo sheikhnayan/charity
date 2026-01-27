@@ -1,4 +1,4 @@
-<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden" style="display: none;">
+<div id="authModal" class="z-50 hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden max-h-[90vh] flex flex-col">
         <!-- Gradient Header -->
         <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-4 text-center flex-shrink-0">
@@ -9,6 +9,28 @@
         </div>
         
         <form id="authForm" autocomplete="off" class="p-6 overflow-y-auto flex-grow">
+            @php
+                $url = url()->current();
+                $domain = parse_url($url, PHP_URL_HOST);
+                $website = \App\Models\Website::where('domain', $domain)->first();
+                $isFundraiser = $website && $website->type === 'fundraiser';
+            @endphp
+
+            <!-- Registration Not Available Message for Fundraiser -->
+            @if($isFundraiser)
+            <div id="registrationDisabledMessage" class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded hidden">
+                <p class="text-sm text-blue-800 font-semibold mb-2">
+                    <i class="fas fa-info-circle mr-2"></i>Registration Not Available
+                </p>
+                <p class="text-xs text-blue-700 mb-3">
+                    To create a new account, please visit our <strong>Registration page</strong>.
+                </p>
+                <a href="/register" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs font-semibold transition">
+                    <i class="fas fa-user-plus mr-1"></i>Go to Registration Page
+                </a>
+            </div>
+            @endif
+
             <div class="mb-3" id="nameFieldContainer">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-user text-purple-600 mr-2"></i>Full Name
@@ -97,13 +119,15 @@
                 <div id="authSuccess" class="text-xs text-green-600 font-semibold mb-1 hidden"></div>
             </div>
             
-            <div class="text-center pt-3 border-t border-gray-200">
+            <div class="text-center pt-3 border-t border-gray-200" id="authSwitchLinks">
                 <div class="flex flex-col gap-2 items-center">
-                    <div class="flex gap-2 justify-center">
+                    <div class="flex gap-2 justify-center" id="registerLoginLinks">
+                        @if(!$isFundraiser)
                         <a href="#" id="switchToRegister" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
                             <i class="fas fa-user-plus mr-1"></i>Register
                         </a>
                         <span class="text-gray-400">|</span>
+                        @endif
                         <a href="#" id="switchToLogin" class="text-purple-600 hover:text-purple-800 font-semibold text-sm hover:underline">
                             <i class="fas fa-sign-in-alt mr-1"></i>Login
                         </a>
@@ -141,6 +165,8 @@
 
 
     let authMode = 'login';
+    let isFundraiserWebsite = {{ $isFundraiser ? 'true' : 'false' }};
+
     function setAuthMode(mode) {
         authMode = mode;
         const authError = document.getElementById('authError');
@@ -160,9 +186,25 @@
         document.getElementById('forgotPasswordVerifyField').classList.add('hidden');
         document.getElementById('forgotPasswordResetField').classList.add('hidden');
 
+        // Hide registration disabled message
+        const registrationMessage = document.getElementById('registrationDisabledMessage');
+        if (registrationMessage) {
+            registrationMessage.classList.add('hidden');
+        }
+
         const submitBtn = document.getElementById('authSubmitBtn');
 
         if (mode === 'register') {
+            // If fundraiser type, show registration disabled message instead
+            if (isFundraiserWebsite) {
+                if (registrationMessage) {
+                    registrationMessage.classList.remove('hidden');
+                }
+                submitBtn.style.display = 'none';
+                document.getElementById('registerLoginLinks').style.display = 'none';
+                document.getElementById('switchToForgot').style.display = 'none';
+                return;
+            }
             submitBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
             document.getElementById('confirmPasswordField').classList.remove('hidden');
             document.getElementById('nameFieldContainer').classList.remove('hidden');
@@ -179,12 +221,20 @@
             document.getElementById('forgotPasswordRequestField').classList.remove('hidden');
         } else {
             submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
+            submitBtn.style.display = 'block';
+            document.getElementById('registerLoginLinks').style.display = 'flex';
+            document.getElementById('switchToForgot').style.display = 'block';
         }
     }
     window.setAuthMode = setAuthMode;
     setAuthMode('login');
 
-    document.getElementById('switchToRegister').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('register'); });
+    // Only attach register listener if the button exists (non-fundraiser websites)
+    const switchToRegister = document.getElementById('switchToRegister');
+    if (switchToRegister) {
+        switchToRegister.addEventListener('click', function(e){ e.preventDefault(); setAuthMode('register'); });
+    }
+    
     document.getElementById('switchToLogin').addEventListener('click', function(e){ e.preventDefault(); setAuthMode('login'); });
 
     document.getElementById('switchToForgot').addEventListener('click', function(e){
@@ -380,6 +430,44 @@
                 }
                 // Success in verify or login
                 closeAuthModal();
+                
+                // Show success alert
+                if (authMode === 'login') {
+                    showSuccessAlert('✓ Login Successful! Welcome back.');
+                } else if (authMode === 'verify') {
+                    showSuccessAlert('✓ Registration Successful! Account verified.');
+                }
+                
+                // Check if there's a checkout redirect URL (from cart page)
+                const checkoutRedirectUrl = window.checkoutRedirectUrl || null;
+                
+                // Check if there's an intended URL to redirect to (from payment pages)
+                const intendedUrl = '{{ session("url.intended") }}';
+                
+                // Redirect after a short delay
+                setTimeout(async () => {
+                    let redirectUrl = null;
+                    
+                    // Priority: checkout redirect > intended URL
+                    if (checkoutRedirectUrl) {
+                        redirectUrl = checkoutRedirectUrl;
+                        window.checkoutRedirectUrl = null; // Clear the flag
+                    } else if (intendedUrl && intendedUrl !== '') {
+                        redirectUrl = intendedUrl;
+                    }
+                    
+                    if (redirectUrl) {
+                        // Clear the intended URL from session before redirect
+                        try {
+                            await ajaxPost('/clear-intended-url', {});
+                        } catch (e) {
+                            console.error('Failed to clear intended URL:', e);
+                        }
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.reload();
+                    }
+                }, 1500);
                 
                 // Check if this is from invest page (data already filled)
                 if (window._investmentFormData) {
@@ -613,5 +701,68 @@
             f.submit();
         }
     });
+
+    // Show success alert function
+    function showSuccessAlert(message) {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'fixed top-4 right-4 z-[9999] bg-green-50 border-l-4 border-green-500 rounded-lg shadow-lg p-4 max-w-sm animate-fadeIn';
+        alertDiv.style.cssText = `
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 16px;
+            max-width: 420px;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        
+        alertDiv.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                <p class="text-sm font-semibold text-green-800">${message}</p>
+            </div>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            alertDiv.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 300);
+        }, 4000);
+    }
+    
+    // Add CSS animations if not already present
+    if (!document.querySelector('style[data-auth-modal-animations]')) {
+        const style = document.createElement('style');
+        style.setAttribute('data-auth-modal-animations', 'true');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 })();
 </script>

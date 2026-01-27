@@ -291,6 +291,108 @@
         <!-- / Content -->
         
         <!-- QR Code Modal -->
+        <!-- Share Modal -->
+        <div class="modal fade" id="modal-share" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-share-nodes me-2"></i> Share {{ $user->name }}'s Profile
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-4">Share this profile to help {{ $user->name }} reach more supporters</p>
+                        
+                        <!-- Social Share Buttons -->
+                        <div class="mb-4">
+                            <p class="fw-semibold mb-3">Share on social media:</p>
+                            <div class="d-flex gap-3">
+                                <button class="share-btn-circle btn btn-whatsapp" id="whatsappShare" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-btn-circle btn btn-twitter" id="twitterShare" title="Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </button>
+                                <button class="share-btn-circle btn btn-facebook" id="facebookShare" title="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-btn-circle btn btn-email" id="emailShare" title="Email">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Copy URL Section -->
+                        <div class="mt-4">
+                            <p class="fw-semibold mb-3">Copy your profile URL:</p>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="profileUrl" placeholder="Profile URL" readonly>
+                                <button class="btn btn-outline-primary" type="button" onclick="copyProfileUrlFromModal()">
+                                    <i class="fas fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .share-btn-circle {
+                width: 60px !important;
+                height: 60px !important;
+                padding: 0 !important;
+                border-radius: 50% !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 24px !important;
+            }
+            .share-btn-circle i {
+                line-height: 1 !important;
+            }
+            .btn-whatsapp {
+                background-color: #25D366 !important;
+                color: white !important;
+                border: none !important;
+            }
+            .btn-whatsapp:hover {
+                background-color: #1ead50 !important;
+                color: white !important;
+            }
+            .btn-twitter {
+                background-color: #1DA1F2 !important;
+                color: white !important;
+                border: none !important;
+            }
+            .btn-twitter:hover {
+                background-color: #1a8cd8 !important;
+                color: white !important;
+            }
+            .btn-facebook {
+                background-color: #1877F2 !important;
+                color: white !important;
+                border: none !important;
+            }
+            .btn-facebook:hover {
+                background-color: #0a66c2 !important;
+                color: white !important;
+            }
+            .btn-email {
+                background-color: #6c757d !important;
+                color: white !important;
+                border: none !important;
+            }
+            .btn-email:hover {
+                background-color: #5a6268 !important;
+                color: white !important;
+            }
+        </style>
+        
         <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -417,6 +519,69 @@
             
             document.body.removeChild(textarea);
         }
+        
+        function copyProfileUrlFromModal() {
+            const profileUrl = window.location.origin + '/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}';
+            const urlInput = document.getElementById('profileUrl');
+            
+            // Select the text in the input
+            urlInput.select();
+            
+            try {
+                document.execCommand('copy');
+                
+                // Show success feedback
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check me-1"></i> Copied!';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy URL. Please copy manually: ' + profileUrl);
+            }
+        }
+        
+        // Initialize Share Modal
+        document.getElementById('modal-share').addEventListener('show.bs.modal', function() {
+            const profileUrl = window.location.origin + '/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}';
+            const studentName = '{{ $user->name }} {{ $user->last_name }}';
+            const shareMessage = 'Check out ' + studentName + '\'s fundraising profile!';
+            
+            // Set the profile URL in the input field
+            document.getElementById('profileUrl').value = profileUrl;
+            
+            // WhatsApp Share
+            document.getElementById('whatsappShare').onclick = function() {
+                const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(shareMessage + ' ' + profileUrl);
+                window.open(whatsappUrl, '_blank', 'width=600,height=400');
+            };
+            
+            // Twitter Share
+            document.getElementById('twitterShare').onclick = function() {
+                const twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareMessage) + '&url=' + encodeURIComponent(profileUrl);
+                window.open(twitterUrl, '_blank', 'width=600,height=400');
+            };
+            
+            // Facebook Share
+            document.getElementById('facebookShare').onclick = function() {
+                const facebookUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(profileUrl);
+                window.open(facebookUrl, '_blank', 'width=600,height=400');
+            };
+            
+            // Email Share
+            document.getElementById('emailShare').onclick = function() {
+                const subject = 'Check out ' + studentName + '\'s Fundraising Profile';
+                const body = shareMessage + '%0A%0A' + profileUrl;
+                window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + body;
+            };
+        });
         </script>
 
         <script>

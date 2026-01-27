@@ -16356,6 +16356,8 @@ function applyResponsiveStyles() {
       }
       
       components.forEach((data, idx) => {
+        console.log(`🟢 DESERIALIZE LOOP - Component ${idx}: type="${data.type}"`)
+;
         console.log(`Loading component ${idx}:`, data.type, 'responsiveStyles:', data.responsiveStyles);
         
         let component;
