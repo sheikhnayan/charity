@@ -7023,24 +7023,7 @@ break;
             <div class="container">
                 <form action="/register" method="POST">
                     @csrf
-                    <div class="row justify-content-center">
-                        <div class="col-md-4">
-                            <label for="register_as" class="form-label">Register as</label>
-                            <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)">
-                                <option value="individual">Student / Participant</option>
-                                <option value="parents">Parent / Guardian</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
-                            <label for="teacher_id" class="form-label">Select Teacher</label>
-                            <select class="form-select" id="teacher_id" name="teacher_id">
-                                <option value="">Select a teacher</option>
-                                @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                    <input type="hidden" name="register_as" value="parents">
                     <div class="row justify-content-center">
                         <div class="col-md-4">
                             <label for="first_name" class="form-label">First name</label>
