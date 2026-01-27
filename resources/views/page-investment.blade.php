@@ -10,7 +10,7 @@ if (isset($state['components'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $data->name ?? 'Page' }}</title>
     
@@ -156,24 +156,6 @@ if (isset($state['components'])) {
     
     footer {
         margin-top: auto;
-    }
-    
-    /* iOS Footer Fix - Prevent white space below footer on iOS Safari */
-    @supports (padding: max(0px)) {
-        footer {
-            padding-bottom: max(0px, env(safe-area-inset-bottom));
-        }
-    }
-    
-    /* iOS Safari specific - prevent scrollable area beyond footer */
-    @media (max-width: 768px) {
-        body {
-            overflow: hidden;
-        }
-        main {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
     }
 
     nav{
@@ -1505,6 +1487,7 @@ if (isset($state['components'])) {
         $check = \App\Models\Website::where('domain', $domain)->first();
         $groups = \App\Models\User::where('website_id', $check->id)->where('role','group_leader')->get();
         $auction = \App\Models\Auction::where('website_id', $check->id)->where('status',1)->latest()->get();
+        $teachers = \App\Models\User::where('website_id', $check->id)->where('role','teacher')->get();
         
         $header = \App\Models\Header::where('website_id', $check->id)->first();
         $footer = \App\Models\Footer::where('website_id', $check->id)->first();
