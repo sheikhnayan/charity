@@ -1165,6 +1165,30 @@ Route::post('/ajax/ticket-auth/verify', function(Request $request) {
     return response()->json(['success' => true, 'csrf_token' => csrf_token()]);
 });
 
+// Resend verification code
+Route::post('/ajax/ticket-auth/resend-code', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email'
+    ]);
+    $user = User::where('email', $request->email)->first();
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+    }
+    if ($user->email_verified_at) {
+        return response()->json(['success' => true, 'message' => 'Email already verified.']);
+    }
+
+    $code = rand(100000, 999999);
+    $user->email_verification_code = $code;
+    $user->save();
+
+    Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name ?? ''], function($m) use ($user) {
+        $m->to($user->email)->subject('Verify Your Account - Verification Code');
+    });
+
+    return response()->json(['success' => true, 'message' => 'Verification code resent.']);
+});
+
 Route::post('/ajax/ticket-auth/check', function(Request $request) {
     $user = Auth::user();
     return response()->json([
