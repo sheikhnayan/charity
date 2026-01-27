@@ -925,7 +925,7 @@
               @foreach ($similar as $item)
               @if ($item->id != $ticket->id)
                   <a href="/product/{{ $item->slug }}">
-                    <div class="card"><img src="/{{ $item->image }}" alt="{{$item->name}}" style="width: 100%"><div class="meta">{{$item->name}}<br><strong>${{ number_format($item->price, 2) }}</strong></div></div>
+                    <div class="card" style="max-width: 178px;"><img src="/{{ $item->image }}" alt="{{$item->name}}" style="width: 100%"><div class="meta">{{$item->name}}<br><strong>${{ number_format($item->price, 2) }}</strong></div></div>
                   </a>
               @endif
               @endforeach
