@@ -6249,6 +6249,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                     <option value="parents">Parent / Guardian</option>
                                                 </select>
                                             </div>
+                                            @php
+                                                dd($teachers);
+                                            @endphp
                                             <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
                                                 <label for="teacher_id" class="form-label">Select Teacher</label>
                                                 <select class="form-select" id="teacher_id" name="teacher_id">
