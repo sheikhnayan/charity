@@ -224,6 +224,10 @@
         line-height: 1.5 !important;
         margin: 0.4rem 0 0.2rem 0 !important;
     }
+
+    .link_wrap div{
+        font-family: Outfit,sans-serif !important;
+    }
     </style>
 
     <style>
