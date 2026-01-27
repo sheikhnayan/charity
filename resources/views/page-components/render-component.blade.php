@@ -6088,12 +6088,13 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
                 <div style="{{ $styleStr }} margin-top: 3rem;" class="legacy-auth-form">
                     @if(isset($component['html']) && !empty($component['html']))
+                        <script>console.log('📋 TEACHERS COUNT:', {{ count($teachers) }});</script>
                         {!! $component['html'] !!}
 
                         <script>
                         // Log teachers data immediately
                         const teachersData = @json($teachers ?? []);
-                        console.log('👨‍🏫 TEACHERS DATA LOADED:', teachersData);
+                        console.log('👨‍🏫 TEACHERS DATA LOADED:', teachersData, 'Count:', teachersData.length);
                         
                         // Function to populate teachers
                         function populateTeachers() {
