@@ -143,6 +143,10 @@ if (isset($state['components'])) {
         padding: 0;
         width: 100%;
     }
+
+    nav{
+        box-shadow: 0 .25rem .5rem rgba(0,0,0,.5) !important;
+    }
     
     /* Main container adjustments for full-width support */
     #rendered-page {
