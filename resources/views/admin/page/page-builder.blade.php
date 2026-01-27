@@ -17838,6 +17838,24 @@ function applyResponsiveStyles() {
                           nestedContent.renderImage();
                         }
                         break;
+                                            case 'text':
+                                                // Restore text content into the inner preview div
+                                                const nestedTextDiv = nestedContent.querySelector('[id^="text-content-"]');
+                                                if (nestedTextDiv && compData.html) {
+                                                    nestedTextDiv.innerHTML = compData.html;
+                                                } else if (compData.html) {
+                                                    nestedContent.innerHTML = compData.html;
+                                                }
+                                                break;
+                                            case 'section-title':
+                                                // Restore section title content into the inner preview div
+                                                const nestedSectionTitleDiv = nestedContent.querySelector('[id^="section-title-content-"]');
+                                                if (nestedSectionTitleDiv && compData.html) {
+                                                    nestedSectionTitleDiv.innerHTML = compData.html;
+                                                } else if (compData.html) {
+                                                    nestedContent.innerHTML = compData.html;
+                                                }
+                                                break;
                       case 'numbered-timeline':
                         if (compData.timelineData) {
                           nestedContent._timelineData = compData.timelineData;
