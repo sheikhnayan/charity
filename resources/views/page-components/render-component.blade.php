@@ -5530,6 +5530,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 $domain = parse_url($url, PHP_URL_HOST);
                 $currentWebsite = \App\Models\Website::where('domain', $domain)->first();
                 $teachers = $currentWebsite ? \App\Models\User::where('website_id', $currentWebsite->id)->where('role','teacher')->get() : collect();
+
+                dd(\App\Models\User::where('role','teacher')->get());
                 
                 // Check if this is a new auth-form with authFormData or old one with hardcoded HTML
                 $authFormData = $component['authFormData'] ?? [];
@@ -6249,9 +6251,6 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                                     <option value="parents">Parent / Guardian</option>
                                                 </select>
                                             </div>
-                                            @php
-                                                dd($teachers);
-                                            @endphp
                                             <div class="col-md-4" id="teacher_select_wrapper" style="display:block;">
                                                 <label for="teacher_id" class="form-label">Select Teacher</label>
                                                 <select class="form-select" id="teacher_id" name="teacher_id">
