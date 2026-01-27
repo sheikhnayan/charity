@@ -147,6 +147,10 @@
         font-family: '{{ $header->investor_exclusives_font_family }}', sans-serif !important;
     }
     @endif
+
+    .link_wrap div{
+        font-family: Outfit,sans-serif !important;
+    }
     </style>
     <style>
         /* Sticky Bottom Investment CTA Styles */

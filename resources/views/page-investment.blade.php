@@ -142,6 +142,20 @@ if (isset($state['components'])) {
         margin: 0;
         padding: 0;
         width: 100%;
+        height: 100%;
+    }
+    
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    main {
+        flex: 1;
+    }
+    
+    footer {
+        margin-top: auto;
     }
 
     nav{
