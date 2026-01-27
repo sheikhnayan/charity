@@ -4415,12 +4415,15 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
         @case('student-leaderboard')
                 @php
-                    $st = App\Models\User::limit(5)->whereIn('role',['individual','group_leader','member'])->where('website_id',$check->id)->get();
-                    $sortedStudents = $st->sortByDesc(function($student) {
-                        return $student->donations->sum('amount');
-                    });
-                    $key = 0 ;
-                    // dd($sortedStudents);
+                    $sortedStudents = App\Models\User::whereIn('role', ['individual', 'group_leader', 'member'])
+                        ->where('website_id', $check->id)
+                        ->withSum(['donations as total_donations' => function ($query) use ($check) {
+                            $query->where('website_id', $check->id);
+                        }], 'amount')
+                        ->orderByDesc('total_donations')
+                        ->limit(5)
+                        ->get();
+                    $key = 0;
                 @endphp
                 @php
                     $style = $component['style'] ?? [];
@@ -4445,6 +4448,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 <div class="col-md-12 mt-4" style="{{ $alertStyleStr }} {{ $wrapperStyleStr }}">
 
                 @foreach($sortedStudents as $student)
+                    @php
+                        $donationTotal = $student->total_donations ?? 0;
+                    @endphp
                     <div class="col-lg-12" style="font-size: 12px; margin-bottom: 1rem; ">
                         <div class="position-relative bg- p-4 rounded-3 shadow-sm border"
                             style="width: 100%; max-width: 580px; margin-inline: auto; background: #ebebeb;">
@@ -4464,12 +4470,12 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
 
                                     {{-- <span class="opacity-75 text-center text-lg-start mt-2"></span> --}}
 
-                                    <div class="progress" role="progressbar" aria-valuenow="{{ $student->donations->sum('amount') }}"
+                                    <div class="progress" role="progressbar" aria-valuenow="{{ $donationTotal }}"
                                         aria-valuemin="0" aria-valuemax="{{ $student->goal }}" data-primary-color="#2e4053"
                                         data-secondary-color="#28a745" data-duration="5"
                                         data-goal-reached="true" style="height: 14px; border: 1px solid #28a745">
                                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
-                                            style="width:@if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal)*100 }}@else 1 @endif%; background-color: #28a745 !important;" > <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal)*100) }}@else 1 @endif% </span>
+                                            style="width:@if($student->goal > 0){{ ($donationTotal / $student->goal)*100 }}@else 1 @endif%; background-color: #28a745 !important;" > <span style="font-size: 13px; font-weight: bold; margin-top: -2px;"> @if($student->goal > 0){{ round(($donationTotal / $student->goal)*100) }}@else 1 @endif% </span>
                                         </div>
                                     </div>
                                 </div>
@@ -4487,7 +4493,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 @endif
                                     top: 30px; right: 25px; font-size: 2.5rem !important;"></i>
                                 <span class="small fw-bold" style="top: 57px; position: relative; left: -36px; right: unset; font-size: 0.74rem; color: #000;">
-                                    $ {{ $student->donations->sum('amount') }}
+                                    $ {{ $donationTotal }}
                                 </span>
                             </span>
                             </a>
