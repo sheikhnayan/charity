@@ -6091,22 +6091,32 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         {!! $component['html'] !!}
 
                         <script>
-                        // Populate teachers list dynamically - run after DOM is ready
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const teachers = @json($teachers ?? []);
-                            console.log('Teachers data:', teachers);
+                        // Log teachers data immediately
+                        const teachersData = @json($teachers ?? []);
+                        console.log('👨‍🏫 TEACHERS DATA LOADED:', teachersData);
+                        
+                        // Function to populate teachers
+                        function populateTeachers() {
+                            const teachers = teachersData;
+                            console.log('🔍 Searching for teacher selects...');
                             
-                            // Find all teacher select dropdowns
                             const teacherSelects = document.querySelectorAll('select[name="teacher_id"], select#teacher_id');
-                            console.log('Found teacher selects:', teacherSelects.length);
+                            console.log('✅ Found teacher selects:', teacherSelects.length);
                             
-                            teacherSelects.forEach(function(select) {
-                                console.log('Processing select:', select);
+                            if (teacherSelects.length === 0) {
+                                console.warn('⚠️ No teacher selects found');
+                                return false;
+                            }
+                            
+                            teacherSelects.forEach(function(select, index) {
+                                console.log('📝 Processing select #' + index, select);
                                 
-                                // Clear existing options except the first one
+                                // Clear existing options except the first one (placeholder)
+                                const initialLength = select.options.length;
                                 while (select.options.length > 1) {
                                     select.remove(1);
                                 }
+                                console.log('   Cleared ' + (initialLength - 1) + ' options');
                                 
                                 // Add teacher options
                                 teachers.forEach(function(teacher) {
@@ -6114,12 +6124,35 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     option.value = teacher.id;
                                     option.textContent = teacher.name;
                                     select.appendChild(option);
-                                    console.log('Added teacher:', teacher.name);
                                 });
                                 
-                                console.log('Total options now:', select.options.length);
+                                console.log('   ✅ Added ' + teachers.length + ' teachers, total options: ' + select.options.length);
                             });
-                        });
+                            
+                            return true;
+                        }
+                        
+                        // Try immediately
+                        console.log('📌 Attempt 1: Populating immediately...');
+                        if (!populateTeachers()) {
+                            // Try after a short delay
+                            setTimeout(function() {
+                                console.log('📌 Attempt 2: Populating after 100ms...');
+                                populateTeachers();
+                            }, 100);
+                            
+                            // Try on DOMContentLoaded
+                            document.addEventListener('DOMContentLoaded', function() {
+                                console.log('📌 Attempt 3: Populating on DOMContentLoaded...');
+                                populateTeachers();
+                            });
+                            
+                            // Try after page fully loaded
+                            window.addEventListener('load', function() {
+                                console.log('📌 Attempt 4: Populating on window.load...');
+                                populateTeachers();
+                            });
+                        }
                         
                         // Add global onclick functions for page builder preview
                             if (!window.showLoginFormPreview) {
