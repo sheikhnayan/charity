@@ -15860,7 +15860,17 @@ function applyResponsiveStyles() {
 
           case 'section-title':
             const sectionTitleEl = content.querySelector('[id^="section-title-content-"]');
-            data.text = sectionTitleEl ? sectionTitleEl.innerHTML : content.textContent;
+            if (sectionTitleEl && sectionTitleEl.innerHTML) {
+              data.html = sectionTitleEl.innerHTML;
+              console.log('SERIALIZE: Section title from canvas preview:', data.html);
+            }
+            break;
+          case 'text':
+            const textEl = content.querySelector('[id^="text-content-"]');
+            if (textEl && textEl.innerHTML) {
+              data.html = textEl.innerHTML;
+              console.log('SERIALIZE: Text from canvas preview:', data.html);
+            }
             break;
           case 'video':
             console.log('=== SERIALIZING VIDEO COMPONENT ===');
@@ -16220,6 +16230,22 @@ function applyResponsiveStyles() {
                       if (compContent._properties) {
                         compData.properties = compContent._properties;
                         console.log('SERIALIZE NESTED: Saving product-listing-grid properties:', compContent._properties);
+                      }
+                      break;
+                    case 'text':
+                      // Get text from inner text-content div
+                      const nestedTextEl = compContent.querySelector('[id^="text-content-"]');
+                      if (nestedTextEl && nestedTextEl.innerHTML) {
+                        compData.html = nestedTextEl.innerHTML;
+                        console.log('SERIALIZE NESTED: Text component from canvas preview:', compData.html);
+                      }
+                      break;
+                    case 'section-title':
+                      // Get section title from inner section-title-content div
+                      const nestedSectionTitleEl = compContent.querySelector('[id^="section-title-content-"]');
+                      if (nestedSectionTitleEl && nestedSectionTitleEl.innerHTML) {
+                        compData.html = nestedSectionTitleEl.innerHTML;
+                        console.log('SERIALIZE NESTED: Section title from canvas preview:', compData.html);
                       }
                       break;
                   }
@@ -18818,7 +18844,29 @@ function applyResponsiveStyles() {
           break;
         
         case 'text':
-          componentData.html = content.innerHTML;
+          // Get text content from canvas preview element (NOT property panel editor)
+          const textContentElement = content.querySelector('[id^="text-content-"]');
+          if (textContentElement && textContentElement.innerHTML) {
+            componentData.html = textContentElement.innerHTML;
+            console.log('Text component serialized from canvas preview:', componentData.html);
+          } else {
+            // Fallback to content innerHTML
+            componentData.html = content.innerHTML;
+            console.log('Text component serialized from content innerHTML:', componentData.html);
+          }
+          break;
+        
+        case 'section-title':
+          // Get section title content from canvas preview element
+          const sectionTitleElement = content.querySelector('[id^="section-title-content-"]');
+          if (sectionTitleElement && sectionTitleElement.innerHTML) {
+            componentData.html = sectionTitleElement.innerHTML;
+            console.log('Section title serialized from canvas preview:', componentData.html);
+          } else {
+            // Fallback to content innerHTML
+            componentData.html = content.innerHTML;
+            console.log('Section title serialized from content innerHTML:', componentData.html);
+          }
           break;
         
         default:
@@ -19211,7 +19259,29 @@ function applyResponsiveStyles() {
         
         case 'text':
           if (data.html && content) {
-            content.innerHTML = data.html;
+            // Find the inner text-content div and update it
+            const textContentDiv = content.querySelector('[id^="text-content-"]');
+            if (textContentDiv) {
+              textContentDiv.innerHTML = data.html;
+              console.log('Text deserialized into text-content div:', data.html);
+            } else {
+              content.innerHTML = data.html;
+              console.log('Text deserialized into content wrapper (fallback):', data.html);
+            }
+          }
+          break;
+        
+        case 'section-title':
+          if (data.html && content) {
+            // Find the inner section-title-content div and update it
+            const sectionTitleDiv = content.querySelector('[id^="section-title-content-"]');
+            if (sectionTitleDiv) {
+              sectionTitleDiv.innerHTML = data.html;
+              console.log('Section title deserialized into section-title-content div:', data.html);
+            } else {
+              content.innerHTML = data.html;
+              console.log('Section title deserialized into content wrapper (fallback):', data.html);
+            }
           }
           break;
         

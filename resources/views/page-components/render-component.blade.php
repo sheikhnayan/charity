@@ -1426,12 +1426,24 @@ h5, .ql-header-5 {
             @php
                 // Check all possible keys where text content might be stored
                 $text = '';
-                if (isset($component['html']) && !empty($component['html'])) {
+                $textData = $component['_textData'] ?? $component['textData'] ?? [];
+                $properties = $component['properties'] ?? [];
+                
+                // Try structured textData first, then fallback to various text fields
+                if (!empty($textData['content'])) {
+                    $text = $textData['content'];
+                } elseif (!empty($properties['text'])) {
+                    $text = $properties['text'];
+                } elseif (!empty($properties['content'])) {
+                    $text = $properties['content'];
+                } elseif (isset($component['html']) && !empty($component['html'])) {
                     $text = $component['html'];
                 } elseif (isset($component['content']) && !empty($component['content'])) {
                     $text = $component['content'];
                 } elseif (isset($component['text']) && !empty($component['text'])) {
                     $text = $component['text'];
+                } elseif (isset($component['textContent']) && !empty($component['textContent'])) {
+                    $text = $component['textContent'];
                 } else {
                     $text = '<p style="color: #666; font-style: italic;">Text content will appear here. Configure this component in the admin panel.</p>';
                 }
@@ -6100,11 +6112,55 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             }
     </script>
                     @else
-                        {{-- Default auth form using exact HTML from page builder --}}
-                        <div class="auth-form-container" style="background-color: {{ $backgroundColor }}; padding: 2rem; border-radius: 0.5rem;">
+                        {{-- Default auth form using dynamic properties from component --}}
+                        <style>
+                            .dynamic-auth-container {
+                                background-color: transparent;
+                                padding: 2rem;
+                                border-radius: 0.5rem;
+                            }
+                            .dynamic-auth-container .form-label {
+                                color: #333;
+                                font-weight: 500;
+                            }
+                            .dynamic-auth-container .form-select,
+                            .dynamic-auth-container .form-control {
+                                border-color: #ddd;
+                            }
+                            .dynamic-auth-container .form-select:focus,
+                            .dynamic-auth-container .form-control:focus {
+                                border-color: {{ $buttonColor }};
+                                box-shadow: 0 0 0 0.2rem {{ $buttonColor }}33;
+                            }
+                            .dynamic-auth-container .btn-primary-custom {
+                                background-color: {{ $buttonColor }};
+                                color: {{ $buttonTextColor }};
+                                border-color: {{ $buttonColor }};
+                                font-weight: 600;
+                            }
+                            .dynamic-auth-container .btn-primary-custom:hover {
+                                background-color: {{ $buttonColor }};
+                                color: {{ $buttonTextColor }};
+                                opacity: 0.9;
+                            }
+                            .dynamic-auth-container .btn-link-custom {
+                                color: {{ $linkColor }};
+                                text-decoration: none;
+                                font-weight: 500;
+                                padding: 0.5rem 1rem;
+                            }
+                            .dynamic-auth-container .btn-link-custom:hover {
+                                color: {{ $linkColor }};
+                                opacity: 0.8;
+                            }
+                            .dynamic-auth-container .avatar-icon {
+                                color: {{ $avatarIconColor }};
+                            }
+                        </style>
+                        <div class="auth-form-container dynamic-auth-container">
                             <div class="row">
                                 <div class="col-md-12 mt-4 mb-4 text-center">
-                                    <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: {{ $avatarIconColor }} !important;"></i>
+                                    <i class="fa-solid fa-circle-user fa-fw mb-3 avatar-icon" aria-hidden="true" style="font-size: 8rem !important;"></i>
                                     <h2 class="display-6 tit">Register</h2>
                                 </div>
                             </div>
@@ -6160,42 +6216,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="row justify-content-center">
                                             <div class="col-8">
                                                 <div class="d-grid gap-3 mt-2">
-                                                    <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
+                                                    <button class="btn btn-lg text-white btn-primary-custom" type="submit">
                                                         <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                        Register
-                                                    </button>
-                                                    <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showLoginForm(this)" style="color: #fff !important; background-color: {{ $linkColor }} !important;">
-                                                        Already have an account? Login
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="login" style="display: none;">
-                                <div class="container">
-                                    <form action="/login" method="POST">
-                                        @csrf
-                                        <div class="row justify-content-center">
-                                            <div class="col-md-4">
-                                                <label for="login_email" class="form-label">Email address</label>
-                                                <input type="email" class="form-control" id="login_email" name="email">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="login_password" class="form-label">Password</label>
-                                                <input type="password" class="form-control" id="login_password" name="password">
-                                            </div>
-                                        </div>
-                                        <div class="row justify-content-center">
-                                            <div class="col-8">
-                                                <div class="d-grid gap-3 mt-2">
-                                                    <button class="btn btn-lg text-white" type="submit" style="background-color: {{ $buttonColor }} !important; border-color: transparent; color: {{ $buttonTextColor }} !important;">
-                                                        <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                                        Login
-                                                    </button>
-                                                    <button class="btn btn-lg p-0 shadow-none" type="button" onclick="showRegisterForm(this)" style="color: #fff !important; background-color: {{ $linkColor }} !important;">
                                                         Register
                                                     </button>
                                                 </div>
@@ -6207,26 +6229,6 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                         
                         <script>
-                        function showLoginForm(button) {
-                            const container = button.closest('.auth-form-container');
-                            const registerForm = container.querySelector('.register');
-                            const loginForm = container.querySelector('.login');
-                            const titleElement = container.querySelector('.tit');
-                            if (registerForm) registerForm.style.display = 'none';
-                            if (loginForm) loginForm.style.display = 'block';
-                            if (titleElement) titleElement.textContent = 'Login';
-                        }
-                        
-                        function showRegisterForm(button) {
-                            const container = button.closest('.auth-form-container');
-                            const registerForm = container.querySelector('.register');
-                            const loginForm = container.querySelector('.login');
-                            const titleElement = container.querySelector('.tit');
-                            if (loginForm) loginForm.style.display = 'none';
-                            if (registerForm) registerForm.style.display = 'block';
-                            if (titleElement) titleElement.textContent = 'Register';
-                        }
-                        
                         function toggleRegistrationFields(selectElement) {
                             const teacherWrapper = document.getElementById('teacher_select_wrapper');
                             if (teacherWrapper) {
@@ -6648,21 +6650,46 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 @if(isset($component['html']) && !empty($component['html']))
                     {!! $component['html'] !!}
                 @else
-                    {{-- Use exact donation form structure from page.blade.php --}}
+                    {{-- Use exact donation form structure with dynamic properties from component --}}
                     @php
-                        $formTitle = 'Make a general donation';
-                        $borderColor = '#2e4053';
-                        $headerColor = '#2e4053';
-                        $headerTextColor = '#ffffff';
-                        $backgroundColor = '#ffffff';
-                        $feeText = 'I elect to pay the fees';
-                        $feeTooltip = 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.';
-                        $anonymousText = 'Anonymous';
-                        $anonymousTooltip = 'Selecting this option will hide your name from everyone but the organizer.';
-                        $anonymousDescription = 'Choose to make your donation anonymous';
-                        $buttonText = 'Donate';
+                        // Extract donation form properties from component
+                        $donationFormData = $component['donationFormData'] ?? [];
+                        $formTitle = $donationFormData['formTitle'] ?? 'Make a general donation';
+                        $borderColor = $donationFormData['borderColor'] ?? '#2e4053';
+                        $headerColor = $donationFormData['headerColor'] ?? '#2e4053';
+                        $headerTextColor = $donationFormData['headerTextColor'] ?? '#ffffff';
+                        $backgroundColor = $donationFormData['backgroundColor'] ?? '#ffffff';
+                        $feeText = $donationFormData['feeText'] ?? 'I elect to pay the fees';
+                        $feeTooltip = $donationFormData['feeTooltip'] ?? 'By selecting this option, you elect to pay the credit card and transaction fees for this donation. The fees will be displayed in the next step.';
+                        $anonymousText = $donationFormData['anonymousText'] ?? 'Anonymous';
+                        $anonymousTooltip = $donationFormData['anonymousTooltip'] ?? 'Selecting this option will hide your name from everyone but the organizer.';
+                        $anonymousDescription = $donationFormData['anonymousDescription'] ?? 'Choose to make your donation anonymous';
+                        $buttonText = $donationFormData['buttonText'] ?? 'Donate';
                     @endphp
-                    <div class="donation-form-component" style="margin-top: 3rem;">
+                    <style>
+                        .dynamic-donation-form .form-control:focus,
+                        .dynamic-donation-form .form-select:focus {
+                            border-color: {{ $borderColor }};
+                            box-shadow: 0 0 0 0.2rem {{ $borderColor }}33;
+                        }
+                        .dynamic-donation-form .input-group-text {
+                            border-color: {{ $borderColor }};
+                            background-color: #fff;
+                            color: #333;
+                        }
+                        .dynamic-donation-form .card {
+                            border-color: {{ $borderColor }};
+                        }
+                        .dynamic-donation-form .form-check-input:checked {
+                            background-color: {{ $headerColor }};
+                            border-color: {{ $headerColor }};
+                        }
+                        .dynamic-donation-form .form-check-input:focus {
+                            border-color: {{ $headerColor }};
+                            box-shadow: 0 0 0 0.25rem {{ $headerColor }}44;
+                        }
+                    </style>
+                    <div class="donation-form-component dynamic-donation-form" style="margin-top: 3rem;">
                         <form method="POST" action="/donation-general" class="donation-form-block">
                             @csrf
                             <div class="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
