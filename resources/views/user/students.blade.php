@@ -284,7 +284,7 @@
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                    <div class="form-text">Email and password will be automatically generated</div>
+                                    <div class="form-text">Credentials are automatically generated for system use only and are not shared or tracked outside the fundraiser.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>

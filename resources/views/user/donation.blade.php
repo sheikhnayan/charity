@@ -1013,7 +1013,7 @@
                         intro.setOptions({
                             steps: [
                                 {
-                                    title: 'Welcome Parents! 👋',
+                                    title: 'Welcome Parents / Guardians! 👋',
                                     intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
                                 },
                                 {

@@ -63,11 +63,18 @@ class AuthController extends Controller
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'email_verified_at ' => now(),
             'password' => Hash::make($request->password),
             'role' => $request->register_as,
             'teacher_id' => $teacher_id,
             'website_id' => $check->id,
         ]);
+
+        $updat = User::find($user->id);
+        $updat->email_verified_at = now();
+        $updat->update();
+
+        // dd($updat);
 
         // Send registration confirmation email for parents and individual registrations
         if (in_array($request->register_as, ['parents', 'individual'])) {

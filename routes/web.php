@@ -497,7 +497,7 @@ Route::get('/product/{slug}', [FrontendController::class, 'productDetails'])->na
 
 Route::post('/custom-form', [FrontendController::class, 'custom_form'])->name('custom-form');
 
-// Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
+Route::post('/donation-general', [FrontendController::class, 'donation_general'])->name('donation-general');
 
 Route::get('/profile/{slug}', [FrontendController::class, 'student'])->name('donate');
 

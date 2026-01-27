@@ -32,6 +32,7 @@ class User extends Authenticatable
         'parent_id',
         'password_reset_code',
         'password_reset_expires',
+        'email_verified_at',
     ];
 
     /**
