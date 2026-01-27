@@ -6189,7 +6189,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <style>
                             .dynamic-auth-container {
                                 background-color: transparent;
-                                padding: 2rem;
+                                /* padding: 2rem; */
                                 border-radius: 0.5rem;
                             }
                             .dynamic-auth-container .form-label {

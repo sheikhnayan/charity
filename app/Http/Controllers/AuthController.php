@@ -81,7 +81,9 @@ class AuthController extends Controller
             }
         }
 
-        $successMessage = "Thanks for signing up! We've received your registration and sent a confirmation email with your submission details. If you don't see it, please check your spam folder.";
+        $successMessage = "Thanks for signing up!
+Your registration has been submitted and is currently under review.
+After approval, you'll receive an email with login access details. Be sure to check your spam or junk folder just in case!";
 
         // If registration came from a page (not login page), redirect back with message
         // Otherwise redirect to login
