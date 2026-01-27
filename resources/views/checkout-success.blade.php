@@ -28,6 +28,203 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<style>
+        /* Sticky Bottom Investment CTA Styles */
+        #sticky-investment-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #000000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            /* border-top: 1px solid #e0e0e0; */
+        }
+
+        .sticky-cta-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            max-width: 100%;
+        }
+
+        .share-price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding-left: 14%;
+
+        }
+
+        .price-value {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .price-label {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .invest-button-section {
+            flex-shrink: 0;
+        }
+
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .sssssttttt{
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        /* Add bottom padding to body to prevent content overlap - Investment websites only */
+        @if($check && $check->isInvestment())
+        body {
+            padding-bottom: 70px;
+        }
+        @endif
+
+        /* Remove bottom padding on desktop */
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+            
+            #sticky-investment-cta {
+                display: none !important;
+            }
+
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 360px) {
+            .sticky-cta-content {
+                padding: 10px 12px;
+            }
+            
+            .price-value {
+                font-size: 16px;
+            }
+            
+            .invest-now-btn {
+                padding: 10px 24px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+
+            footer{
+                margin-bottom: 0px !important;
+            }
+        }
+
+        /* System font classes (for Quill editor content) */
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* Quill size classes (align with Quill editor defaults) */
+    .ql-size-small { font-size: 0.75em !important; }
+    .ql-size-large { font-size: 1.5em !important; }
+    .ql-size-huge  { font-size: 2.5em !important; }
+
+    /* Quill.js Class-based Font Styles for Frontend */
+    .ql-size-6px { font-size: 6px !important; }
+    .ql-size-8px { font-size: 8px !important; }
+    .ql-size-9px { font-size: 9px !important; }
+    .ql-size-10px { font-size: 10px !important; }
+    .ql-size-12px { font-size: 12px !important; }
+    .ql-size-14px { font-size: 14px !important; }
+    .ql-size-16px { font-size: 16px !important; }
+    .ql-size-18px { font-size: 18px !important; }
+    .ql-size-20px { font-size: 20px !important; }
+    .ql-size-24px { font-size: 24px !important; }
+    .ql-size-28px { font-size: 28px !important; }
+    .ql-size-32px { font-size: 32px !important; }
+    .ql-size-36px { font-size: 36px !important; }
+    .ql-size-40px { font-size: 40px !important; }
+    .ql-size-48px { font-size: 48px !important; }
+
+    .ql-font-arial { font-family: Arial, sans-serif !important; }
+    .ql-font-helvetica { font-family: 'Helvetica Neue', Helvetica, sans-serif !important; }
+    .ql-font-times { font-family: 'Times New Roman', Times, serif !important; }
+    .ql-font-georgia { font-family: Georgia, serif !important; }
+    .ql-font-verdana { font-family: Verdana, sans-serif !important; }
+    .ql-font-courier { font-family: 'Courier New', Courier, monospace !important; }
+    .ql-font-outfit { font-family: 'Outfit', sans-serif !important; }
+
+    /* SEO-friendly semantic heading styles for frontend */
+    h1, .ql-header-1 {
+        font-size: 2.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.2 !important;
+        margin: 1rem 0 0.5rem 0 !important;
+    }
+    h2, .ql-header-2 {
+        font-size: 2rem !important;
+        font-weight: bold !important;
+        line-height: 1.3 !important;
+        margin: 0.8rem 0 0.4rem 0 !important;
+    }
+    h3, .ql-header-3 {
+        font-size: 1.75rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.6rem 0 0.3rem 0 !important;
+    }
+    h4, .ql-header-4 {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        line-height: 1.4 !important;
+        margin: 0.5rem 0 0.25rem 0 !important;
+    }
+    h5, .ql-header-5 {
+        font-size: 1.25rem !important;
+        font-weight: bold !important;
+        line-height: 1.5 !important;
+        margin: 0.4rem 0 0.2rem 0 !important;
+    }
+    </style>
 
     <style>
     body{background:#f9fafb;}
