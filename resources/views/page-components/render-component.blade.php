@@ -4715,7 +4715,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                         <div id="studentListContainer" class="row" style="display: flex; flex-wrap: wrap; gap: 20px;">
     @php
-        $students = App\Models\User::limit(10)->whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
+        $students = App\Models\User::whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
     @endphp
 
     @foreach ($students as $student)
