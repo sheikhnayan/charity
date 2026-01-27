@@ -739,7 +739,7 @@ class FrontendController extends Controller
             \Log::error('Payment funnel tracking error in ticket purchase: ' . $e->getMessage());
         }
 
-        return redirect('/authorize/payment/ticket/'.$add->id)->with('success', 'Donation Pending');
+        return redirect('/authorize/payment/ticket/'.$add->id)->with('success', 'Purchase Pending');
     }
 
     public function donation_general(Request $request)
