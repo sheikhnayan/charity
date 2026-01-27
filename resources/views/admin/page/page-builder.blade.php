@@ -3726,10 +3726,7 @@ button a:hover {
             border: inherit !important;
             padding: inherit !important;
             margin: inherit !important;
-            background: inherit !important;
-            background-color: inherit !important;
-            background-image: inherit !important;
-            background-attachment: inherit !important;
+            /* Do NOT override background here; keep inline background-color/image set by editor */
         }
         
         /* Parallax background fix - Enhanced implementation with higher specificity */

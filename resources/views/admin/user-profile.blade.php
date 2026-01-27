@@ -101,7 +101,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
                             @if($user->photo)
-                                <img src="{{ asset($user->photo) }}" alt="{{ $user->fist_name }}" class="profile-avatar">
+                                <img src="{{ asset($user->photo) }}" alt="{{ $user->name }}" class="profile-avatar">
                             @else
                                 <div class="profile-avatar d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                                     <i class="fas fa-user fa-4x text-white"></i>
@@ -109,7 +109,7 @@
                             @endif
                         </div>
                         <div class="col-md">
-                            <h2 class="mb-2">{{ $user->fist_name }} {{ $user->last_name }}</h2>
+                            <h2 class="mb-2">{{ $user->name }} {{ $user->last_name }}</h2>
                             <p class="mb-2">
                                 <i class="fas fa-envelope me-2"></i>{{ $user->email }}
                             </p>
@@ -161,7 +161,7 @@
                             <div class="info-label">
                                 <i class="fas fa-user text-primary"></i> Full Name
                             </div>
-                            <div class="info-value">{{ $user->fist_name }} {{ $user->last_name }}</div>
+                            <div class="info-value">{{ $user->name }} {{ $user->last_name }}</div>
                         </div>
 
                         <div class="info-card">
@@ -187,7 +187,7 @@
                             </div>
                             <div class="info-value">
                                 <a href="{{ route('admin.user.profile', $user->parent->id) }}" class="text-decoration-none">
-                                    {{ $user->parent->fist_name }} {{ $user->parent->last_name }}
+                                    {{ $user->parent->name }} {{ $user->parent->last_name }}
                                 </a>
                             </div>
                         </div>
@@ -214,7 +214,7 @@
                                 @foreach($user->children as $child)
                                     <div class="mb-2">
                                         <a href="{{ route('admin.user.profile', $child->id) }}" class="text-decoration-none">
-                                            {{ $child->fist_name }} {{ $child->last_name }}
+                                            {{ $child->name }} {{ $child->last_name }}
                                         </a>
                                     </div>
                                 @endforeach

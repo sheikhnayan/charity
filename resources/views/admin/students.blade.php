@@ -128,7 +128,7 @@
                                                         <td>{{ $item->id }}</td>
                                                         <td>
                                                             <a href="{{ route('admin.user.profile', $item->id) }}" class="text-decoration-none fw-bold text-primary">
-                                                                {{ $item->fist_name }} {{ $item->last_name }}
+                                                                {{ $item->name }} {{ $item->last_name }}
                                                             </a>
                                                         </td>
                                                         <td>{{ $item->website->name ?? 'N/A' }}</td>

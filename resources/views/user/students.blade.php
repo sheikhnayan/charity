@@ -132,7 +132,7 @@
                                                         <td>{{ $item->id }}</td>
                                                         <td>
                                                             <a href="/users/student/profile/{{ $item->id }}" class="text-decoration-none fw-bold text-primary">
-                                                                {{ $item->fist_name }} {{ $item->last_name }}
+                                                                {{ $item->name }} {{ $item->last_name }}
                                                             </a>
                                                         </td>
                                                         <td>{{ $item->email }}</td>
@@ -143,7 +143,7 @@
                                                         <td>
                                                             @if($item->parent)
                                                                 <a href="/users/student/profile/{{ $item->parent->id }}" class="text-decoration-none text-primary fw-semibold">
-                                                                    {{ $item->parent->fist_name }} {{ $item->parent->last_name }}
+                                                                    {{ $item->parent->name }} {{ $item->parent->last_name }}
                                                                 </a>
                                                             @else
                                                                 <span class="text-muted">N/A</span>

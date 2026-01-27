@@ -171,7 +171,7 @@
                                                 <h5 class="menu-header-title">
                                                     <a href="{{ $user->website->domain }}/profile/{{ $user->id }}-{{ str_replace(' ', '-', $user->name) }}-{{ str_replace(' ', '-', $user->last_name) }}"
                                                         class="link-light">
-                                                        {{ $user->fist_name }} {{ $user->last_name }}
+                                                        {{ $user->name }} {{ $user->last_name }}
                                                     </a>
                                                 </h5>
                                                 <h6 class="menu-header-subtitle text-capitalize">
