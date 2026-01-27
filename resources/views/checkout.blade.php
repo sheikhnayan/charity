@@ -666,7 +666,7 @@
                         </div>
                     </div>
                     @php
-                        dd($item);
+                        dd(\App\Models\User::where('id',$item['id'])->first());
                     @endphp
                     @if(!$loop->last)
                         <div style="height:1px;background:#eee;margin:20px 0;"></div>
