@@ -6091,12 +6091,18 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         {!! $component['html'] !!}
 
                         <script>
-                        // Populate teachers list dynamically
-                        (function() {
+                        // Populate teachers list dynamically - run after DOM is ready
+                        document.addEventListener('DOMContentLoaded', function() {
                             const teachers = @json($teachers ?? []);
+                            console.log('Teachers data:', teachers);
+                            
+                            // Find all teacher select dropdowns
                             const teacherSelects = document.querySelectorAll('select[name="teacher_id"], select#teacher_id');
+                            console.log('Found teacher selects:', teacherSelects.length);
                             
                             teacherSelects.forEach(function(select) {
+                                console.log('Processing select:', select);
+                                
                                 // Clear existing options except the first one
                                 while (select.options.length > 1) {
                                     select.remove(1);
@@ -6108,9 +6114,12 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     option.value = teacher.id;
                                     option.textContent = teacher.name;
                                     select.appendChild(option);
+                                    console.log('Added teacher:', teacher.name);
                                 });
+                                
+                                console.log('Total options now:', select.options.length);
                             });
-                        })();
+                        });
                         
                         // Add global onclick functions for page builder preview
                             if (!window.showLoginFormPreview) {
