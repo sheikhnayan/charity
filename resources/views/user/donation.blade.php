@@ -36,56 +36,112 @@
 }
 
 /* Intro.js Custom Styling */
+.introjs-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
 .introjs-tooltip {
     max-width: 450px;
     border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: white;
 }
 
 .introjs-tooltip-title {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
 }
 
 .introjs-tooltiptext {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.6;
     padding: 15px 20px;
+    color: #333;
+}
+
+.introjs-tooltipbuttons {
+    padding: 0 20px 15px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
 }
 
 .introjs-button {
-    border-radius: 4px;
+    border-radius: 5px;
     padding: 8px 16px;
-    font-weight: 500;
+    font-weight: 600;
     text-shadow: none;
+    cursor: pointer;
+    font-size: 12px;
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .introjs-button:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .introjs-nextbutton {
-    background: #007bff;
-    border: 1px solid #007bff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
 .introjs-prevbutton {
-    background: #6c757d;
-    border: 1px solid #6c757d;
+    background: #e2e8f0;
+    color: #2d3748;
 }
 
 .introjs-donebutton {
-    background: #28a745;
-    border: 1px solid #28a745;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
 }
 
 .introjs-skipbutton {
-    color: #dc3545;
+    color: #e53e3e;
+    background: transparent;
+    padding: 6px 12px;
+    border: 1px solid #e53e3e;
+    border-radius: 5px;
+}
+
+.introjs-skipbutton:hover {
+    background: #fff5f5;
+}
+
+.introjs-skipbutton:disabled,
+.introjs-skipbutton.disabled {
+    display: none !important;
+}
+
+/* Hide skip button on first visit */
+body.tutorial-first-visit .introjs-skipbutton {
+    display: none !important;
 }
 
 .introjs-progressbar {
-    background-color: #007bff;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Mobile responsive */
+@media(max-width: 768px) {
+    .introjs-tooltip {
+        max-width: 90vw;
+    }
+    
+    .introjs-tooltipbuttons {
+        flex-wrap: wrap;
+    }
+    
+    .introjs-button {
+        font-size: 11px;
+        padding: 6px 12px;
+        flex: 1;
+    }
 }
 
 /* Safari-specific fixes for Intro.js */
@@ -164,6 +220,9 @@
                                 </div>
                                 <div class="page-title-actions">
                                     @if(Auth::user()->role == 'parents')
+                                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                        <i class="fas fa-plus me-2"></i>Add Participants
+                                    </button>
                                     <button type="button" class="btn btn-info" onclick="startParentTutorial()" id="tutorialBtn">
                                         <i class="fas fa-graduation-cap me-2"></i>View Tutorial
                                     </button>
@@ -588,8 +647,16 @@
             <!-- DataTables CSS -->
             <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+            <style>
+                .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+                .dataTables_wrapper .dataTables_paginate .paginate_button {
+                    color: #000 !important;
+                }
+            </style>
             <!-- Date Range Picker CSS -->
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+            <!-- Select2 CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
             <!-- DataTables JS -->
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -599,6 +666,8 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <!-- Select2 JS -->
+            <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
             <!-- Moment.js (MUST be before daterangepicker) -->
             <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -1007,13 +1076,20 @@
                 <!-- Parent Tutorial Script -->
                 @if(Auth::user()->role == 'parents')
                 <script>
+                    let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
+                    
                     function startParentTutorial() {
                         const intro = introJs();
+                        
+                        // Add class to body to hide skip button via CSS
+                        if (isFirstVisit) {
+                            document.body.classList.add('tutorial-first-visit');
+                        }
                         
                         intro.setOptions({
                             steps: [
                                 {
-                                    title: 'Welcome Parents / Guardians! 👋',
+                                    title: 'Welcome Parents! 👋',
                                     intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
                                 },
                                 {
@@ -1052,8 +1128,8 @@
                             ],
                             showProgress: true,
                             showBullets: false,
-                            exitOnOverlayClick: false,
-                            exitOnEsc: true,
+                            exitOnOverlayClick: isFirstVisit ? false : true,
+                            exitOnEsc: isFirstVisit ? false : true,
                             nextLabel: 'Next →',
                             prevLabel: '← Back',
                             doneLabel: 'Finish',
@@ -1063,31 +1139,26 @@
                             overlayOpacity: 0.7
                         });
                         
-                        // Safari-specific: Force visibility of floating tooltips
-                        intro.onbeforechange(function(targetElement) {
-                            if (!targetElement) {
-                                // For steps without elements, ensure tooltip is centered
-                                setTimeout(function() {
-                                    const tooltip = document.querySelector('.introjs-tooltip');
-                                    if (tooltip && !targetElement) {
-                                        tooltip.classList.add('introjs-floating');
-                                        tooltip.style.position = 'fixed';
-                                        tooltip.style.left = '50%';
-                                        tooltip.style.top = '50%';
-                                        tooltip.style.transform = 'translate(-50%, -50%)';
-                                        tooltip.style.margin = '0';
-                                        tooltip.style.zIndex = '2147483647';
-                                    }
-                                }, 10);
+                        // Prevent exit on first visit via any method
+                        intro.onbeforeexit(function() {
+                            if (isFirstVisit) {
+                                console.log('Blocking exit on first visit');
+                                return false;
                             }
+                            return true;
                         });
                         
                         intro.oncomplete(function() {
+                            isFirstVisit = false;
+                            document.body.classList.remove('tutorial-first-visit');
                             markTutorialAsSeen();
                         });
                         
                         intro.onexit(function() {
-                            markTutorialAsSeen();
+                            if (!isFirstVisit) {
+                                document.body.classList.remove('tutorial-first-visit');
+                                markTutorialAsSeen();
+                            }
                         });
                         
                         intro.start();

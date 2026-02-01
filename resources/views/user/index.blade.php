@@ -6,6 +6,17 @@
     <div class="content-wrapper">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y">
+        @if(Auth::user()->role == 'parents')
+        <div class="row mb-4">
+            <div class="col-xxl-12">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <i class="fas fa-plus me-2"></i>Add Participants
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
         <div class="row">
         <div class="col-xxl-12 mb-6 order-0">
             <div class="card">
@@ -82,6 +93,70 @@
     </div>
     <!-- / Content -->
 
+    <!-- Add Student Modal -->
+    @if(Auth::user()->role == 'parents')
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('parent.add-student') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <div class="form-text">Credentials are automatically generated for system use only and are not shared or tracked outside the fundraiser.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                            <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
+                                <option value="">Choose a teacher</option>
+                                @if(isset($teachers))
+                                    @foreach($teachers as $teacher)
+                                        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- jQuery (Required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        // Wait for jQuery and Select2 to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if jQuery and Select2 are loaded
+            if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
+                // Initialize Select2 for teacher select with search
+                jQuery('.teacher-select').select2({
+                    placeholder: 'Search and select a teacher',
+                    allowClear: true,
+                    width: '100%'
+                });
+            }
+        });
+    </script>
 
 @endsection
 

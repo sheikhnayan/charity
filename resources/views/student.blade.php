@@ -593,6 +593,50 @@
                                 ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $data->goal ?? 0 }}
                                 <small class="opacity-75 fw-light">raised</small>
                             </span>
+                            
+                            <!-- Share Icons -->
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+                                @php
+                                    $profileUrl = url('/profile/' . $data->id . '-' . str_replace(' ', '-', $data->name) . '-' . str_replace(' ', '-', $data->last_name));
+                                    $shareText = 'Check out ' . $data->name . '\'s fundraising page!';
+                                @endphp
+                                
+                                <!-- Facebook Share -->
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($profileUrl) }}" 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   class="btn btn-sm btn-outline-primary" title="Share on Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                
+                                <!-- Twitter Share -->
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode($profileUrl) }}&text={{ urlencode($shareText) }}" 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   class="btn btn-sm btn-outline-info" title="Share on Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                
+                                <!-- LinkedIn Share -->
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($profileUrl) }}" 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   class="btn btn-sm btn-outline-primary" title="Share on LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                
+                                <!-- WhatsApp Share -->
+                                <a href="https://wa.me/?text={{ urlencode($shareText . ' ' . $profileUrl) }}" 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   class="btn btn-sm btn-outline-success" title="Share on WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                
+                                <!-- Copy Link -->
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="copyToClipboard('{{ $profileUrl }}')" 
+                                        title="Copy profile link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                            
                             @if($data->tshirt_size)
                             <span class="badge bg-info text-dark d-inline-block mt-3 mx-auto">
                                 <i class="fas fa-shirt me-1"></i>T-Shirt Size: {{ $data->tshirt_size }}
@@ -979,5 +1023,26 @@
             table.search(value).draw();
         });
     });
+    
+    // Copy to Clipboard Function
+    function copyToClipboard(text) {
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        // Show success feedback
+        const btn = event.currentTarget;
+        const originalTitle = btn.title;
+        btn.title = 'Copied!';
+        btn.classList.add('active');
+        
+        setTimeout(() => {
+            btn.title = originalTitle;
+            btn.classList.remove('active');
+        }, 2000);
+    }
 </script>
 

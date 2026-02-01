@@ -50,7 +50,6 @@ class WebsiteController extends Controller
             'name' => 'required|string|max:255',
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
-            'google_analytics_id' => 'nullable|string|max:255',
         ];
 
         // Add investment fields for all website types
@@ -67,8 +66,6 @@ class WebsiteController extends Controller
         $validation['invest_amount_title'] = 'nullable|string|max:255';
         $validation['share_price_label'] = 'nullable|string|max:255';
         $validation['minimum_investment_label'] = 'nullable|string|max:255';
-        $validation['contact_emails'] = 'nullable|array';
-        $validation['contact_emails.*'] = 'email';
 
         $request->validate($validation);
 
@@ -81,7 +78,6 @@ class WebsiteController extends Controller
             $add->type = $request->type;
             $add->status = 1;
             $add->custom_sticky_button_text = $request->custom_sticky_button_text;
-            $add->google_analytics_id = $request->google_analytics_id ?? null;
             
             // Add investment fields for all website types
             $add->share_price = $request->share_price ?? null;
@@ -97,7 +93,22 @@ class WebsiteController extends Controller
             $add->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
             $add->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
             $add->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
-            $add->contact_emails = $request->contact_emails ?? [];
+            
+            // Process contact emails with individual preferences
+            $contactEmails = $request->contact_emails ?? [];
+            $processedEmails = [];
+            if (is_array($contactEmails)) {
+                foreach ($contactEmails as $emailItem) {
+                    if (is_array($emailItem) && !empty($emailItem['email'])) {
+                        $processedEmails[] = [
+                            'email' => $emailItem['email'],
+                            'receive_contact_form' => isset($emailItem['receive_contact_form']) && $emailItem['receive_contact_form'] == '1' ? true : false,
+                            'receive_transaction_emails' => isset($emailItem['receive_transaction_emails']) && $emailItem['receive_transaction_emails'] == '1' ? true : false
+                        ];
+                    }
+                }
+            }
+            $add->contact_emails = $processedEmails;
             
             $add->save();
 
@@ -240,9 +251,6 @@ class WebsiteController extends Controller
             'domain' => 'required|string|max:255',
             'type' => 'required|in:fundraiser,investment',
             'status' => 'required|in:0,1',
-            'contact_emails' => 'nullable|array',
-            'contact_emails.*' => 'email',
-            'google_analytics_id' => 'nullable|string|max:255',
         ];
         // Only validate password if present
         if ($request->filled('password')) {
@@ -256,7 +264,6 @@ class WebsiteController extends Controller
         $update->type = $request->type;
         $update->status = $request->status;
         $update->custom_sticky_button_text = $request->custom_sticky_button_text;
-        $update->google_analytics_id = $request->google_analytics_id ?? null;
         // Add investment fields for all website types
         $update->share_price = $request->share_price ?? null;
         $update->investment_title = $request->investment_title ?? null;
@@ -269,9 +276,25 @@ class WebsiteController extends Controller
         $update->additional_information = $request->additional_information ?? null;
         $update->invest_page_title = $request->invest_page_title ?? 'Complete Your Investment';
         $update->invest_amount_title = $request->invest_amount_title ?? 'Select Investment Amount';
-        $update->contact_emails = $request->contact_emails ?? [];
         $update->share_price_label = $request->share_price_label ?? 'SHARE PRICE';
         $update->minimum_investment_label = $request->minimum_investment_label ?? 'MINIMUM INVESTMENT';
+        
+        // Process contact emails with individual preferences
+        $contactEmails = $request->contact_emails ?? [];
+        $processedEmails = [];
+        if (is_array($contactEmails)) {
+            foreach ($contactEmails as $emailItem) {
+                if (is_array($emailItem) && !empty($emailItem['email'])) {
+                    $processedEmails[] = [
+                        'email' => $emailItem['email'],
+                        'receive_contact_form' => isset($emailItem['receive_contact_form']) && $emailItem['receive_contact_form'] == '1' ? true : false,
+                        'receive_transaction_emails' => isset($emailItem['receive_transaction_emails']) && $emailItem['receive_transaction_emails'] == '1' ? true : false
+                    ];
+                }
+            }
+        }
+        $update->contact_emails = $processedEmails;
+        
         $update->sticky_footer_button_bg = $request->sticky_footer_button_bg ?? null;
         $update->sticky_footer_button_text = $request->sticky_footer_button_text ?? null;
         $update->sticky_footer_text_color = $request->sticky_footer_text_color ?? null;

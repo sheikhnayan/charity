@@ -553,6 +553,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/investor-profile', [AuthController::class, 'getInvestorProfile'])->name('investor-profile.get');
 
     Route::get('/donation', [AdminController::class, 'donation']);
+    Route::get('/payments', [AdminController::class, 'payments']);
 
     Route::get('/student',[
         AdminController::class, 'student'
@@ -638,6 +639,9 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     ])->name('admin.student.approve');
 
 Route::group(['prefix' => 'admins', 'middleware' => ['auth',admin::class]], function () {
+    Route::post('/students/mass-approve',[
+        AdminController::class, 'mass_approve_students'
+    ])->name('admin.students.mass-approve');
     Route::get('/', [
         AdminController::class, 'index'
     ])->name('admin.index');

@@ -393,6 +393,29 @@ class AdminController extends Controller
         $data->refund_page_id = $request->refund_page_id ?: null;
         $data->terms_page_id = $request->terms_page_id ?: null;
         
+        // Handle contact section fields
+        if ($request->has('contact_heading')) {
+            $data->contact_heading = $request->contact_heading;
+        }
+        if ($request->has('contact_heading_color')) {
+            $data->contact_heading_color = $request->contact_heading_color;
+        }
+        if ($request->has('contact_heading_font')) {
+            $data->contact_heading_font = $request->contact_heading_font;
+        }
+        if ($request->has('contact_heading_size')) {
+            $data->contact_heading_size = $request->contact_heading_size;
+        }
+        if ($request->has('contact_email_color')) {
+            $data->contact_email_color = $request->contact_email_color;
+        }
+        if ($request->has('contact_email_font')) {
+            $data->contact_email_font = $request->contact_email_font;
+        }
+        if ($request->has('contact_email_size')) {
+            $data->contact_email_size = $request->contact_email_size;
+        }
+        
         // Handle investment-specific fields
         if ($request->has('disclaimer_text')) {
             $data->disclaimer_text = $request->disclaimer_text;
@@ -551,6 +574,26 @@ class AdminController extends Controller
 
     }
 
+    public function payments()
+    {
+        $user = Auth::user();
+
+        if ($user->role == 'parents') {
+            // Get all student IDs that belong to this parent
+            $studentIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
+            
+            // Get transaction records from those students
+            $data = Transaction::where('email', Auth::user()->email)->latest()->get();
+            
+            // Check if parent has seen tutorial
+            $showTutorial = !$user->parent_tutorial_seen;
+
+            return view('user.payments', compact('data', 'showTutorial'));
+        }
+
+        return redirect('/users');
+    }
+
     public function approve($id)
     {
         $data = Donation::find($id);
@@ -612,6 +655,83 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', 'User Approved successfully');
+    }
+
+    public function mass_approve_students(\Illuminate\Http\Request $request)
+    {
+        try {
+            $userIds = $request->input('user_ids', []);
+            
+            // Validate input
+            if (empty($userIds) || !is_array($userIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No users selected for approval.',
+                    'approved' => 0
+                ], 400);
+            }
+
+            $approvedCount = 0;
+            $failedCount = 0;
+            $errors = [];
+
+            // Process each user
+            foreach ($userIds as $userId) {
+                try {
+                    $user = User::find($userId);
+                    
+                    if (!$user) {
+                        $failedCount++;
+                        $errors[] = "User ID {$userId} not found.";
+                        continue;
+                    }
+
+                    $previousStatus = $user->status;
+                    $user->status = 1;
+                    $user->save();
+
+                    // Send approval email only if status was changed from inactive to active
+                    if ($previousStatus != 1 && $user->status == 1) {
+                        try {
+                            $website = Website::find($user->website_id);
+                            if ($website) {
+                                Mail::to($user->email)->send(new \App\Mail\AccountApproval($user, $website));
+                            }
+                        } catch (\Exception $e) {
+                            // Log error but don't count as failure - approval was successful
+                            \Log::warning('Account approval email failed for user ' . $user->id . ': ' . $e->getMessage());
+                        }
+                    }
+
+                    $approvedCount++;
+                } catch (\Exception $e) {
+                    $failedCount++;
+                    $errors[] = "Error approving user {$userId}: " . $e->getMessage();
+                    \Log::error('Mass approval error for user ' . $userId . ': ' . $e->getMessage());
+                }
+            }
+
+            $message = "Successfully approved {$approvedCount} user(s)";
+            if ($failedCount > 0) {
+                $message .= " and {$failedCount} failed.";
+            }
+
+            return response()->json([
+                'success' => true,
+                'approved' => $approvedCount,
+                'failed' => $failedCount,
+                'message' => $message,
+                'errors' => $errors
+            ], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Mass approval error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during mass approval: ' . $e->getMessage(),
+                'approved' => 0
+            ], 500);
+        }
     }
 
     public function student()
@@ -728,7 +848,11 @@ class AdminController extends Controller
             'goal' => 'nullable|numeric|min:0',
             'tshirt_size' => 'nullable|string|max:50',
             'description' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120'
+        ], [
+            'photo.image' => 'The photo must be a valid image file.',
+            'photo.mimes' => 'The photo must be in JPG, PNG, or GIF format.',
+            'photo.max' => 'The photo must not exceed 5MB in size.',
         ]);
         
         // Save the name in both name and fist_name fields
@@ -1393,10 +1517,23 @@ class AdminController extends Controller
     {
         $transaction = Transaction::where('transaction_id', $transactionId)->firstOrFail();
         $website = $transaction->website;
-        
+
         try {
             if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
+            
+            // Send to customer's email
             \Mail::to($transaction->email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
+            
+            // Also send to website owner emails that have transaction preference enabled
+            if ($website) {
+                $websiteEmails = $website->getTransactionEmails();
+                foreach ($websiteEmails as $email) {
+                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
+                        \Mail::to($email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
+                    }
+                }
+            }
+            
             return response()->json(['success' => true, 'message' => 'Invoice email sent successfully!']);
         } catch (\Exception $e) {
             \Log::error('Failed to resend transaction invoice', [

@@ -66,6 +66,7 @@
                                                         Peer to Peer
                                                         (Premium)
                                                     </div> --}}
+                                                    @if(Auth::user()->role != 'parents')
                                                     <div class="fs-6 mt-2">
                                                         <i class="fas fa-link link-info me-1 btn-clipboard" role="button"
                                                             data-clipboard-text="http://{{ $currentWebsite->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"></i>
@@ -73,11 +74,13 @@
                                                             class="link-info"
                                                             target="_blank">{{ $currentWebsite->domain }}/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}</a>
                                                     </div>
+                                                    @endif
                                                 </div>
 
                                                 <div class="widget-content-right">
                                                     @if(Auth::user()->role == 'individual' || Auth::user()->role == 'parents')
                                                         <div class="btn-group d-none d-md-inline-flex" role="group">
+                                                            @if(Auth::user()->role != 'parents')
                                                             <a href="/profile/{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}"
                                                                 class="btn btn-info btn-hover-info" target="_blank">
                                                                 <i class="fa-solid fa-eye fa-fw" aria-hidden="true"></i>
@@ -99,6 +102,7 @@
                                                                 <i class="fa-solid fa-copy fa-fw" aria-hidden="true"></i>
                                                                 <span>Copy URL</span>
                                                             </button>
+                                                            @endif
                                                         </div>
                                                     {{-- @else
                                                         <button type="button" class="btn btn-primary btn-hover-info d-none d-md-inline-flex" onclick="copyProfileUrl()">
@@ -132,6 +136,11 @@
 
                                 </div>
                                 <div class="page-title-actions">
+                                    @if(Auth::user()->role == 'parents')
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                            <i class="fas fa-plus me-2"></i>Add Participants
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -586,10 +595,12 @@
                                             </label>
 
 
-                                            <input class="form-control" type="file" id="photo-image-file" name="photo"
+                                            <input class="form-control @error('photo') is-invalid @enderror" type="file" id="photo-image-file" name="photo"
                                                 accept="image/png, image/gif, image/jpeg, image/jpg">
-                                            <div class="form-text">The recommended format for the profile picture should be
-                                                a square.</div>
+                                            @error('photo')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, PNG, GIF</strong> | Recommended: Square format</div>
                                         </div>
                                     @endif
 
@@ -895,4 +906,69 @@
                     console.error(error);
                 });
         </script>
+
+<!-- Add Student Modal -->
+@if(Auth::user()->role == 'parents')
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('parent.add-student') }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        <div class="form-text">Credentials are automatically generated for system use only and are not shared or tracked outside the fundraiser.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                        <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
+                            <option value="">Choose a teacher</option>
+                            @if(isset($teachers))
+                                @foreach($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- jQuery (Required for Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    // Wait for jQuery and Select2 to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if jQuery and Select2 are loaded
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
+            // Initialize Select2 for teacher select with search
+            jQuery('.teacher-select').select2({
+                placeholder: 'Search and select a teacher',
+                allowClear: true,
+                width: '100%'
+            });
+        }
+    });
+</script>
 @endsection

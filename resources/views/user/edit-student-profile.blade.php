@@ -265,10 +265,12 @@
                                         <label for="photo" class="form-label ">
                                             Upload New Photo
                                         </label>
-                                        <input class="form-control" type="file" id="photo-image-file" name="photo"
+                                        <input class="form-control @error('photo') is-invalid @enderror" type="file" id="photo-image-file" name="photo"
                                             accept="image/png, image/gif, image/jpeg, image/jpg">
-                                        <div class="form-text">The recommended format for the profile picture should be
-                                            a square.</div>
+                                        @error('photo')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, PNG, GIF</strong> | Recommended: Square format</div>
                                     </div>
 
                                 </div>

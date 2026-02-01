@@ -405,19 +405,15 @@ class FrontendController extends Controller
             $website = \App\Models\Website::find($website_id);
         }
 
-        // Collect all emails: contact_emails from website settings + admin email
+        // Get emails that should receive contact form emails (respects individual preferences)
         $emails = [];
-        
-        if ($website && $website->contact_emails) {
-            $contactEmails = is_array($website->contact_emails) ? $website->contact_emails : json_decode($website->contact_emails, true);
-            $emails = array_merge($emails, (array)$contactEmails);
+        if ($website) {
+            $emails = $website->getContactFormEmails();
         }
         
-        // Add admin email (website owner's email)
-        if ($website && $website->user && $website->user->email) {
-            if (!in_array($website->user->email, $emails)) {
-                $emails[] = $website->user->email;
-            }
+        // Add admin email if no emails configured
+        if (empty($emails) && $website && $website->user && $website->user->email) {
+            $emails[] = $website->user->email;
         }
         
         // Fallback if no emails configured

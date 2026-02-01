@@ -166,27 +166,81 @@ label{
                                                                 $emails = $data->contact_emails ?? [];
                                                                 $emailsList = is_array($emails) ? $emails : (is_string($emails) ? json_decode($emails, true) ?? [] : []);
                                                             @endphp
-                                                            @foreach($emailsList as $index => $email)
-                                                                <div class="input-group mb-2">
-                                                                    <input type="email" name="contact_emails[]" class="form-control" value="{{ $email }}" placeholder="Enter email address" required>
-                                                                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
-                                                                        <i class="bx bx-trash"></i>
-                                                                    </button>
+                                                            @foreach($emailsList as $index => $emailItem)
+                                                                @php
+                                                                    // Handle both old format (string) and new format (array with email + preferences)
+                                                                    $email = is_array($emailItem) ? $emailItem['email'] : $emailItem;
+                                                                    $receiveContact = is_array($emailItem) ? ($emailItem['receive_contact_form'] ?? true) : true;
+                                                                    $receiveTransaction = is_array($emailItem) ? ($emailItem['receive_transaction_emails'] ?? true) : true;
+                                                                @endphp
+                                                                <div class="email-item mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+                                                                    <div class="input-group mb-2">
+                                                                        <input type="email" name="contact_emails[{{ $index }}][email]" class="form-control" value="{{ $email }}" placeholder="Enter email address" required>
+                                                                        <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                                                                            <i class="bx bx-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="ms-2">
+                                                                        <div class="form-check form-check-sm">
+                                                                            <input type="checkbox" class="form-check-input" 
+                                                                                   id="receive_contact_{{ $index }}" 
+                                                                                   name="contact_emails[{{ $index }}][receive_contact_form]" 
+                                                                                   value="1" 
+                                                                                   {{ $receiveContact ? 'checked' : '' }}>
+                                                                            <label class="form-check-label small" for="receive_contact_{{ $index }}">
+                                                                                <i class="bx bx-envelope-open me-1"></i>Receive Contact Form Submissions
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-sm">
+                                                                            <input type="checkbox" class="form-check-input" 
+                                                                                   id="receive_transaction_{{ $index }}" 
+                                                                                   name="contact_emails[{{ $index }}][receive_transaction_emails]" 
+                                                                                   value="1" 
+                                                                                   {{ $receiveTransaction ? 'checked' : '' }}>
+                                                                            <label class="form-check-label small" for="receive_transaction_{{ $index }}">
+                                                                                <i class="bx bx-receipt me-1"></i>Receive Transaction & Payment Confirmations
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             @endforeach
                                                             @if(empty($emailsList))
-                                                                <div class="input-group mb-2">
-                                                                    <input type="email" name="contact_emails[]" class="form-control" placeholder="Enter email address" required>
-                                                                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
-                                                                        <i class="bx bx-trash"></i>
-                                                                    </button>
+                                                                <div class="email-item mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+                                                                    <div class="input-group mb-2">
+                                                                        <input type="email" name="contact_emails[0][email]" class="form-control" placeholder="Enter email address" required>
+                                                                        <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                                                                            <i class="bx bx-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="ms-2">
+                                                                        <div class="form-check form-check-sm">
+                                                                            <input type="checkbox" class="form-check-input" 
+                                                                                   id="receive_contact_0" 
+                                                                                   name="contact_emails[0][receive_contact_form]" 
+                                                                                   value="1" 
+                                                                                   checked>
+                                                                            <label class="form-check-label small" for="receive_contact_0">
+                                                                                <i class="bx bx-envelope-open me-1"></i>Receive Contact Form Submissions
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-sm">
+                                                                            <input type="checkbox" class="form-check-input" 
+                                                                                   id="receive_transaction_0" 
+                                                                                   name="contact_emails[0][receive_transaction_emails]" 
+                                                                                   value="1" 
+                                                                                   checked>
+                                                                            <label class="form-check-label small" for="receive_transaction_0">
+                                                                                <i class="bx bx-receipt me-1"></i>Receive Transaction & Payment Confirmations
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             @endif
                                                         </div>
                                                         <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addEmailField()">
                                                             <i class="bx bx-plus me-1"></i>Add Another Email
                                                         </button>
-                                                        <small class="form-text text-muted d-block mt-2">Contact form submissions will be sent to all listed emails in addition to the admin email. Enter at least one email address.</small>
+                                                        <small class="form-text text-muted d-block mt-2">Contact form submissions and transaction emails will be sent to all configured emails based on their individual preferences. Each email can receive contact form submissions, transaction confirmations, both, or neither.</small>
                                                     </div>
                                                 </div>
                                             </div>
@@ -621,24 +675,52 @@ label{
             // Email management functions
             function addEmailField() {
                 const container = document.getElementById('contact_emails_container');
-                const newEmailField = document.createElement('div');
-                newEmailField.className = 'input-group mb-2';
-                newEmailField.innerHTML = `
-                    <input type="email" name="contact_emails[]" class="form-control" placeholder="Enter email address" required>
-                    <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
-                        <i class="bx bx-trash"></i>
-                    </button>
+                const existingItems = container.querySelectorAll('.email-item');
+                const nextIndex = existingItems.length;
+                
+                const newEmailItem = document.createElement('div');
+                newEmailItem.className = 'email-item mb-3 p-3 border rounded';
+                newEmailItem.style.backgroundColor = '#f8f9fa';
+                newEmailItem.innerHTML = `
+                    <div class="input-group mb-2">
+                        <input type="email" name="contact_emails[${nextIndex}][email]" class="form-control" placeholder="Enter email address" required>
+                        <button type="button" class="btn btn-outline-danger btn-remove-email" onclick="removeEmailField(this)">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                    <div class="ms-2">
+                        <div class="form-check form-check-sm">
+                            <input type="checkbox" class="form-check-input" 
+                                   id="receive_contact_${nextIndex}" 
+                                   name="contact_emails[${nextIndex}][receive_contact_form]" 
+                                   value="1" 
+                                   checked>
+                            <label class="form-check-label small" for="receive_contact_${nextIndex}">
+                                <i class="bx bx-envelope-open me-1"></i>Receive Contact Form Submissions
+                            </label>
+                        </div>
+                        <div class="form-check form-check-sm">
+                            <input type="checkbox" class="form-check-input" 
+                                   id="receive_transaction_${nextIndex}" 
+                                   name="contact_emails[${nextIndex}][receive_transaction_emails]" 
+                                   value="1" 
+                                   checked>
+                            <label class="form-check-label small" for="receive_transaction_${nextIndex}">
+                                <i class="bx bx-receipt me-1"></i>Receive Transaction & Payment Confirmations
+                            </label>
+                        </div>
+                    </div>
                 `;
-                container.appendChild(newEmailField);
+                container.appendChild(newEmailItem);
             }
 
             function removeEmailField(button) {
                 const container = document.getElementById('contact_emails_container');
-                const fields = container.querySelectorAll('.input-group');
+                const items = container.querySelectorAll('.email-item');
                 
                 // Only allow removal if there's more than one email field
-                if (fields.length > 1) {
-                    button.closest('.input-group').remove();
+                if (items.length > 1) {
+                    button.closest('.email-item').remove();
                 } else {
                     alert('You must keep at least one contact email.');
                 }

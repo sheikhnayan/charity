@@ -50,16 +50,16 @@
                                     <div>
                                         <span class="text-capitalize">
                                             @if(Auth::user()->role == 'parents')
-                                                My Students
+                                                My Participants
                                             @else
-                                                Users
+                                                Participants
                                             @endif
                                         </span>
                                         <div class="page-title-subheading">
                                             @if(Auth::user()->role == 'parents')
-                                                Manage your students/children.
+                                                Manage your Participants.
                                             @else
-                                                View all Users.
+                                                View all Participants.
                                             @endif
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@
                                 <div class="page-title-actions">
                                     @if(Auth::user()->role == 'parents')
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                                            <i class="fas fa-plus me-2"></i>Add Student
+                                            <i class="fas fa-plus me-2"></i>Add Participants
                                         </button>
                                     @endif
                                 </div>
@@ -172,6 +172,9 @@
                                                             <a href="/users/student/profile/{{ $item->id }}" class="btn btn-sm btn-primary me-1" title="Edit Profile">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
+                                                            <a href="/profile/{{ $item->id }}-{{ str_replace(' ', '-', $item->name) }}-{{ str_replace(' ', '-', $item->last_name) }}" class="btn btn-sm btn-info me-1" title="View Frontend Profile" target="_blank">
+                                                                <i class="fas fa-external-link-alt"></i>
+                                                            </a>
                                                             @if(Auth::user()->role == 'parents' && $item->status != 1)
                                                                 <a href="/admins/student/approve/{{ $item->id }}" class="btn btn-sm btn-success" title="Approve">
                                                                     <i class="fas fa-check"></i>
@@ -202,6 +205,8 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <!-- Select2 JS -->
+            <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
             <script>
                 $(document).ready(function() {
@@ -263,6 +268,25 @@
                     });
                     @endif
                 });
+                
+                // Initialize Select2 when modal is shown
+                $('#addStudentModal').on('shown.bs.modal', function () {
+                    if (!$('.teacher-select').hasClass('select2-hidden-accessible')) {
+                        $('.teacher-select').select2({
+                            placeholder: 'Search and select a teacher',
+                            allowClear: true,
+                            width: '100%',
+                            dropdownParent: $('#addStudentModal')
+                        });
+                    }
+                });
+                
+                // Destroy Select2 when modal is hidden to prevent duplicates
+                $('#addStudentModal').on('hidden.bs.modal', function () {
+                    if ($('.teacher-select').hasClass('select2-hidden-accessible')) {
+                        $('.teacher-select').select2('destroy');
+                    }
+                });
             </script>
             
             <!-- Add Student Modal -->
@@ -273,7 +297,7 @@
                         <form action="{{ route('parent.add-student') }}" method="POST">
                             @csrf
                             <div class="modal-header">
-                                <h5 class="modal-title" id="addStudentModalLabel">Add Student/Child</h5>
+                                <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -288,7 +312,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="teacher_id" name="teacher_id" required>
+                                    <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
                                         <option value="">Choose a teacher</option>
                                         @if(isset($teachers))
                                             @foreach($teachers as $teacher)

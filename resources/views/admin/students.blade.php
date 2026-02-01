@@ -99,9 +99,17 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <!-- Mass Approve Button -->
+                                    <div class="mb-3">
+                                        <button id="massApproveBtn" class="btn btn-success d-none" style="display: none;">
+                                            <i class="fas fa-check-double"></i> Mass Approve Selected
+                                        </button>
+                                        <span id="selectedCount" class="ms-2 text-muted"></span>
+                                    </div>
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
+                                                <th style="width: 40px;"><input type="checkbox" id="selectAll" title="Select All"></th>
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Website</th>
@@ -119,12 +127,17 @@
                                         <tbody>
                                             @if ($data->isEmpty())
                                                 <tr>
-                                                    <td colspan="9" class="text-center">No users found.</td>
+                                                    <td colspan="10" class="text-center">No users found.</td>
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
                                                 @if ($item->role != 'admin')
                                                     <tr>
+                                                        <td>
+                                                            @if ($item->status != 1)
+                                                                <input type="checkbox" class="user-checkbox" value="{{ $item->id }}" data-user-email="{{ $item->email }}">
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $item->id }}</td>
                                                         <td>
                                                             <a href="{{ route('admin.user.profile', $item->id) }}" class="text-decoration-none fw-bold text-primary">
@@ -173,6 +186,12 @@
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+            <style>
+                .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+                .dataTables_wrapper .dataTables_paginate .paginate_button {
+                    color: #000 !important;
+                }
+            </style>
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
             <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
             <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
@@ -180,6 +199,37 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+            <!-- Loading Overlay for Mass Approval -->
+            <div id="loadingOverlay" style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 9999;
+                justify-content: center;
+                align-items: center;
+            ">
+                <div style="
+                    background: white;
+                    padding: 40px;
+                    border-radius: 10px;
+                    text-align: center;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                ">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #007bff; margin-bottom: 20px; display: block;"></i>
+                    <h4 style="margin: 15px 0; color: #333;">Processing Approvals</h4>
+                    <p style="color: #666; margin: 10px 0;">
+                        <strong>Please do not refresh, close, or navigate away from this page.</strong>
+                    </p>
+                    <p style="color: #999; font-size: 14px; margin: 10px 0;" id="processingStatus">
+                        Approving selected users...
+                    </p>
+                </div>
+            </div>
 
             <script>
                 $(document).ready(function() {
@@ -200,6 +250,98 @@
                         } else {
                             table.column(2).search('').draw();
                         }
+                    });
+
+                    // Mass Approval Functionality
+                    let selectedIds = [];
+
+                    // Select All / Deselect All
+                    $('#selectAll').on('change', function() {
+                        if($(this).is(':checked')) {
+                            $('.user-checkbox:not(:checked)').each(function() {
+                                $(this).prop('checked', true);
+                            });
+                        } else {
+                            $('.user-checkbox:checked').each(function() {
+                                $(this).prop('checked', false);
+                            });
+                        }
+                        updateSelectedCount();
+                    });
+
+                    // Individual checkbox change
+                    $(document).on('change', '.user-checkbox', function() {
+                        updateSelectedCount();
+                    });
+
+                    // Update selected count display
+                    function updateSelectedCount() {
+                        selectedIds = [];
+                        $('.user-checkbox:checked').each(function() {
+                            selectedIds.push(parseInt($(this).val()));
+                        });
+                        
+                        const count = selectedIds.length;
+                        const countSpan = $('#selectedCount');
+                        const massApproveBtn = $('#massApproveBtn');
+                        
+                        if(count > 0) {
+                            countSpan.html('<span style="color: #28a745; font-weight: bold;">' + count + ' user(s) selected</span>');
+                            massApproveBtn.removeClass('d-none').show();
+                        } else {
+                            countSpan.html('');
+                            massApproveBtn.addClass('d-none').hide();
+                        }
+
+                        // Update Select All checkbox state
+                        const totalCheckboxes = $('.user-checkbox').length;
+                        const checkedCheckboxes = $('.user-checkbox:checked').length;
+                        $('#selectAll').prop('checked', totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes);
+                    }
+
+                    // Mass Approve Button Click
+                    $('#massApproveBtn').on('click', function() {
+                        if(selectedIds.length === 0) {
+                            alert('Please select at least one user to approve.');
+                            return;
+                        }
+
+                        if(!confirm('Are you sure you want to approve ' + selectedIds.length + ' user(s)?')) {
+                            return;
+                        }
+
+                        // Show loading overlay
+                        $('#loadingOverlay').css('display', 'flex');
+
+                        // Send AJAX request
+                        $.ajax({
+                            url: '/admins/students/mass-approve',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: JSON.stringify({
+                                user_ids: selectedIds
+                            }),
+                            success: function(response) {
+                                $('#loadingOverlay').css('display', 'none');
+                                
+                                if(response.success) {
+                                    alert('Successfully approved ' + response.approved + ' user(s)!');
+                                    // Reload the page to reflect changes
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + response.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                $('#loadingOverlay').css('display', 'none');
+                                console.error('Error:', error);
+                                console.error('Response:', xhr.responseText);
+                                alert('An error occurred while processing approvals. Please try again.');
+                            }
+                        });
                     });
                 });
 

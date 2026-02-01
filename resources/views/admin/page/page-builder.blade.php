@@ -7024,34 +7024,69 @@ break;
                 <form action="/register" method="POST">
                     @csrf
                     <input type="hidden" name="register_as" value="parents">
+                    <style>
+                        .password-toggle-btn {
+                            position: absolute;
+                            right: 12px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            color: #666;
+                            padding: 5px 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: color 0.2s;
+                            z-index: 10;
+                        }
+                        .password-toggle-btn:hover {
+                            color: #2e4053;
+                        }
+                        .required-asterisk {
+                            color: #e74c3c;
+                            font-weight: 700;
+                            margin-left: 0.25rem;
+                        }
+                        .password-input-wrapper {
+                            position: relative;
+                        }
+                    </style>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">First name</label>
+                            <label for="first_name" class="form-label">First name<span class="required-asterisk">*</span></label>
                             <input type="text" class="form-control" id="first_name" name="name">
                         </div>
                         <div class="col-md-4">
-                            <label for="last_name" class="form-label">Last name</label>
+                            <label for="last_name" class="form-label">Last name<span class="required-asterisk">*</span></label>
                             <input type="text" class="form-control" id="last_name" name="last_name">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="email" class="form-label">Email address</label>
+                            <label for="email" class="form-label">Email address<span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control" id="email" name="email">
                         </div>
                         <div class="col-md-4">
-                            <label for="confirm_email" class="form-label">Confirm email address</label>
+                            <label for="confirm_email" class="form-label">Confirm email address<span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control" id="confirm_email" name="confirm_email">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password">
+                            <label for="password" class="form-label">Password<span class="required-asterisk">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-control" id="password" name="password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event, 'password')"><i class="fa-solid fa-eye"></i></button>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label for="confirm_password" class="form-label">Confirm password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                            <label for="confirm_password" class="form-label">Confirm password<span class="required-asterisk">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event, 'confirm_password')"><i class="fa-solid fa-eye"></i></button>
+                            </div>
                         </div>
                     </div>
                     <div class="row justify-content-center">
@@ -7074,12 +7109,15 @@ break;
                     @csrf
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="login_email" class="form-label">Email address</label>
+                            <label for="login_email" class="form-label">Email address<span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control" id="login_email" name="email">
                         </div>
                         <div class="col-md-4">
-                            <label for="login_password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="login_password" name="password">
+                            <label for="login_password" class="form-label">Password<span class="required-asterisk">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" class="form-control" id="login_password" name="password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event, 'login_password')"><i class="fa-solid fa-eye"></i></button>
+                            </div>
                         </div>
                     </div>
                     <div class="row justify-content-center">
@@ -7159,6 +7197,32 @@ break;
                             teacherWrapper.style.display = 'block';
                         } else {
                             teacherWrapper.style.display = 'none';
+                        }
+                    }
+                };
+            }
+            
+            // Add global togglePasswordVisibility function for this component
+            if (!window.togglePasswordVisibility) {
+                window.togglePasswordVisibility = function(event, fieldId) {
+                    event.preventDefault();
+                    const input = document.getElementById(fieldId);
+                    const button = event.currentTarget;
+                    const icon = button.querySelector('i');
+                    
+                    if (input) {
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            if (icon) {
+                                icon.classList.remove('fa-eye');
+                                icon.classList.add('fa-eye-slash');
+                            }
+                        } else {
+                            input.type = 'password';
+                            if (icon) {
+                                icon.classList.remove('fa-eye-slash');
+                                icon.classList.add('fa-eye');
+                            }
                         }
                     }
                 };

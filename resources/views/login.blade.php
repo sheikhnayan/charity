@@ -48,11 +48,29 @@
     .btn-brand:hover { background: #3371da; color: #000; }
     .helper-links { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 0.9rem; }
     .footer-note { margin-top: 24px; font-size: 0.85rem; color: #6b7280; }
+    
+    /* Loader styles */
+    .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .loader-overlay.active { display: flex; }
+    .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #fff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* Success notification styles */
+    .success-notification { position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: flex; align-items: center; gap: 12px; z-index: 10000; animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .success-notification.hide { animation: slideOut 0.3s ease-out forwards; }
+    @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+    
     @media (max-width: 992px) { .brand-panel { display: none; } }
   </style>
 </head>
 
 <body>
+  <!-- Loader -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="spinner"></div>
+  </div>
+
   <div class="login-wrapper">
     <div class="row g-0">
       <div class="col-lg-5 brand-panel">
@@ -144,11 +162,37 @@
   <script>
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
+    const loaderOverlay = document.getElementById('loaderOverlay');
+    
     togglePassword?.addEventListener('click', () => {
       const isText = passwordInput.type === 'text';
       passwordInput.type = isText ? 'password' : 'text';
       togglePassword.innerHTML = isText ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
     });
+    
+    function showLoader() {
+      loaderOverlay.classList.add('active');
+    }
+    
+    function hideLoader() {
+      loaderOverlay.classList.remove('active');
+    }
+    
+    function showSuccessNotification(message = 'Success!') {
+      const notification = document.createElement('div');
+      notification.className = 'success-notification';
+      notification.innerHTML = `
+        <i class="fa fa-check-circle"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.add('hide');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
     const forgotLink = document.getElementById('forgotLink');
     const forgotCard = document.getElementById('forgotCard');
     const forgotStep1 = document.getElementById('forgotStep1');
@@ -158,29 +202,75 @@
     const forgotCode = document.getElementById('forgotCode');
     const newPassword = document.getElementById('newPassword');
     const csrfToken = document.querySelector('meta[name=csrf-token]')?.content;
+    
     function showAlert(type, message) { forgotAlert.innerHTML = `<div class="alert alert-${type}">${message}</div>`; }
-    forgotLink?.addEventListener('click', (e) => { e.preventDefault(); forgotCard.classList.toggle('d-none'); forgotAlert.innerHTML = ''; });
+    
+    forgotLink?.addEventListener('click', (e) => { 
+      e.preventDefault(); 
+      forgotCard.classList.toggle('d-none'); 
+      forgotAlert.innerHTML = ''; 
+    });
+    
     document.getElementById('forgotRequestBtn')?.addEventListener('click', async () => {
       const email = (forgotEmail.value || '').trim();
       if (!email) { showAlert('warning', 'Please enter your email.'); return; }
+      
+      showLoader();
       try {
-        const res = await fetch('/ajax/ticket-auth/forgot-request', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ email }) });
+        const res = await fetch('/ajax/ticket-auth/forgot-request', { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, 
+          body: JSON.stringify({ email }) 
+        });
         const data = await res.json();
-        if (data.success) { showAlert('success', 'Verification code sent to your email.'); forgotStep1.classList.add('d-none'); forgotStep2.classList.remove('d-none'); }
+        hideLoader();
+        
+        if (data.success) { 
+          showAlert('success', 'Verification code sent to your email.'); 
+          forgotStep1.classList.add('d-none'); 
+          forgotStep2.classList.remove('d-none'); 
+        }
         else { showAlert('danger', data.message || 'Failed to send code.'); }
-      } catch (e) { showAlert('danger', 'Network error. Please try again.'); }
+      } catch (e) { 
+        hideLoader();
+        showAlert('danger', 'Network error. Please try again.'); 
+      }
     });
+    
     document.getElementById('forgotResetBtn')?.addEventListener('click', async () => {
       const email = (forgotEmail.value || '').trim();
       const code = (forgotCode.value || '').trim();
       const password = (newPassword.value || '').trim();
       if (!email || !code || !password) { showAlert('warning', 'Please fill all fields.'); return; }
+      
+      showLoader();
       try {
-        const res = await fetch('/ajax/ticket-auth/forgot-reset', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ email, code, password }) });
+        const res = await fetch('/ajax/ticket-auth/forgot-reset', { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, 
+          body: JSON.stringify({ email, code, password }) 
+        });
         const data = await res.json();
-        if (data.success) { showAlert('success', 'Password reset successful. You can now log in.'); forgotCard.classList.add('d-none'); }
+        hideLoader();
+        
+        if (data.success) { 
+          showSuccessNotification('Password reset successful!');
+          showAlert('success', 'Password reset successful. You can now log in.'); 
+          setTimeout(() => {
+            forgotCard.classList.add('d-none');
+            forgotStep1.classList.remove('d-none');
+            forgotStep2.classList.add('d-none');
+            forgotEmail.value = '';
+            forgotCode.value = '';
+            newPassword.value = '';
+            forgotAlert.innerHTML = '';
+          }, 2000);
+        }
         else { showAlert('danger', data.message || 'Failed to reset password.'); }
-      } catch (e) { showAlert('danger', 'Network error. Please try again.'); }
+      } catch (e) { 
+        hideLoader();
+        showAlert('danger', 'Network error. Please try again.'); 
+      }
     });
   </script>
 </body>

@@ -32,7 +32,14 @@ class Footer extends Model
         'investment_disclaimer',
         'privacy_page_id',
         'refund_page_id',
-        'terms_page_id'
+        'terms_page_id',
+        'contact_heading',
+        'contact_heading_color',
+        'contact_heading_font',
+        'contact_heading_size',
+        'contact_email_color',
+        'contact_email_font',
+        'contact_email_size'
     ];
 
     /**

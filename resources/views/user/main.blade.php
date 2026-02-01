@@ -374,14 +374,22 @@
               @if (Auth::user()->role != 'user')
                 <!-- Dashboard -->
                 <li class="menu-header small text-uppercase ">
-                    <span class="menu-header-text">Dashboard</span>
+                    <span class="menu-header-text">
+                        Dashboard
+                    </span>
                 </li>
                 <li class="menu-item {{ request()->is('users') ? 'active' : '' }}">
                     <a
                     href="/users"
                     class="menu-link">
                     <i class="menu-icon tf-icons bx bx-home"></i>
-                    <div class="text-truncate" data-i18n="Email">Dashboard</div>
+                    <div class="text-truncate" data-i18n="Email">
+                        @if(Auth::user()->role == 'parents')
+                        Support
+                        @else
+                        Dashboard
+                        @endif
+                    </div>
                     </a>
                 </li>
                 <!-- Information -->
@@ -393,7 +401,13 @@
                     href="/users/profile"
                     class="menu-link">
                     <i class="menu-icon tf-icons bx bx-user-circle"></i>
-                    <div class="text-truncate" data-i18n="Email">Profile</div>
+                    <div class="text-truncate" data-i18n="Email">
+                        @if(Auth::user()->role == 'parents')
+                        Your Profile
+                        @else
+                        Profile
+                        @endif
+                    </div>
                     </a>
                 </li>
                 @if (Auth::user()->role == 'user' || Auth::user()->role == 'group_leader' || Auth::user()->role == 'parent' || Auth::user()->role == 'Parents' || Auth::user()->role == 'parents')
@@ -406,7 +420,7 @@
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
                         @elseif (Auth::user()->role == 'parents')
-                        Student / Participant
+                        Participant
                         @else
                         Group Member
                         @endif
@@ -418,7 +432,7 @@
 
 
               <!-- Reports -->
-            @if(Auth::user()->role != 'parents')
+              @if (Auth::user()->role != 'parents')
             <li class="menu-header small text-uppercase ">
                 <span class="menu-header-text">Reports</span>
               </li>
@@ -430,7 +444,22 @@
                   <div class="text-truncate" data-i18n="Email">Transactions</div>
                 </a>
               </li>
-            @endif
+              @endif
+
+              <!-- Payments (Parents Only) -->
+              @if (Auth::user()->role == 'parents')
+              <li class="menu-header small text-uppercase ">
+                <span class="menu-header-text">Payments</span>
+              </li>
+              <li class="menu-item {{ request()->is('users/payments') ? 'active' : '' }}">
+                <a
+                  href="/users/payments"
+                  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                  <div class="text-truncate" data-i18n="Email">Payments</div>
+                </a>
+              </li>
+              @endif
             @if (Auth::user()->role == 'user')
                 <!-- Setting -->
                 <li class="menu-header small text-uppercase ">
@@ -602,11 +631,8 @@
             </div>
 
             <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
-              <!-- Left Side: Sidebar Toggle & Welcome -->
+              <!-- Left Side: Welcome -->
               <div class="d-flex align-items-center gap-3">
-                <button id="sidebarToggle" class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
-                  <i class="bx bx-menu"></i>
-                </button>
                 <div>
                   <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
                   <small style="color: rgba(0,0,0,0.5)">Welcome back — insights updated</small>
@@ -704,11 +730,9 @@
       (function(){
         const body = document.body;
         const darkToggle = document.getElementById('darkToggle');
-        const sidebarToggle = document.getElementById('sidebarToggle');
         const themeSelect = document.getElementById('themeSelect');
-        const sidebar = document.querySelector('.layout-menu');
 
-        if (!darkToggle || !sidebarToggle || !themeSelect || !sidebar) {
+        if (!darkToggle || !themeSelect) {
           console.warn('Modern theme controls not found on this page');
           return;
         }
@@ -723,10 +747,6 @@
           const theme = localStorage.getItem('ui:theme') || 'theme-purple';
           body.classList.add(theme);
           themeSelect.value = theme;
-          
-          if (localStorage.getItem('ui:sidebarCollapsed') === '1') {
-            sidebar.classList.add('collapsed');
-          }
         } catch(e) {
           console.error('Failed to load UI preferences:', e);
         }
@@ -745,12 +765,6 @@
           }
         });
 
-        // Sidebar toggle
-        sidebarToggle.addEventListener('click', () => {
-          sidebar.classList.toggle('collapsed');
-          localStorage.setItem('ui:sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
-        });
-
         // Theme select
         themeSelect.addEventListener('change', (e) => {
           // Remove existing theme classes
@@ -758,16 +772,6 @@
           document.body.classList.add(e.target.value);
           localStorage.setItem('ui:theme', e.target.value);
         });
-
-        // Keyboard shortcuts disabled
-        // document.addEventListener('keydown', (e) => {
-        //   // Only if not in an input/textarea
-        //   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-          
-        //   if (e.key === 'd') darkToggle.click();
-        //   if (e.key === 's') sidebarToggle.click();
-        //   if (e.key === 't') themeSelect.focus();
-        // });
       })();
     </script>
 

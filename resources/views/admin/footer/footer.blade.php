@@ -304,6 +304,143 @@
                                     </select>
                                 </div>
 
+                                <!-- Contact Section Fields -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="mb-3">Contact Us Section</h5>
+                                    <small class="text-muted">Customize the "Contact Us" section heading and email styling in the footer</small>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="contact_heading" class="form-label">
+                                        Contact Section Heading Text
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Customize the text for the 'Contact Us' heading in the footer."></i>
+                                    <input type="text" name="contact_heading" value="{{ $data->contact_heading ?? 'Contact Us' }}" class="form-control">
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_heading_color" class="form-label">
+                                        Heading Text Color
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose a color for the 'Contact Us' heading text."></i>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="contact_heading_color_picker"
+                                            value="{{ $data->contact_heading_color ?? '#ffffff' }}" title="Choose color"
+                                            style="max-width: 3rem;">
+                                        <input type="text" class="form-control" id="contact_heading_color" name="contact_heading_color"
+                                            value="{{ $data->contact_heading_color ?? '#ffffff' }}" placeholder="#ffffff or color name">
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const colorInput = document.getElementById('contact_heading_color_picker');
+                                            const textInput = document.getElementById('contact_heading_color');
+                                            colorInput.addEventListener('input', function() {
+                                                textInput.value = colorInput.value;
+                                            });
+                                            textInput.addEventListener('input', function() {
+                                                const val = textInput.value.trim();
+                                                if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                    colorInput.value = val;
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_heading_font" class="form-label">
+                                        Heading Font Family
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose a font for the 'Contact Us' heading text."></i>
+                                    <select class="form-select" name="contact_heading_font">
+                                        <option value="outfit" {{ ($data->contact_heading_font ?? 'outfit') == 'outfit' ? 'selected' : '' }}>Outfit</option>
+                                        <option value="arial" {{ ($data->contact_heading_font ?? 'outfit') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->contact_heading_font ?? 'outfit') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->contact_heading_font ?? 'outfit') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->contact_heading_font ?? 'outfit') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->contact_heading_font ?? 'outfit') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->contact_heading_font ?? 'outfit') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        @if(isset($customFonts) && $customFonts->count() > 0)
+                                            @foreach($customFonts as $font)
+                                                <option value="{{ $font->font_family }}" {{ ($data->contact_heading_font ?? 'outfit') == $font->font_family ? 'selected' : '' }}>{{ $font->font_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_heading_size" class="form-label">
+                                        Heading Font Size
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose the font size for the 'Contact Us' heading."></i>
+                                    <input type="text" name="contact_heading_size" value="{{ $data->contact_heading_size ?? '14px' }}" class="form-control" placeholder="e.g., 14px, 16px, 18px">
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_email_color" class="form-label">
+                                        Email Text Color
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose a color for the email address text below the heading."></i>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="contact_email_color_picker"
+                                            value="{{ $data->contact_email_color ?? '#ffffff' }}" title="Choose color"
+                                            style="max-width: 3rem;">
+                                        <input type="text" class="form-control" id="contact_email_color" name="contact_email_color"
+                                            value="{{ $data->contact_email_color ?? '#ffffff' }}" placeholder="#ffffff or color name">
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const colorInput = document.getElementById('contact_email_color_picker');
+                                            const textInput = document.getElementById('contact_email_color');
+                                            colorInput.addEventListener('input', function() {
+                                                textInput.value = colorInput.value;
+                                            });
+                                            textInput.addEventListener('input', function() {
+                                                const val = textInput.value.trim();
+                                                if (/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(val)) {
+                                                    colorInput.value = val;
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_email_font" class="form-label">
+                                        Email Font Family
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose a font for the email address text."></i>
+                                    <select class="form-select" name="contact_email_font">
+                                        <option value="outfit" {{ ($data->contact_email_font ?? 'outfit') == 'outfit' ? 'selected' : '' }}>Outfit</option>
+                                        <option value="arial" {{ ($data->contact_email_font ?? 'outfit') == 'arial' ? 'selected' : '' }}>Arial</option>
+                                        <option value="helvetica" {{ ($data->contact_email_font ?? 'outfit') == 'helvetica' ? 'selected' : '' }}>Helvetica</option>
+                                        <option value="times" {{ ($data->contact_email_font ?? 'outfit') == 'times' ? 'selected' : '' }}>Times New Roman</option>
+                                        <option value="georgia" {{ ($data->contact_email_font ?? 'outfit') == 'georgia' ? 'selected' : '' }}>Georgia</option>
+                                        <option value="verdana" {{ ($data->contact_email_font ?? 'outfit') == 'verdana' ? 'selected' : '' }}>Verdana</option>
+                                        <option value="courier" {{ ($data->contact_email_font ?? 'outfit') == 'courier' ? 'selected' : '' }}>Courier New</option>
+                                        @if(isset($customFonts) && $customFonts->count() > 0)
+                                            @foreach($customFonts as $font)
+                                                <option value="{{ $font->font_family }}" {{ ($data->contact_email_font ?? 'outfit') == $font->font_family ? 'selected' : '' }}>{{ $font->font_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="contact_email_size" class="form-label">
+                                        Email Font Size
+                                    </label>
+                                    <i role="button" class="fa-solid fa-circle-info text-info btn-modal-info" 
+                                        data-description="Choose the font size for the email address."></i>
+                                    <input type="text" name="contact_email_size" value="{{ $data->contact_email_size ?? '14px' }}" class="form-control" placeholder="e.g., 14px, 16px, 18px">
+                                </div>
+
                                 <!-- Investment Website Specific Fields -->
                                 <div class="col-12 mt-4">
                                     <h5 class="mb-3">Investment Website Content</h5>

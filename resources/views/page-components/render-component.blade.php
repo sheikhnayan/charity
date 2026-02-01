@@ -3674,44 +3674,61 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
              
             <div class="press-cards-slider" style="{{ $styleStr }}">
                 <style>
+                    .press-cards-slider {
+                        position: relative;
+                        padding: 0 70px;
+                    }
+                    
+                    #{{ $sliderId }}-wrapper {
+                        position: relative;
+                    }
+                    
                     #{{ $sliderId }} .owl-nav {
+                        display: none;
+                    }
+                    
+                    .custom-owl-nav-{{ $sliderId }} {
                         position: absolute;
                         top: 50%;
                         transform: translateY(-50%);
                         width: 100%;
-                        z-index: 10;
+                        pointer-events: none;
+                        z-index: 100;
                     }
                     
-                    #{{ $sliderId }} .owl-prev,
-                    #{{ $sliderId }} .owl-next {
+                    .custom-owl-nav-{{ $sliderId }} button {
                         position: absolute;
-                        width: 48px;
-                        height: 48px;
-                        background: {{ $arrowBackgroundColor }};
-                        color: {{ $arrowColor }};
+                        width: 50px;
+                        height: 50px;
+                        background: {{ $arrowBackgroundColor }} !important;
+                        color: {{ $arrowColor }} !important;
                         border: none;
                         border-radius: 50%;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 20px;
+                        font-size: 28px;
+                        font-weight: bold;
                         cursor: pointer;
                         transition: all 0.3s ease;
-                        opacity: 0.8;
+                        opacity: 0.95;
+                        pointer-events: all;
+                        line-height: 1;
+                        padding: 0;
                     }
                     
-                    #{{ $sliderId }} .owl-prev:hover,
-                    #{{ $sliderId }} .owl-next:hover {
+                    .custom-owl-nav-{{ $sliderId }} button:hover {
                         opacity: 1;
                         transform: scale(1.1);
+                        background: {{ $arrowBackgroundColor }} !important;
                     }
                     
-                    #{{ $sliderId }} .owl-prev {
-                        left: -24px;
+                    .custom-owl-nav-{{ $sliderId }} .custom-prev {
+                        left: -60px;
                     }
                     
-                    #{{ $sliderId }} .owl-next {
-                        right: -24px;
+                    .custom-owl-nav-{{ $sliderId }} .custom-next {
+                        right: -60px;
                     }
                     
                     #{{ $sliderId }} .owl-dots {
@@ -3735,18 +3752,22 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     }
                     
                     @media (max-width: 768px) {
-                        #{{ $sliderId }} .owl-prev,
-                        #{{ $sliderId }} .owl-next {
+                        .press-cards-slider {
+                            padding: 0;
+                        }
+                        
+                        .custom-owl-nav-{{ $sliderId }} {
                             display: none;
                         }
 
                         .inner-section-frontend {
-                        padding: 0 !important;
-                    }
+                            padding: 0 !important;
+                        }
                     }
                 </style>
                 
-                <div class="owl-carousel owl-theme" id="{{ $sliderId }}">
+                <div id="{{ $sliderId }}-wrapper">
+                    <div class="owl-carousel owl-theme" id="{{ $sliderId }}">
                     @foreach($cards as $card)
                         <div class="press-card-item">
                             <div class="press-card" style="
@@ -3839,6 +3860,13 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                     @endforeach
                 </div>
+                
+                <!-- Custom Navigation Arrows -->
+                <div class="custom-owl-nav-{{ $sliderId }}">
+                    <button class="custom-prev" onclick="$('#{{ $sliderId }}').trigger('prev.owl.carousel')">‹</button>
+                    <button class="custom-next" onclick="$('#{{ $sliderId }}').trigger('next.owl.carousel')">›</button>
+                </div>
+            </div>
             </div>
             
             <script>
@@ -3847,24 +3875,20 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         items: {{ $slidesToShow }},
                         loop: {{ count($cards) > $slidesToShow ? 'true' : 'false' }},
                         margin: 0,
-                        nav: true,
+                        nav: false,
                         dots: true,
                         autoplay: {{ $autoplay ? 'true' : 'false' }},
                         autoplayTimeout: {{ $autoplaySpeed }},
                         autoplayHoverPause: true,
-                        navText: ['<', '>'],
                         responsive: {
                             0: { 
-                                items: 1,
-                                nav: false
+                                items: 1
                             },
                             600: { 
-                                items: {{ min(2, $slidesToShow) }},
-                                nav: {{ $slidesToShow > 2 ? 'true' : 'false' }}
+                                items: {{ min(2, $slidesToShow) }}
                             },
                             1000: { 
-                                items: {{ $slidesToShow }},
-                                nav: true
+                                items: {{ $slidesToShow }}
                             }
                         }
                     });
@@ -4727,8 +4751,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
                             <div class="row lsls gy-3" style="padding: 0.5rem;">
                                 <div class="col-lg-2 d-flex align-items-center">
-                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
-                                        <img src="{{ asset($student->photo) }}" style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
+                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden; width: 80px; height: 80px;">
+                                        <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                                     </div>
                                 </div>
 
@@ -4759,16 +4783,16 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             </div>
                         </a>
                         <div style="position: absolute; bottom: 10px; left: 0; right: 0; display: flex; gap: 10px; padding: 0 10px; justify-content: center;">
-                            <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" class="btn btn-sm btn-primary" style="flex: 1;" target="_blank">
-                                <i class="fa fa-heart me-2"></i>Donate
+                            <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" class="btn btn-sm btn-primary" style="flex: 1; font-size: clamp(0.65rem, 1.8vw, 0.875rem); padding: 0.35rem 0.5rem;" target="_blank">
+                                <i class="fa fa-heart me-1"></i>Donate Now
                             </a>
                             <button class="btn btn-sm btn-outline-primary add-student-to-cart" 
                                 data-item-id="{{ $student->id }}"
                                 data-item-type="student"
                                 data-item-name="{{ $student->name }}"
                                 data-item-price="0"
-                                style="flex: 1;">
-                                <i class="fa fa-shopping-cart me-2"></i>Wish to Donate
+                                style="flex: 1; font-size: clamp(0.65rem, 1.8vw, 0.875rem); padding: 0.35rem 0.5rem; white-space: nowrap;">
+                                <i class="fa fa-shopping-cart me-1"></i>Add to Donation
                             </button>
                         </div>
                     </div>
@@ -5672,6 +5696,29 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         pointer-events: none;
                     }
                     
+                    .password-toggle-btn {
+                        position: absolute;
+                        right: 1rem;
+                        top: 2.5rem;
+                        background: none;
+                        border: none;
+                        color: #666;
+                        cursor: pointer;
+                        padding: 0.5rem;
+                        transition: color 0.3s ease;
+                        font-size: 1.1rem;
+                    }
+                    
+                    .password-toggle-btn:hover {
+                        color: {{ $buttonColor }};
+                    }
+                    
+                    .required-asterisk {
+                        color: #e74c3c;
+                        font-weight: 700;
+                        margin-left: 0.25rem;
+                    }
+                    
                     .modern-btn-primary {
                         background: linear-gradient(135deg, {{ $buttonColor }}, {{ $buttonColor }}dd);
                         border: none;
@@ -5824,6 +5871,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="first_name">
                                                 <i class="fa-solid fa-user"></i> First name
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="text" class="form-control" id="first_name" name="name" required>
                                         </div>
@@ -5832,6 +5880,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="last_name">
                                                 <i class="fa-solid fa-user"></i> Last name
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="text" class="form-control" id="last_name" name="last_name" required>
                                         </div>
@@ -5843,6 +5892,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="email">
                                                 <i class="fa-solid fa-envelope"></i> Email address
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="email" name="email" required>
                                         </div>
@@ -5851,6 +5901,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="confirm_email">
                                                 <i class="fa-solid fa-envelope-circle-check"></i> Confirm email
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="confirm_email" name="confirm_email" required>
                                         </div>
@@ -5862,6 +5913,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="register_as">
                                                 <i class="fa-solid fa-user-tag"></i> Register as
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <select class="form-select" id="register_as" name="register_as" onchange="toggleRegistrationFields(this)" required>
                                                 <option value="individual">Individual</option>
@@ -5873,8 +5925,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group teacher-select-animate">
                                             <label for="teacher_id">
                                                 <i class="fa-solid fa-chalkboard-teacher"></i> Select Teacher
+                                                <span class="required-asterisk">*</span>
                                             </label>
-                                            <select class="form-select" id="teacher_id" name="teacher_id">
+                                            <select class="form-select" id="teacher_id" name="teacher_id" required>
                                                 <option value="">Choose your teacher</option>
                                                 @if(isset($teachers))
                                                     @foreach($teachers as $teacher)
@@ -5891,16 +5944,24 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="password">
                                                 <i class="fa-solid fa-lock"></i> Password
+                                                <span class="required-asterisk">*</span>
                                             </label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <input type="password" class="form-control password-input" id="password" name="password" required>
+                                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('password')">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="modern-form-group">
                                             <label for="confirm_password">
                                                 <i class="fa-solid fa-lock-keyhole"></i> Confirm password
+                                                <span class="required-asterisk">*</span>
                                             </label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                            <input type="password" class="form-control password-input" id="confirm_password" name="confirm_password" required>
+                                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirm_password')">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -5931,6 +5992,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="login_email">
                                                 <i class="fa-solid fa-envelope"></i> Email address
+                                                <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="login_email" name="email" required>
                                         </div>
@@ -5939,8 +6001,12 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <div class="modern-form-group">
                                             <label for="login_password">
                                                 <i class="fa-solid fa-lock"></i> Password
+                                                <span class="required-asterisk">*</span>
                                             </label>
-                                            <input type="password" class="form-control" id="login_password" name="password" required>
+                                            <input type="password" class="form-control password-input" id="login_password" name="password" required>
+                                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login_password')">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -5963,6 +6029,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     </div>
 
                     <script>
+                        // Toggle password visibility function
+                        function togglePasswordVisibility(fieldId) {
+                            const passwordInput = document.getElementById(fieldId);
+                            const toggleBtn = event.currentTarget;
+                            const icon = toggleBtn.querySelector('i');
+                            
+                            if (passwordInput.type === 'password') {
+                                passwordInput.type = 'text';
+                                icon.classList.remove('fa-eye');
+                                icon.classList.add('fa-eye-slash');
+                            } else {
+                                passwordInput.type = 'password';
+                                icon.classList.remove('fa-eye-slash');
+                                icon.classList.add('fa-eye');
+                            }
+                        }
+                        
                         // Define toggleRegistrationFields globally first with smooth animations
                         if (!window.toggleRegistrationFields) {
                             window.toggleRegistrationFields = function(selectElement) {
@@ -6092,6 +6175,35 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             @else
                 {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
+                <style>
+                    .legacy-auth-form .password-toggle-btn {
+                        position: absolute;
+                        right: 12px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        color: #666;
+                        padding: 5px 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.2s;
+                        z-index: 10;
+                    }
+                    .legacy-auth-form .password-toggle-btn:hover {
+                        color: #2e4053;
+                    }
+                    .legacy-auth-form .required-asterisk {
+                        color: #e74c3c;
+                        font-weight: 700;
+                        margin-left: 0.25rem;
+                    }
+                    .legacy-auth-form .password-input-wrapper {
+                        position: relative;
+                    }
+                </style>
                 <div style="{{ $styleStr }} margin-top: 3rem;" class="legacy-auth-form">
                     @if(isset($component['html']) && !empty($component['html']))
                         <script>console.log('📋 TEACHERS COUNT:', {{ count($teachers) }});</script>
@@ -6189,6 +6301,27 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     if (titleElement) titleElement.textContent = 'Register';
                                 };
                             }
+                            
+                            // Add togglePasswordVisibility function for legacy auth-form
+                            if (!window.togglePasswordVisibility) {
+                                window.togglePasswordVisibility = function(fieldId) {
+                                    const passwordInput = document.getElementById(fieldId);
+                                    const toggleBtn = event.currentTarget;
+                                    const icon = toggleBtn.querySelector('i');
+                                    
+                                    if (passwordInput && icon) {
+                                        if (passwordInput.type === 'password') {
+                                            passwordInput.type = 'text';
+                                            icon.classList.remove('fa-eye');
+                                            icon.classList.add('fa-eye-slash');
+                                        } else {
+                                            passwordInput.type = 'password';
+                                            icon.classList.remove('fa-eye-slash');
+                                            icon.classList.add('fa-eye');
+                                        }
+                                    }
+                                };
+                            }
                     </script>
                     @else
                         {{-- Default auth form using dynamic properties from component --}}
@@ -6250,32 +6383,38 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <input type="hidden" name="register_as" value="parents">
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="first_name" class="form-label">First name</label>
+                                                <label for="first_name" class="form-label">First name<span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="first_name" name="name">
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="last_name" class="form-label">Last name</label>
+                                                <label for="last_name" class="form-label">Last name<span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="last_name" name="last_name">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="email" class="form-label">Email address</label>
+                                                <label for="email" class="form-label">Email address<span class="required-asterisk">*</span></label>
                                                 <input type="email" class="form-control" id="email" name="email">
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="confirm_email" class="form-label">Confirm email address</label>
+                                                <label for="confirm_email" class="form-label">Confirm email address<span class="required-asterisk">*</span></label>
                                                 <input type="email" class="form-control" id="confirm_email" name="confirm_email">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="password" class="form-label">Password</label>
-                                                <input type="password" class="form-control" id="password" name="password">
+                                                <label for="password" class="form-label">Password<span class="required-asterisk">*</span></label>
+                                                <div class="password-input-wrapper">
+                                                    <input type="password" class="form-control" id="password" name="password">
+                                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('password')"><i class="fa-solid fa-eye"></i></button>
+                                                </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="confirm_password" class="form-label">Confirm password</label>
-                                                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                                <label for="confirm_password" class="form-label">Confirm password<span class="required-asterisk">*</span></label>
+                                                <div class="password-input-wrapper">
+                                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirm_password')"><i class="fa-solid fa-eye"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
@@ -6303,6 +6442,27 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     teacherWrapper.style.display = 'none';
                                 }
                             }
+                        }
+                        
+                        // Global togglePasswordVisibility function for default auth-form
+                        if (!window.togglePasswordVisibility) {
+                            window.togglePasswordVisibility = function(fieldId) {
+                                const passwordInput = document.getElementById(fieldId);
+                                const toggleBtn = event.currentTarget;
+                                const icon = toggleBtn.querySelector('i');
+                                
+                                if (passwordInput && icon) {
+                                    if (passwordInput.type === 'password') {
+                                        passwordInput.type = 'text';
+                                        icon.classList.remove('fa-eye');
+                                        icon.classList.add('fa-eye-slash');
+                                    } else {
+                                        passwordInput.type = 'password';
+                                        icon.classList.remove('fa-eye-slash');
+                                        icon.classList.add('fa-eye');
+                                    }
+                                }
+                            };
                         }
                         </script>
                     @endif
@@ -6896,11 +7056,64 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
             <div class="ticket-carousel-component" style="{{ $styleStr }}">
+                <style>
+                    .ticket-carousel-wrapper-{{ $sliderId }} {
+                        position: relative;
+                    }
+                    #{{ $sliderId }} .owl-nav { display: none; }
+                    .custom-nav-{{ $sliderId }} {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 100%;
+                        pointer-events: none;
+                        z-index: 100;
+                        left: 0;
+                        right: 0;
+                    }
+                    .custom-nav-{{ $sliderId }} button {
+                        position: absolute;
+                        width: 45px;
+                        height: 45px;
+                        background: rgba(0,0,0,0.6) !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 50%;
+                        font-size: 24px;
+                        font-weight: normal;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        opacity: 0.9;
+                        pointer-events: all;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        line-height: 1;
+                        padding: 0;
+                    }
+                    .custom-nav-{{ $sliderId }} button:hover {
+                        opacity: 1;
+                        transform: scale(1.1);
+                        background: rgba(0,0,0,0.8) !important;
+                    }
+                    .custom-nav-{{ $sliderId }} .prev { left: 15px; }
+                    .custom-nav-{{ $sliderId }} .next { right: 15px; }
+                    @media (max-width: 768px) {
+                        .custom-nav-{{ $sliderId }} button {
+                            width: 35px;
+                            height: 35px;
+                            font-size: 20px;
+                        }
+                        .custom-nav-{{ $sliderId }} .prev { left: 10px; }
+                        .custom-nav-{{ $sliderId }} .next { right: 10px; }
+                    }
+                </style>
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
                             @if($tickets->count() > 0)
-                                <div class="owl-carousel ticket-carousel" id="{{ $sliderId }}">
+                                <div class="ticket-carousel-wrapper-{{ $sliderId }}">
+                                    <div class="owl-carousel ticket-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
                                         <div class="ticket-card-wrapper">
                                             <div class="ticket-card">
@@ -6918,6 +7131,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             </div>
                                         </div>
                                     @endforeach
+                                </div>
+                                    <div class="custom-nav-{{ $sliderId }}">
+                                        <button class="prev" onclick="$('#{{ $sliderId }}').trigger('prev.owl.carousel')">‹</button>
+                                        <button class="next" onclick="$('#{{ $sliderId }}').trigger('next.owl.carousel')">›</button>
+                                    </div>
                                 </div>
                             @else
                                 <div class="no-tickets">
@@ -6986,7 +7204,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     autoplayTimeout: {{ $autoplaySpeed }},
                     autoplayHoverPause: true,
                     dots: {{ $dots ? 'true' : 'false' }},
-                    nav: {{ $arrows ? 'true' : 'false' }},
+                    nav: false,
                     responsive: {
                         0: { items: 1 },                    // Mobile: 1 item
                         576: { items: 1 },
@@ -7043,11 +7261,64 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
             <div class="ticket-category-carousel-component" style="{{ $styleStr }}">
+                <style>
+                    .ticket-cat-wrapper-{{ $sliderId }} {
+                        position: relative;
+                    }
+                    #{{ $sliderId }} .owl-nav { display: none; }
+                    .custom-nav-cat-{{ $sliderId }} {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 100%;
+                        pointer-events: none;
+                        z-index: 100;
+                        left: 0;
+                        right: 0;
+                    }
+                    .custom-nav-cat-{{ $sliderId }} button {
+                        position: absolute;
+                        width: 45px;
+                        height: 45px;
+                        background: rgba(0,0,0,0.6) !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 50%;
+                        font-size: 24px;
+                        font-weight: normal;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        opacity: 0.9;
+                        pointer-events: all;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        line-height: 1;
+                        padding: 0;
+                    }
+                    .custom-nav-cat-{{ $sliderId }} button:hover {
+                        opacity: 1;
+                        transform: scale(1.1);
+                        background: rgba(0,0,0,0.8) !important;
+                    }
+                    .custom-nav-cat-{{ $sliderId }} .prev { left: 15px; }
+                    .custom-nav-cat-{{ $sliderId }} .next { right: 15px; }
+                    @media (max-width: 768px) {
+                        .custom-nav-cat-{{ $sliderId }} button {
+                            width: 35px;
+                            height: 35px;
+                            font-size: 20px;
+                        }
+                        .custom-nav-cat-{{ $sliderId }} .prev { left: 10px; }
+                        .custom-nav-cat-{{ $sliderId }} .next { right: 10px; }
+                    }
+                </style>
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
                             @if($tickets->count() > 0)
-                                <div class="owl-carousel ticket-category-carousel" id="{{ $sliderId }}">
+                                <div class="ticket-cat-wrapper-{{ $sliderId }}">
+                                    <div class="owl-carousel ticket-category-carousel" id="{{ $sliderId }}">
                                     @foreach($tickets as $ticket)
                                         <div class="ticket-card-wrapper">
                                             <div class="ticket-card">
@@ -7065,6 +7336,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             </div>
                                         </div>
                                     @endforeach
+                                </div>
+                                    <div class="custom-nav-cat-{{ $sliderId }}">
+                                        <button class="prev" onclick="$('#{{ $sliderId }}').trigger('prev.owl.carousel')">‹</button>
+                                        <button class="next" onclick="$('#{{ $sliderId }}').trigger('next.owl.carousel')">›</button>
+                                    </div>
                                 </div>
                             @else
                                 <div class="no-tickets">
@@ -7135,7 +7411,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     autoplayTimeout: {{ $autoplaySpeed }},
                     autoplayHoverPause: true,
                     dots: {{ $dots ? 'true' : 'false' }},
-                    nav: {{ $arrows ? 'true' : 'false' }},
+                    nav: false,
                     responsive: {
                         0: {
                             items: 1,
@@ -7214,6 +7490,56 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             <!-- Component Structure -->
             <div class="property-category-carousel-component" style="{{ $styleStr }}">
                 <style>
+                    .property-wrapper-{{ $sliderId }} {
+                        position: relative;
+                    }
+                    #{{ $sliderId }} .owl-nav { display: none; }
+                    .custom-nav-prop-{{ $sliderId }} {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 100%;
+                        pointer-events: none;
+                        z-index: 100;
+                        left: 0;
+                        right: 0;
+                    }
+                    .custom-nav-prop-{{ $sliderId }} button {
+                        position: absolute;
+                        width: 45px;
+                        height: 45px;
+                        background: rgba(0,0,0,0.6) !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 50%;
+                        font-size: 24px;
+                        font-weight: normal;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        opacity: 0.9;
+                        pointer-events: all;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        line-height: 1;
+                        padding: 0;
+                    }
+                    .custom-nav-prop-{{ $sliderId }} button:hover {
+                        opacity: 1;
+                        transform: scale(1.1);
+                        background: rgba(0,0,0,0.8) !important;
+                    }
+                    .custom-nav-prop-{{ $sliderId }} .prev { left: 15px; }
+                    .custom-nav-prop-{{ $sliderId }} .next { right: 15px; }
+                    @media (max-width: 768px) {
+                        .custom-nav-prop-{{ $sliderId }} button {
+                            width: 35px;
+                            height: 35px;
+                            font-size: 20px;
+                        }
+                        .custom-nav-prop-{{ $sliderId }} .prev { left: 10px; }
+                        .custom-nav-prop-{{ $sliderId }} .next { right: 10px; }
+                    }
                     #{{ $sliderId }}.owl-carousel .owl-item {
                         min-width: 262px;
                         max-width: 262px;
@@ -7238,7 +7564,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     <div class="row">
                         <div class="col-12">
                             @if(isset($properties) && count($properties) > 0)
-                                <div class="owl-carousel property-category-carousel" id="{{ $sliderId }}">
+                                <div class="property-wrapper-{{ $sliderId }}">
+                                    <div class="owl-carousel property-category-carousel" id="{{ $sliderId }}">
                                     @foreach($properties as $property)
                                     @php
                                         $totalSold = \App\Models\TicketSellDetail::where('ticket_id', $property->id)
@@ -7269,6 +7596,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                             </a>
                                         </div>
                                     @endforeach
+                                </div>
+                                    <div class="custom-nav-prop-{{ $sliderId }}">
+                                        <button class="prev" onclick="$('#{{ $sliderId }}').trigger('prev.owl.carousel')">‹</button>
+                                        <button class="next" onclick="$('#{{ $sliderId }}').trigger('next.owl.carousel')">›</button>
+                                    </div>
                                 </div>
                             @else
                                 <div class="no-properties">
@@ -7418,7 +7750,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         autoplayTimeout: {{ $autoplaySpeed }},
                         autoplayHoverPause: true,
                         dots: {{ $dots ? 'true' : 'false' }},
-                        nav: {{ $arrows ? 'true' : 'false' }},
+                        nav: false,
                         responsive: {
                             0: {
                                 items: 1,

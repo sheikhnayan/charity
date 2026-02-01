@@ -1066,8 +1066,22 @@ class AuthorizeNetController extends Controller
     private function sendInvoiceEmail($transaction, $website)
     {
         try {
-            \App\Services\WebsiteMailService::applyForWebsite($website);
+            if ($website) {
+                \App\Services\WebsiteMailService::applyForWebsite($website);
+            }
+            
+            // Send to customer's email
             Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+            
+            // Also send to website owner emails that have transaction preference enabled
+            if ($website) {
+                $websiteEmails = $website->getTransactionEmails();
+                foreach ($websiteEmails as $email) {
+                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
+                        Mail::to($email)->send(new TransactionInvoice($transaction, $website));
+                    }
+                }
+            }
         } catch (\Exception $e) {
             \Log::error('Failed to send transaction invoice', [
                 'transaction_id' => $transaction->transaction_id,

@@ -226,9 +226,15 @@ class DashboardController extends Controller
         
         // Fallback to Transaction count if PaymentFunnelEvent has no conversions
         if ($count == 0) {
-            $count = \App\Models\Transaction::where('website_id', $websiteId)
+            $transactionCount = \App\Models\Transaction::where('website_id', $websiteId)
                 ->where('status', 1)
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
+            $donationCount = \App\Models\Donation::where('website_id', $websiteId)
+                ->where('status', 1)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+            $count = $transactionCount + $donationCount;
         }
             
         return $count;
@@ -246,9 +252,16 @@ class DashboardController extends Controller
         
         // Fallback to Transaction data if PaymentFunnelEvent has no revenue
         if ($revenue == 0) {
-            $revenue = \App\Models\Transaction::where('website_id', $websiteId)
+            $transactionRevenue = \App\Models\Transaction::where('website_id', $websiteId)
                 ->where('status', 1)
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->sum('amount') ?? 0;
+            $donationRevenue = \App\Models\Donation::where('website_id', $websiteId)
+                ->where('status', 1)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('SUM(amount + COALESCE(tip_amount, 0)) as total')
+                ->value('total') ?? 0;
+            $revenue = $transactionRevenue + $donationRevenue;
         }
             
         return $revenue;
@@ -334,10 +347,15 @@ class DashboardController extends Controller
      */
     protected function getSalesByDonationType($websiteId, $startDate = null, $endDate = null)
     {
-        return \App\Models\Transaction::where('website_id', $websiteId)
-            ->where('status', 1)
-            ->groupBy('type')
-            ->selectRaw('type, count(*) as count, sum(amount) as total')
+        $query = \App\Models\Donation::where('website_id', $websiteId)
+            ->where('status', 1);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        return $query->groupBy('type')
+            ->selectRaw('type, count(*) as count, SUM(amount + COALESCE(tip_amount, 0)) as total')
             ->orderByDesc('total')
             ->get();
     }

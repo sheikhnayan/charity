@@ -46,6 +46,66 @@ class Website extends Model
     ];
 
     /**
+     * Get emails that should receive contact form submissions
+     * @return array List of email addresses that have receive_contact_form enabled
+     */
+    public function getContactFormEmails(): array
+    {
+        $emails = [];
+        $contactEmails = $this->contact_emails ?? [];
+        
+        // Handle new structure with individual preferences
+        if (!empty($contactEmails) && isset($contactEmails[0]['email'])) {
+            foreach ($contactEmails as $item) {
+                if (($item['receive_contact_form'] ?? true) === true) {
+                    $emails[] = $item['email'];
+                }
+            }
+        }
+        
+        return $emails;
+    }
+
+    /**
+     * Get emails that should receive transaction confirmations
+     * @return array List of email addresses that have receive_transaction_emails enabled
+     */
+    public function getTransactionEmails(): array
+    {
+        $emails = [];
+        $contactEmails = $this->contact_emails ?? [];
+        
+        // Handle new structure with individual preferences
+        if (!empty($contactEmails) && isset($contactEmails[0]['email'])) {
+            foreach ($contactEmails as $item) {
+                if (($item['receive_transaction_emails'] ?? true) === true) {
+                    $emails[] = $item['email'];
+                }
+            }
+        }
+        
+        return $emails;
+    }
+    
+    /**
+     * Check if any email should receive contact form emails
+     * @return bool True if at least one email has preference enabled
+     */
+    public function shouldReceiveContactFormEmails(): bool
+    {
+        return !empty($this->getContactFormEmails());
+    }
+
+    /**
+     * Check if any email should receive transaction emails
+     * @return bool True if at least one email has preference enabled
+     */
+    public function shouldReceiveTransactionEmails(): bool
+    {
+        return !empty($this->getTransactionEmails());
+    }
+
+    /**
      * Check if website is a fundraiser type
      */
     public function isFundraiser()
