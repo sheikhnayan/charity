@@ -104,9 +104,11 @@
 .introjs-skipbutton {
     color: #e53e3e;
     background: transparent;
-    padding: 6px 12px;
+    padding: 4px 8px;
     border: 1px solid #e53e3e;
-    border-radius: 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .introjs-skipbutton:hover {
@@ -1086,46 +1088,94 @@ body.tutorial-first-visit .introjs-skipbutton {
                             document.body.classList.add('tutorial-first-visit');
                         }
                         
+                        // Detect if user is on mobile
+                        const isMobile = window.innerWidth < 768;
+                        
+                        // Build steps based on device type
+                        let tutorialSteps = [];
+                        
+                        // Welcome step (both mobile and desktop)
+                        tutorialSteps.push({
+                            title: 'Welcome Parents! 👋',
+                            intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
+                        });
+                        
+                        if (isMobile) {
+                            // Mobile-specific tutorial steps (skip sidebar references)
+                            tutorialSteps.push({
+                                title: 'Navigation Menu 📱',
+                                intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like Students, Profile, and Payments.',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Adding Students 🎓',
+                                intro: 'To add a new student:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Student" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Managing Students',
+                                intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#tutorialBtn'),
+                                title: 'Need Help Later?',
+                                intro: 'You can always replay this tutorial by tapping this button anytime!',
+                                position: 'bottom'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'You\'re All Set! 🎉',
+                                intro: 'That\'s it! You\'re ready to start managing your students. Tap the menu icon (☰) and select "Participant" to get started!',
+                                tooltipClass: 'introjs-floating'
+                            });
+                        } else {
+                            // Desktop tutorial steps (original with sidebar references)
+                            tutorialSteps.push({
+                                element: document.querySelector('#students-menu-item'),
+                                title: 'Students / Participants',
+                                intro: 'Click here to view and manage all your students or participants. This is where you\'ll spend most of your time!',
+                                position: 'right'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#profile-menu-item'),
+                                title: 'Your Profile',
+                                intro: 'Update your personal information and profile settings here.',
+                                position: 'right'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Adding Students 🎓',
+                                intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Managing Students',
+                                intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#tutorialBtn'),
+                                title: 'Need Help Later?',
+                                intro: 'You can always replay this tutorial by clicking this button anytime!',
+                                position: 'left'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'You\'re All Set! 🎉',
+                                intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!',
+                                tooltipClass: 'introjs-floating'
+                            });
+                        }
+                        
                         intro.setOptions({
-                            steps: [
-                                {
-                                    title: 'Welcome Parents! 👋',
-                                    intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
-                                },
-                                {
-                                    element: document.querySelector('#students-menu-item'),
-                                    title: 'Students / Participants',
-                                    intro: 'Click here to view and manage all your students or participants. This is where you\'ll spend most of your time!',
-                                    position: 'right'
-                                },
-                                {
-                                    element: document.querySelector('#profile-menu-item'),
-                                    title: 'Your Profile',
-                                    intro: 'Update your personal information and profile settings here.',
-                                    position: 'right'
-                                },
-                                {
-                                    title: 'Adding Students 🎓',
-                                    intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
-                                    tooltipClass: 'introjs-floating'
-                                },
-                                {
-                                    title: 'Managing Students',
-                                    intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
-                                    tooltipClass: 'introjs-floating'
-                                },
-                                {
-                                    element: document.querySelector('#tutorialBtn'),
-                                    title: 'Need Help Later?',
-                                    intro: 'You can always replay this tutorial by clicking this button anytime!',
-                                    position: 'left'
-                                },
-                                {
-                                    title: 'You\'re All Set! 🎉',
-                                    intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!',
-                                    tooltipClass: 'introjs-floating'
-                                }
-                            ],
+                            steps: tutorialSteps,
                             showProgress: true,
                             showBullets: false,
                             exitOnOverlayClick: isFirstVisit ? false : true,
