@@ -826,12 +826,6 @@ img {
                     <div class="text-style-eyebrow" style="color: {{ $footer->contact_heading_color ?? $footer->color ?? '#ffffff' }} !important; font-family: '{{ $footer->contact_heading_font ?? 'outfit' }}', sans-serif !important; font-size: {{ $footer->contact_heading_size ?? '14px' }} !important;">{{ $footer->contact_heading ?? 'Contact Us' }}</div>
                 </div><a aria-label="Email {{ $website->name }}" href="mailto:{{$website->user->email}}"
                     class="link_wrap not-allcaps w-inline-block">
-                    <div class="link_icon icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg"
-                            height="1em" viewBox="0 0 512 512" style="color: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important;">
-                            <path style="fill: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important;"
-                                d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"
-                                fill="{{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }}"></path>
-                        </svg></div>
                     <div style="color: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important; font-family: '{{ $footer->contact_email_font ?? 'outfit' }}', sans-serif !important; font-size: {{ $footer->contact_email_size ?? '14px' }} !important;">{{$website->user->email}}</div>
                 </a>
             </div>
@@ -841,12 +835,6 @@ img {
                     <div class="text-style-eyebrow" style="color: {{ $footer->contact_heading_color ?? $footer->color ?? '#ffffff' }} !important; font-family: '{{ $footer->contact_heading_font ?? 'outfit' }}', sans-serif !important; font-size: {{ $footer->contact_heading_size ?? '14px' }} !important;">{{ $footer->contact_heading ?? 'Contact Us' }}</div>
                 </div><a aria-label="Email {{ $website->name }}" href="mailto:{{$website->user->email}}"
                     class="link_wrap not-allcaps w-inline-block">
-                    <div class="link_icon icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg"
-                            height="1em" viewBox="0 0 512 512" style="color: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important;">
-                            <path style="fill: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important;"
-                                d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"
-                                fill="{{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }}"></path>
-                        </svg></div>
                     <div style="color: {{ $footer->contact_email_color ?? $footer->color ?? '#ffffff' }} !important; font-family: '{{ $footer->contact_email_font ?? 'outfit' }}', sans-serif; font-size: {{ $footer->contact_email_size ?? '14px' }} !important;">{{$website->user->email}}</div>
                 </a>
             </div>
