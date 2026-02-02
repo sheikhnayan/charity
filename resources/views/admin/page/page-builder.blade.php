@@ -5363,52 +5363,51 @@ break;
                 const iframeId = 'custom-html-iframe-' + Date.now() + Math.random().toString(36).substr(2, 9);
                 
                 // Add link handler script to make internal links open in parent window
-                const linkHandlerScript = `<script>
-                    (function() {
-                        function handleLinks() {
-                            var links = document.querySelectorAll('a[href]');
-                            links.forEach(function(link) {
-                                var href = link.getAttribute('href');
-                                if (href && !link.hasAttribute('data-link-handled')) {
-                                    link.setAttribute('data-link-handled', 'true');
-                                    link.addEventListener('click', function(e) {
-                                        if (href.startsWith('/') || href.includes(window.location.hostname) || href.startsWith('#')) {
-                                            e.preventDefault();
-                                            if (href.startsWith('#')) {
-                                                window.parent.location.hash = href;
-                                            } else {
-                                                window.parent.location.href = href;
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        if (document.readyState === 'loading') {
-                            document.addEventListener('DOMContentLoaded', handleLinks);
-                        } else {
-                            handleLinks();
-                        }
-                        setInterval(handleLinks, 1000);
-                    })();
-                </script>`;
+                const linkHandlerScript = '<script>' +
+                    '(function() {' +
+                        'function handleLinks() {' +
+                            'var links = document.querySelectorAll("a[href]");' +
+                            'links.forEach(function(link) {' +
+                                'var href = link.getAttribute("href");' +
+                                'if (href && !link.hasAttribute("data-link-handled")) {' +
+                                    'link.setAttribute("data-link-handled", "true");' +
+                                    'link.addEventListener("click", function(e) {' +
+                                        'if (href.startsWith("/") || href.includes(window.location.hostname) || href.startsWith("#")) {' +
+                                            'e.preventDefault();' +
+                                            'if (href.startsWith("#")) {' +
+                                                'window.parent.location.hash = href;' +
+                                            '} else {' +
+                                                'window.parent.location.href = href;' +
+                                            '}' +
+                                        '}' +
+                                    '});' +
+                                '}' +
+                            '});' +
+                        '}' +
+                        'if (document.readyState === "loading") {' +
+                            'document.addEventListener("DOMContentLoaded", handleLinks);' +
+                        '} else {' +
+                            'handleLinks();' +
+                        '}' +
+                        'setInterval(handleLinks, 1000);' +
+                    '})();' +
+                '</script>';
                 
                 const htmlWithScript = d.htmlContent + linkHandlerScript;
                 
-                content.innerHTML = `
-                    <div class="custom-html-preview" style="border: 2px dashed #ccc; padding: 10px; background: #f9f9f9;">
-                        <div style="background: #667eea; color: white; padding: 5px 10px; margin-bottom: 10px; font-size: 12px; border-radius: 4px;">
-                            <i class="fas fa-code"></i> Custom HTML Component (Preview)
-                        </div>
-                        <iframe 
-                            id="${iframeId}"
-                            srcdoc="${htmlWithScript.replace(/"/g, '&quot;')}" 
-                            style="width: 100%; border: none; background: white; display: block; min-height: ${d.height}px;"
-                            sandbox="allow-scripts allow-same-origin allow-top-navigation"
-                            scrolling="no">
-                        </iframe>
-                    </div>
-                `;
+                content.innerHTML = 
+                    '<div class="custom-html-preview" style="border: 2px dashed #ccc; padding: 10px; background: #f9f9f9;">' +
+                        '<div style="background: #667eea; color: white; padding: 5px 10px; margin-bottom: 10px; font-size: 12px; border-radius: 4px;">' +
+                            '<i class="fas fa-code"></i> Custom HTML Component (Preview)' +
+                        '</div>' +
+                        '<iframe ' +
+                            'id="' + iframeId + '"' +
+                            'srcdoc="' + htmlWithScript.replace(/"/g, '&quot;') + '" ' +
+                            'style="width: 100%; border: none; background: white; display: block; min-height: ' + d.height + 'px;"' +
+                            'sandbox="allow-scripts allow-same-origin allow-top-navigation"' +
+                            'scrolling="no">' +
+                        '</iframe>' +
+                    '</div>';
                 
                 // Auto-resize iframe to fit content
                 setTimeout(() => {
