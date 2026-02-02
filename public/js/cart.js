@@ -37,7 +37,9 @@ window.ShoppingCart = {
     state: {
         cart: null,
         cartOpen: false,
-        loading: false
+        loading: false,
+        addingQueue: [],  // Queue for items being added
+        isProcessingQueue: false  // Flag to prevent concurrent queue processing
     },
 
     /**
@@ -604,7 +606,7 @@ window.ShoppingCart = {
     },
 
     /**
-     * Add item to cart
+     * Add item to cart with queue support
      */
     async addItem(itemData) {
         if (!itemData.type || !itemData.id || !itemData.name) {
@@ -612,36 +614,74 @@ window.ShoppingCart = {
             return false;
         }
 
+        // Add item to queue
+        this.state.addingQueue.push(itemData);
+        console.log('🛒 [QUEUE] Item queued. Queue length:', this.state.addingQueue.length);
+        
+        // Process queue if not already processing
+        if (!this.state.isProcessingQueue) {
+            this.processAddingQueue();
+        }
+        
+        return true; // Return immediately, don't wait for API
+    },
+
+    /**
+     * Process the queue of items to add
+     */
+    async processAddingQueue() {
+        // Prevent concurrent queue processing
+        if (this.state.isProcessingQueue || this.state.addingQueue.length === 0) {
+            return;
+        }
+
+        this.state.isProcessingQueue = true;
+        console.log('🛒 [QUEUE] Starting to process queue. Items:', this.state.addingQueue.length);
+
         try {
-            this.state.loading = true;
+            while (this.state.addingQueue.length > 0) {
+                // Get next item from queue
+                const itemData = this.state.addingQueue.shift();
+                console.log('🛒 [QUEUE] Processing item:', itemData.name, 'Remaining:', this.state.addingQueue.length);
 
-            const response = await fetch(`${this.config.apiBaseUrl}/add`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': this.getCSRFToken()
-                },
-                body: JSON.stringify(itemData)
-            });
+                try {
+                    // Send to API
+                    const response = await fetch(`${this.config.apiBaseUrl}/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': this.getCSRFToken()
+                        },
+                        body: JSON.stringify(itemData)
+                    });
 
-            const data = await response.json();
+                    const data = await response.json();
 
-            if (data.success) {
-                this.state.cart = data.cart;
-                this.updateCartDisplay();
-                this.updateCartBadge();
-                this.showNotification(`${itemData.name} added to cart!`, 'success');
-                return true;
-            } else {
-                this.showNotification(data.message || 'Failed to add item', 'error');
-                return false;
+                    if (data.success) {
+                        this.state.cart = data.cart;
+                        this.updateCartDisplay();
+                        this.updateCartBadge();
+                        this.showNotification(`${itemData.name} added to cart!`, 'success');
+                        console.log('✅ [QUEUE] Item added successfully');
+                    } else {
+                        console.warn('⚠️ [QUEUE] API returned failure:', data.message);
+                        this.showNotification(data.message || 'Failed to add item', 'error');
+                    }
+                } catch (error) {
+                    console.error('❌ [QUEUE] Error adding single item:', error);
+                    // Continue processing queue even if one item fails
+                    this.showNotification('Error adding item to cart', 'error');
+                }
             }
-        } catch (error) {
-            console.error('Error adding item to cart:', error);
-            this.showNotification('An error occurred', 'error');
-            return false;
         } finally {
-            this.state.loading = false;
+            this.state.isProcessingQueue = false;
+            console.log('🛒 [QUEUE] Queue processing complete');
+            
+            // Check if new items were added while processing
+            if (this.state.addingQueue.length > 0) {
+                console.log('🛒 [QUEUE] New items detected, restarting queue');
+                this.processAddingQueue();
+            }
         }
     },
 
