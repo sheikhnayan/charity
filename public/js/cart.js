@@ -609,8 +609,52 @@ window.ShoppingCart = {
     },
 
     /**
-     * Add item to cart with queue support
+     * Add item to cart - direct API call
      */
+    async addItem(itemData) {
+        if (!itemData.type || !itemData.id || !itemData.name) {
+            console.error('Invalid item data for cart', itemData);
+            return false;
+        }
+
+        console.log('🛒 Adding item to cart:', itemData.name);
+
+        try {
+            const response = await fetch(`${this.config.apiBaseUrl}/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': this.getCSRFToken()
+                },
+                body: JSON.stringify(itemData)
+            });
+
+            if (!response.ok) {
+                console.error('❌ HTTP Error:', response.status);
+                this.showNotification(`Failed to add ${itemData.name}`, 'error');
+                return false;
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.cart) {
+                this.state.cart = data.cart;
+                this.updateCartDisplay();
+                this.updateCartBadge();
+                console.log('✅ Added:', itemData.name);
+                this.showNotification(`${itemData.name} added!`, 'success');
+                return true;
+            }
+
+            console.error('❌ API returned error:', data.message);
+            this.showNotification(data.message || 'Failed to add item', 'error');
+            return false;
+        } catch (error) {
+            console.error('❌ Error adding item:', error);
+            this.showNotification('Error adding item', 'error');
+            return false;
+        }
+    },
 
 
 
