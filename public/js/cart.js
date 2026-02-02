@@ -607,23 +607,7 @@ window.ShoppingCart = {
     /**
      * Add item to cart with queue support
      */
-    async addItem(itemData) {
-        if (!itemData.type || !itemData.id || !itemData.name) {
-            console.error('Invalid item data for cart', itemData);
-            return false;
-        }
 
-        // Add item to queue
-        this.state.addingQueue.push(itemData);
-        console.log('🛒 [QUEUE] Item queued. Queue length:', this.state.addingQueue.length);
-        
-        // Process queue if not already processing
-        if (!this.state.isProcessingQueue) {
-            this.processAddingQueue();
-        }
-        
-        return true; // Return immediately, don't wait for API
-    },
 
 
 
