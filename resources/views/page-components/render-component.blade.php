@@ -1392,14 +1392,56 @@ h5, .ql-header-5 {
                 $htmlContent = $component['customHtmlData']['htmlContent'] ?? $component['properties']['htmlContent'] ?? '<div style="padding: 20px; text-align: center;"><h3>Custom HTML Content</h3><p>Add your custom HTML code in the page builder</p></div>';
                 $height = $component['customHtmlData']['height'] ?? $component['properties']['height'] ?? '300';
                 $iframeId = 'custom-html-' . uniqid();
+                
+                // Inject script to handle internal links - make them open in parent window
+                $linkHandlerScript = "<script>
+                    (function() {
+                        function handleLinks() {
+                            var links = document.querySelectorAll('a[href]');
+                            links.forEach(function(link) {
+                                var href = link.getAttribute('href');
+                                if (href && !link.hasAttribute('data-link-handled')) {
+                                    link.setAttribute('data-link-handled', 'true');
+                                    link.addEventListener('click', function(e) {
+                                        // Check if it's an internal link
+                                        if (href.startsWith('/') || href.includes(window.location.hostname) || href.startsWith('#')) {
+                                            e.preventDefault();
+                                            if (href.startsWith('#')) {
+                                                // Handle anchor links in parent
+                                                window.parent.location.hash = href;
+                                            } else {
+                                                // Open internal links in parent window
+                                                window.parent.location.href = href;
+                                            }
+                                        }
+                                        // External links will work normally with their target attribute
+                                    });
+                                }
+                            });
+                        }
+                        
+                        // Run on load
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', handleLinks);
+                        } else {
+                            handleLinks();
+                        }
+                        
+                        // Re-run periodically for dynamically added links
+                        setInterval(handleLinks, 1000);
+                    })();
+                </script>";
+                
+                // Append the script to the HTML content
+                $htmlContentWithScript = $htmlContent . $linkHandlerScript;
             @endphp
             
             <div class="custom-html-component" id="{{ $componentId }}" style="{{ $styleStr }}">
                 <iframe 
                     id="{{ $iframeId }}"
-                    srcdoc="{!! htmlspecialchars($htmlContent) !!}" 
+                    srcdoc="{!! htmlspecialchars($htmlContentWithScript) !!}" 
                     style="width: 100%; border: none; display: block; min-height: {{ $height }}px;"
-                    sandbox="allow-scripts allow-same-origin"
+                    sandbox="allow-scripts allow-same-origin allow-top-navigation"
                     scrolling="no"
                     loading="lazy"
                     onload="(function(iframe){
