@@ -4963,8 +4963,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Add to cart button functionality - Simple and direct
-                document.addEventListener('click', async function(e) {
+                // Add to cart button functionality - Use global addToCart function
+                document.addEventListener('click', function(e) {
                     const btn = e.target.closest('.add-student-to-cart');
                     if (!btn) return;
                     
@@ -4981,52 +4981,42 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     
                     console.log('🛒 Adding to cart:', itemName);
                     
-                    // Disable button and show loading
+                    // Disable button temporarily
                     const originalHTML = btn.innerHTML;
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
                     
-                    if (typeof window.ShoppingCart !== 'undefined' && window.ShoppingCart.addItem) {
-                        try {
-                            // Wait for item to be added
-                            const success = await window.ShoppingCart.addItem({
-                                id: itemId,
-                                name: itemName,
-                                type: itemType,
-                                price: parseFloat(itemPrice),
-                                quantity: 1
-                            });
-                            
-                            if (success) {
-                                // Show success briefly
-                                btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
-                                btn.classList.remove('btn-outline-primary');
-                                btn.classList.add('btn-success');
-                                
-                                setTimeout(function() {
-                                    btn.innerHTML = originalHTML;
-                                    btn.classList.remove('btn-success');
-                                    btn.classList.add('btn-outline-primary');
-                                    btn.disabled = false;
-                                }, 1000);
-                            } else {
-                                throw new Error('Failed to add item');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error:', error);
-                            btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
-                            btn.classList.add('btn-danger');
-                            
-                            setTimeout(function() {
-                                btn.innerHTML = originalHTML;
-                                btn.classList.remove('btn-danger');
-                                btn.disabled = false;
-                            }, 2000);
-                        }
+                    // Use window.addToCart (has queueing if cart not ready)
+                    if (typeof window.addToCart === 'function') {
+                        window.addToCart({
+                            id: itemId,
+                            name: itemName,
+                            type: itemType,
+                            price: parseFloat(itemPrice),
+                            quantity: 1
+                        });
+                        
+                        // Show success
+                        btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-success');
+                        
+                        setTimeout(function() {
+                            btn.innerHTML = originalHTML;
+                            btn.classList.remove('btn-success');
+                            btn.classList.add('btn-outline-primary');
+                            btn.disabled = false;
+                        }, 1000);
                     } else {
-                        console.error('❌ ShoppingCart not available');
-                        btn.innerHTML = originalHTML;
-                        btn.disabled = false;
+                        console.error('❌ addToCart function not available');
+                        btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
+                        btn.classList.add('btn-danger');
+                        
+                        setTimeout(function() {
+                            btn.innerHTML = originalHTML;
+                            btn.classList.remove('btn-danger');
+                            btn.disabled = false;
+                        }, 2000);
                     }
                 });
             })();
