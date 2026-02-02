@@ -4978,7 +4978,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     
                     console.log('🛒 [Student Listing] Add to cart clicked', { itemId: itemId, itemName: itemName, itemType: itemType, itemPrice: itemPrice });
                     
-                    // Visual feedback - disable button temporarily
+                    // Visual feedback - show "Adding..." state briefly
                     const originalHTML = btn.innerHTML;
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
@@ -4993,22 +4993,22 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 quantity: 1
                             });
                             
-                            console.log('✅ [Student Listing] Item added to cart');
+                            console.log('✅ [Student Listing] Item queued for cart');
                             
-                            // Success feedback
-                            btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                            // Show success feedback immediately (item is queued)
+                            btn.innerHTML = '<i class="fa fa-check me-2"></i>Queued!';
                             btn.classList.remove('btn-outline-primary');
                             btn.classList.add('btn-success');
                             
-                            // Reset button after 2 seconds
+                            // Re-enable button quickly since it's now queued
                             setTimeout(function() {
                                 btn.innerHTML = originalHTML;
                                 btn.classList.remove('btn-success');
                                 btn.classList.add('btn-outline-primary');
                                 btn.disabled = false;
-                            }, 2000);
+                            }, 500);
                         } catch (error) {
-                            console.error('❌ [Student Listing] Error adding to cart:', error);
+                            console.error('❌ [Student Listing] Error queuing item:', error);
                             
                             // Error feedback
                             btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
