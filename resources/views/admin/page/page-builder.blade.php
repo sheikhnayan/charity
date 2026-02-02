@@ -5394,6 +5394,7 @@ break;
                 '</script>';
                 
                 const htmlWithScript = d.htmlContent + linkHandlerScript;
+                const escapedHtml = htmlWithScript.split('"').join('&quot;');
                 
                 content.innerHTML = 
                     '<div class="custom-html-preview" style="border: 2px dashed #ccc; padding: 10px; background: #f9f9f9;">' +
@@ -5401,10 +5402,10 @@ break;
                             '<i class="fas fa-code"></i> Custom HTML Component (Preview)' +
                         '</div>' +
                         '<iframe ' +
-                            'id="' + iframeId + '"' +
-                            'srcdoc="' + htmlWithScript.replace(/"/g, '&quot;') + '" ' +
-                            'style="width: 100%; border: none; background: white; display: block; min-height: ' + d.height + 'px;"' +
-                            'sandbox="allow-scripts allow-same-origin allow-top-navigation"' +
+                            'id="' + iframeId + '" ' +
+                            'srcdoc="' + escapedHtml + '" ' +
+                            'style="width: 100%; border: none; background: white; display: block; min-height: ' + d.height + 'px;" ' +
+                            'sandbox="allow-scripts allow-same-origin allow-top-navigation" ' +
                             'scrolling="no">' +
                         '</iframe>' +
                     '</div>';
