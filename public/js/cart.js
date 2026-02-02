@@ -73,7 +73,7 @@ window.ShoppingCart = {
             
             // Process any queued items
             console.log('🛒 [CART] Processing queued items...');
-            this.processQueuedItems();
+            await this.processQueuedItems();
             
             console.log('✅ [CART] Shopping Cart initialized successfully');
         } catch (error) {
@@ -632,30 +632,45 @@ window.ShoppingCart = {
 
     /**
      * Process the queue of items to add
+     * CRITICAL: Strict atomic locking to prevent race conditions
      */
     async processAddingQueue() {
-        // Prevent concurrent queue processing
-        if (this.state.isProcessingQueue || this.state.addingQueue.length === 0) {
-            console.log('🛒 [QUEUE] Skipping - isProcessingQueue:', this.state.isProcessingQueue, 'queueLength:', this.state.addingQueue.length);
+        // CHECK: If already processing, exit immediately (no concurrent processing)
+        if (this.state.isProcessingQueue) {
+            console.log('🛒 [QUEUE] ⏳ Already processing queue, exiting...');
+            return;
+        }
+        
+        // CHECK: If no items, exit
+        if (this.state.addingQueue.length === 0) {
+            console.log('🛒 [QUEUE] ℹ️ No items to process');
             return;
         }
 
+        // SET: Lock flag IMMEDIATELY before any async operations
         this.state.isProcessingQueue = true;
-        console.log('🛒 [QUEUE] ========== STARTING QUEUE PROCESSING ==========');
-        console.log('🛒 [QUEUE] Items to process:', this.state.addingQueue.length);
-        console.log('🛒 [QUEUE] Queue contents:', this.state.addingQueue.map(item => item.name));
+        console.log('\n🛒 [QUEUE] ═══════════════════════════════════════════');
+        console.log('🛒 [QUEUE] 🔒 LOCK ACQUIRED - Starting processing');
+        console.log('🛒 [QUEUE] Queue size: ' + this.state.addingQueue.length);
+        console.log('🛒 [QUEUE] Items: ' + this.state.addingQueue.map(i => i.name).join(', '));
 
         let successCount = 0;
         let failureCount = 0;
 
         try {
+            // Process every single item in the queue
             while (this.state.addingQueue.length > 0) {
-                // Get next item from queue
+                // Get next item
                 const itemData = this.state.addingQueue.shift();
-                console.log('🛒 [QUEUE] [' + (successCount + failureCount + 1) + '] Processing item:', itemData.name, 'Queue remaining:', this.state.addingQueue.length);
+                const itemNumber = successCount + failureCount + 1;
+                
+                console.log('🛒 [QUEUE] ─────────────────────');
+                console.log('🛒 [QUEUE] [Item ' + itemNumber + '] Processing: ' + itemData.name);
+                console.log('🛒 [QUEUE] Remaining in queue: ' + this.state.addingQueue.length);
 
                 try {
-                    // Send to API
+                    // Make API request
+                    console.log('🛒 [QUEUE] → Fetching API...');
                     const response = await fetch(`${this.config.apiBaseUrl}/add`, {
                         method: 'POST',
                         headers: {
@@ -665,50 +680,62 @@ window.ShoppingCart = {
                         body: JSON.stringify(itemData)
                     });
 
+                    // Check HTTP status
                     if (!response.ok) {
-                        console.error('❌ [QUEUE] HTTP Error:', response.status, response.statusText);
+                        console.error('❌ [QUEUE] HTTP ' + response.status + ' ' + response.statusText);
                         failureCount++;
-                        this.showNotification(`Failed to add ${itemData.name} (HTTP ${response.status})`, 'error');
-                        continue;
-                    }
-
-                    const data = await response.json();
-                    console.log('🛒 [QUEUE] API Response:', data);
-
-                    if (data.success) {
-                        this.state.cart = data.cart;
-                        this.updateCartDisplay();
-                        this.updateCartBadge();
-                        this.showNotification(`${itemData.name} added to cart!`, 'success');
-                        successCount++;
-                        console.log('✅ [QUEUE] Item ' + itemData.name + ' added successfully');
+                        this.showNotification(`Failed to add ${itemData.name}`, 'error');
                     } else {
-                        console.warn('⚠️ [QUEUE] API returned failure:', data.message);
-                        failureCount++;
-                        this.showNotification(data.message || `Failed to add ${itemData.name}`, 'error');
+                        // Parse response
+                        const data = await response.json();
+                        console.log('🛒 [QUEUE] ← Response received');
+
+                        if (data.success) {
+                            // SUCCESS: Update cart
+                            this.state.cart = data.cart;
+                            this.updateCartDisplay();
+                            this.updateCartBadge();
+                            successCount++;
+                            console.log('✅ [QUEUE] [Item ' + itemNumber + '] SUCCESS: ' + itemData.name + ' added to cart');
+                            this.showNotification(`${itemData.name} added!`, 'success');
+                        } else {
+                            // API error response
+                            console.warn('⚠️ [QUEUE] API error: ' + (data.message || 'Unknown error'));
+                            failureCount++;
+                            this.showNotification(data.message || `Failed to add ${itemData.name}`, 'error');
+                        }
                     }
                 } catch (error) {
-                    console.error('❌ [QUEUE] Error adding item:', itemData.name, error);
+                    // Network or parsing error
+                    console.error('❌ [QUEUE] Exception: ' + error.message);
                     failureCount++;
-                    this.showNotification(`Error adding ${itemData.name}: ${error.message}`, 'error');
+                    this.showNotification(`Error: ${error.message}`, 'error');
                 }
                 
-                // Small delay between requests to prevent overwhelming the server
-                // But only if there are more items in the queue
+                // Delay between requests (only if more items remain)
                 if (this.state.addingQueue.length > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    console.log('🛒 [QUEUE] ⏱️  Waiting 200ms before next item...');
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
             }
         } finally {
+            // RELEASE: Always release lock
             this.state.isProcessingQueue = false;
-            console.log('🛒 [QUEUE] ========== QUEUE PROCESSING COMPLETE ==========');
-            console.log('🛒 [QUEUE] Summary - Success: ' + successCount + ', Failures: ' + failureCount);
+            console.log('🛒 [QUEUE] ─────────────────────');
+            console.log('🛒 [QUEUE] 🔓 LOCK RELEASED');
+            console.log('🛒 [QUEUE] ═══════════════════════════════════════════');
+            console.log('🛒 [QUEUE] FINAL RESULTS:');
+            console.log('🛒 [QUEUE]   ✅ Successfully added: ' + successCount);
+            console.log('🛒 [QUEUE]   ❌ Failed: ' + failureCount);
+            console.log('🛒 [QUEUE]   ⏳ Remaining in queue: ' + this.state.addingQueue.length);
+            console.log('');
             
-            // Check if new items were added while processing
+            // If new items were added while processing, restart the queue
             if (this.state.addingQueue.length > 0) {
-                console.log('🛒 [QUEUE] New items detected during processing (' + this.state.addingQueue.length + '), restarting queue');
-                // Wait a bit before restarting to avoid tight loops
+                console.log('🛒 [QUEUE] ♻️  New items detected! Restarting queue with ' + this.state.addingQueue.length + ' items');
+                // Brief pause before restart
                 await new Promise(resolve => setTimeout(resolve, 100));
+                // Recursive restart
                 this.processAddingQueue();
             }
         }
