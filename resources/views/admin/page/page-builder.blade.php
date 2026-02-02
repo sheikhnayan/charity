@@ -5391,7 +5391,7 @@ break;
                         '}' +
                         'setInterval(handleLinks, 1000);' +
                     '})();' +
-                '</script>';
+                '<\/script>';
                 
                 const htmlWithScript = d.htmlContent + linkHandlerScript;
                 const escapedHtml = htmlWithScript.split('"').join('&quot;');

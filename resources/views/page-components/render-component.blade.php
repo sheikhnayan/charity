@@ -1430,7 +1430,7 @@ h5, .ql-header-5 {
                         // Re-run periodically for dynamically added links
                         setInterval(handleLinks, 1000);
                     })();
-                </script>";
+                <\/script>";
                 
                 // Append the script to the HTML content
                 $htmlContentWithScript = $htmlContent . $linkHandlerScript;
