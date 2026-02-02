@@ -5362,35 +5362,42 @@ break;
                 
                 const iframeId = 'custom-html-iframe-' + Date.now() + Math.random().toString(36).substr(2, 9);
                 
-                // Add link handler script to make internal links open in parent window
+                // Add comprehensive link handler script
                 const linkHandlerScript = '<script>' +
-                    '(function() {' +
-                        'function handleLinks() {' +
-                            'var links = document.querySelectorAll("a[href]");' +
-                            'links.forEach(function(link) {' +
-                                'var href = link.getAttribute("href");' +
-                                'if (href && !link.hasAttribute("data-link-handled")) {' +
-                                    'link.setAttribute("data-link-handled", "true");' +
-                                    'link.addEventListener("click", function(e) {' +
-                                        'if (href.startsWith("/") || href.includes(window.location.hostname) || href.startsWith("#")) {' +
-                                            'e.preventDefault();' +
-                                            'if (href.startsWith("#")) {' +
-                                                'window.parent.location.hash = href;' +
-                                            '} else {' +
-                                                'window.parent.location.href = href;' +
-                                            '}' +
-                                        '}' +
-                                    '});' +
+                    'document.addEventListener("click", function(e) {' +
+                        'var target = e.target.closest("a[href]");' +
+                        'if (!target) return;' +
+                        'var href = target.getAttribute("href");' +
+                        'if (!href || href === "#") return;' +
+                        'var isInternal = href.startsWith("/") || href.startsWith("./") || href.startsWith("../") || href.includes(window.location.hostname) || !href.includes("://");' +
+                        'if (isInternal) {' +
+                            'e.preventDefault();' +
+                            'e.stopPropagation();' +
+                            'try {' +
+                                'window.top.location.href = href;' +
+                            '} catch(e2) {' +
+                                'try {' +
+                                    'window.parent.location.href = href;' +
+                                '} catch(e3) {' +
+                                    'window.open(href, "_blank");' +
                                 '}' +
-                            '});' +
+                            '}' +
                         '}' +
-                        'if (document.readyState === "loading") {' +
-                            'document.addEventListener("DOMContentLoaded", handleLinks);' +
-                        '} else {' +
-                            'handleLinks();' +
+                    '}, true);' +
+                    'document.addEventListener("submit", function(e) {' +
+                        'var form = e.target;' +
+                        'var action = form.getAttribute("action");' +
+                        'if (action && !action.includes("://")) {' +
+                            'e.preventDefault();' +
+                            'try {' +
+                                'window.top.location.href = action;' +
+                            '} catch(e2) {' +
+                                'try {' +
+                                    'window.parent.location.href = action;' +
+                                '} catch(e3) {}' +
+                            '}' +
                         '}' +
-                        'setInterval(handleLinks, 1000);' +
-                    '})();' +
+                    '}, true);' +
                 '<\/script>';
                 
                 const htmlWithScript = d.htmlContent + linkHandlerScript;
@@ -5405,7 +5412,7 @@ break;
                             'id="' + iframeId + '" ' +
                             'srcdoc="' + escapedHtml + '" ' +
                             'style="width: 100%; border: none; background: white; display: block; min-height: ' + d.height + 'px;" ' +
-                            'sandbox="allow-scripts allow-same-origin allow-top-navigation" ' +
+                            'sandbox="allow-scripts allow-same-origin allow-top-navigation allow-popups" ' +
                             'scrolling="no">' +
                         '</iframe>' +
                     '</div>';

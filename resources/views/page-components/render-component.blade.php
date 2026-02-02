@@ -1393,44 +1393,58 @@ h5, .ql-header-5 {
                 $height = $component['customHtmlData']['height'] ?? $component['properties']['height'] ?? '300';
                 $iframeId = 'custom-html-' . uniqid();
                 
-                // Inject script to handle internal links - make them open in parent window
+                // Inject comprehensive script to handle all link navigation
                 $linkHandlerScript = "<script>
-                    (function() {
-                        function handleLinks() {
-                            var links = document.querySelectorAll('a[href]');
-                            links.forEach(function(link) {
-                                var href = link.getAttribute('href');
-                                if (href && !link.hasAttribute('data-link-handled')) {
-                                    link.setAttribute('data-link-handled', 'true');
-                                    link.addEventListener('click', function(e) {
-                                        // Check if it's an internal link
-                                        if (href.startsWith('/') || href.includes(window.location.hostname) || href.startsWith('#')) {
-                                            e.preventDefault();
-                                            if (href.startsWith('#')) {
-                                                // Handle anchor links in parent
-                                                window.parent.location.hash = href;
-                                            } else {
-                                                // Open internal links in parent window
-                                                window.parent.location.href = href;
-                                            }
-                                        }
-                                        // External links will work normally with their target attribute
-                                    });
+                    // Intercept ALL link clicks and navigate parent window instead
+                    document.addEventListener('click', function(e) {
+                        var target = e.target.closest('a[href]');
+                        if (!target) return;
+                        
+                        var href = target.getAttribute('href');
+                        if (!href || href === '#') return;
+                        
+                        // Check if it's an internal link (starts with / or is same domain)
+                        var isInternal = href.startsWith('/') || 
+                                       href.startsWith('./') || 
+                                       href.startsWith('../') ||
+                                       href.includes(window.location.hostname) ||
+                                       !href.includes('://');
+                        
+                        if (isInternal) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Navigate the parent/top window
+                            try {
+                                window.top.location.href = href;
+                            } catch(e2) {
+                                try {
+                                    window.parent.location.href = href;
+                                } catch(e3) {
+                                    // Fallback: open in new window if parent navigation fails
+                                    window.open(href, '_blank');
                                 }
-                            });
+                            }
                         }
-                        
-                        // Run on load
-                        if (document.readyState === 'loading') {
-                            document.addEventListener('DOMContentLoaded', handleLinks);
-                        } else {
-                            handleLinks();
+                    }, true);
+                    
+                    // Also handle form submissions to internal pages
+                    document.addEventListener('submit', function(e) {
+                        var form = e.target;
+                        var action = form.getAttribute('action');
+                        if (action && !action.includes('://')) {
+                            e.preventDefault();
+                            try {
+                                window.top.location.href = action;
+                            } catch(e2) {
+                                try {
+                                    window.parent.location.href = action;
+                                } catch(e3) {
+                                    // Fallback
+                                }
+                            }
                         }
-                        
-                        // Re-run periodically for dynamically added links
-                        setInterval(handleLinks, 1000);
-                    })();
-                <\/script>";
+                    }, true);
+                </script>";
                 
                 // Append the script to the HTML content
                 $htmlContentWithScript = $htmlContent . $linkHandlerScript;
@@ -1441,7 +1455,7 @@ h5, .ql-header-5 {
                     id="{{ $iframeId }}"
                     srcdoc="{!! htmlspecialchars($htmlContentWithScript) !!}" 
                     style="width: 100%; border: none; display: block; min-height: {{ $height }}px;"
-                    sandbox="allow-scripts allow-same-origin allow-top-navigation"
+                    sandbox="allow-scripts allow-same-origin allow-top-navigation allow-popups"
                     scrolling="no"
                     loading="lazy"
                     onload="(function(iframe){
