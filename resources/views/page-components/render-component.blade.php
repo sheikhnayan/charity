@@ -4743,7 +4743,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
     @endphp
 
     @foreach ($students as $index => $student)
-        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" data-index="{{ $index }}" style="flex: 0 0 calc(50% - 10px); padding-left: 0px; padding-right: 0px; {{ $index >= 20 ? 'display: none;' : '' }}" class="student-item">
+        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" data-index="{{ $index }}" style="flex: 0 0 calc(50% - 10px); padding-left: 0px; padding-right: 0px; {{ $index >= 10 ? 'display: none;' : '' }}" class="student-item">
             <div class="student-card-content" style="background: #fff">
                 <div style="font-size: 12px;">
                     <div class="position-relative rounded-3 shadow-sm border listingg"
@@ -4803,7 +4803,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         </div>
                         
                         <!-- Load More Button -->
-                        <div id="loadMoreContainer" style="text-align: center; margin-top: 30px; display: {{ count($students) > 20 ? 'block' : 'none' }};">
+                        <div id="loadMoreContainer" style="text-align: center; margin-top: 30px; display: {{ count($students) > 10 ? 'block' : 'none' }};">
                             <button id="loadMoreBtn" class="btn btn-primary btn-lg" style="padding: 12px 40px; font-size: 16px; font-weight: 600;">
                                 <i class="fa fa-plus-circle me-2"></i>Load More Students
                             </button>
@@ -4821,7 +4821,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 const loadMoreContainer = document.getElementById('loadMoreContainer');
                 const allStudentCards = document.querySelectorAll('.student-card-wrapper');
                 
-                let currentlyVisible = 20; // Initially show 20 students
+                let currentlyVisible = 10; // Initially show 10 students
                 const loadMoreCount = 10; // Load 10 more each time
                 const totalStudents = allStudentCards.length;
                 
