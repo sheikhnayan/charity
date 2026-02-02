@@ -37,9 +37,7 @@ window.ShoppingCart = {
     state: {
         cart: null,
         cartOpen: false,
-        loading: false,
-        addingQueue: [],  // Queue for items being added
-        isProcessingQueue: false  // Flag to prevent concurrent queue processing
+        loading: false
     },
 
     /**
@@ -88,14 +86,11 @@ window.ShoppingCart = {
     async processQueuedItems() {
         if (window._cartQueue && window._cartQueue.length > 0) {
             console.log('🛒 [INIT] Processing queued items:', window._cartQueue.length);
-            // Add all queued items to the internal queue
-            while (window._cartQueue.length > 0) {
-                const item = window._cartQueue.shift();
-                this.state.addingQueue.push(item);
-                console.log('🛒 [INIT] Moved item to processing queue:', item.name);
+            // Process each queued item directly
+            for (const item of window._cartQueue) {
+                await this.addItem(item);
             }
-            // Start processing the internal queue
-            await this.processAddingQueue();
+            window._cartQueue = [];
         }
     },
 
@@ -630,126 +625,7 @@ window.ShoppingCart = {
         return true; // Return immediately, don't wait for API
     },
 
-    /**
-     * Process the queue of items to add
-     * CRITICAL: Strict atomic locking to prevent race conditions
-     */
-    async processAddingQueue() {
-        // CHECK: If already processing, exit immediately (no concurrent processing)
-        if (this.state.isProcessingQueue) {
-            console.log('🛒 [QUEUE] ⏳ Already processing queue, exiting...');
-            return;
-        }
-        
-        // CHECK: If no items, exit
-        if (this.state.addingQueue.length === 0) {
-            console.log('🛒 [QUEUE] ℹ️ No items to process');
-            return;
-        }
 
-        // SET: Lock flag IMMEDIATELY before any async operations
-        this.state.isProcessingQueue = true;
-        const startTime = Date.now();
-        const totalItems = this.state.addingQueue.length;
-        
-        console.log('\n🛒 [QUEUE] ═══════════════════════════════════════════');
-        console.log('🛒 [QUEUE] 🔒 LOCK ACQUIRED - Starting processing');
-        console.log('🛒 [QUEUE] Queue size: ' + totalItems);
-        console.log('🛒 [QUEUE] Items: ' + this.state.addingQueue.map(i => i.name).join(', '));
-
-        let successCount = 0;
-        let failureCount = 0;
-
-        try {
-            // Process every single item in the queue
-            while (this.state.addingQueue.length > 0) {
-                // Get next item
-                const itemData = this.state.addingQueue.shift();
-                const itemNumber = successCount + failureCount + 1;
-                
-                console.log('🛒 [QUEUE] [' + itemNumber + '/' + totalItems + '] Processing: ' + itemData.name);
-
-                try {
-                    // Make API request
-                    const response = await fetch(`${this.config.apiBaseUrl}/add`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': this.getCSRFToken()
-                        },
-                        body: JSON.stringify(itemData)
-                    });
-
-                    // Check HTTP status
-                    if (!response.ok) {
-                        console.error('❌ [QUEUE] HTTP ' + response.status);
-                        failureCount++;
-                    } else {
-                        // Parse response
-                        const data = await response.json();
-                        console.log('🛒 [QUEUE] Response:', JSON.stringify(data).substring(0, 100));
-
-                        if (data.success && data.cart) {
-                            // SUCCESS: Just update cart state, don't update display yet
-                            this.state.cart = data.cart;
-                            successCount++;
-                            console.log('✅ [QUEUE] [' + itemNumber + '/' + totalItems + '] Added: ' + itemData.name);
-                        } else {
-                            // API error response
-                            console.warn('⚠️ [QUEUE] API failed: ' + (data.message || 'No cart in response'));
-                            failureCount++;
-                        }
-                    }
-                } catch (error) {
-                    // Network or parsing error
-                    console.error('❌ [QUEUE] Exception: ' + error.message);
-                    failureCount++;
-                }
-                
-                // NO DELAY - Process as fast as possible
-                // Laravel session will handle locking properly
-            }
-        } finally {
-            // Calculate processing time
-            const processingTime = Date.now() - startTime;
-            
-            // RELEASE: Always release lock
-            this.state.isProcessingQueue = false;
-            console.log('🛒 [QUEUE] ─────────────────────');
-            console.log('🛒 [QUEUE] 🔓 LOCK RELEASED');
-            console.log('🛒 [QUEUE] ═══════════════════════════════════════════');
-            console.log('🛒 [QUEUE] RESULTS:');
-            console.log('🛒 [QUEUE]   ✅ Success: ' + successCount + '/' + totalItems);
-            console.log('🛒 [QUEUE]   ❌ Failed: ' + failureCount);
-            console.log('🛒 [QUEUE]   ⏱️  Time: ' + processingTime + 'ms');
-            console.log('🛒 [QUEUE]   📦 Remaining: ' + this.state.addingQueue.length);
-            
-            // CRITICAL: Reload cart from server to get accurate state
-            console.log('🛒 [QUEUE] 🔄 Reloading cart from server...');
-            await this.loadCart();
-            
-            // Now update all displays with final accurate cart state
-            this.updateCartDisplay();
-            this.updateCartBadge();
-            
-            // Show summary notification
-            if (successCount > 0) {
-                this.showNotification(`✅ Added ${successCount} item(s) to cart!`, 'success');
-            }
-            if (failureCount > 0) {
-                this.showNotification(`⚠️ Failed to add ${failureCount} item(s)`, 'error');
-            }
-            
-            // If new items were added while processing, restart the queue
-            if (this.state.addingQueue.length > 0) {
-                console.log('🛒 [QUEUE] ♻️  New items detected! Restarting queue with ' + this.state.addingQueue.length + ' items');
-                // Brief pause before restart
-                await new Promise(resolve => setTimeout(resolve, 50));
-                // Recursive restart
-                this.processAddingQueue();
-            }
-        }
-    },
 
     /**
      * Remove item from cart

@@ -4963,29 +4963,33 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Add to cart button functionality with visual feedback
-                document.addEventListener('click', function(e) {
+                // Add to cart button functionality - Simple and direct
+                document.addEventListener('click', async function(e) {
                     const btn = e.target.closest('.add-student-to-cart');
                     if (!btn) return;
                     
                     e.preventDefault();
                     e.stopPropagation();
                     
+                    // Prevent double clicks
+                    if (btn.disabled) return;
+                    
                     const itemId = btn.dataset.itemId;
                     const itemName = btn.dataset.itemName;
                     const itemType = btn.dataset.itemType;
                     const itemPrice = btn.dataset.itemPrice || '0';
                     
-                    console.log('🛒 [Student Listing] Add to cart clicked', { itemId: itemId, itemName: itemName, itemType: itemType, itemPrice: itemPrice });
+                    console.log('🛒 Adding to cart:', itemName);
                     
-                    // Visual feedback - show "Adding..." state briefly
+                    // Disable button and show loading
                     const originalHTML = btn.innerHTML;
                     btn.disabled = true;
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
                     
-                    if (typeof window.addToCart === 'function') {
+                    if (typeof window.ShoppingCart !== 'undefined' && window.ShoppingCart.addItem) {
                         try {
-                            window.addToCart({
+                            // Wait for item to be added
+                            const success = await window.ShoppingCart.addItem({
                                 id: itemId,
                                 name: itemName,
                                 type: itemType,
@@ -4993,24 +4997,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 quantity: 1
                             });
                             
-                            console.log('✅ [Student Listing] Item queued for cart');
-                            
-                            // Show success feedback immediately (item is queued)
-                            btn.innerHTML = '<i class="fa fa-check me-2"></i>Queued!';
-                            btn.classList.remove('btn-outline-primary');
-                            btn.classList.add('btn-success');
-                            
-                            // Re-enable button quickly since it's now queued
-                            setTimeout(function() {
-                                btn.innerHTML = originalHTML;
-                                btn.classList.remove('btn-success');
-                                btn.classList.add('btn-outline-primary');
-                                btn.disabled = false;
-                            }, 500);
+                            if (success) {
+                                // Show success briefly
+                                btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                                btn.classList.remove('btn-outline-primary');
+                                btn.classList.add('btn-success');
+                                
+                                setTimeout(function() {
+                                    btn.innerHTML = originalHTML;
+                                    btn.classList.remove('btn-success');
+                                    btn.classList.add('btn-outline-primary');
+                                    btn.disabled = false;
+                                }, 1000);
+                            } else {
+                                throw new Error('Failed to add item');
+                            }
                         } catch (error) {
-                            console.error('❌ [Student Listing] Error queuing item:', error);
-                            
-                            // Error feedback
+                            console.error('❌ Error:', error);
                             btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
                             btn.classList.add('btn-danger');
                             
@@ -5021,17 +5024,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             }, 2000);
                         }
                     } else {
-                        console.error('❌ [Student Listing] addToCart function not available');
-                        
-                        // Error feedback
-                        btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
-                        btn.classList.add('btn-danger');
-                        
-                        setTimeout(function() {
-                            btn.innerHTML = originalHTML;
-                            btn.classList.remove('btn-danger');
-                            btn.disabled = false;
-                        }, 2000);
+                        console.error('❌ ShoppingCart not available');
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
                     }
                 });
             })();
