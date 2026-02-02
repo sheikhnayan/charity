@@ -4750,7 +4750,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         style="width: 100%; max-width: 580px; margin-inline: auto; padding-bottom: 50px;">
                         <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
                             <div class="row lsls gy-3" style="padding: 0.5rem;">
-                                <div class="col-lg-2 d-flex align-items-center">
+                                <div class="col-lg-3 d-flex align-items-center">
                                     <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50% !important; border-color: #2e4053 !important; overflow: hidden; width: 80px; height: 80px; aspect-ratio: 1/1;">
                                         <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%;">
                                     </div>
