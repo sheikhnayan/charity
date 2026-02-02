@@ -1184,6 +1184,11 @@ function initializeCart() {
 }
 
 // Execute initialization based on document state
+console.log('🛒 [CART.JS] Reached end of file, about to set up initialization');
+console.log('🛒 [CART.JS] document.readyState:', document.readyState);
+console.log('🛒 [CART.JS] window.ShoppingCart exists:', !!window.ShoppingCart);
+console.log('🛒 [CART.JS] window.ShoppingCart.init exists:', !!(window.ShoppingCart && window.ShoppingCart.init));
+
 if (document.readyState === 'loading') {
     console.log('🛒 [CART] DOM still loading, waiting for DOMContentLoaded...');
     document.addEventListener('DOMContentLoaded', initializeCart);
@@ -1192,3 +1197,5 @@ if (document.readyState === 'loading') {
     // Use setTimeout to ensure the script is fully parsed
     setTimeout(initializeCart, 10);
 }
+
+console.log('🛒 [CART.JS] Script execution complete');
