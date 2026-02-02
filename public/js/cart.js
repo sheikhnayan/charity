@@ -60,18 +60,22 @@ window.ShoppingCart = {
             // Load cart from server - DON'T BLOCK BUTTON CREATION
             console.log('🛒 [CART] Loading cart from server...');
             await this.loadCart();
+            console.log('🛒 [CART] ✅ Cart loaded');
             
             // Setup event listeners
             console.log('🛒 [CART] Setting up event listeners...');
             this.setupEventListeners();
+            console.log('🛒 [CART] ✅ Event listeners set up');
             
             // Update cart display
             console.log('🛒 [CART] Updating cart display...');
             this.updateCartDisplay();
+            console.log('🛒 [CART] ✅ Cart display updated');
             
             // Process any queued items
-            console.log('🛒 [CART] Processing queued items...');
+            console.log('🛒 [CART] Processing ' + (window._cartQueue ? window._cartQueue.length : 0) + ' queued items...');
             await this.processQueuedItems();
+            console.log('🛒 [CART] ✅ Queued items processed');
             
             console.log('✅ [CART] Shopping Cart initialized successfully');
         } catch (error) {
