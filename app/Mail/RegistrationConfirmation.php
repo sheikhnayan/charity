@@ -29,7 +29,10 @@ class RegistrationConfirmation extends Mailable
      */
     public function build()
     {
-        return $this->subject("We've Received Your Registration")
+        // Apply website-specific email settings
+        \App\Services\WebsiteMailService::applyForWebsite($this->website);
+
+        $message = $this->subject("We've Received Your Registration")
                     ->view('emails.registration-confirmation')
                     ->with([
                         'userName' => $this->user->name,
@@ -37,5 +40,15 @@ class RegistrationConfirmation extends Mailable
                         'websiteName' => $this->website->name,
                         'websiteDomain' => $this->website->domain,
                     ]);
+
+        // Apply from address from website settings if available
+        if ($this->website && $this->website->emailSettings && $this->website->emailSettings->from_address) {
+            $message->from(
+                $this->website->emailSettings->from_address,
+                $this->website->emailSettings->from_name ?? $this->website->name
+            );
+        }
+
+        return $message;
     }
 }

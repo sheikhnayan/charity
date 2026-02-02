@@ -30,6 +30,9 @@ class TransactionInvoice extends Mailable
      */
     public function build()
     {
+        // Apply website-specific email settings
+        \App\Services\WebsiteMailService::applyForWebsite($this->website);
+
         $fee_percentage = 2.9; // Default fee
         if ($this->website->paymentSettings) {
             $fee_percentage = $this->website->paymentSettings->fee ?? 2.9;
@@ -56,11 +59,7 @@ class TransactionInvoice extends Mailable
             'defaultFont' => 'Arial'
         ]);
 
-        return $this->subject($subject)
-                    ->from(config('mail.from.address', 'noreply@' . $this->website->domain), $this->website->name)
-                    ->when(config('mail.reply_to.address'), function ($m) {
-                        $m->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
-                    })
+        $message = $this->subject($subject)
                     ->view('emails.transaction-invoice')
                     ->with(array_merge([
                         'transaction' => $this->transaction,
@@ -75,6 +74,23 @@ class TransactionInvoice extends Mailable
                             'mime' => 'application/pdf',
                         ]
                     );
+
+        // Apply from address from website settings if available
+        if ($this->website && $this->website->emailSettings && $this->website->emailSettings->from_address) {
+            $message->from(
+                $this->website->emailSettings->from_address,
+                $this->website->emailSettings->from_name ?? $this->website->name
+            );
+        } else {
+            $message->from(config('mail.from.address', 'noreply@' . $this->website->domain), $this->website->name);
+        }
+
+        // Apply reply-to if configured
+        if (config('mail.reply_to.address')) {
+            $message->replyTo(config('mail.reply_to.address'), config('mail.reply_to.name'));
+        }
+
+        return $message;
     }
     
     /**

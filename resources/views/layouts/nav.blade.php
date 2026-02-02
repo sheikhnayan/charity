@@ -68,6 +68,26 @@
                      class="d-inline-block align-text-top" 
                      style="width: {{ $header->logo_size ?? 100 }}px !important; height: {{ $header->logo_height ?? 60 }}px !important; object-fit: contain;">
             </a>
+
+            {{-- Mobile Only Auth/Dashboard Button --}}
+            <div class="d-xl-none" style="display: flex; align-items: center; gap: 10px; margin: 0 auto;">
+                @if($header && $header->show_auth_button == 1)
+                    @guest
+                    <button class="invest-now-btn sssssttttt" 
+                            onclick="openAuthModal()" 
+                            style="background-color: {{ $header->auth_button_bg_color ?? '#007bff' }} !important; color: {{ $header->auth_button_text_color ?? '#ffffff' }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
+                        {{ $header->auth_button_text ?? 'Login / Register' }}
+                    </button>
+                    @endguest
+                @endif
+                
+                @auth
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
+                    DASHBOARD
+                </button>
+                @endauth
+            </div>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color:{{ $header->color }} !important; border-color: transparent !important;">
                 <i class="fa fa-bars" style="color: {{ $header->color }}; font-size: 1.5rem;"></i>
             </button>
@@ -103,7 +123,7 @@
             </div>
             @if($check && $check->isInvestment())
                 {{-- Investment website buttons --}}
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="close-on-mobile" style="display: flex; align-items: center; gap: 10px;">
                     {{-- Login/Registration Button (if enabled) --}}
                     @if($header && $header->show_auth_button == 1)
                         @guest
@@ -117,7 +137,7 @@
                     
                     {{-- Dashboard/Invest Now Button --}}
                     @auth
-                    <a class="navbar-brand close-on-mobile" href="/users/donation">
+                    <a class="navbar-brand" href="/users/donation">
                         <div class="invest-button-section">
                         <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
                             DASHBOARD
@@ -125,7 +145,7 @@
                     </div>
                     </a>
                     @else
-                    <a class="navbar-brand close-on-mobile" href="/invest">
+                    <a class="navbar-brand" href="/invest">
                         <div class="invest-button-section">
                         <button class="invest-now-btn sssssttttt" onclick="window.location.href='/invest'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
                             {{ $header->invest_now_button_text ?? 'INVEST NOW' }}
@@ -136,7 +156,7 @@
                 </div>
             @else
                 {{-- Fundraiser website buttons --}}
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="close-on-mobile" style="display: flex; align-items: center; gap: 10px;">
                     {{-- Login/Registration Button (if enabled) --}}
                     @if($header && $header->show_auth_button == 1)
                         @guest
@@ -150,8 +170,8 @@
                     
                     {{-- Dashboard Button (only for authenticated fundraiser users) --}}
                     @auth
-                    <a class="navbar-brand close-on-mobile" href="/users/donation">
-                        <div class="invest-button-section">
+                    <a class="navbar-brand" href="/users/donation">
+                    <div class="invest-button-section close-on-mobile">
                         <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
                             DASHBOARD
                         </button>

@@ -20,6 +20,10 @@
         $website = null;
         $customFonts = collect();
     }
+    
+    // Load payment settings and check if Coinbase is enabled
+    $paymentSettings = $website?->paymentSettings ?? \App\Models\PaymentSetting::find(1);
+    $coinbaseEnabled = $paymentSettings?->coinbase_enabled ?? false;
 @endphp
 
 <!DOCTYPE html>
@@ -698,6 +702,7 @@
                     </div>
                     
                     <!-- Pay with Crypto Button -->
+                    @if($coinbaseEnabled)
                     <div class="sc-gyZVQB fWNGEI mt-3">
                         <div class="sc-cVAmsi cvolSU">
                             <a href="{{ route('crypto.payment') }}?amount={{ $data->amount }}&type={{ $data->type }}&reference_id={{ $data->id }}&website_id={{ $data->website_id ?? '' }}&session_id={{ session()->getId() }}" 
@@ -707,6 +712,7 @@
                             </a>
                         </div>
                     </div>
+                    @endif
                 </form>
             </div>
             <div class="col-md-6 desktop">

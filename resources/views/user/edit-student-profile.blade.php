@@ -3,7 +3,7 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('user/extra.css') }}">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
@@ -313,8 +313,8 @@
                                 <button class="share-btn-circle btn btn-whatsapp" id="whatsappShare" title="WhatsApp">
                                     <i class="fab fa-whatsapp"></i>
                                 </button>
-                                <button class="share-btn-circle btn btn-twitter" id="twitterShare" title="Twitter">
-                                    <i class="fab fa-twitter"></i>
+                                <button class="share-btn-circle btn btn-twitter" id="twitterShare" title="X">
+                                    <i class="fa-brands fa-x-twitter"></i>
                                 </button>
                                 <button class="share-btn-circle btn btn-facebook" id="facebookShare" title="Facebook">
                                     <i class="fab fa-facebook-f"></i>
@@ -371,6 +371,9 @@
                 color: white !important;
                 border: none !important;
             }
+            .btn-twitter .fa-x-twitter {
+                color: #fff !important;
+            }
             .btn-twitter:hover {
                 background-color: #1a8cd8 !important;
                 color: white !important;
@@ -392,6 +395,10 @@
             .btn-email:hover {
                 background-color: #5a6268 !important;
                 color: white !important;
+            }
+
+            .btn-twitter{
+                background: #000 !important;
             }
         </style>
         

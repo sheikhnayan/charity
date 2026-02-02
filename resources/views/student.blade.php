@@ -10,12 +10,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $check->name ?? 'Page' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <style>body{background:#f9fafb;}</style>
+    <style>
+        body{background:#f9fafb;}
+
+        .btn-x-share {
+            /* background-color: #1DA1F2; */
+            color: #fff;
+            border-color: #000;
+        }
+
+        .btn-x-share:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .btn-x-share:hover i{
+            /* background-color: #000; */
+            color: #fff;
+        }
+
+        .btn-twitter{
+            background: #000 !important;
+        }
+
+        .fa-x-twitter{
+            color: #000;
+        }
+    </style>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('auction.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Bootstrap JS -->
@@ -608,11 +634,11 @@
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
                                 
-                                <!-- Twitter Share -->
-                                <a href="https://twitter.com/intent/tweet?url={{ urlencode($profileUrl) }}&text={{ urlencode($shareText) }}" 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   class="btn btn-sm btn-outline-info" title="Share on Twitter">
-                                    <i class="fab fa-twitter"></i>
+                                <!-- X Share -->
+                                          <a href="https://twitter.com/intent/tweet?url={{ urlencode($profileUrl) }}&text={{ urlencode($shareText) }}" 
+                                              target="_blank" rel="noopener noreferrer" 
+                                              class="btn btn-sm btn-x-share" title="Share on X">
+                                    <i class="fa-brands fa-x-twitter"></i>
                                 </a>
                                 
                                 <!-- LinkedIn Share -->
@@ -632,16 +658,10 @@
                                 <!-- Copy Link -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" 
                                         onclick="copyToClipboard('{{ $profileUrl }}')" 
-                                        title="Copy profile link">
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Copy URL">
                                     <i class="fas fa-link"></i>
                                 </button>
                             </div>
-                            
-                            @if($data->tshirt_size)
-                            <span class="badge bg-info text-dark d-inline-block mt-3 mx-auto">
-                                <i class="fas fa-shirt me-1"></i>T-Shirt Size: {{ $data->tshirt_size }}
-                            </span>
-                            @endif
                         </div>
                     </div>
                     <span class="position-absolute top-0 end-0 m-2 opacity-50 small">

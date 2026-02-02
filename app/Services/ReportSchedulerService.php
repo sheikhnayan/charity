@@ -317,6 +317,11 @@ class ReportSchedulerService
         }
 
         try {
+            // Apply website-specific email settings if available
+            if ($report->website_id) {
+                \App\Services\WebsiteMailService::applyForWebsite($report->website);
+            }
+
             Mail::send('emails.scheduled_report', [
                 'report' => $report,
                 'execution' => $execution

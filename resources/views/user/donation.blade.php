@@ -102,17 +102,28 @@
 }
 
 .introjs-skipbutton {
-    color: #e53e3e;
-    background: transparent;
-    padding: 4px 8px;
-    border: 1px solid #e53e3e;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
+    color: #475569;
+    background: #f8fafc;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 28px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    margin-top: 13px;
+    margin-right: 0px;
 }
 
 .introjs-skipbutton:hover {
-    background: #fff5f5;
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
 .introjs-skipbutton:disabled,
@@ -644,6 +655,49 @@ body.tutorial-first-visit .introjs-skipbutton {
             </div>
             </div>
 
+            <!-- Add Student Modal -->
+            @if(Auth::user()->role == 'parents')
+            <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="{{ route('parent.add-student') }}" method="POST">
+                            @csrf
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                    <div class="form-text">Credentials are automatically generated for system use only and are not shared or tracked outside the fundraiser.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                                    <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
+                                        <option value="">Choose a teacher</option>
+                                        @if(isset($teachers))
+                                            @foreach($teachers as $teacher)
+                                                <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Student</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- jQuery -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <!-- DataTables CSS -->
@@ -678,6 +732,15 @@ body.tutorial-first-visit .introjs-skipbutton {
 
             <script>
                 $(document).ready(function() {
+                    // Initialize Select2 for teacher select if available
+                    if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
+                        jQuery('.teacher-select').select2({
+                            placeholder: 'Search and select a teacher',
+                            allowClear: true,
+                            width: '100%'
+                        });
+                    }
+
                     // Only initialize DataTable if there are rows with data
                     @if (!$data->isEmpty())
                     let table = new DataTable('.table', {

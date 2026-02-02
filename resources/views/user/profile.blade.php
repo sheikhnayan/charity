@@ -244,31 +244,33 @@
                                     <div class="col-12 tab-content fundraiser-tab-content">
 
                                         @if (Auth::user()->role != 'customer')
-                                            <div class="row gy-3 tab-pane profile-tab-individual show active" role="tabpanel">
-                                                <div class="col-12">
-                                                    <label for="individual_goal" class="form-label">Your goal</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">$</span>
-                                                        <input type="number" class="form-control" id="individual_goal"
-                                                            name="goal" value="{{ Auth::user()->goal }}">
-                                                        <span class="input-group-text">.00 USD</span>
+                                            @if (Auth::user()->role != 'parents' && Auth::user()->role != 'parent' && Auth::user()->role != 'Parents')
+                                                <div class="row gy-3 tab-pane profile-tab-individual show active" role="tabpanel">
+                                                    <div class="col-12">
+                                                        <label for="individual_goal" class="form-label">Your goal</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">$</span>
+                                                            <input type="number" class="form-control" id="individual_goal"
+                                                                name="goal" value="{{ Auth::user()->goal }}">
+                                                            <span class="input-group-text">.00 USD</span>
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <div class="col-12">
-                                                    <label for="individual_url" class="form-label">
-                                                        Your URL
-                                                    </label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">
-                                                            {{ Auth::user()->website->domain }}/profile/
-                                                        </span>
-                                                        <input type="text" class="form-control" id="individual_url"
-                                                            name="individual_url"
-                                                            value="{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}">
+                                                    <div class="col-12">
+                                                        <label for="individual_url" class="form-label">
+                                                            Your URL
+                                                        </label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">
+                                                                {{ Auth::user()->website->domain }}/profile/
+                                                            </span>
+                                                            <input type="text" class="form-control" id="individual_url"
+                                                                name="individual_url"
+                                                                value="{{ Auth::user()->id }}-{{ str_replace(' ', '-', Auth::user()->name) }}-{{ str_replace(' ', '-', Auth::user()->last_name) }}">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         @else
                                         @endif
 
@@ -316,6 +318,7 @@
 
 
                                     @if (Auth::user()->role != 'customer')
+                                        @if (Auth::user()->role != 'parents' && Auth::user()->role != 'parent' && Auth::user()->role != 'Parents')
                                         <div class="col-12">
                                             <label for="description" class="form-label ">
                                                 Enter the text that will appear on your personal fundraising page.
@@ -327,6 +330,7 @@
                                                         {!! Auth::user()->description !!}
                                                     </textarea>
                                         </div>
+                                        @endif
                                         
                                     @else
                                         {{-- Investor Profile Section for Customers --}}

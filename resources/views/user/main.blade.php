@@ -144,6 +144,19 @@
         letter-spacing: 0.5px;
       }
 
+      /* Mobile spacing for navbar title area */
+      @media (max-width: 768px) {
+        .layout-navbar.container-xxl {
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
+
+        .layout-navbar .navbar-nav-right {
+          padding-left: 4px;
+          padding-right: 4px;
+        }
+      }
+
       /* Sidebar collapse behavior */
       .layout-menu.collapsed .menu-header-text,
       .layout-menu.collapsed .app-brand-text {
@@ -264,18 +277,18 @@
       }
 
       .menu-back-home .menu-link {
-        background: rgba(255,255,255,0.14) !important;
+        background: linear-gradient(135deg, #374151, #111827) !important;
         color: #fff !important;
-        font-weight: 700 !important;
-        border: 1px solid rgba(255,255,255,0.25) !important;
-        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+        font-weight: 800 !important;
+        border: 1px solid rgba(255,255,255,0.35) !important;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
         border-radius: 10px !important;
       }
 
       .menu-back-home .menu-link:hover {
         transform: translateX(4px);
-        background: rgba(255,255,255,0.22) !important;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+        background: linear-gradient(135deg, #4b5563, #1f2937) !important;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.6);
       }
 
       /* Layout menu toggle icon */
@@ -371,27 +384,25 @@
               </li>
 
 
-              @if (Auth::user()->role != 'user')
+                @if (Auth::user()->role != 'user')
+                @if (Auth::user()->role != 'parents' && Auth::user()->role != 'parent' && Auth::user()->role != 'Parents')
                 <!-- Dashboard -->
                 <li class="menu-header small text-uppercase ">
-                    <span class="menu-header-text">
-                        Dashboard
-                    </span>
+                  <span class="menu-header-text">
+                    Dashboard
+                  </span>
                 </li>
                 <li class="menu-item {{ request()->is('users') ? 'active' : '' }}">
-                    <a
-                    href="/users"
-                    class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-home"></i>
-                    <div class="text-truncate" data-i18n="Email">
-                        @if(Auth::user()->role == 'parents')
-                        Support
-                        @else
-                        Dashboard
-                        @endif
-                    </div>
-                    </a>
+                  <a
+                  href="/users"
+                  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-home"></i>
+                  <div class="text-truncate" data-i18n="Email">
+                    Dashboard
+                  </div>
+                  </a>
                 </li>
+                @endif
                 <!-- Information -->
                 <li class="menu-header small text-uppercase ">
                     <span class="menu-header-text">Information</span>
@@ -449,14 +460,22 @@
               <!-- Payments (Parents Only) -->
               @if (Auth::user()->role == 'parents')
               <li class="menu-header small text-uppercase ">
-                <span class="menu-header-text">Payments</span>
+                <span class="menu-header-text">Donations</span>
+              </li>
+              <li class="menu-item {{ request()->is('users/donation') ? 'active' : '' }}">
+                <a
+                  href="/users/donation"
+                  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-transfer"></i>
+                  <div class="text-truncate" data-i18n="Email">Received</div>
+                </a>
               </li>
               <li class="menu-item {{ request()->is('users/payments') ? 'active' : '' }}">
                 <a
                   href="/users/payments"
                   class="menu-link">
                   <i class="menu-icon tf-icons bx bx-credit-card"></i>
-                  <div class="text-truncate" data-i18n="Email">Payments</div>
+                  <div class="text-truncate" data-i18n="Email">Paid</div>
                 </a>
               </li>
               @endif
@@ -773,6 +792,20 @@
           localStorage.setItem('ui:theme', e.target.value);
         });
       })();
+    </script>
+
+    <!-- Add Participant Modal Fallback (Parents) -->
+    <script>
+      document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-bs-target="#addStudentModal"]');
+        if (!trigger) return;
+
+        const modalEl = document.getElementById('addStudentModal');
+        if (!modalEl || typeof bootstrap === 'undefined' || !bootstrap.Modal) return;
+
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modalInstance.show();
+      });
     </script>
 
     <!-- Place this tag before closing body tag for github widget button. -->

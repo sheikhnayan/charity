@@ -646,6 +646,8 @@ class AdminController extends Controller
             try {
                 $website = Website::find($data->website_id);
                 if ($website) {
+                    // Apply website-specific email settings
+                    \App\Services\WebsiteMailService::applyForWebsite($website);
                     Mail::to($data->email)->send(new AccountApproval($data, $website));
                 }
             } catch (\Exception $e) {
@@ -695,6 +697,8 @@ class AdminController extends Controller
                         try {
                             $website = Website::find($user->website_id);
                             if ($website) {
+                                // Apply website-specific email settings
+                                \App\Services\WebsiteMailService::applyForWebsite($website);
                                 Mail::to($user->email)->send(new \App\Mail\AccountApproval($user, $website));
                             }
                         } catch (\Exception $e) {

@@ -4735,15 +4735,15 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
                 <div class="col-12 mt-4">
                         <div id="studentEntryInfo" style="margin-bottom: 10px; font-size: 14px; color: #666;">
-                            Showing <span id="studentCount">0</span> students
+                            Showing <span id="studentCount">0</span> of <span id="totalStudentCount">0</span> students
                         </div>
                         <div id="studentListContainer" class="row" style="display: flex; flex-wrap: wrap; gap: 20px;">
     @php
         $students = App\Models\User::whereIn('role', ['individual', 'group_leader', 'member'])->where('website_id', $check->id)->latest()->get();
     @endphp
 
-    @foreach ($students as $student)
-        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" style="flex: 0 0 calc(50% - 10px); padding-left: 0px; padding-right: 0px;" class="student-item">
+    @foreach ($students as $index => $student)
+        <div class="student-card-wrapper" data-student-id="{{ $student->id }}" data-index="{{ $index }}" style="flex: 0 0 calc(50% - 10px); padding-left: 0px; padding-right: 0px; {{ $index >= 20 ? 'display: none;' : '' }}" class="student-item">
             <div class="student-card-content" style="background: #fff">
                 <div style="font-size: 12px;">
                     <div class="position-relative rounded-3 shadow-sm border listingg"
@@ -4751,8 +4751,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <a href="/profile/{{ $student->id }}-{{ $student->name }}-{{ $student->last_name }}" style="color: {{ $style['color'] ?? '#000'}}; text-decoration: none;" target="_blank">
                             <div class="row lsls gy-3" style="padding: 0.5rem;">
                                 <div class="col-lg-2 d-flex align-items-center">
-                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden; width: 80px; height: 80px;">
-                                        <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                    <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50% !important; border-color: #2e4053 !important; overflow: hidden; width: 80px; height: 80px; aspect-ratio: 1/1;">
+                                        <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%;">
                                     </div>
                                 </div>
 
@@ -4801,21 +4801,53 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
         </div>
     @endforeach
                         </div>
+                        
+                        <!-- Load More Button -->
+                        <div id="loadMoreContainer" style="text-align: center; margin-top: 30px; display: {{ count($students) > 20 ? 'block' : 'none' }};">
+                            <button id="loadMoreBtn" class="btn btn-primary btn-lg" style="padding: 12px 40px; font-size: 16px; font-weight: 600;">
+                                <i class="fa fa-plus-circle me-2"></i>Load More Students
+                            </button>
+                        </div>
                 </div>
             </div>
         <script>
-            // Fixed student listing counter and search for the refactored layout
+            // Fixed student listing counter and search with load more functionality
             (function() {
                 const searchInput = document.getElementById('search');
                 const studentListContainer = document.getElementById('studentListContainer');
                 const studentCountEl = document.getElementById('studentCount');
+                const totalStudentCountEl = document.getElementById('totalStudentCount');
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                const loadMoreContainer = document.getElementById('loadMoreContainer');
                 const allStudentCards = document.querySelectorAll('.student-card-wrapper');
+                
+                let currentlyVisible = 20; // Initially show 20 students
+                const loadMoreCount = 10; // Load 10 more each time
+                const totalStudents = allStudentCards.length;
+                
+                // Update total count
+                if (totalStudentCountEl) {
+                    totalStudentCountEl.textContent = totalStudents;
+                }
                 
                 const updateStudentCount = function() {
                     const visibleCards = Array.from(allStudentCards).filter(function(card) {
-                        return card.style.display !== 'none';
+                        const computedDisplay = window.getComputedStyle(card).display;
+                        return computedDisplay !== 'none' && card.getAttribute('data-hidden-by-search') !== 'true';
                     });
-                    studentCountEl.textContent = visibleCards.length;
+                    if (studentCountEl) {
+                        studentCountEl.textContent = visibleCards.length;
+                    }
+                    
+                    // Show/hide load more button based on hidden cards
+                    const hiddenByPagination = Array.from(allStudentCards).filter(function(card) {
+                        const index = parseInt(card.getAttribute('data-index'));
+                        return index >= currentlyVisible && card.getAttribute('data-hidden-by-search') !== 'true';
+                    });
+                    
+                    if (loadMoreContainer) {
+                        loadMoreContainer.style.display = hiddenByPagination.length > 0 ? 'block' : 'none';
+                    }
                 };
                 
                 const filterStudents = function() {
@@ -4824,11 +4856,48 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     allStudentCards.forEach(function(card) {
                         const studentContent = card.textContent.toLowerCase();
                         const matches = !keyword || studentContent.includes(keyword);
-                        card.style.display = matches ? '' : 'none';
+                        
+                        if (!matches) {
+                            card.style.display = 'none';
+                            card.setAttribute('data-hidden-by-search', 'true');
+                        } else {
+                            card.removeAttribute('data-hidden-by-search');
+                            // Check if it should be shown based on pagination
+                            const index = parseInt(card.getAttribute('data-index'));
+                            if (index < currentlyVisible) {
+                                card.style.display = '';
+                            }
+                        }
                     });
                     
                     updateStudentCount();
                 };
+                
+                // Load More functionality
+                if (loadMoreBtn) {
+                    loadMoreBtn.addEventListener('click', function() {
+                        const oldVisible = currentlyVisible;
+                        currentlyVisible += loadMoreCount;
+                        
+                        // Show next batch of students
+                        allStudentCards.forEach(function(card) {
+                            const index = parseInt(card.getAttribute('data-index'));
+                            if (index >= oldVisible && index < currentlyVisible && card.getAttribute('data-hidden-by-search') !== 'true') {
+                                card.style.display = '';
+                            }
+                        });
+                        
+                        updateStudentCount();
+                        
+                        // Smooth scroll to first newly loaded student
+                        setTimeout(function() {
+                            const firstNewCard = document.querySelector('.student-card-wrapper[data-index="' + oldVisible + '"]');
+                            if (firstNewCard) {
+                                firstNewCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }, 100);
+                    });
+                }
                 
                 // Initialize count
                 updateStudentCount();

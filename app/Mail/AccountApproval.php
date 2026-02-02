@@ -31,7 +31,10 @@ class AccountApproval extends Mailable
      */
     public function build()
     {
-        return $this->subject('Your Account Has Been Approved')
+        // Apply website-specific email settings
+        \App\Services\WebsiteMailService::applyForWebsite($this->website);
+
+        $message = $this->subject('Your Account Has Been Approved')
                     ->view('emails.account-approval')
                     ->with([
                         'userName' => $this->user->name,
@@ -40,5 +43,15 @@ class AccountApproval extends Mailable
                         'websiteDomain' => $this->website->domain,
                         'loginUrl' => $this->loginUrl,
                     ]);
+
+        // Apply from address from website settings if available
+        if ($this->website && $this->website->emailSettings && $this->website->emailSettings->from_address) {
+            $message->from(
+                $this->website->emailSettings->from_address,
+                $this->website->emailSettings->from_name ?? $this->website->name
+            );
+        }
+
+        return $message;
     }
 }

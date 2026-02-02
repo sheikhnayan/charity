@@ -1122,8 +1122,8 @@ Route::post('/ajax/ticket-auth/register', function(Request $request) {
     $user->email_verification_code = $code;
     $user->email_verified_at = null;
     $user->save();
-    // Send code
-    Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+    // Send code with website-specific email settings
+    \App\Services\WebsiteMailService::sendForUser($user, 'emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
         $m->to($user->email)->subject('Verify Your Account - Registration Verification Code');
     });
     return response()->json(['success' => true, 'message' => 'Verification code sent.']);
@@ -1142,7 +1142,7 @@ Route::post('/ajax/ticket-auth/login', function(Request $request) {
         $code = rand(100000, 999999);
         $user->email_verification_code = $code;
         $user->save();
-        Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+        \App\Services\WebsiteMailService::sendForUser($user, 'emails.verification-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
             $m->to($user->email)->subject('Verify Your Account - Registration Verification Code');
         });
         return response()->json(['success' => false, 'message' => 'Email not verified. Verification code sent.', 'require_verification' => true]);
@@ -1186,7 +1186,7 @@ Route::post('/ajax/ticket-auth/resend-code', function(Request $request) {
     $user->email_verification_code = $code;
     $user->save();
 
-    Mail::send('emails.verification-code', ['code' => $code, 'name' => $user->name ?? ''], function($m) use ($user) {
+    \App\Services\WebsiteMailService::sendForUser($user, 'emails.verification-code', ['code' => $code, 'name' => $user->name ?? ''], function($m) use ($user) {
         $m->to($user->email)->subject('Verify Your Account - Verification Code');
     });
 
@@ -1227,7 +1227,7 @@ Route::post('/ajax/ticket-auth/forgot-request', function(Request $request) {
     $user->password_reset_code = $code;
     $user->password_reset_expires = now()->addMinutes(15);
     $user->save();
-    Mail::send('emails.password-reset-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
+    \App\Services\WebsiteMailService::sendForUser($user, 'emails.password-reset-code', ['code' => $code, 'name' => $user->name], function($m) use ($user) {
         $m->to($user->email)->subject('Password Reset Code');
     });
     return response()->json(['success' => true, 'message' => 'Reset code sent to your email.']);

@@ -20,6 +20,10 @@
         $website = null;
         $customFonts = collect();
     }
+    
+    // Load payment settings and check if Coinbase is enabled
+    $paymentSettings = $website?->paymentSettings ?? \App\Models\PaymentSetting::find(1);
+    $coinbaseEnabled = $paymentSettings?->coinbase_enabled ?? false;
 @endphp
 
 <!DOCTYPE html>
@@ -409,7 +413,7 @@
                             <div class="col-md-6 col-6 text-start" style="padding-top: 7px; font-weight: bold;">
                                 {{ $item->ticket->name }}
                                 @if ($item->ticket->type != 'property')
-                                /* <p style="font-weight: 400">{!! $item->ticket->description !!}</p> */
+                                
                                 @else
                                 <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
                                 @endif
@@ -687,6 +691,7 @@
                     </div>
                     
                     <!-- Pay with Crypto Button -->
+                    @if($coinbaseEnabled)
                     <div class="sc-gyZVQB fWNGEI mt-3">
                         <div class="sc-cVAmsi cvolSU">
                             <a href="{{ route('crypto.payment') }}?amount={{ $data->amount }}&type={{ $data->type }}&reference_id={{ $data->id }}&website_id={{ $data->website_id ?? '' }}&session_id={{ session()->getId() }}" 
@@ -696,6 +701,7 @@
                             </a>
                         </div>
                     </div>
+                    @endif
                 </form>
             </div>
             <div class="col-md-6 desktop">
@@ -741,7 +747,6 @@
                             <div class="col-md-6 col-6 text-start" style="padding-top: 7px; font-weight: bold;">
                                 {{ $item->ticket->name }}
                                 @if ($item->ticket->type != 'property')
-                                /* <p style="font-weight: 400">{!! $item->ticket->description !!}</p> */
                                 @else
                                 <p style="font-weight: 400">{{ $item->quantity }} shares bought at ${{ $item->ticket->price_per_share }} per share</p>
                                 @endif

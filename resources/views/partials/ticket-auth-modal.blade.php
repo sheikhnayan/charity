@@ -48,7 +48,7 @@
                 <input type="text" name="name" id="authName" class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-sm" style="color: #000 !important;">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" id="emailField">
                 <label class="block text-gray-800 font-semibold mb-1 text-sm">
                     <i class="fas fa-envelope text-purple-600 mr-2"></i>Email Address
                 </label>
@@ -188,6 +188,7 @@
         }
 
         // Hide all special fields
+        document.getElementById('emailField').classList.remove('hidden');
         document.getElementById('verificationField').classList.add('hidden');
         document.getElementById('passwordField').classList.remove('hidden');
         document.getElementById('confirmPasswordField').classList.add('hidden');
@@ -231,6 +232,7 @@
             document.getElementById('nameFieldContainer').classList.add('hidden');
         } else if (mode === 'forgot') {
             submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Login';
+            document.getElementById('emailField').classList.add('hidden');
             document.getElementById('passwordField').classList.add('hidden');
             document.getElementById('confirmPasswordField').classList.add('hidden');
             document.getElementById('nameFieldContainer').classList.add('hidden');

@@ -970,7 +970,7 @@
             }
 
             .close-on-mobile {
-                display: none;
+                display: none !important;
             }
 
             .invest-mobile {
