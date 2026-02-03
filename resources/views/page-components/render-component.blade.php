@@ -5993,7 +5993,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 <div id="{{ $componentId }}" style="{{ $styleStr }}" class="modern-auth-container">
                     {{-- Registration Success Modal --}}
                     @if(session('success'))
-                    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                                 <div class="modal-header" style="border: none; padding: 2rem 2rem 1rem; flex-direction: column; align-items: center;">
