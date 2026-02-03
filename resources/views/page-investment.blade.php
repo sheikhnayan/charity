@@ -44,6 +44,10 @@ if (isset($state['components'])) {
     <!-- Shopping Cart CSS -->
     <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
     <style>
+        footer{
+            position: relative;
+  bottom: 0px;
+        }
     body{background:#f9fafb;}
     
     /* Custom Fonts @font-face declarations */
