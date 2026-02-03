@@ -1,7 +1,7 @@
 /**
- * iOS Footer Scroll Lock
- * Prevents scrolling below footer on iOS devices without blocking normal page scroll
- * Works with dynamic content and responsive layouts
+ * iOS White Space Fix
+ * Fixes the white space below footer on iOS by constraining body height to actual content
+ * Works with dynamic content without using 100vh or flexbox
  */
 
 (function() {
@@ -14,118 +14,76 @@
 
     // Only apply on iOS devices
     if (!isIOS()) {
-        console.log('📱 Not an iOS device, footer scroll lock not applied');
+        console.log('📱 Not an iOS device, iOS white space fix not applied');
         return;
     }
 
-    console.log('📱 iOS detected - enabling footer scroll lock');
+    console.log('📱 iOS detected - applying white space fix');
 
-    let lastScrollTop = 0;
-    let scrollDirection = 'down';
-    let preventScroll = false;
-
-    // Detect footer element dynamically
-    function getFooter() {
-        return document.querySelector('footer') || document.querySelector('[role="contentinfo"]');
-    }
-
-    // Get document's actual scrollable height (dynamic)
-    function getScrollableHeight() {
-        return Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight
-        );
-    }
-
-    // Handle scroll event to prevent overscroll past footer
-    function handleScroll() {
-        const currentScroll = window.scrollY || window.pageYOffset;
-        const windowHeight = window.innerHeight;
-        const documentHeight = getScrollableHeight();
-
-        // Calculate how far we can actually scroll
-        const maxScroll = documentHeight - windowHeight;
-
-        // If we're trying to scroll past the maximum, prevent it
-        if (currentScroll > maxScroll && currentScroll > lastScrollTop) {
-            // User is scrolling down past the bottom
-            window.scrollTo(0, maxScroll);
-            preventScroll = true;
-        } else {
-            preventScroll = false;
+    // Fix body height to match actual content
+    function fixBodyHeight() {
+        const footer = document.querySelector('footer');
+        if (!footer) {
+            console.warn('⚠️ Footer not found, skipping height fix');
+            return;
         }
 
-        scrollDirection = currentScroll > lastScrollTop ? 'down' : 'up';
-        lastScrollTop = currentScroll;
-    }
-
-    // Handle touch events to prevent overscroll momentum on iOS
-    function handleTouchMove(e) {
-        const currentScroll = window.scrollY || window.pageYOffset;
-        const windowHeight = window.innerHeight;
-        const documentHeight = getScrollableHeight();
-        const maxScroll = documentHeight - windowHeight;
-
-        // Only prevent if scrolling down and at or past the bottom
-        if (currentScroll >= maxScroll) {
-            // Check if the touch is trying to scroll down
-            const touch = e.touches[0];
-            const touchStartY = touch.clientY;
-
-            // If trying to scroll down while at bottom, prevent it
-            if (touchStartY < window.innerHeight - 50) {
-                // Allow normal scrolling, but prevent overscroll
-                // Don't preventDefault here - it would block all scrolling
-                // Instead, we'll use the scroll event to clamp the position
-            }
-        }
-    }
-
-    // Prevent scroll boost on iOS by clamping scroll position
-    function clampScroll() {
-        const currentScroll = window.scrollY || window.pageYOffset;
-        const windowHeight = window.innerHeight;
-        const documentHeight = getScrollableHeight();
-        const maxScroll = Math.max(0, documentHeight - windowHeight);
-
-        if (currentScroll > maxScroll) {
-            // Use requestAnimationFrame to clamp without blocking
-            requestAnimationFrame(() => {
-                window.scrollTo(0, maxScroll);
-            });
-        }
-    }
-
-    // Initialize scroll lock
-    function init() {
-        console.log('🔒 Initializing iOS footer scroll lock');
-
-        // Add scroll event listener
-        window.addEventListener('scroll', handleScroll, { passive: true });
-
-        // Add touch move listener for momentum scroll prevention
-        document.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-        // Monitor for scroll clamping (catches momentum scroll)
-        let scrollMonitor = null;
+        // Get the actual bottom position of the footer
+        const footerRect = footer.getBoundingClientRect();
+        const footerBottom = footerRect.bottom + window.scrollY;
         
-        // Reapply clamping when scroll stabilizes
-        window.addEventListener('scroll', () => {
-            clearTimeout(scrollMonitor);
-            scrollMonitor = setTimeout(() => {
-                clampScroll();
-            }, 50);
-        }, { passive: true });
+        // Get current body scroll height
+        const bodyScrollHeight = document.body.scrollHeight;
+        
+        // If body extends beyond footer, constrain it
+        if (bodyScrollHeight > footerBottom) {
+            console.log('🔧 Body extends beyond footer, fixing...', {
+                bodyScrollHeight,
+                footerBottom,
+                difference: bodyScrollHeight - footerBottom
+            });
+            
+            // Set body max-height to footer bottom position
+            document.body.style.maxHeight = footerBottom + 'px';
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'auto';
+            
+            console.log('✅ Body height constrained to footer position');
+        }
+    }
 
-        // Handle window resize (footer position might change)
+    // Remove the constraint and let body expand naturally
+    function removeBodyHeightConstraint() {
+        document.body.style.maxHeight = 'none';
+        document.body.style.overflow = 'visible';
+    }
+
+    // Initialize fix
+    function init() {
+        console.log('🔒 Initializing iOS white space fix');
+
+        // Apply fix after content loads
+        fixBodyHeight();
+
+        // Reapply on window resize
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            handleScroll();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                console.log('📐 Window resized, reapplying fix');
+                removeBodyHeightConstraint();
+                setTimeout(fixBodyHeight, 100);
+            }, 250);
         }, { passive: true });
 
         // Monitor DOM changes for dynamic content
         const observer = new MutationObserver(() => {
-            // When content changes, recalculate scroll limits
-            handleScroll();
+            // Debounce the fix
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                removeBodyHeightConstraint();
+                setTimeout(fixBodyHeight, 100);
+            }, 500);
         });
 
         observer.observe(document.body, {
@@ -135,31 +93,38 @@
             attributeFilter: ['style', 'class']
         });
 
-        console.log('✅ iOS footer scroll lock initialized');
+        console.log('✅ iOS white space fix initialized');
     }
 
-    // Wait for DOM to be ready
+    // Wait for DOM and footer to be ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(init, 500);
+        });
     } else {
-        init();
+        setTimeout(init, 500);
     }
 
-    // Also run after a delay to catch late-loading content
+    // Also run after delays to catch late-loading content
     setTimeout(() => {
-        handleScroll();
-    }, 1000);
+        removeBodyHeightConstraint();
+        setTimeout(fixBodyHeight, 100);
+    }, 1500);
 
-    // Expose methods for manual control if needed
-    window.footerScrollLock = {
-        clampScroll: clampScroll,
-        getScrollableHeight: getScrollableHeight,
-        getMaxScroll: function() {
-            const windowHeight = window.innerHeight;
-            const documentHeight = getScrollableHeight();
-            return Math.max(0, documentHeight - windowHeight);
+    setTimeout(() => {
+        removeBodyHeightConstraint();
+        setTimeout(fixBodyHeight, 100);
+    }, 3000);
+
+    // Expose methods for manual control
+    window.iOSWhiteSpaceFix = {
+        apply: fixBodyHeight,
+        remove: removeBodyHeightConstraint,
+        reapply: function() {
+            removeBodyHeightConstraint();
+            setTimeout(fixBodyHeight, 100);
         }
     };
 
-    console.log('📱 Footer scroll lock ready - use window.footerScrollLock for manual control');
+    console.log('📱 iOS white space fix ready - use window.iOSWhiteSpaceFix for manual control');
 })();

@@ -148,40 +148,29 @@ if (isset($state['components'])) {
         width: 100%;
     }
     
-    /* iOS Safari Fix: Use 100dvh (dynamic viewport height) to prevent white space */
+    /* iOS Safari Fix: Prevent white space below footer */
     @supports (-webkit-touch-callout: none) {
-        /* iOS Safari specific fix */
+        /* iOS Safari specific */
         html {
-            height: -webkit-fill-available;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
         
         body {
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            display: flex;
-            flex-direction: column;
-        }
-    }
-    
-    /* Non-iOS devices */
-    @supports not (-webkit-touch-callout: none) {
-        html {
-            height: 100%;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: visible;
+            /* No height constraints - let content define height */
         }
         
-        body {
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
+        /* Prevent body from extending beyond actual content */
+        body::after {
+            content: '';
+            display: block;
+            height: 0;
+            clear: both;
         }
-    }
-    
-    main {
-        flex: 1;
-    }
-    
-    footer {
-        margin-top: auto;
     }
 
     nav{
@@ -1506,7 +1495,7 @@ if (isset($state['components'])) {
         setTimeout(initCartNow, 100);
     </script>
 </head>
-<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0; overflow: hidden;">
+<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
