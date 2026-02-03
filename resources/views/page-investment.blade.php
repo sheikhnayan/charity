@@ -1506,7 +1506,7 @@ if (isset($state['components'])) {
         setTimeout(initCartNow, 100);
     </script>
 </head>
-<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0;">
+<body style="background-color: {{ $data->background_color ?? '#fff'}}; margin: 0; padding: 0; overflow: hidden;">
     @php
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
