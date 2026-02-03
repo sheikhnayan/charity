@@ -56,8 +56,7 @@ class CartController extends Controller
     {
         return response()->json([
             'success' => true,
-            'cart' => $this->cartService->getCart(),
-            'summary' => $this->cartService->getSummary()
+            'cart' => $this->cartService->getSummary()
         ]);
     }
 
