@@ -7,8 +7,10 @@ use App\Services\PaymentFunnelService;
 use App\Services\PaymentGatewayService;
 use App\Models\Transaction;
 use App\Models\Website;
+use App\Mail\TransactionInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -298,6 +300,9 @@ class CheckoutController extends Controller
             $this->recordCartTransactions($checkoutData, $transactionId, $paymentMethod);
 
             \Log::info('Transactions recorded successfully');
+
+            // Send transaction emails after all records are created
+            $this->sendTransactionEmails($checkoutData, $transactionId);
 
             // Clear cart after successful payment
             $this->cartService->clearCart();
@@ -657,6 +662,63 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             return $this->handlePaymentFailure('Coinbase payment error: ' . $e->getMessage(), $checkoutData);
+        }
+    }
+
+    /**
+     * Send invoice emails after successful transaction
+     * Dynamically sends to customer and website-configured emails based on preferences
+     */
+    protected function sendTransactionEmails($checkoutData, $transactionId)
+    {
+        try {
+            // Get the website for this transaction
+            $websiteId = $this->resolveWebsiteId();
+            $website = Website::find($websiteId);
+
+            // Get the first transaction record created for this transaction ID to use as template
+            $transaction = Transaction::where('transaction_id', $transactionId)
+                ->where('website_id', $websiteId)
+                ->first();
+
+            if (!$transaction) {
+                \Log::warning('No transaction found for email sending', [
+                    'transaction_id' => $transactionId,
+                    'website_id' => $websiteId
+                ]);
+                return;
+            }
+
+            // Apply website-specific mail configuration
+            if ($website) {
+                \App\Services\WebsiteMailService::applyForWebsite($website);
+            }
+
+            // Send to customer's email
+            Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+
+            // Also send to website owner emails that have transaction preference enabled
+            if ($website) {
+                $websiteEmails = $website->getTransactionEmails();
+                foreach ($websiteEmails as $email) {
+                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
+                        Mail::to($email)->send(new TransactionInvoice($transaction, $website));
+                    }
+                }
+            }
+
+            \Log::info('Transaction emails sent successfully', [
+                'transaction_id' => $transactionId,
+                'customer_email' => $transaction->email,
+                'website_id' => $websiteId
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to send transaction invoices', [
+                'transaction_id' => $transactionId,
+                'email' => $checkoutData['email'] ?? null,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }
