@@ -68,76 +68,92 @@ class CartService
                 return false;
             }
 
-            // Get current cart
-            $cart = $this->getCart();
+            // CRITICAL: Use cache lock to prevent race conditions
+            // This ensures only ONE request can modify the cart at a time
+            $lock = \Cache::lock('cart_lock_' . Session::getId(), 10);
+            
+            try {
+                // Wait up to 10 seconds to acquire the lock
+                $lock->block(10);
+                
+                // Get current cart (now safe from race conditions)
+                $cart = $this->getCart();
 
-            // Generate unique key for this item
-            $itemKey = $this->generateItemKey($type, $item['id']);
+                // Generate unique key for this item
+                $itemKey = $this->generateItemKey($type, $item['id']);
 
-            // Check if item already exists
-            if (isset($cart['items'][$itemKey])) {
-                // Update quantity/amount based on type
-                if ($type === 'student') {
-                    // For students, update the donation amount
-                    $cart['items'][$itemKey]['amount'] = $item['amount'] ?? $cart['items'][$itemKey]['amount'];
+                // Check if item already exists
+                if (isset($cart['items'][$itemKey])) {
+                    // Update quantity/amount based on type
+                    if ($type === 'student') {
+                        // For students, update the donation amount
+                        $cart['items'][$itemKey]['amount'] = $item['amount'] ?? $cart['items'][$itemKey]['amount'];
+                    } else {
+                        // For other items, increment quantity
+                        $cart['items'][$itemKey]['quantity'] = ($cart['items'][$itemKey]['quantity'] ?? 1) + ($item['quantity'] ?? 1);
+                    }
                 } else {
-                    // For other items, increment quantity
-                    $cart['items'][$itemKey]['quantity'] = ($cart['items'][$itemKey]['quantity'] ?? 1) + ($item['quantity'] ?? 1);
+                    // Add new item
+                    $cartItem = [
+                        'id' => $item['id'],
+                        'type' => $type,
+                        'name' => $item['name'],
+                        'key' => $itemKey,
+                        'quantity' => $item['quantity'] ?? 1,
+                        'photo_url' => $item['photo_url'] ?? null,
+                        'image_url' => $item['image_url'] ?? null,
+                    ];
+
+                    // Handle pricing based on type
+                    if ($type === 'student') {
+                        $cartItem['amount'] = $item['amount'] ?? 0;
+                        $cartItem['photo_url'] = $item['photo_url'] ?? null;
+                    } elseif ($type === 'ticket') {
+                        $cartItem['price'] = $item['price'] ?? 0;
+                        $cartItem['image_url'] = $item['image_url'] ?? null;
+                    } elseif ($type === 'auction') {
+                        $cartItem['current_bid'] = $item['current_bid'] ?? $item['price'] ?? 0;
+                        $cartItem['image_url'] = $item['image_url'] ?? null;
+                    } elseif ($type === 'product') {
+                        $cartItem['price'] = $item['price'] ?? 0;
+                        $cartItem['image_url'] = $item['image_url'] ?? null;
+                    }
+
+                    // Add additional metadata
+                    if (isset($item['website_id'])) {
+                        $cartItem['website_id'] = $item['website_id'];
+                    }
+
+                    $cart['items'][$itemKey] = $cartItem;
                 }
-            } else {
-                // Add new item
-                $cartItem = [
-                    'id' => $item['id'],
+
+                // Recalculate totals
+                $cart = $this->recalculateCart($cart);
+
+                // Save to session
+                Session::put(self::SESSION_KEY, $cart);
+
+                \Log::info('Item added to cart', [
                     'type' => $type,
-                    'name' => $item['name'],
-                    'key' => $itemKey,
-                    'quantity' => $item['quantity'] ?? 1,
-                    'photo_url' => $item['photo_url'] ?? null,
-                    'image_url' => $item['image_url'] ?? null,
-                ];
+                    'item_id' => $item['id'],
+                    'item_key' => $itemKey,
+                    'cart_total' => $cart['total'],
+                    'item_count' => count($cart['items']),
+                    'all_items' => array_keys($cart['items'])
+                ]);
 
-                // Handle pricing based on type
-                if ($type === 'student') {
-                    $cartItem['amount'] = $item['amount'] ?? 0;
-                    $cartItem['photo_url'] = $item['photo_url'] ?? null;
-                } elseif ($type === 'ticket') {
-                    $cartItem['price'] = $item['price'] ?? 0;
-                    $cartItem['image_url'] = $item['image_url'] ?? null;
-                } elseif ($type === 'auction') {
-                    $cartItem['current_bid'] = $item['current_bid'] ?? $item['price'] ?? 0;
-                    $cartItem['image_url'] = $item['image_url'] ?? null;
-                } elseif ($type === 'product') {
-                    $cartItem['price'] = $item['price'] ?? 0;
-                    $cartItem['image_url'] = $item['image_url'] ?? null;
-                }
-
-                // Add additional metadata
-                if (isset($item['website_id'])) {
-                    $cartItem['website_id'] = $item['website_id'];
-                }
-
-                $cart['items'][$itemKey] = $cartItem;
+                return true;
+                
+            } finally {
+                // ALWAYS release the lock
+                optional($lock)->release();
             }
-
-            // Recalculate totals
-            $cart = $this->recalculateCart($cart);
-
-            // Save to session
-            Session::put(self::SESSION_KEY, $cart);
-
-            \Log::info('Item added to cart', [
-                'type' => $type,
-                'item_id' => $item['id'],
-                'cart_total' => $cart['total'],
-                'item_count' => count($cart['items'])
-            ]);
-
-            return true;
 
         } catch (\Exception $e) {
             \Log::error('Error adding item to cart: ' . $e->getMessage(), [
                 'type' => $type,
-                'item' => $item
+                'item' => $item,
+                'trace' => $e->getTraceAsString()
             ]);
             return false;
         }
