@@ -4963,7 +4963,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Add to cart button functionality - Disable all buttons during add
+                // Global flag to prevent rapid clicking
+                let isAddingToCart = false;
+                
+                // Add to cart button functionality - Strict one-at-a-time processing
                 document.addEventListener('click', async function(e) {
                     const btn = e.target.closest('.add-student-to-cart');
                     if (!btn) return;
@@ -4971,8 +4974,14 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Prevent double clicks
-                    if (btn.disabled) return;
+                    // CRITICAL: Check global flag FIRST - only ONE operation allowed at a time
+                    if (isAddingToCart) {
+                        console.log('⏳ Another item is being added, please wait...');
+                        return;
+                    }
+                    
+                    // Set global flag immediately
+                    isAddingToCart = true;
                     
                     const itemId = btn.dataset.itemId;
                     const itemName = btn.dataset.itemName;
@@ -4981,11 +4990,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     
                     console.log('🛒 Adding to cart:', itemName);
                     
-                    // Get ALL add-to-cart buttons
+                    // Get ALL add-to-cart buttons and disable them
                     const allButtons = document.querySelectorAll('.add-student-to-cart');
-                    
-                    // Disable ALL buttons to prevent rapid clicking
                     const buttonStates = new Map();
+                    
                     allButtons.forEach(function(button) {
                         buttonStates.set(button, {
                             html: button.innerHTML,
@@ -4997,9 +5005,9 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     // Show loading state on clicked button
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
                     
-                    // Use window.ShoppingCart.addItem if available
-                    if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
-                        try {
+                    try {
+                        // Use window.ShoppingCart.addItem if available
+                        if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
                             const success = await window.ShoppingCart.addItem({
                                 id: itemId,
                                 name: itemName,
@@ -5017,27 +5025,19 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Failed';
                                 btn.classList.add('btn-danger');
                             }
-                        } catch (error) {
-                            console.error('❌ Error:', error);
+                        } else {
+                            console.error('❌ ShoppingCart not available');
                             btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
                             btn.classList.add('btn-danger');
                         }
-                        
-                        // Wait 6 seconds then re-enable ALL buttons
-                        setTimeout(function() {
-                            allButtons.forEach(function(button) {
-                                const state = buttonStates.get(button);
-                                if (state) {
-                                    button.innerHTML = state.html;
-                                    button.className = state.classes;
-                                }
-                                button.disabled = false;
-                            });
-                        }, 6000);
-                    } else {
-                        console.error('❌ ShoppingCart not available');
-                        
-                        // Re-enable all buttons immediately on error
+                    } catch (error) {
+                        console.error('❌ Error:', error);
+                        btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
+                        btn.classList.add('btn-danger');
+                    }
+                    
+                    // Wait 5 seconds then re-enable ALL buttons and reset flag
+                    setTimeout(function() {
                         allButtons.forEach(function(button) {
                             const state = buttonStates.get(button);
                             if (state) {
@@ -5046,7 +5046,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             }
                             button.disabled = false;
                         });
-                    }
+                        
+                        // Release global flag
+                        isAddingToCart = false;
+                        console.log('✅ Ready for next item');
+                    }, 5000);
                 });
             })();
         </script>
