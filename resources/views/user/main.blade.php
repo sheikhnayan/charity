@@ -818,15 +818,7 @@
                         <div class="mb-3">
                             <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
                             <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
-                                <option value="">Choose a teacher</option>
-                                @php
-                                    $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)
-                                        ->where('is_active', true)
-                                        ->get();
-                                @endphp
-                                @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                                @endforeach
+                                <option value="">Loading teachers...</option>
                             </select>
                         </div>
                     </div>
@@ -841,6 +833,52 @@
     @endif
 
     <script>
+      // Populate teachers dropdown dynamically via API
+      function loadTeachersForModal() {
+        const teacherSelect = document.getElementById('teacher_id');
+        if (!teacherSelect) return;
+
+        fetch('/api/teachers')
+          .then(response => response.json())
+          .then(data => {
+            console.log('📚 Teachers loaded:', data);
+            
+            // Clear existing options except placeholder
+            while (teacherSelect.options.length > 1) {
+              teacherSelect.remove(1);
+            }
+            
+            // Add teachers from API
+            if (data.teachers && data.teachers.length > 0) {
+              data.teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = teacher.name;
+                teacherSelect.appendChild(option);
+              });
+              
+              // Update placeholder
+              teacherSelect.options[0].textContent = 'Choose a teacher';
+              console.log('✅ Teachers populated:', data.teachers.length);
+            } else {
+              teacherSelect.options[0].textContent = 'No teachers available';
+            }
+          })
+          .catch(error => {
+            console.error('❌ Error loading teachers:', error);
+            teacherSelect.options[0].textContent = 'Error loading teachers';
+          });
+      }
+
+      // Load teachers when modal is opened
+      const addStudentModal = document.getElementById('addStudentModal');
+      if (addStudentModal) {
+        addStudentModal.addEventListener('show.bs.modal', loadTeachersForModal);
+      }
+
+      // Also load on page load for immediate access
+      document.addEventListener('DOMContentLoaded', loadTeachersForModal);
+
       document.addEventListener('click', function (event) {
         const trigger = event.target.closest('[data-bs-target="#addStudentModal"]');
         if (!trigger) return;
