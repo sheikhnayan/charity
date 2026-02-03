@@ -518,9 +518,24 @@ function renderCart(cartData) {
     const cartItemsContainer = document.getElementById('cartItems');
     const cartEmptyContainer = document.getElementById('cartEmpty');
     let itemsArray = [];
-    if (cartData.items && typeof cartData.items === 'object' && !Array.isArray(cartData.items)) {
+    
+    // UPDATED: Use items_by_type structure (consistent with cart.js)
+    if (cartData.items_by_type && typeof cartData.items_by_type === 'object') {
+        // Flatten items_by_type into a single array
+        Object.keys(cartData.items_by_type).forEach(type => {
+            const typeItems = cartData.items_by_type[type];
+            if (Array.isArray(typeItems)) {
+                itemsArray = itemsArray.concat(typeItems);
+            }
+        });
+    }
+    // Fallback for old format (items as object)
+    else if (cartData.items && typeof cartData.items === 'object' && !Array.isArray(cartData.items)) {
         itemsArray = Object.entries(cartData.items).map(([key, item]) => ({ ...item, key }));
-    } else if (Array.isArray(cartData.items)) { itemsArray = cartData.items; }
+    } else if (Array.isArray(cartData.items)) { 
+        itemsArray = cartData.items; 
+    }
+    
     if (!itemsArray || itemsArray.length === 0) {
         cartEmptyContainer.style.display = 'block';
         cartItemsContainer.style.display = 'none';
