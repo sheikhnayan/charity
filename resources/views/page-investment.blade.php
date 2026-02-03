@@ -136,26 +136,38 @@ if (isset($state['components'])) {
     <style>
     /* COMPREHENSIVE FRONTEND FIXES */
     
-    /* Global full-width support */
-    html, body {
-        overflow-x: hidden;
-        margin: 0;
-        padding: 0;
+    /* iOS Safari White Space Fix - Prevent rubber band bounce */
+    html {
+        position: fixed;
         width: 100%;
         height: 100%;
+        overflow: hidden;
     }
     
     body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Ensure footer sticks to bottom without white space on iOS */
+    #rendered-page {
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
     }
     
-    main {
-        flex: 1;
-    }
-    
     footer {
         margin-top: auto;
+    }
+    
+    main {
+        flex: 1;
     }
 
     nav{
