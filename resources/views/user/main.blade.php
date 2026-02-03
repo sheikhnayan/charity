@@ -794,7 +794,52 @@
       })();
     </script>
 
-    <!-- Add Participant Modal Fallback (Parents) -->
+    <!-- Add Participant Modal (Parents) - Available on All Pages -->
+    @if(Auth::user() && Auth::user()->role === 'parents')
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('parent.add-student') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <div class="form-text">Credentials are automatically generated for system use only and are not shared or tracked outside the fundraiser.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="teacher_id" class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                            <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
+                                <option value="">Choose a teacher</option>
+                                @php
+                                    $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)
+                                        ->where('is_active', true)
+                                        ->get();
+                                @endphp
+                                @foreach($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <script>
       document.addEventListener('click', function (event) {
         const trigger = event.target.closest('[data-bs-target="#addStudentModal"]');
