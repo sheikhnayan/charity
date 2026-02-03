@@ -6248,6 +6248,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 return;
                             }
                             
+                            // Check if there's a success or error message
+                            const successAlert = component.querySelector('.alert-success');
+                            const errorAlert = component.querySelector('.alert-danger');
+                            const hasMessage = successAlert || errorAlert;
+                            
                             const registerForm = component.querySelector('.register');
                             const loginForm = component.querySelector('.login');
                             const titleElement = component.querySelector('.tit');
@@ -6255,6 +6260,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             
                             console.log('Register form:', registerForm);
                             console.log('Login form:', loginForm);
+                            console.log('Has success/error message:', hasMessage);
                             
                             if (registerForm) {
                                 registerForm.style.opacity = '0';
@@ -6268,6 +6274,13 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         setTimeout(() => {
                                             loginForm.style.opacity = '1';
                                             console.log('Login form should now be visible');
+                                            
+                                            // If there's a success message, scroll to it
+                                            if (hasMessage) {
+                                                setTimeout(() => {
+                                                    component.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }, 100);
+                                            }
                                         }, 50);
                                     }
                                 }, 300);
