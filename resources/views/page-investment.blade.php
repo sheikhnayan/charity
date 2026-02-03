@@ -142,10 +142,15 @@ if (isset($state['components'])) {
         margin: 0;
         padding: 0;
         width: 100%;
+    }
+    
+    /* iOS Safari Fix: Don't set height:100% on body - causes white space */
+    html {
         height: 100%;
     }
     
     body {
+        min-height: 100%;
         display: flex;
         flex-direction: column;
     }
@@ -2230,25 +2235,6 @@ if (isset($state['components'])) {
             }
         }
     </style>
-
-    <!-- Fix iOS white space when sticky button is hidden -->
-    <script>
-        // Check if sticky button is actually visible, if not remove body padding
-        document.addEventListener('DOMContentLoaded', function() {
-            const stickyBtn = document.getElementById('sticky-investment-cta');
-            if (stickyBtn) {
-                // Check if button is actually visible (not hidden by CSS or conditions)
-                const isVisible = window.getComputedStyle(stickyBtn).display !== 'none';
-                if (!isVisible) {
-                    // Button is hidden, remove body padding
-                    document.body.style.paddingBottom = '0px';
-                }
-            } else {
-                // No sticky button element at all, remove padding
-                document.body.style.paddingBottom = '0px';
-            }
-        });
-    </script>
 
     <!-- DataTables Initialization Script -->
     <script>
