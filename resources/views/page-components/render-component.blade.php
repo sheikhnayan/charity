@@ -5023,36 +5023,49 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
                                 btn.classList.remove('btn-outline-primary');
                                 btn.classList.add('btn-success');
+                                
+                                // CRITICAL: Reload cart to verify item was actually added
+                                console.log('🔄 Reloading cart to verify...');
+                                await window.ShoppingCart.loadCart();
+                                console.log('✅ Cart verified, item count:', window.ShoppingCart.state.cart?.item_count);
+                                
+                                // Update displays with verified cart
+                                window.ShoppingCart.updateCartDisplay();
+                                window.ShoppingCart.updateCartBadge();
+                                
+                                // Small delay for user to see success message
+                                await new Promise(r => setTimeout(r, 1000));
                             } else {
                                 btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Failed';
                                 btn.classList.add('btn-danger');
+                                await new Promise(r => setTimeout(r, 2000));
                             }
                         } else {
                             console.error('❌ ShoppingCart not available');
                             btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
                             btn.classList.add('btn-danger');
+                            await new Promise(r => setTimeout(r, 2000));
                         }
                     } catch (error) {
                         console.error('❌ Error:', error);
                         btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
                         btn.classList.add('btn-danger');
+                        await new Promise(r => setTimeout(r, 2000));
                     }
                     
-                    // Wait 5 seconds then re-enable ALL buttons and reset flag
-                    setTimeout(function() {
-                        allButtons.forEach(function(button) {
-                            const state = buttonStates.get(button);
-                            if (state) {
-                                button.innerHTML = state.html;
-                                button.className = state.classes;
-                            }
-                            button.disabled = false;
-                        });
-                        
-                        // Release GLOBAL flag
-                        window._isAddingToCart = false;
-                        console.log('✅ Ready for next item');
-                    }, 5000);
+                    // Re-enable ALL buttons NOW (after verification complete)
+                    allButtons.forEach(function(button) {
+                        const state = buttonStates.get(button);
+                        if (state) {
+                            button.innerHTML = state.html;
+                            button.className = state.classes;
+                        }
+                        button.disabled = false;
+                    });
+                    
+                    // Release GLOBAL flag
+                    window._isAddingToCart = false;
+                    console.log('✅ Ready for next item');
                 });
             })();
         </script>
