@@ -1045,13 +1045,13 @@ h5, .ql-header-5 {
                             
                             const columns = section.querySelectorAll('.animated-column');
                             
-                            // Fallback: show content after 5 seconds if animation doesn't trigger
+                            // Fallback: show content after 6 seconds if animation doesn't trigger
                             setTimeout(() => {
                                 if (!section.classList.contains('visible')) {
                                     section.classList.add('visible');
                                     columns.forEach(column => column.classList.add('visible'));
                                 }
-                            }, 5000);
+                            }, 6000);
                             
                             // Check if IntersectionObserver is supported
                             if (!('IntersectionObserver' in window)) {
@@ -2814,8 +2814,8 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                             successMsg.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
                             this.parentNode.insertBefore(successMsg, this.nextSibling);
                             
-                            // Remove success message after 5 seconds
-                            setTimeout(() => successMsg.remove(), 5000);
+                            // Remove success message after 6 seconds
+                            setTimeout(() => successMsg.remove(), 6000);
                             
                             // Reload comments if not moderated
                             @if(!$simpleCommentsData['moderationEnabled'])
@@ -2833,8 +2833,8 @@ Questions Count: {{ count($faqData['questions'] ?? []) }}
                         errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (error.message || 'Failed to submit comment. Please try again.');
                         this.parentNode.insertBefore(errorMsg, this.nextSibling);
                         
-                        // Remove error message after 5 seconds
-                        setTimeout(() => errorMsg.remove(), 5000);
+                        // Remove error message after 6 seconds
+                        setTimeout(() => errorMsg.remove(), 6000);
                     })
                     .finally(() => {
                         // Reset button state
@@ -4474,8 +4474,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         setTimeout(updateAuctionPrices, 500);
                     }
                     
-                    // Poll for updates every 5 seconds
-                    setInterval(updateAuctionPrices, 5000);
+                    // Poll for updates every 6 seconds
+                    setInterval(updateAuctionPrices, 6000);
                     
                 } catch (error) {
                     console.error('Firebase initialization failed:', error);
@@ -5023,7 +5023,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             btn.classList.add('btn-danger');
                         }
                         
-                        // Wait 5 seconds then re-enable ALL buttons
+                        // Wait 6 seconds then re-enable ALL buttons
                         setTimeout(function() {
                             allButtons.forEach(function(button) {
                                 const state = buttonStates.get(button);
@@ -5033,7 +5033,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 }
                                 button.disabled = false;
                             });
-                        }, 5000);
+                        }, 6000);
                     } else {
                         console.error('❌ ShoppingCart not available');
                         
@@ -5297,11 +5297,11 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         button.disabled = false;
                                     }
                                     
-                                    // Hide message after 5 seconds
+                                    // Hide message after 6 seconds
                                     if (messageDiv) {
                                         setTimeout(() => {
                                             messageDiv.style.display = 'none';
-                                        }, 5000);
+                                        }, 6000);
                                     }
                                 });
                             });
