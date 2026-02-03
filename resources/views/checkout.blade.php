@@ -679,7 +679,7 @@
                                             : null;
                                     } elseif ($item['type'] === 'product') {
                                         // Product: fetch from database
-                                        $product = \App\Models\Product::find($item['id']);
+                                        $product = \App\Models\Ticket::find($item['id']);
                                         $imagePath = $product && $product->image 
                                             ? asset($product->image)
                                             : null;
