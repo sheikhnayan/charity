@@ -6363,6 +6363,36 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             @else
                 {{-- Legacy auth-form with hardcoded HTML - fallback for existing components --}}
+                
+                {{-- Registration Success Modal --}}
+                @if(session('success'))
+                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                            <div class="modal-header" style="border: none; padding: 2rem 2rem 1rem; flex-direction: column; align-items: center;">
+                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);">
+                                    <i class="fa-solid fa-check" style="font-size: 2.5rem; color: white;"></i>
+                                </div>
+                                <h3 class="modal-title" id="successModalLabel" style="color: #2c3e50; font-weight: 700; margin: 0;">Congratulations!</h3>
+                            </div>
+                            <div class="modal-body text-center" style="padding: 1rem 2rem 2rem;">
+                                <p style="color: #666; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; white-space: pre-line;">{{ session('success') }}</p>
+                                <button type="button" class="btn" onclick="document.getElementById('successModal').querySelector('[data-bs-dismiss]').click()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 40px; border-radius: 25px; border: none; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                                    Got it!
+                                </button>
+                                <button type="button" class="d-none" data-bs-dismiss="modal"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                        successModal.show();
+                    });
+                </script>
+                @endif
+                
                 <style>
                     .legacy-auth-form .password-toggle-btn {
                         position: absolute;
