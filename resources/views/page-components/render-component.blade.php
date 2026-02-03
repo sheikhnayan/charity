@@ -4963,8 +4963,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Add to cart button functionality - Use global addToCart function
-                document.addEventListener('click', function(e) {
+                // Add to cart button functionality - Disable all buttons during add
+                document.addEventListener('click', async function(e) {
                     const btn = e.target.closest('.add-student-to-cart');
                     if (!btn) return;
                     
@@ -4981,42 +4981,71 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     
                     console.log('🛒 Adding to cart:', itemName);
                     
-                    // Disable button temporarily
-                    const originalHTML = btn.innerHTML;
-                    btn.disabled = true;
+                    // Get ALL add-to-cart buttons
+                    const allButtons = document.querySelectorAll('.add-student-to-cart');
+                    
+                    // Disable ALL buttons to prevent rapid clicking
+                    const buttonStates = new Map();
+                    allButtons.forEach(function(button) {
+                        buttonStates.set(button, {
+                            html: button.innerHTML,
+                            classes: button.className
+                        });
+                        button.disabled = true;
+                    });
+                    
+                    // Show loading state on clicked button
                     btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Adding...';
                     
-                    // Use window.addToCart (has queueing if cart not ready)
-                    if (typeof window.addToCart === 'function') {
-                        window.addToCart({
-                            id: itemId,
-                            name: itemName,
-                            type: itemType,
-                            price: parseFloat(itemPrice),
-                            quantity: 1
-                        });
+                    // Use window.ShoppingCart.addItem if available
+                    if (window.ShoppingCart && typeof window.ShoppingCart.addItem === 'function') {
+                        try {
+                            const success = await window.ShoppingCart.addItem({
+                                id: itemId,
+                                name: itemName,
+                                type: itemType,
+                                price: parseFloat(itemPrice),
+                                quantity: 1
+                            });
+                            
+                            if (success) {
+                                // Show success on clicked button
+                                btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                                btn.classList.remove('btn-outline-primary');
+                                btn.classList.add('btn-success');
+                            } else {
+                                btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Failed';
+                                btn.classList.add('btn-danger');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error:', error);
+                            btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
+                            btn.classList.add('btn-danger');
+                        }
                         
-                        // Show success
-                        btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
-                        btn.classList.remove('btn-outline-primary');
-                        btn.classList.add('btn-success');
-                        
+                        // Wait 2 seconds then re-enable ALL buttons
                         setTimeout(function() {
-                            btn.innerHTML = originalHTML;
-                            btn.classList.remove('btn-success');
-                            btn.classList.add('btn-outline-primary');
-                            btn.disabled = false;
-                        }, 1000);
-                    } else {
-                        console.error('❌ addToCart function not available');
-                        btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Error';
-                        btn.classList.add('btn-danger');
-                        
-                        setTimeout(function() {
-                            btn.innerHTML = originalHTML;
-                            btn.classList.remove('btn-danger');
-                            btn.disabled = false;
+                            allButtons.forEach(function(button) {
+                                const state = buttonStates.get(button);
+                                if (state) {
+                                    button.innerHTML = state.html;
+                                    button.className = state.classes;
+                                }
+                                button.disabled = false;
+                            });
                         }, 2000);
+                    } else {
+                        console.error('❌ ShoppingCart not available');
+                        
+                        // Re-enable all buttons immediately on error
+                        allButtons.forEach(function(button) {
+                            const state = buttonStates.get(button);
+                            if (state) {
+                                button.innerHTML = state.html;
+                                button.className = state.classes;
+                            }
+                            button.disabled = false;
+                        });
                     }
                 });
             })();
