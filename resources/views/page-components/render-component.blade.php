@@ -5033,8 +5033,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 window.ShoppingCart.updateCartDisplay();
                                 window.ShoppingCart.updateCartBadge();
                                 
-                                // Wait 3 seconds total (1s for success message + 2s extra safety delay)
-                                await new Promise(r => setTimeout(r, 3000));
+                                // Wait 5 seconds total (3s base + 2s extra for database persistence)
+                                await new Promise(r => setTimeout(r, 5000));
                             } else {
                                 btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Failed';
                                 btn.classList.add('btn-danger');
