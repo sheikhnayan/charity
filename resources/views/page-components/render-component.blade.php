@@ -4963,8 +4963,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     searchInput.addEventListener('input', filterStudents);
                 }
                 
-                // Global flag to prevent rapid clicking
-                let isAddingToCart = false;
+                // CRITICAL: Use TRUE GLOBAL flag to prevent rapid clicking across ALL components
+                if (typeof window._isAddingToCart === 'undefined') {
+                    window._isAddingToCart = false;
+                }
                 
                 // Add to cart button functionality - Strict one-at-a-time processing
                 document.addEventListener('click', async function(e) {
@@ -4974,14 +4976,14 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // CRITICAL: Check global flag FIRST - only ONE operation allowed at a time
-                    if (isAddingToCart) {
+                    // CRITICAL: Check GLOBAL flag FIRST - only ONE operation allowed at a time
+                    if (window._isAddingToCart) {
                         console.log('⏳ Another item is being added, please wait...');
                         return;
                     }
                     
-                    // Set global flag immediately
-                    isAddingToCart = true;
+                    // Set GLOBAL flag immediately
+                    window._isAddingToCart = true;
                     
                     const itemId = btn.dataset.itemId;
                     const itemName = btn.dataset.itemName;
@@ -5047,8 +5049,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             button.disabled = false;
                         });
                         
-                        // Release global flag
-                        isAddingToCart = false;
+                        // Release GLOBAL flag
+                        window._isAddingToCart = false;
                         console.log('✅ Ready for next item');
                     }, 5000);
                 });
