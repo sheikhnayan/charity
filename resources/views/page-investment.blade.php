@@ -136,38 +136,26 @@ if (isset($state['components'])) {
     <style>
     /* COMPREHENSIVE FRONTEND FIXES */
     
-    /* iOS Safari White Space Fix - Prevent rubber band bounce */
-    html {
-        position: fixed;
+    /* Global full-width support */
+    html, body {
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
     }
     
     body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* Ensure footer sticks to bottom without white space on iOS */
-    #rendered-page {
-        min-height: 100vh;
         display: flex;
         flex-direction: column;
     }
     
-    footer {
-        margin-top: auto;
-    }
-    
     main {
         flex: 1;
+    }
+    
+    footer {
+        margin-top: auto;
     }
 
     nav{
@@ -2199,16 +2187,20 @@ if (isset($state['components'])) {
         }
 
         /* Add bottom padding to body to prevent content overlap - Investment websites only */
+        /* ONLY add padding if sticky button is actually visible */
         @if($check && $check->isInvestment())
-        body {
-            padding-bottom: 70px;
+        @media (max-width: 767px) {
+            /* Only add padding when sticky button is shown (mobile only) */
+            body {
+                padding-bottom: 70px !important;
+            }
         }
         @endif
 
         /* Remove bottom padding on desktop */
         @media (min-width: 768px) {
             body {
-                padding-bottom: 0;
+                padding-bottom: 0 !important;
             }
             
             #sticky-investment-cta {
@@ -2238,6 +2230,25 @@ if (isset($state['components'])) {
             }
         }
     </style>
+
+    <!-- Fix iOS white space when sticky button is hidden -->
+    <script>
+        // Check if sticky button is actually visible, if not remove body padding
+        document.addEventListener('DOMContentLoaded', function() {
+            const stickyBtn = document.getElementById('sticky-investment-cta');
+            if (stickyBtn) {
+                // Check if button is actually visible (not hidden by CSS or conditions)
+                const isVisible = window.getComputedStyle(stickyBtn).display !== 'none';
+                if (!isVisible) {
+                    // Button is hidden, remove body padding
+                    document.body.style.paddingBottom = '0px';
+                }
+            } else {
+                // No sticky button element at all, remove padding
+                document.body.style.paddingBottom = '0px';
+            }
+        });
+    </script>
 
     <!-- DataTables Initialization Script -->
     <script>
