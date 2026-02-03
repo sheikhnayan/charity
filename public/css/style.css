@@ -1,3 +1,31 @@
+/* iOS-specific fixes for white space below footer */
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    position: relative;
+}
+
+/* Prevent overscroll bounce on iOS that creates white space */
+@supports (-webkit-overflow-scrolling: touch) {
+    html {
+        position: fixed;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    body {
+        width: 100vw;
+        height: 100vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
+}
+
 nav{
     box-shadow: 0 .25rem .5rem rgba(0,0,0,.5);
     padding-block: 1rem !important;
