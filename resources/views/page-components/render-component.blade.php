@@ -5991,15 +5991,38 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </style>
                 
                 <div id="{{ $componentId }}" style="{{ $styleStr }}" class="modern-auth-container">
-                    {{-- Registration Success Message --}}
+                    {{-- Registration Success Modal --}}
                     @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                            <h5 class="alert-heading" style="display: flex; align-items: center; gap: 10px;">
-                                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
-                                <strong>{{ session('success') }}</strong>
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                                <div class="modal-header" style="border: none; padding: 2rem 2rem 1rem; flex-direction: column; align-items: center;">
+                                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);">
+                                        <i class="fa-solid fa-check" style="font-size: 2.5rem; color: white;"></i>
+                                    </div>
+                                    <h3 class="modal-title" id="successModalLabel" style="color: #2c3e50; font-weight: 700; margin: 0;">Congratulations!</h3>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 1rem 2rem 2rem;">
+                                    <p style="color: #666; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; white-space: pre-line;">{{ session('success') }}</p>
+                                    <button type="button" class="btn" onclick="document.getElementById('successModal').querySelector('[data-bs-dismiss]').click()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 40px; border-radius: 25px; border: none; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                                        Got it!
+                                    </button>
+                                    <button type="button" class="d-none" data-bs-dismiss="modal"></button>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                            
+                            // Auto scroll to auth form when modal is shown
+                            document.getElementById('successModal').addEventListener('shown.bs.modal', function() {
+                                document.getElementById('{{ $componentId }}').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            });
+                        });
+                    </script>
                     @endif
                     
                     @if(session('error'))
@@ -6248,10 +6271,10 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 return;
                             }
                             
-                            // Check if there's a success or error message
-                            const successAlert = component.querySelector('.alert-success');
+                            // Check if there's a success modal or error message
+                            const successModal = document.getElementById('successModal');
                             const errorAlert = component.querySelector('.alert-danger');
-                            const hasMessage = successAlert || errorAlert;
+                            const hasMessage = successModal || errorAlert;
                             
                             const registerForm = component.querySelector('.register');
                             const loginForm = component.querySelector('.login');
@@ -6260,7 +6283,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             
                             console.log('Register form:', registerForm);
                             console.log('Login form:', loginForm);
-                            console.log('Has success/error message:', hasMessage);
+                            console.log('Has success modal or error message:', hasMessage);
                             
                             if (registerForm) {
                                 registerForm.style.opacity = '0';
@@ -6274,13 +6297,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         setTimeout(() => {
                                             loginForm.style.opacity = '1';
                                             console.log('Login form should now be visible');
-                                            
-                                            // If there's a success message, scroll to it
-                                            if (hasMessage) {
-                                                setTimeout(() => {
-                                                    component.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                }, 100);
-                                            }
+                                        }, 50);
                                         }, 50);
                                     }
                                 }, 300);
