@@ -144,15 +144,32 @@ if (isset($state['components'])) {
         width: 100%;
     }
     
-    /* iOS Safari Fix: Don't set height:100% on body - causes white space */
-    html {
-        height: 100%;
+    /* iOS Safari Fix: Use 100dvh (dynamic viewport height) to prevent white space */
+    @supports (-webkit-touch-callout: none) {
+        /* iOS Safari specific fix */
+        html {
+            height: -webkit-fill-available;
+        }
+        
+        body {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+        }
     }
     
-    body {
-        min-height: 100%;
-        display: flex;
-        flex-direction: column;
+    /* Non-iOS devices */
+    @supports not (-webkit-touch-callout: none) {
+        html {
+            height: 100%;
+        }
+        
+        body {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
     }
     
     main {
@@ -2191,18 +2208,7 @@ if (isset($state['components'])) {
             font-weight: bold;
         }
 
-        /* Add bottom padding to body to prevent content overlap - Investment websites only */
-        /* ONLY add padding if sticky button is actually visible */
-        @if($check && $check->isInvestment())
-        @media (max-width: 767px) {
-            /* Only add padding when sticky button is shown (mobile only) */
-            body {
-                padding-bottom: 70px !important;
-            }
-        }
-        @endif
-
-        /* Remove bottom padding on desktop */
+        /* Remove bottom padding on desktop - sticky button hidden */
         @media (min-width: 768px) {
             body {
                 padding-bottom: 0 !important;

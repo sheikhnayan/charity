@@ -246,9 +246,9 @@
                         if(val) {
                             // Escape special regex characters
                             let escapedVal = val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            table.column(2).search('^' + escapedVal + '$', true, false).draw();
+                            table.column(3).search('^' + escapedVal + '$', true, false).draw();
                         } else {
-                            table.column(2).search('').draw();
+                            table.column(3).search('').draw();
                         }
                     });
 
