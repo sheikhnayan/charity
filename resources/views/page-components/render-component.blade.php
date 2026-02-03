@@ -5023,7 +5023,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             btn.classList.add('btn-danger');
                         }
                         
-                        // Wait 2 seconds then re-enable ALL buttons
+                        // Wait 5 seconds then re-enable ALL buttons
                         setTimeout(function() {
                             allButtons.forEach(function(button) {
                                 const state = buttonStates.get(button);
@@ -5033,7 +5033,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 }
                                 button.disabled = false;
                             });
-                        }, 2000);
+                        }, 5000);
                     } else {
                         console.error('❌ ShoppingCart not available');
                         
