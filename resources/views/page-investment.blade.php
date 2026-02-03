@@ -2654,4 +2654,7 @@ function moveFontClassesToParent() {
 <script src="{{ asset('js/payment-funnel-tracking.js') }}"></script>
 
 </body>
+<!-- iOS Footer Scroll Lock - Prevents white space below footer on iOS devices -->
+<script src="{{ asset('js/ios-footer-scroll-lock.js') }}"></script>
+
 </html>
