@@ -363,7 +363,7 @@ function updateTipSummary() {
 }
 
 function updateCheckoutTotal() {
-    // Calculate processing fee amount
+    // Calculate Platform Fee amount
     const processingFee = (baseAmount / 100) * processingFeePercent;
     const newTotal = baseAmount + processingFee + currentTipAmount;
     

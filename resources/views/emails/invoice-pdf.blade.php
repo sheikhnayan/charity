@@ -256,7 +256,7 @@
                 @php
                     $pay = \App\Models\PaymentSetting::first();
                 @endphp
-                <div class="financial-label">Processing Fee ({{ $pay->fee ?? 5 }}%):</div>
+                <div class="financial-label">Platform Fee ({{ $pay->fee ?? 5 }}%):</div>
                 <div class="financial-amount">${{ number_format($transaction->fee, 2) }}</div>
             </div>
             @endif

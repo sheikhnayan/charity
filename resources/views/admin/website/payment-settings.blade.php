@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <div>
                 <h4 class="mb-1"><i class="fa fa-credit-card me-2"></i>Payment Settings - {{ $website->name }}</h4>
-                <p class="text-muted mb-0">Configure payment gateway credentials and processing fees for this website</p>
+                <p class="text-muted mb-0">Configure payment gateway credentials and Platform Fees for this website</p>
             </div>
             <div class="mt-3 mt-md-0">
                 <a href="{{ route('admin.website.index') }}" class="btn btn-secondary">
@@ -56,7 +56,7 @@
                                 <div class="col-12">
                                     <div class="alert alert-info">
                                         <i class="bx bx-info-circle me-2"></i>
-                                        <strong>Website-Specific Platform Fee:</strong> Set a custom processing fee for this website. This fee will be used for all transactions on <strong>{{ $website->name }}</strong>.
+                                        <strong>Website-Specific Platform Fee:</strong> Set a custom Platform Fee for this website. This fee will be used for all transactions on <strong>{{ $website->name }}</strong>.
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -70,7 +70,7 @@
                                             <span class="input-group-text">%</span>
                                         </div>
                                         <small class="form-text text-muted">
-                                            Processing fee percentage charged on transactions (e.g., 2.9 for 2.9%)
+                                            Platform Fee percentage charged on transactions (e.g., 2.9 for 2.9%)
                                         </small>
                                         @error('fee')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>

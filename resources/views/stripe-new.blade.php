@@ -389,7 +389,7 @@
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
-                        Processing Fee
+                        Platform Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
                         ${{ number_format((($data->amount / 100) * $payment->fee), 2) }}
@@ -712,7 +712,7 @@
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
-                        Processing Fee
+                        Platform Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
                         ${{ ($data->amount / 100) * $payment->fee }}

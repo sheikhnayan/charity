@@ -431,7 +431,7 @@
                 <span>${{ number_format($subtotal, 2) }}</span>
             </div>
             <div class="summary-row">
-                <span>Processing Fee:</span>
+                <span>Platform Fee:</span>
                 <span>${{ number_format($transaction['processing_fee'] ?? 0, 2) }}</span>
             </div>
             @if(($transaction['tip_amount'] ?? 0) > 0)

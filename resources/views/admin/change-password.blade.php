@@ -260,7 +260,7 @@
                                             <strong>Gross Amount:</strong> <span id="modal-gross"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
-                                            <strong>Processing Fee:</strong> <span id="modal-fee"></span>
+                                            <strong>Platform Fee:</strong> <span id="modal-fee"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <strong>Total Amount Paid:</strong> <span id="modal-total-paid"></span>
@@ -592,7 +592,7 @@
                                     body: [
                                         ['Field', 'Value'],
                                         ['Gross Amount', $('#modal-gross').text()],
-                                        ['Processing Fee', $('#modal-fee').text()],
+                                        ['Platform Fee', $('#modal-fee').text()],
                                         ['Total Amount', $('#modal-total-amount').text()],
                                         ['Total Paid', $('#modal-total-paid').text()],
                                         ['Total Due', $('#modal-total-due').text()]

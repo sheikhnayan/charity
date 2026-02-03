@@ -716,7 +716,7 @@
                     <span style="text-align:right;font-weight:600;color:#2c3e50;">${{ number_format($subtotal ?? $total, 2) }}</span>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
-                    <span style="color:#2c3e50;font-weight:500;">Processing Fee</span>
+                    <span style="color:#2c3e50;font-weight:500;">Platform Fee</span>
                     <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
                 </div>
                 @if($tippingEnabled)
@@ -1183,7 +1183,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Pay Now button amounts with processing fee
+        // Initialize Pay Now button amounts with Platform Fee
         const checkoutTotal = document.getElementById('checkout-total');
         if (checkoutTotal) {
             const totalText = checkoutTotal.textContent;

@@ -234,7 +234,7 @@
                 </div>
                 @if($transaction->fee_paid)
                 <div class="financial-row">
-                    <span>Processing Fee:</span>
+                    <span>Platform Fee:</span>
                     @php
                         $pay = \App\Models\PaymentSetting::first();
                     @endphp

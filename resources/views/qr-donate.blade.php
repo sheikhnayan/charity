@@ -683,7 +683,7 @@
                         <span id="orderSummaryAmount" class="fw-bold">$0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Processing Fee:</span>
+                        <span>Platform Fee:</span>
                         <span id="orderSummaryFee" class="fw-bold">$0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3" id="orderSummaryTipRow" style="display: none;">
@@ -1194,7 +1194,7 @@
                     }
                 }
                 
-                // Calculate processing fee
+                // Calculate Platform Fee
                 const processingFeePercent = {{ $paymentFee ?? 2.9 }};
                 const processingFee = (amount / 100) * processingFeePercent;
                 const total = amount + processingFee + tipAmount;

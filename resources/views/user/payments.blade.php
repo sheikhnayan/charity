@@ -91,7 +91,7 @@
                                                 <th>Individual Name</th>
                                                 <th>Team Name</th>
                                                 <th>Amount Entered</th>
-                                                <th>Processing Fee</th>
+                                                <th>Platform Fee</th>
                                                 <th>Tip Amount</th>
                                                 <th>Total Amount</th>
                                                 {{-- <th>Amount Net</th> --}}
@@ -415,7 +415,7 @@
                                     <strong>Amount Entered:</strong> <span id="modal-gross"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Processing Fee:</strong> <span id="modal-fee"></span>
+                                    <strong>Platform Fee:</strong> <span id="modal-fee"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Tip Amount:</strong> <span id="modal-tip-amount"></span>
