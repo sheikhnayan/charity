@@ -132,6 +132,11 @@ class CartService
 
                 // Save to session
                 Session::put(self::SESSION_KEY, $cart);
+                
+                // CRITICAL: Force immediate session write to database
+                // Without this, the session is written at end of request lifecycle
+                // which means subsequent GET requests might read stale data
+                Session::save();
 
                 \Log::info('Item added to cart', [
                     'type' => $type,
