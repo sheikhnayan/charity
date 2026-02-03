@@ -675,6 +675,35 @@
 
           <!-- / Navbar -->
 
+          <!-- Success/Error Alerts -->
+          @if(session('success'))
+          <div class="container-xxl mt-3">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bx bx-check-circle fs-5"></i>
+                <div>
+                  <strong>Success!</strong> {{ session('success') }}
+                </div>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+          @endif
+
+          @if(session('error'))
+          <div class="container-xxl mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bx bx-x-circle fs-5"></i>
+                <div>
+                  <strong>Error!</strong> {{ session('error') }}
+                </div>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+          @endif
+
           @yield('content')
 
         <!-- Footer -->
@@ -877,7 +906,25 @@
       }
 
       // Also load on page load for immediate access
-      document.addEventListener('DOMContentLoaded', loadTeachersForModal);
+      document.addEventListener('DOMContentLoaded', function() {
+        loadTeachersForModal();
+        
+        // Reset form and close modal after successful submission
+        const addStudentForm = document.querySelector('form[action="{{ route('parent.add-student') }}"]');
+        if (addStudentForm) {
+          // Listen for modal close - which happens after page reload with success
+          addStudentModal?.addEventListener('hide.bs.modal', function() {
+            // Clear form when modal closes (after page reload with success message)
+            if (session('success')) {
+              addStudentForm.reset();
+              const teacherSelect = document.getElementById('teacher_id');
+              if (teacherSelect) {
+                teacherSelect.value = '';
+              }
+            }
+          });
+        }
+      });
 
       document.addEventListener('click', function (event) {
         const trigger = event.target.closest('[data-bs-target="#addStudentModal"]');
