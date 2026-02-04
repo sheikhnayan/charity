@@ -486,6 +486,25 @@
         @endif
     @endif
 
+    @php
+        $cartSession = session('shopping_cart');
+        $availabilityMap = [];
+        if (!empty($cartSession['items'])) {
+            foreach ($cartSession['items'] as $cartItem) {
+                if (isset($cartItem['type'], $cartItem['id']) && in_array($cartItem['type'], ['ticket', 'product'], true)) {
+                    $ticket = \App\Models\Ticket::find($cartItem['id']);
+                    if ($ticket && $ticket->quantity !== null && $ticket->quantity !== '') {
+                        $availabilityMap[$cartItem['id']] = (int) $ticket->quantity;
+                    }
+                }
+            }
+        }
+    @endphp
+
+    <script>
+        window._cartAvailability = @json($availabilityMap);
+    </script>
+
 <style>
     .cart-item { animation: slideIn 0.3s ease; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
@@ -564,7 +583,19 @@ function createCartItemElement(item, index) {
     const donationInput = clone.querySelector('.donation-amount');
     const donationTotalSection = clone.querySelector('.donation-total-section');
     const donationTotal = clone.querySelector('.donation-total');
+    const availabilityMap = window._cartAvailability || {};
+    const maxQty = (item.type === 'ticket' || item.type === 'product')
+        ? Number(availabilityMap[item.id] ?? item.available_quantity ?? 0)
+        : 0;
+
     quantityInput.value = item.quantity || 1;
+    if (maxQty > 0) {
+        quantityInput.setAttribute('max', String(maxQty));
+        if (parseInt(quantityInput.value) > maxQty) {
+            quantityInput.value = maxQty;
+            updateItemQuantity(itemKey, maxQty);
+        }
+    }
     if (isStudent) {
         if (quantityControls) { quantityControls.style.cssText = 'display: none !important;'; quantityControls.classList.add('hidden'); }
         if (itemPriceSection) { itemPriceSection.style.cssText = 'display: none !important;'; }
@@ -589,9 +620,30 @@ function createCartItemElement(item, index) {
     const increaseBtn = clone.querySelector('[data-action="increase"]');
     const removeBtn = clone.querySelector('.btn-remove');
     if (!isStudent) {
-        if (decreaseBtn) { decreaseBtn.addEventListener('click', function() { const currentQty = parseInt(quantityInput.value); if (currentQty > 1) { quantityInput.value = currentQty - 1; updateItemQuantity(itemKey, currentQty - 1); } }); }
-        if (increaseBtn) { increaseBtn.addEventListener('click', function() { const currentQty = parseInt(quantityInput.value); quantityInput.value = currentQty + 1; updateItemQuantity(itemKey, currentQty + 1); }); }
-        quantityInput.addEventListener('change', function() { const newQty = parseInt(this.value) || 1; if (newQty > 0) { updateItemQuantity(itemKey, newQty); } else { this.value = 1; } });
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                const currentQty = parseInt(quantityInput.value) || 1;
+                if (currentQty > 1) {
+                    quantityInput.value = currentQty - 1;
+                    updateItemQuantity(itemKey, currentQty - 1);
+                }
+            });
+        }
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                const currentQty = parseInt(quantityInput.value) || 1;
+                const nextQty = maxQty > 0 ? Math.min(maxQty, currentQty + 1) : currentQty + 1;
+                quantityInput.value = nextQty;
+                updateItemQuantity(itemKey, nextQty);
+            });
+        }
+        quantityInput.addEventListener('change', function() {
+            let newQty = parseInt(this.value) || 1;
+            if (newQty < 1) newQty = 1;
+            if (maxQty > 0 && newQty > maxQty) newQty = maxQty;
+            this.value = newQty;
+            updateItemQuantity(itemKey, newQty);
+        });
     }
     if (isStudent && donationInput) {
         donationInput.addEventListener('change', function() {
