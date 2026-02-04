@@ -860,6 +860,22 @@ function updateSummary(items) {
 }
 
 function handleCheckout() {
+    // Validate student donation amounts before checkout
+    const studentDonationInputs = document.querySelectorAll('.cart-item .donation-amount');
+    let hasInvalidStudentDonation = false;
+
+    studentDonationInputs.forEach(input => {
+        const value = parseFloat(input.value);
+        if (isNaN(value) || value <= 0) {
+            hasInvalidStudentDonation = true;
+        }
+    });
+
+    if (hasInvalidStudentDonation) {
+        alert('Please enter an amount greater than 0 or remove the student from the cart instead.');
+        return;
+    }
+
     // Use the Cart class's proceedToCheckout method which handles authentication
     if (typeof cart !== 'undefined' && cart.proceedToCheckout) {
         cart.proceedToCheckout();
