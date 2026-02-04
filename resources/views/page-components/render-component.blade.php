@@ -5019,10 +5019,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             });
                             
                             if (success) {
-                                // Show success on clicked button
-                                btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
-                                btn.classList.remove('btn-outline-primary');
-                                btn.classList.add('btn-success');
+                                // Keep "Adding..." state during 7-second persistence window
+                                // Don't change to "Added!" yet
                                 
                                 // CRITICAL: Reload cart to verify item was actually added
                                 console.log('🔄 Reloading cart to verify...');
@@ -5033,8 +5031,13 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 window.ShoppingCart.updateCartDisplay();
                                 window.ShoppingCart.updateCartBadge();
                                 
-                                // Wait 7 seconds total for database persistence
+                                // Wait 7 seconds total for database persistence - keep "Adding..." visible
                                 await new Promise(r => setTimeout(r, 7000));
+                                
+                                // NOW show success after 7-second delay
+                                btn.innerHTML = '<i class="fa fa-check me-2"></i>Added!';
+                                btn.classList.remove('btn-outline-primary');
+                                btn.classList.add('btn-success');
                             } else {
                                 btn.innerHTML = '<i class="fa fa-exclamation-triangle me-2"></i>Failed';
                                 btn.classList.add('btn-danger');

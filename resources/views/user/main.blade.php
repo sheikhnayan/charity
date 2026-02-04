@@ -678,7 +678,7 @@
           <!-- Success/Error Alerts -->
           @if(session('success'))
           <div class="container-xxl mt-3">
-            <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
               <div class="d-flex align-items-center gap-2">
                 <i class="bx bx-check-circle fs-5"></i>
                 <div>
