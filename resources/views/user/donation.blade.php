@@ -105,8 +105,8 @@
     color: #475569;
     background: #f8fafc;
     padding: 0;
-    width: 28px;
-    height: 28px;
+    width: 15px;
+    height: 15px;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
     font-size: 16px;
@@ -117,8 +117,8 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-    margin-top: 13px;
-    margin-right: 0px;
+    margin-top: 21px;
+    margin-right: 4px;
 }
 
 .introjs-skipbutton:hover {
