@@ -348,7 +348,7 @@
                                     <strong>Website ID:</strong> <span id="modal-website"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Date:</strong> <span id="modal-date"></span> <small class="text-muted ms-1" id="modal-timezone"></small>
+                                    <strong>Date:</strong> <span id="modal-date"></span>
                                 </li>
                             </ul>
                         </div>
@@ -648,7 +648,7 @@
                     const timestamp = $btn.data('timestamp');
                     
                     // Display date
-                    $('#modal-date').text(transactionDate);
+                    let dateText = transactionDate;
                     
                     // Calculate timezone from transaction timestamp
                     if (timestamp) {
@@ -662,10 +662,10 @@
                         const tzPart = parts.find(p => p.type === 'timeZoneName');
                         const tzName = tzPart ? tzPart.value : 'UTC';
                         const offset = getUTCOffset(date, appTimezone);
-                        $('#modal-timezone').text(`(${tzName} ${offset})`);
-                    } else {
-                        $('#modal-timezone').text('');
+                        dateText += ` (${tzName} ${offset})`;
                     }
+                    
+                    $('#modal-date').text(dateText);
                     
                     // Basic transaction details
                     $('#modal-transaction').text($btn.data('transaction') || 'N/A');

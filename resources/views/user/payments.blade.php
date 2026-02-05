@@ -611,7 +611,7 @@
             const timestamp = $btn.data('timestamp');
             
             // Display date
-            $('#modal-date').text(transactionDate);
+            let dateText = transactionDate;
             
             // Calculate timezone from transaction timestamp
             if (timestamp) {
@@ -625,10 +625,10 @@
                 const tzPart = parts.find(p => p.type === 'timeZoneName');
                 const tzName = tzPart ? tzPart.value : 'UTC';
                 const offset = getUTCOffset(date, appTimezone);
-                $('#modal-timezone').text(`(${tzName} ${offset})`);
-            } else {
-                $('#modal-timezone').text('');
+                dateText += ` (${tzName} ${offset})`;
             }
+            
+            $('#modal-date').text(dateText);
             
             // Basic transaction details
             $('#modal-transaction').text($btn.data('transaction') || 'N/A');
