@@ -607,24 +607,23 @@
 
                 <script>
                 let currentTransactionData = {};
+            const serverTimezone = '{{ (new DateTime("now", new DateTimeZone(config("app.timezone"))))->format("T (P)") }}';
+            
+            $(document).on('click', '.view-btn', function() {
+                const $btn = $(this);
+                currentTransactionData = $btn.data();
                 
-                $(document).on('click', '.view-btn', function() {
-                    const $btn = $(this);
-                    currentTransactionData = $btn.data();
-                    
-                    // Basic transaction details
-                    $('#modal-transaction').text($btn.data('transaction') || 'N/A');
-                    $('#modal-ip-address').text($btn.data('ip-address') || 'N/A');
-                    $('#modal-first-name').text($btn.data('first-name') || 'N/A');
-                    $('#modal-last-name').text($btn.data('last-name') || 'N/A');
-                    $('#modal-email').text($btn.data('email') || 'N/A');
-                    $('#modal-phone').text($btn.data('phone') || 'N/A');
-                    $('#modal-type').text($btn.data('type') || 'N/A');
-                    $('#modal-status').text($btn.data('status') || 'N/A');
-                    $('#modal-website').text($btn.data('website') || 'N/A');
-                    $('#modal-date').text($btn.data('date') || 'N/A');
-                    
-                    // Payment information
+                // Basic transaction details
+                $('#modal-transaction').text($btn.data('transaction') || 'N/A');
+                $('#modal-ip-address').text($btn.data('ip-address') || 'N/A');
+                $('#modal-first-name').text($btn.data('first-name') || 'N/A');
+                $('#modal-last-name').text($btn.data('last-name') || 'N/A');
+                $('#modal-email').text($btn.data('email') || 'N/A');
+                $('#modal-phone').text($btn.data('phone') || 'N/A');
+                $('#modal-type').text($btn.data('type') || 'N/A');
+                $('#modal-status').text($btn.data('status') || 'N/A');
+                $('#modal-website').text($btn.data('website') || 'N/A');
+                $('#modal-date').text(($btn.data('date') || 'N/A') + ' ' + serverTimezone);
                     $('#modal-payment-first-name').text($btn.data('payment-first-name') || 'N/A');
                     $('#modal-payment-last-name').text($btn.data('payment-last-name') || 'N/A');
                     $('#modal-payment-phone').text($btn.data('payment-phone') || 'N/A');

@@ -837,6 +837,7 @@ body.tutorial-first-visit .introjs-skipbutton {
 
                 <script>
                 let currentTransactionData = {};
+                const serverTimezone = '{{ (new DateTime("now", new DateTimeZone(config("app.timezone"))))->format("T (P)") }}';
                 
                 $(document).on('click', '.view-btn', function() {
                     const $btn = $(this);
@@ -852,7 +853,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                     $('#modal-type').text($btn.data('type') || 'N/A');
                     $('#modal-status').text($btn.data('status') || 'N/A');
                     $('#modal-website').text($btn.data('website') || 'N/A');
-                    $('#modal-date').text($btn.data('date') || 'N/A');
+                    $('#modal-date').text(($btn.data('date') || 'N/A') + ' ' + serverTimezone);
                     
                     // Payment information
                     $('#modal-payment-first-name').text($btn.data('payment-first-name') || 'N/A');

@@ -315,7 +315,7 @@
                             <strong>Website ID:</strong> <span id="modal-website"></span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
-                            <strong>Date:</strong> <span id="modal-date"></span> {{ (new DateTime('now', new DateTimeZone(config('app.timezone'))))->format('T (P)') }}
+                            <strong>Date:</strong> <span id="modal-date"></span>
                         </li>
                     </ul>
                 </div>
@@ -570,6 +570,7 @@
 
         <script>
         let currentTransactionData = {};
+        const serverTimezone = '{{ (new DateTime("now", new DateTimeZone(config("app.timezone"))))->format("T (P)") }}';
         
         $(document).on('click', '.view-btn', function() {
             const $btn = $(this);
@@ -585,7 +586,7 @@
             $('#modal-type').text($btn.data('type') || 'N/A');
             $('#modal-status').text($btn.data('status') || 'N/A');
             $('#modal-website').text($btn.data('website') || 'N/A');
-            $('#modal-date').text($btn.data('date') || 'N/A');
+            $('#modal-date').text(($btn.data('date') || 'N/A') + ' ' + serverTimezone);
             
             // Payment information
             $('#modal-payment-first-name').text($btn.data('payment-first-name') || 'N/A');
