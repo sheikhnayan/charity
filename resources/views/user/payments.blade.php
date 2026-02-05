@@ -315,7 +315,7 @@
                             <strong>Website ID:</strong> <span id="modal-website"></span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
-                            <strong>Date:</strong> <span id="modal-date"></span> <small class="text-muted ms-1">({{ date_default_timezone_get() }})</small>
+                            <strong>Date:</strong> <span id="modal-date"></span> <small class="text-muted ms-1">({{ (new DateTime('now', new DateTimeZone(config('app.timezone'))))->format('T (P)') }})</small>
                         </li>
                     </ul>
                 </div>
