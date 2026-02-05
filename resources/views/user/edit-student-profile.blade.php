@@ -225,12 +225,20 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-12">
-                                        <label for="name" class="form-label required">
-                                            Full Name
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label required">
+                                            First Name
                                         </label>
-                                        <input type="text" class="form-control" id="name" name="name"
+                                        <input type="text" class="form-control" id="first_name" name="name"
                                             value="{{ $user->name }}" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label required">
+                                            Last Name
+                                        </label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name"
+                                            value="{{ $user->last_name }}" required>
                                     </div>
 
                                     {{-- <div class="col-12">
