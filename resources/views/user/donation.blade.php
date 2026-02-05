@@ -418,6 +418,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                 data-website="{{ $item->website->name }}"
                                                                 data-type="{{ $item->type }}"
                                                                 data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
+                                                                data-timestamp="{{ $item->created_at->getTimestamp() }}"
                                                                 @if($item->type === 'investment' && $item->investment)
                                                                     data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
                                                                     data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"
@@ -521,7 +522,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                     <strong>Website ID:</strong> <span id="modal-website"></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Date:</strong> <span id="modal-date"></span> {{ (new DateTime('now', new DateTimeZone(config('app.timezone'))))->format('T (P)') }}
+                                    <strong>Date:</strong> <span id="modal-date"></span> <small class="text-muted ms-1" id="modal-timezone"></small>
                                 </li>
                             </ul>
                         </div>
@@ -837,11 +838,64 @@ body.tutorial-first-visit .introjs-skipbutton {
 
                 <script>
                 let currentTransactionData = {};
-                const serverTimezone = '{{ (new DateTime("now", new DateTimeZone(config("app.timezone"))))->format("T (P)") }}';
+                
+                function getUTCOffset(date, timeZone) {
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: timeZone,
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    });
+                    
+                    const parts = formatter.formatToParts(date);
+                    const timeZoneDate = new Date(
+                        parts.find(p => p.type === 'year').value,
+                        parts.find(p => p.type === 'month').value - 1,
+                        parts.find(p => p.type === 'day').value,
+                        parts.find(p => p.type === 'hour').value,
+                        parts.find(p => p.type === 'minute').value,
+                        parts.find(p => p.type === 'second').value
+                    );
+                    
+                    const offset = date.getTime() - timeZoneDate.getTime();
+                    const hours = Math.floor(Math.abs(offset) / 3600000);
+                    const minutes = Math.floor((Math.abs(offset) % 3600000) / 60000);
+                    const sign = offset <= 0 ? '+' : '-';
+                    
+                    return sign + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+                }
                 
                 $(document).on('click', '.view-btn', function() {
                     const $btn = $(this);
                     currentTransactionData = $btn.data();
+                    
+                    // Get transaction date and timestamp
+                    const transactionDate = $btn.data('date') || 'N/A';
+                    const timestamp = $btn.data('timestamp');
+                    
+                    // Display date
+                    $('#modal-date').text(transactionDate);
+                    
+                    // Calculate timezone from transaction timestamp
+                    if (timestamp) {
+                        const appTimezone = '{{ config('app.timezone') }}';
+                        const date = new Date(timestamp * 1000);
+                        const formatter = new Intl.DateTimeFormat('en-US', {
+                            timeZone: appTimezone,
+                            timeZoneName: 'short'
+                        });
+                        const parts = formatter.formatToParts(date);
+                        const tzPart = parts.find(p => p.type === 'timeZoneName');
+                        const tzName = tzPart ? tzPart.value : 'UTC';
+                        const offset = getUTCOffset(date, appTimezone);
+                        $('#modal-timezone').text(`(${tzName} ${offset})`);
+                    } else {
+                        $('#modal-timezone').text('');
+                    }
                     
                     // Basic transaction details
                     $('#modal-transaction').text($btn.data('transaction') || 'N/A');
@@ -853,7 +907,6 @@ body.tutorial-first-visit .introjs-skipbutton {
                     $('#modal-type').text($btn.data('type') || 'N/A');
                     $('#modal-status').text($btn.data('status') || 'N/A');
                     $('#modal-website').text($btn.data('website') || 'N/A');
-                    $('#modal-date').text(($btn.data('date') || 'N/A') + ' ' + serverTimezone);
                     
                     // Payment information
                     $('#modal-payment-first-name').text($btn.data('payment-first-name') || 'N/A');
