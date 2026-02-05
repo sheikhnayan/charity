@@ -872,7 +872,7 @@ function handleCheckout() {
     });
 
     if (hasInvalidStudentDonation) {
-        alert('Please enter an amount greater than 0 or remove the student from the cart instead.');
+        alert('Please enter an amount greater than 0 or remove the participant from the cart instead.');
         return;
     }
 
