@@ -852,10 +852,10 @@ class AdminController extends Controller
             'goal' => 'nullable|numeric|min:0',
             'tshirt_size' => 'nullable|string|max:50',
             'description' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120'
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,pjpeg|max:5120'
         ], [
             'photo.image' => 'The photo must be a valid image file.',
-            'photo.mimes' => 'The photo must be in JPG, PNG, or GIF format.',
+            'photo.mimes' => 'The photo must be in JPG, JPEG, PNG, or GIF format.',
             'photo.max' => 'The photo must not exceed 5MB in size.',
         ]);
         

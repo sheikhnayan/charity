@@ -266,11 +266,11 @@
                                             Upload New Photo
                                         </label>
                                         <input class="form-control @error('photo') is-invalid @enderror" type="file" id="photo-image-file" name="photo"
-                                            accept="image/png, image/gif, image/jpeg, image/jpg">
+                                            accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
                                         @error('photo')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
-                                        <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, PNG, GIF</strong> | Recommended: Square format</div>
+                                        <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
                                     </div>
 
                                 </div>

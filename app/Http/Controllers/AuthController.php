@@ -118,12 +118,12 @@ After approval, you'll receive an email with login access details. Be sure to ch
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,pjpeg|max:5120',
             'goal' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ], [
             'photo.image' => 'The photo must be a valid image file.',
-            'photo.mimes' => 'The photo must be in JPG, PNG, or GIF format.',
+            'photo.mimes' => 'The photo must be in JPG, JPEG, PNG, or GIF format.',
             'photo.max' => 'The photo must not exceed 5MB in size.',
         ]);
 
