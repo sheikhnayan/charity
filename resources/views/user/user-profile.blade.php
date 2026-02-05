@@ -89,7 +89,7 @@
                         </li>
                         <li class="breadcrumb-item">
                             <a href="/users/student">
-                                <i class="fas fa-users"></i> My Students
+                                <i class="fas fa-users"></i> My Participants
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Student Profile</li>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-md-auto text-center text-md-end mt-3 mt-md-0">
                             <a href="/users/student" class="btn btn-light btn-lg">
-                                <i class="fas fa-arrow-left me-2"></i>Back to My Students
+                                <i class="fas fa-arrow-left me-2"></i>Back to My Participants
                             </a>
                         </div>
                     </div>

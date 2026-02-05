@@ -440,7 +440,7 @@
                     <div class="selection-required donation-student-required">Please select a student</div>
                     <div class="selection-list" id="studentList">
                         <div class="text-center py-5 text-muted">
-                            <i class="fas fa-spinner fa-spin"></i> Loading students...
+                            <i class="fas fa-spinner fa-spin"></i> Loading participants...
                         </div>
                     </div>
                     <input type="hidden" name="student_id_temp" id="studentSelected" value="">

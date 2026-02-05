@@ -87,7 +87,7 @@
                                                     
                                                     <a href="/users/student" class="btn btn-secondary">
                                                         <i class="fa-solid fa-arrow-left fa-fw" aria-hidden="true"></i>
-                                                        <span>Back to Students</span>
+                                                        <span>Back to Particiipants</span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -132,7 +132,7 @@
                                         </li>
 
                                         <li class="breadcrumb-item ">
-                                            <a href="/users/student">My Students</a>
+                                            <a href="/users/student">My Participants</a>
                                             <i class="fas fa-chevron-right ms-1"></i>
                                         </li>
                                         <li class="active breadcrumb-item" aria-current="page">

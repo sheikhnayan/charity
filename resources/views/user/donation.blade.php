@@ -1160,26 +1160,26 @@ body.tutorial-first-visit .introjs-skipbutton {
                         // Welcome step (both mobile and desktop)
                         tutorialSteps.push({
                             title: 'Welcome Parents! 👋',
-                            intro: 'Welcome to your dashboard! Let me show you how to add and manage students under your profile.'
+                            intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
                         });
                         
                         if (isMobile) {
                             // Mobile-specific tutorial steps (skip sidebar references)
                             tutorialSteps.push({
                                 title: 'Navigation Menu 📱',
-                                intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like Students, Profile, and Payments.',
+                                intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like participants, Profile, and Payments.',
                                 tooltipClass: 'introjs-floating'
                             });
                             
                             tutorialSteps.push({
-                                title: 'Adding Students 🎓',
-                                intro: 'To add a new student:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Student" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
+                                title: 'Adding Participants 🎓',
+                                intro: 'To add a new participant:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Participant" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
                                 tooltipClass: 'introjs-floating'
                             });
                             
                             tutorialSteps.push({
-                                title: 'Managing Students',
-                                intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                title: 'Managing Participants',
+                                intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
                                 tooltipClass: 'introjs-floating'
                             });
                             
@@ -1192,15 +1192,15 @@ body.tutorial-first-visit .introjs-skipbutton {
                             
                             tutorialSteps.push({
                                 title: 'You\'re All Set! 🎉',
-                                intro: 'That\'s it! You\'re ready to start managing your students. Tap the menu icon (☰) and select "Participant" to get started!',
+                                intro: 'That\'s it! You\'re ready to start managing your participants. Tap the menu icon (☰) and select "Participant" to get started!',
                                 tooltipClass: 'introjs-floating'
                             });
                         } else {
                             // Desktop tutorial steps (original with sidebar references)
                             tutorialSteps.push({
                                 element: document.querySelector('#students-menu-item'),
-                                title: 'Students / Participants',
-                                intro: 'Click here to view and manage all your students or participants. This is where you\'ll spend most of your time!',
+                                title: 'Participants',
+                                intro: 'Click here to view and manage all your participants. This is where you\'ll spend most of your time!',
                                 position: 'right'
                             });
                             
@@ -1212,14 +1212,14 @@ body.tutorial-first-visit .introjs-skipbutton {
                             });
                             
                             tutorialSteps.push({
-                                title: 'Adding Students 🎓',
-                                intro: 'To add a new student:<br><br>1. Click on "Student / Participant" in the sidebar<br>2. Click the "Add Student" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
+                                title: 'Adding Participants 🎓',
+                                intro: 'To add a new participant:<br><br>1. Click on "Participant" in the sidebar<br>2. Click the "Add Participant" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
                                 tooltipClass: 'introjs-floating'
                             });
                             
                             tutorialSteps.push({
-                                title: 'Managing Students',
-                                intro: 'Once you\'ve added students, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                title: 'Managing Participants',
+                                intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
                                 tooltipClass: 'introjs-floating'
                             });
                             
@@ -1232,7 +1232,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                             
                             tutorialSteps.push({
                                 title: 'You\'re All Set! 🎉',
-                                intro: 'That\'s it! You\'re ready to start managing your students. Click "Student / Participant" in the sidebar to get started!',
+                                intro: 'That\'s it! You\'re ready to start managing your participants. Click "Participant" in the sidebar to get started!',
                                 tooltipClass: 'introjs-floating'
                             });
                         }

@@ -40,7 +40,7 @@
                                         <th>Name</th>
                                         <th>Description</th>
                                         <th>Status</th>
-                                        <th>Students</th>
+                                        <th>Participants</th>
                                         @if(!isset($website))
                                             <th>Website</th>
                                         @endif

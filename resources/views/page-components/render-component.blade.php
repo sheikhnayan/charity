@@ -4791,7 +4791,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                 </div>
                 <div class="col-12 mt-4">
                         <div id="studentEntryInfo" style="margin-bottom: 10px; font-size: 14px; color: #666;">
-                            Showing <span id="studentCount">0</span> of <span id="totalStudentCount">0</span> students
+                            Showing <span id="studentCount">0</span> of <span id="totalStudentCount">0</span> participants
                         </div>
                         <div id="studentListContainer" class="row" style="display: flex; flex-wrap: wrap; gap: 20px;">
     @php
@@ -4861,7 +4861,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <!-- Load More Button -->
                         <div id="loadMoreContainer" style="text-align: center; margin-top: 30px; display: {{ count($students) > 10 ? 'block' : 'none' }};">
                             <button id="loadMoreBtn" class="btn btn-primary btn-lg" style="padding: 12px 40px; font-size: 16px; font-weight: 600;">
-                                <i class="fa fa-plus-circle me-2"></i>Load More Students
+                                <i class="fa fa-plus-circle me-2"></i>Load More participants
                             </button>
                         </div>
                 </div>
