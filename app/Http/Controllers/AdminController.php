@@ -849,6 +849,7 @@ class AdminController extends Controller
         
         $request->validate([
             'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'goal' => 'nullable|numeric|min:0',
             'tshirt_size' => 'nullable|string|max:50',
             'description' => 'nullable|string',
@@ -862,6 +863,7 @@ class AdminController extends Controller
         // Save the name in both name and fist_name fields
         $student->name = $request->name;
         // $student->fist_name = $request->name;
+        $student->last_name = $request->last_name;
         $student->goal = $request->goal ?? 0;
         $student->tshirt_size = $request->tshirt_size;
         $student->description = $request->description;
