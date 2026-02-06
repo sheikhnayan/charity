@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
 use App\Models\Website;
+use App\Models\Setting;
 use Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationConfirmation;
@@ -86,11 +87,41 @@ class AuthController extends Controller
                 // Log error but don't stop registration process
                 \Log::error('Registration confirmation email failed: ' . $e->getMessage());
             }
+
+            // Send admin notification emails for parent registrations
+            try {
+                // Get admin emails from contact form settings
+                $adminEmails = [];
+                
+                // Get site owner (user with role 'user' for this website)
+                $siteOwner = User::where('website_id', $check->id)
+                    ->where('role', 'user')
+                    ->first();
+                if ($siteOwner) {
+                    $adminEmails[] = $siteOwner->email;
+                }
+
+                // Get contact form admin emails from settings
+                $setting = Setting::where('user_id', $check->user_id)->first();
+                if ($setting && $setting->contact_email_admin) {
+                    $contactEmails = array_filter(array_map('trim', explode(',', $setting->contact_email_admin)));
+                    $adminEmails = array_merge($adminEmails, $contactEmails);
+                }
+
+                // Remove duplicates and send notifications
+                $adminEmails = array_unique($adminEmails);
+                foreach ($adminEmails as $adminEmail) {
+                    Mail::to($adminEmail)->send(new \App\Mail\AdminRegistrationNotification($user, $check));
+                }
+            } catch (\Exception $e) {
+                // Log error but don't stop registration process
+                \Log::error('Admin registration notification email failed: ' . $e->getMessage());
+            }
         }
 
         $successMessage = "Thanks for signing up!
-Your registration has been submitted and is currently under review.
-After approval, you'll receive an email with login access details. Be sure to check your spam or junk folder just in case!";
+        Your registration has been submitted and is currently under review.
+        After approval, you'll receive an email with login access details. Be sure to check your spam or junk folder just in case!";
 
         // If registration came from a page (not login page), redirect back with message
         // Otherwise redirect to login
