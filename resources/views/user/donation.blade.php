@@ -278,12 +278,12 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                 <label>Filter by Type:</label>
                                                 <select id="typeFilter" class="form-select">
                                                     <option value="">All Types</option>
-                                                    <option value="student">Student</option>
-                                                    <option value="general">General</option>
-                                                    <option value="sponsor">Sponsor</option>
-                                                    <option value="auction">Auction</option>
-                                                    <option value="ticket">Ticket</option>
-                                                    <option value="investment">Investment</option>
+                                                    <option value="Donation">Donation</option>
+                                                    <option value="General Donation">General Donation</option>
+                                                    <option value="Sponsor">Sponsor</option>
+                                                    <option value="Auction">Auction</option>
+                                                    <option value="Ticket">Ticket</option>
+                                                    <option value="Investment">Investment</option>
                                                 </select>
                                             </div>
                                         @endif
@@ -385,7 +385,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                             @endif
                                                         </td>
                                                         <td>{{ $item->website->name }}</td>
-                                                        <td>{{ ($item->type == 'student' || $item->type == 'general') ? 'Donation' : ucfirst($item->type) }}</td>
+                                                        <td>{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}</td>
                                                         <td>
                                                             @if ($item->type == 'auction')
                                                                 Pending
@@ -416,7 +416,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                 data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
                                                                 data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
                                                                 data-website="{{ $item->website->name }}"
-                                                                data-type="{{ ($item->type == 'student' || $item->type == 'general') ? 'Donation' : ucfirst($item->type) }}"
+                                                                data-type="{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}"
                                                                 data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
                                                                 data-timestamp="{{ $item->created_at->getTimestamp() }}"
                                                                 @if($item->type === 'investment' && $item->investment)
