@@ -130,8 +130,22 @@ class AuthorizeNetController extends Controller
         // Only set zip and state for AVS (skip street address to avoid mismatch failures)
         if (!empty($request->zipcode) && !empty($request->state)) {
             $billTo = new AnetAPI\CustomerAddressType();
+            if ($request->first_name) $billTo->setFirstName($request->first_name);
+            if ($request->last_name) $billTo->setLastName($request->last_name);
             if ($request->zipcode) $billTo->setZip($request->zipcode);
             if ($request->state) $billTo->setState($request->state);
+        }
+
+        // Include customer email (and optional names) in CustomerData
+        if (!empty($request->email) || !empty($request->first_name) || !empty($request->last_name)) {
+            $customerData = new AnetAPI\CustomerDataType();
+            $customerData->setType('individual');
+            if (!empty($request->email)) {
+                $customerData->setEmail($request->email);
+            }
+            if (!empty($request->first_name) || !empty($request->last_name)) {
+                $customerData->setId(trim(($request->first_name ?? '') . ' ' . ($request->last_name ?? '')));
+            }
         }
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
@@ -145,6 +159,9 @@ class AuthorizeNetController extends Controller
         $transactionRequestType->setPayment($payment);
         if (isset($billTo)) {
             $transactionRequestType->setBillTo($billTo);
+        }
+        if (isset($customerData)) {
+            $transactionRequestType->setCustomer($customerData);
         }
 
         // Pass real customer IP (only if it's a public IP; avoid local/proxy placeholders)
