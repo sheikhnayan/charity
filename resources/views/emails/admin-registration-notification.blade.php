@@ -1,73 +1,168 @@
-@extends('emails.layout')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Registration - Approval Required | {{ $website->name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .content {
+            color: #333;
+            font-size: 16px;
+        }
+        .content h2 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        .content p {
+            margin: 15px 0;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .details-box {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .details-table {
+            width: 100%;
+            margin-top: 15px;
+        }
+        .details-table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .details-table td {
+            padding: 12px 0;
+        }
+        .details-table .label {
+            font-weight: bold;
+            color: #667eea;
+            width: 30%;
+        }
+        .details-table .value {
+            color: #333;
+        }
+        .details-table tr:last-child {
+            border-bottom: none;
+        }
+        .btn-primary {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #0099ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #0066cc;
+            font-size: 14px;
+        }
+        .footer {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+            margin-top: 30px;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">{{ $website->name }}</div>
+            <h2 style="margin: 10px 0 0 0; font-size: 20px;">New Registration Pending</h2>
+        </div>
 
-@section('content')
-<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    
-    <!-- Header Section -->
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">New Registration Pending</h1>
-        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">{{ $website->name }}</p>
-    </div>
+        <!-- Content -->
+        <div class="content">
+            <p>Hello Admin,</p>
 
-    <!-- Main Content -->
-    <div style="background: #f9f9f9; padding: 40px; border-radius: 0 0 8px 8px;">
-        
-        <!-- Greeting -->
-        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
-            Hello Admin,
-        </p>
-
-        <!-- Alert Box -->
-        <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
-            <p style="margin: 0; color: #856404;">
+            <!-- Alert -->
+            <div class="highlight-box">
                 <strong>A new {{ $userRole }} has registered and requires approval.</strong>
-            </p>
-        </div>
+            </div>
 
-        <!-- Registration Details -->
-        <div style="background: white; padding: 20px; border-radius: 4px; margin: 20px 0; border: 1px solid #e0e0e0;">
-            <h3 style="color: #333; font-size: 16px; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Registration Details</h3>
-            
-            <table style="width: 100%; margin-top: 15px;">
-                <tr style="border-bottom: 1px solid #f0f0f0;">
-                    <td style="padding: 12px 0; width: 30%; font-weight: bold; color: #667eea;">Name:</td>
-                    <td style="padding: 12px 0; color: #333;">{{ $newUser->name }} {{ $newUser->last_name }}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f0f0f0;">
-                    <td style="padding: 12px 0; width: 30%; font-weight: bold; color: #667eea;">Email:</td>
-                    <td style="padding: 12px 0; color: #333;">{{ $newUser->email }}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f0f0f0;">
-                    <td style="padding: 12px 0; width: 30%; font-weight: bold; color: #667eea;">Account Type:</td>
-                    <td style="padding: 12px 0; color: #333;">{{ $userRole }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 12px 0; width: 30%; font-weight: bold; color: #667eea;">Registered:</td>
-                    <td style="padding: 12px 0; color: #333;">{{ $registrationDate }}</td>
-                </tr>
-            </table>
-        </div>
+            <!-- Registration Details -->
+            <div class="details-box">
+                <h3 style="color: #333; font-size: 16px; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Registration Details</h3>
+                <table class="details-table">
+                    <tr>
+                        <td class="label">Name:</td>
+                        <td class="value">{{ $newUser->name }} {{ $newUser->last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Email:</td>
+                        <td class="value">{{ $newUser->email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Account Type:</td>
+                        <td class="value">{{ $userRole }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Registered:</td>
+                        <td class="value">{{ $registrationDate }}</td>
+                    </tr>
+                </table>
+            </div>
 
-        <!-- Action Button -->
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $approvalLink }}" style="display: inline-block; background: #667eea; color: white; text-decoration: none; padding: 12px 30px; border-radius: 4px; font-weight: bold; font-size: 14px;">
-                Review & Approve Registrations
-            </a>
-        </div>
+            <!-- Action Button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ $approvalLink }}" class="btn-primary">Review & Approve Registrations</a>
+            </div>
 
-        <!-- Status Info -->
-        <div style="background: #f0f7ff; padding: 15px; border-radius: 4px; margin: 20px 0; border-left: 4px solid #0099ff;">
-            <p style="margin: 0; color: #0066cc; font-size: 14px;">
+            <!-- Status Info -->
+            <div class="info-box">
                 <strong>Note:</strong> This account will remain inactive until you approve it. Once approved, the user will receive an email confirming their access.
-            </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                This is an automated notification from {{ $website->name }}. If you have any questions, please contact your system administrator.
+            </div>
         </div>
-
-        <!-- Footer Message -->
-        <p style="color: #666; font-size: 13px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
-            This is an automated notification from {{ $website->name }}. If you have any questions, please contact your system administrator.
-        </p>
-
     </div>
-
-</div>
-@endsection
+</body>
+</html>
