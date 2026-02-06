@@ -124,8 +124,6 @@ class AuthorizeNetController extends Controller
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
 
-        // dd($creditCard);
-
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
 
@@ -163,12 +161,11 @@ class AuthorizeNetController extends Controller
         $controller = new AnetController\CreateTransactionController($requests);
         // Use website-specific environment (sandbox/production)
         $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
+        dd($environment);
         $response = $controller->executeWithApiResponse($environment);
 
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
-
-            dd($tresponse);
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
                 $type = $request->type;
