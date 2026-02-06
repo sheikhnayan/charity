@@ -43,7 +43,7 @@ class AdminRegistrationNotification extends Mailable
                         'website' => $this->website,
                         'userRole' => ucfirst($this->newUser->role),
                         'registrationDate' => $this->newUser->created_at->format('M d, Y \a\t g:i A'),
-                        'approvalLink' => url('/admin/users/manage')
+                        'approvalLink' => url('/admins/student')
                     ]);
 
         // Apply from address from website settings if available
