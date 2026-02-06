@@ -144,6 +144,8 @@ class AuthorizeNetController extends Controller
         $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
         $response = $controller->executeWithApiResponse($environment);
 
+        dd($response);
+
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
 
