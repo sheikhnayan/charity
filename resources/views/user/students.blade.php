@@ -131,7 +131,7 @@
                                                     <tr>
                                                         <td>{{ $item->id }}</td>
                                                         <td>
-                                                            <a href="/users/profile" class="text-decoration-none fw-bold text-primary">
+                                                            <a href="/users/student/profile/{{ $item->id }}" class="text-decoration-none fw-bold text-primary">
                                                                 {{ $item->name }} {{ $item->last_name }}
                                                             </a>
                                                         </td>
@@ -142,7 +142,7 @@
                                                         <td>{{ $item->teacher->name ?? 'N/A' }}</td>
                                                         <td>
                                                             @if($item->parent)
-                                                                <a href="/users/student/profile/{{ $item->parent->id }}" class="text-decoration-none text-primary fw-semibold">
+                                                                <a href="/users/profile" class="text-decoration-none text-primary fw-semibold">
                                                                     {{ $item->parent->name }} {{ $item->parent->last_name }}
                                                                 </a>
                                                             @else
