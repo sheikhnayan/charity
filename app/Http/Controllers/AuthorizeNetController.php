@@ -152,8 +152,11 @@ class AuthorizeNetController extends Controller
         $transactionRequestType->setPayment($payment);
         $transactionRequestType->setBillTo($billTo);
 
-        // Pass real customer IP (important for FDS)
-        $transactionRequestType->setCustomerIP($request->ip());
+        // Pass real customer IP (only if it's a public IP; avoid local/proxy placeholders)
+        $clientIp = $request->getClientIp();
+        if ($clientIp && filter_var($clientIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            $transactionRequestType->setCustomerIP($clientIp);
+        }
 
 
         $requests = new AnetAPI\CreateTransactionRequest();
@@ -169,8 +172,6 @@ class AuthorizeNetController extends Controller
 
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
-
-            dd($tresponse);
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
                 $type = $request->type;
