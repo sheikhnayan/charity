@@ -107,11 +107,11 @@ class AuthorizeNetController extends Controller
             return back()->with('error', 'Payment configuration error: ' . implode(', ', $validationErrors));
         }
 
-        $cardNumber = (int) $request->input('card_number');
+        $cardNumber = $request->input('card_number');
         $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
         // dd($expirationDate);
-        $cvv = (int) $request->input('cvv');
+        $cvv = $request->input('cvv');
 
         // Use website-specific credentials instead of environment variables
         $merchantAuthentication = $paymentGatewayService->createAuthorizeNetAuth($website);
@@ -124,7 +124,7 @@ class AuthorizeNetController extends Controller
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
 
-        // dd($creditCard);
+        dd($creditCard);
 
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
