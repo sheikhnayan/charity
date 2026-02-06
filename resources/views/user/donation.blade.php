@@ -322,7 +322,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                         <td class="text-break"> {{ $item->transaction_id }} </td>
                                                         <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->name ?? null}}</td>
+                                                            <td>{{ $item->donation->user->name ?? null}} {{ $item->donation->user->last_name ?? null}}</td>
                                                         @elseif($item->type == 'general')
                                                             <td>{{ $item->website->name }}</td>
                                                         @elseif($item->type == 'sponsor')
@@ -416,7 +416,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                 data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
                                                                 data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
                                                                 data-website="{{ $item->website->name }}"
-                                                                data-type="{{ $item->type }}"
+                                                                data-type="{{ ($item->type == 'student' || $item->type == 'general') ? 'Donation' : ucfirst($item->type) }}"
                                                                 data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
                                                                 data-timestamp="{{ $item->created_at->getTimestamp() }}"
                                                                 @if($item->type === 'investment' && $item->investment)

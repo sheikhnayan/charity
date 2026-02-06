@@ -155,7 +155,7 @@
                                                         <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
                                                         @if ($item->type == 'student')
                                                             @if ($item->donation)
-                                                            <td>{{ ($item->donation->user)? $item->donation->user->name : '' }}</td>
+                                                            <td>{{ ($item->donation->user)? $item->donation->user->name : '' }} {{ ($item->donation->user)? $item->donation->user->last_name : '' }}</td>
                                                                 
                                                             @else
                                                                 <td>NULL</td>
@@ -242,7 +242,7 @@
                                                                 data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
                                                                 data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
                                                                 data-website="{{ $item->website->name }}"
-                                                                data-type="{{ $item->type }}"
+                                                                data-type="{{ ($item->type == 'student' || $item->type == 'general') ? 'Donation' : ucfirst($item->type) }}"
                                                                 data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
                                                                 data-timestamp="{{ $item->created_at->getTimestamp() }}"
                                                                 @if($item->type === 'investment' && $item->investment)
