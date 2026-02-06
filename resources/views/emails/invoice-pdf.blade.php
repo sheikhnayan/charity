@@ -227,7 +227,7 @@
             <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
                 <thead>
                     <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                        <th style="padding: 12px; text-align: left; font-weight: bold; border: 1px solid #dee2e6;">Item #</th>
+                        <th style="padding: 12px; text-align: left; font-weight: bold; border: 1px solid #dee2e6;">Item Name</th>
                         <th style="padding: 12px; text-align: left; font-weight: bold; border: 1px solid #dee2e6;">Type</th>
                         <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Amount</th>
                         <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Fee</th>
@@ -237,9 +237,47 @@
                 </thead>
                 <tbody>
                     @forelse($transactions as $idx => $transaction)
+                    @php
+                        // Get item name based on transaction type
+                        $itemName = '';
+                        if ($transaction->type === 'student') {
+                            // Student: show student name and last_name via donation
+                            $donation = \App\Models\Donation::find($transaction->reference_id);
+                            $student = $donation ? $donation->user : null;
+                            $itemName = $student ? ($student->name . ' ' . $student->last_name) : 'Student';
+                        } elseif ($transaction->type === 'ticket') {
+                            // Ticket: show ticket name
+                            $ticket = \App\Models\Ticket::find($transaction->reference_id);
+                            $itemName = $ticket ? $ticket->name : 'Ticket';
+                        } elseif ($transaction->type === 'auction') {
+                            // Auction: show auction name
+                            $auction = \App\Models\Auction::find($transaction->reference_id);
+                            $itemName = $auction ? $auction->name : 'Auction Item';
+                        } elseif ($transaction->type === 'investment') {
+                            // Investment: show website name
+                            $itemName = $website->name ?? 'Investment';
+                        } else {
+                            // General: show website name
+                            $itemName = $website->name ?? 'Donation';
+                        }
+                        
+                        // Get transaction type label based on transaction type
+                        $typeLabel = '';
+                        if ($transaction->type === 'student' || $transaction->type === 'general' || $transaction->type === 'donation') {
+                            $typeLabel = 'Donation';
+                        } elseif ($transaction->type === 'investment') {
+                            $typeLabel = 'Investment';
+                        } elseif ($transaction->type === 'ticket') {
+                            $typeLabel = 'Product Purchase';
+                        } elseif ($transaction->type === 'auction') {
+                            $typeLabel = 'Auction';
+                        } else {
+                            $typeLabel = ucfirst($transaction->type);
+                        }
+                    @endphp
                     <tr style="border-bottom: 1px solid #dee2e6;">
-                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ $idx + 1 }}</td>
-                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ ucfirst($transaction->type) }}</td>
+                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ $itemName }}</td>
+                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ $typeLabel }}</td>
                         <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->amount, 2) }}</td>
                         <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->fee ?? 0, 2) }}</td>
                         <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->tip_amount ?? 0, 2) }}</td>
