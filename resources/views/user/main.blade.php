@@ -650,8 +650,11 @@
             </div>
 
             <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
-              <!-- Left Side: Welcome -->
+              <!-- Left Side: Sidebar Toggle & Welcome -->
               <div class="d-flex align-items-center gap-3">
+                <button id="sidebarToggle" class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
+                  <i class="bx bx-menu"></i>
+                </button>
                 <div>
                   <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
                   <small style="color: rgba(0,0,0,0.5)">Welcome back — insights updated</small>
@@ -778,9 +781,11 @@
       (function(){
         const body = document.body;
         const darkToggle = document.getElementById('darkToggle');
+        const sidebarToggle = document.getElementById('sidebarToggle');
         const themeSelect = document.getElementById('themeSelect');
+        const sidebar = document.querySelector('.layout-menu');
 
-        if (!darkToggle || !themeSelect) {
+        if (!darkToggle || !sidebarToggle || !themeSelect || !sidebar) {
           console.warn('Modern theme controls not found on this page');
           return;
         }
@@ -795,6 +800,10 @@
           const theme = localStorage.getItem('ui:theme') || 'theme-purple';
           body.classList.add(theme);
           themeSelect.value = theme;
+          
+          if (localStorage.getItem('ui:sidebarCollapsed') === '1') {
+            sidebar.classList.add('collapsed');
+          }
         } catch(e) {
           console.error('Failed to load UI preferences:', e);
         }
@@ -811,6 +820,12 @@
           } else {
             icon.classList.replace('bx-sun', 'bx-moon');
           }
+        });
+
+        // Sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem('ui:sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
         });
 
         // Theme select

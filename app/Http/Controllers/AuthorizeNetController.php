@@ -489,7 +489,7 @@ class AuthorizeNetController extends Controller
                 $type = $request->input('type', 'general');
                 $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment failed - Response error');
                 
-                dd($response);
+                // dd($response);
                 return back()->with('error', "Payment failed");
             }
         } else {
@@ -499,7 +499,7 @@ class AuthorizeNetController extends Controller
             $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment failed - Transaction not approved');
             
             // dd($response);
-                dd($response);
+                // dd($response);
             return back()->with('error', "Payment failed ");
         }
 
