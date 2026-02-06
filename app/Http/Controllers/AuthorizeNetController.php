@@ -138,7 +138,6 @@ class AuthorizeNetController extends Controller
         $billTo->setZip($request->zipcode ?? '0000'); // IMPORTANT
         $billTo->setCountry($request->country ?? 'BD');
 
-        $transactionRequestType->setBillTo($billTo);
 
         // dd($payment);
 
@@ -151,6 +150,8 @@ class AuthorizeNetController extends Controller
         $amount = number_format((float)$request->amount, 2, '.', '');
         $transactionRequestType->setAmount($amount);
         $transactionRequestType->setPayment($payment);
+        $transactionRequestType->setBillTo($billTo);
+
 
         $requests = new AnetAPI\CreateTransactionRequest();
         $requests->setMerchantAuthentication($merchantAuthentication);
