@@ -124,7 +124,7 @@ class AuthorizeNetController extends Controller
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
 
-        dd($creditCard);
+        // dd($creditCard);
 
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
