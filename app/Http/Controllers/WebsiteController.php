@@ -195,8 +195,7 @@ class WebsiteController extends Controller
             $vhostPath = "/etc/apache2/sites-available/{$domain}.conf";
             $docRoot = "/var/www/charity/public";
 
-                $vhostConfig = "
-            <VirtualHost *:80>
+                $vhostConfig = "<VirtualHost *:80>
                 ServerName {$domain}
                 DocumentRoot {$docRoot}
 

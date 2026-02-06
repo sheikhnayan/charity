@@ -162,7 +162,15 @@
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Type:</div>
-                        <div class="detail-value">{{ ucfirst($transactions->first()->type) }}</div>
+                            <div class="detail-value">
+                                @if($website && $website->type === 'fundraiser')
+                                    Fundraiser
+                                @elseif($website && $website->type === 'investment')
+                                    Investment
+                                @else
+                                    {{ ucfirst($transactions->first()->type) }}
+                                @endif
+                            </div>
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Payment Method:</div>

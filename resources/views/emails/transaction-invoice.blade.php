@@ -33,8 +33,18 @@
             @php
                 $firstTransaction = $transactions->first();
                 $multipleItems = $transactions->count() > 1;
+                
+                // Get type label for header
+                $typeLabel = '';
+                if ($website->type === 'fundraiser') {
+                    $typeLabel = 'Fundraise';
+                } elseif ($website->type === 'investment') {
+                    $typeLabel = 'Investment';
+                } else {
+                    $typeLabel = ucfirst($firstTransaction->type);
+                }
             @endphp
-            <h2>{{ $multipleItems ? 'Multi-Item Invoice' : 'Transaction Receipt' }}</h2>
+            <h2>{{ $multipleItems ? 'Multi-Item Invoice' : ($typeLabel . ' Receipt') }}</h2>
             <p>Transaction #{{ $firstTransaction->transaction_id }}</p>
         </div>
 
@@ -92,7 +102,7 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Item</th>
+                            <th>Item Name</th>
                             <th>Type</th>
                             <th>Amount</th>
                             <th>Fee</th>
@@ -102,9 +112,47 @@
                     </thead>
                     <tbody>
                         @foreach($transactions as $idx => $transaction)
+                        @php
+                            // Get item name based on transaction type
+                            $itemName = '';
+                            if ($transaction->type === 'student') {
+                                // Student: show student name and last_name
+                                $donation = \App\Models\Donation::find($transaction->reference_id);
+                                $student = $donation ? $donation->user : null;
+                                $itemName = $student ? ($student->name . ' ' . $student->last_name) : 'Student';
+                            } elseif ($transaction->type === 'ticket') {
+                                // Ticket: show ticket name
+                                $ticket = \App\Models\Ticket::find($transaction->reference_id);
+                                $itemName = $ticket ? $ticket->name : 'Ticket';
+                            } elseif ($transaction->type === 'auction') {
+                                // Auction: show auction name
+                                $auction = \App\Models\Auction::find($transaction->reference_id);
+                                $itemName = $auction ? $auction->name : 'Auction Item';
+                            } elseif ($transaction->type === 'investment') {
+                                // Investment: show website name
+                                $itemName = $website->name ?? 'Investment';
+                            } else {
+                                // General: show website name
+                                $itemName = $website->name ?? 'Donation';
+                            }
+                            
+                                // Get transaction type label based on transaction type
+                                $typeLabel = '';
+                                if ($transaction->type === 'student' || $transaction->type === 'general' || $transaction->type === 'donation') {
+                                    $typeLabel = 'Donation';
+                                } elseif ($transaction->type === 'investment') {
+                                    $typeLabel = 'Investment';
+                                } elseif ($transaction->type === 'ticket') {
+                                    $typeLabel = 'Product Purchase';
+                                } elseif ($transaction->type === 'auction') {
+                                    $typeLabel = 'Auction';
+                                } else {
+                                    $typeLabel = ucfirst($transaction->type);
+                                }
+                        @endphp
                         <tr>
-                            <td>#{{ $idx + 1 }}</td>
-                            <td>{{ ucfirst($transaction->type) }}</td>
+                            <td>{{ $itemName }}</td>
+                            <td>{{ $typeLabel }}</td>
                             <td>${{ number_format($transaction->amount, 2) }}</td>
                             <td>${{ number_format($transaction->fee ?? 0, 2) }}</td>
                             <td>${{ number_format($transaction->tip_amount ?? 0, 2) }}</td>
