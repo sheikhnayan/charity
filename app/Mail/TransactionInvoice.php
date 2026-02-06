@@ -7,22 +7,35 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Transaction;
 use App\Models\Website;
+use Illuminate\Database\Eloquent\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionInvoice extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $transaction;
+    public $transactions;
     public $website;
+    public $isCustomer;
 
     /**
      * Create a new message instance.
+     * Accepts either a single Transaction or a Collection of Transactions
      */
-    public function __construct(Transaction $transaction, Website $website)
+    public function __construct($transactions, Website $website = null, $isCustomer = true)
     {
-        $this->transaction = $transaction;
+        // Convert single transaction to collection for unified handling
+        if ($transactions instanceof Transaction) {
+            $this->transactions = collect([$transactions]);
+        } else if ($transactions instanceof Collection) {
+            $this->transactions = $transactions;
+        } else {
+            // Handle if it's an array or other collection type
+            $this->transactions = collect((array) $transactions);
+        }
+        
         $this->website = $website;
+        $this->isCustomer = $isCustomer;
     }
 
     /**
@@ -31,25 +44,43 @@ class TransactionInvoice extends Mailable
     public function build()
     {
         // Apply website-specific email settings
-        \App\Services\WebsiteMailService::applyForWebsite($this->website);
+        if ($this->website) {
+            \App\Services\WebsiteMailService::applyForWebsite($this->website);
+        }
 
         $fee_percentage = 2.9; // Default fee
-        if ($this->website->paymentSettings) {
+        if ($this->website && $this->website->paymentSettings) {
             $fee_percentage = $this->website->paymentSettings->fee ?? 2.9;
         }
-        $total_with_fee = $this->transaction->amount + (($this->transaction->amount / 100) * $fee_percentage);
         
-        // Get transaction type specific data and customize subject/content
-        $additionalData = $this->getTransactionTypeData();
-        $subject = $this->getCustomSubject();
+        // Calculate totals for all transactions
+        $totalAmount = 0;
+        $totalFee = 0;
+        $totalTip = 0;
         
-        // Generate PDF
-        $pdf = Pdf::loadView('emails.invoice-pdf', array_merge([
-            'transaction' => $this->transaction,
+        foreach ($this->transactions as $transaction) {
+            $totalAmount += $transaction->amount;
+            $totalFee += $transaction->fee ?? 0;
+            $totalTip += $transaction->tip_amount ?? 0;
+        }
+        
+        $grandTotal = $totalAmount + $totalFee + $totalTip;
+        
+        // Get the first transaction for basic details (they all share same transaction_id and email)
+        $firstTransaction = $this->transactions->first();
+        $subject = $this->getCustomSubject($firstTransaction);
+        
+        // Generate PDF with all items
+        $pdf = Pdf::loadView('emails.invoice-pdf', [
+            'transactions' => $this->transactions,
             'website' => $this->website,
-            'total_with_fee' => $total_with_fee,
-            'fee_percentage' => $fee_percentage
-        ], $additionalData));
+            'totalAmount' => $totalAmount,
+            'totalFee' => $totalFee,
+            'totalTip' => $totalTip,
+            'grandTotal' => $grandTotal,
+            'fee_percentage' => $fee_percentage,
+            'isCustomer' => $this->isCustomer
+        ]);
 
         // Set PDF options for better rendering
         $pdf->setPaper('A4', 'portrait');
@@ -61,15 +92,19 @@ class TransactionInvoice extends Mailable
 
         $message = $this->subject($subject)
                     ->view('emails.transaction-invoice')
-                    ->with(array_merge([
-                        'transaction' => $this->transaction,
+                    ->with([
+                        'transactions' => $this->transactions,
                         'website' => $this->website,
-                        'total_with_fee' => $total_with_fee,
-                        'fee_percentage' => $fee_percentage
-                    ], $additionalData))
+                        'totalAmount' => $totalAmount,
+                        'totalFee' => $totalFee,
+                        'totalTip' => $totalTip,
+                        'grandTotal' => $grandTotal,
+                        'fee_percentage' => $fee_percentage,
+                        'isCustomer' => $this->isCustomer
+                    ])
                     ->attachData(
                         $pdf->output(),
-                        $this->getFileName(),
+                        $this->getFileName($firstTransaction),
                         [
                             'mime' => 'application/pdf',
                         ]
@@ -81,7 +116,7 @@ class TransactionInvoice extends Mailable
                 $this->website->emailSettings->from_address,
                 $this->website->emailSettings->from_name ?? $this->website->name
             );
-        } else {
+        } else if ($this->website) {
             $message->from(config('mail.from.address', 'noreply@' . $this->website->domain), $this->website->name);
         }
 
@@ -94,100 +129,60 @@ class TransactionInvoice extends Mailable
     }
     
     /**
-     * Get transaction type specific data
-     */
-    private function getTransactionTypeData()
-    {
-        $data = [];
-        
-        switch($this->transaction->type) {
-            case 'student':
-                // Get donation details for student donations
-                $donation = \App\Models\Donation::find($this->transaction->reference_id);
-                $data['donation'] = $donation;
-                $data['transaction_type_label'] = 'Student Donation';
-                break;
-                
-            case 'general':
-                // Get donation details for general donations  
-                $donation = \App\Models\Donation::find($this->transaction->reference_id);
-                $data['donation'] = $donation;
-                $data['transaction_type_label'] = 'General Donation';
-                break;
-                
-            case 'ticket':
-                // Get ticket sale details
-                $ticketSale = \App\Models\TicektSell::with('details.ticket')->find($this->transaction->reference_id);
-                $data['ticket_sale'] = $ticketSale;
-                $data['transaction_type_label'] = 'Ticket Purchase';
-                break;
-                
-            case 'auction':
-                // Get auction details
-                $auction = \App\Models\Auction::find($this->transaction->reference_id);
-                $data['auction'] = $auction;
-                $data['transaction_type_label'] = 'Auction Bid';
-                break;
-                
-            case 'investment':
-                // Get investment details
-                $investment = \App\Models\Investment::find($this->transaction->reference_id);
-                $data['investment'] = $investment;
-                $data['transaction_type_label'] = 'Investment Transaction';
-                break;
-                
-            default:
-                $data['transaction_type_label'] = 'Transaction';
-        }
-        
-        return $data;
-    }
-    
-    /**
      * Get custom subject based on transaction type
      */
-    private function getCustomSubject()
+    private function getCustomSubject($transaction = null)
     {
-        switch($this->transaction->type) {
+        $transaction = $transaction ?? $this->transactions->first();
+        $transactionId = $transaction->transaction_id;
+        $websiteName = $this->website ? $this->website->name : 'Our Platform';
+        $itemCount = $this->transactions->count();
+        
+        // Add item count to subject if multiple items
+        $itemInfo = $itemCount > 1 ? " ({$itemCount} items)" : '';
+        
+        switch($transaction->type) {
             case 'student':
             case 'general':
-                return 'Donation Receipt #' . $this->transaction->transaction_id . ' - ' . $this->website->name;
+                return "Donation Receipt #{$transactionId}{$itemInfo} - {$websiteName}";
                 
             case 'ticket':
-                return 'Ticket Purchase Confirmation #' . $this->transaction->transaction_id . ' - ' . $this->website->name;
+                return "Ticket Purchase Confirmation #{$transactionId}{$itemInfo} - {$websiteName}";
                 
             case 'auction':
-                return 'Auction Bid Confirmation #' . $this->transaction->transaction_id . ' - ' . $this->website->name;
+                return "Auction Bid Confirmation #{$transactionId}{$itemInfo} - {$websiteName}";
                 
             case 'investment':
-                return 'Investment Confirmation #' . $this->transaction->transaction_id . ' - ' . $this->website->name;
+                return "Investment Confirmation #{$transactionId}{$itemInfo} - {$websiteName}";
                 
             default:
-                return 'Transaction Receipt #' . $this->transaction->transaction_id . ' - ' . $this->website->name;
+                return "Transaction Receipt #{$transactionId}{$itemInfo} - {$websiteName}";
         }
     }
     
     /**
      * Get custom filename based on transaction type
      */
-    private function getFileName()
+    private function getFileName($transaction = null)
     {
-        switch($this->transaction->type) {
+        $transaction = $transaction ?? $this->transactions->first();
+        
+        switch($transaction->type) {
             case 'student':
             case 'general':
-                return 'donation-receipt-' . $this->transaction->transaction_id . '.pdf';
+                return 'donation-receipt-' . $transaction->transaction_id . '.pdf';
                 
             case 'ticket':
-                return 'ticket-confirmation-' . $this->transaction->transaction_id . '.pdf';
+                return 'ticket-confirmation-' . $transaction->transaction_id . '.pdf';
                 
             case 'auction':
-                return 'auction-confirmation-' . $this->transaction->transaction_id . '.pdf';
+                return 'auction-confirmation-' . $transaction->transaction_id . '.pdf';
                 
             case 'investment':
-                return 'investment-confirmation-' . $this->transaction->transaction_id . '.pdf';
+                return 'investment-confirmation-' . $transaction->transaction_id . '.pdf';
                 
             default:
-                return 'transaction-receipt-' . $this->transaction->transaction_id . '.pdf';
+                return 'transaction-receipt-' . $transaction->transaction_id . '.pdf';
         }
     }
 }

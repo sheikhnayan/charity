@@ -668,6 +668,7 @@ class CheckoutController extends Controller
     /**
      * Send invoice emails after successful transaction
      * Dynamically sends to customer and website-configured emails based on preferences
+     * Includes ALL items in the transaction, not just the first one
      */
     protected function sendTransactionEmails($checkoutData, $transactionId)
     {
@@ -676,40 +677,45 @@ class CheckoutController extends Controller
             $websiteId = $this->resolveWebsiteId();
             $website = Website::find($websiteId);
 
-            // Get the first transaction record created for this transaction ID to use as template
-            $transaction = Transaction::where('transaction_id', $transactionId)
+            // Get ALL transaction records created for this transaction ID
+            $transactions = Transaction::where('transaction_id', $transactionId)
                 ->where('website_id', $websiteId)
-                ->first();
+                ->get();
 
-            if (!$transaction) {
-                \Log::warning('No transaction found for email sending', [
+            if ($transactions->isEmpty()) {
+                \Log::warning('No transactions found for email sending', [
                     'transaction_id' => $transactionId,
                     'website_id' => $websiteId
                 ]);
                 return;
             }
 
+            // Use first transaction for customer email (all have same email)
+            $customerEmail = $transactions->first()->email;
+            $customerTransaction = $transactions->first();
+
             // Apply website-specific mail configuration
             if ($website) {
                 \App\Services\WebsiteMailService::applyForWebsite($website);
             }
 
-            // Send to customer's email
-            Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+            // Send to customer's email with ALL items in the transaction
+            Mail::to($customerEmail)->send(new TransactionInvoice($transactions, $website, true));
 
             // Also send to website owner emails that have transaction preference enabled
             if ($website) {
                 $websiteEmails = $website->getTransactionEmails();
                 foreach ($websiteEmails as $email) {
-                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
-                        Mail::to($email)->send(new TransactionInvoice($transaction, $website));
+                    if ($email !== $customerEmail) {  // Don't send duplicate if customer email is in list
+                        Mail::to($email)->send(new TransactionInvoice($transactions, $website, false));
                     }
                 }
             }
 
             \Log::info('Transaction emails sent successfully', [
                 'transaction_id' => $transactionId,
-                'customer_email' => $transaction->email,
+                'customer_email' => $customerEmail,
+                'item_count' => $transactions->count(),
                 'website_id' => $websiteId
             ]);
 
