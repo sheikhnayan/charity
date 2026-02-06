@@ -108,10 +108,30 @@ class AuthorizeNetController extends Controller
         }
 
         $cardNumber = preg_replace('/[^0-9]/', '', trim($request->input('card_number')));
-        $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
-        $expirationDate = $date;
+        $expirationInput = $request->input('expiration_date') ?? $request->input('date');
+        $digits = preg_replace('/[^0-9]/', '', (string)$expirationInput);
+        $expirationDate = null;
+        if (strlen($digits) >= 4) {
+            $expMonth = substr($digits, 0, 2);
+            $expYear = substr($digits, 2);
+            if (strlen($expYear) === 2) {
+                $expYear = '20' . $expYear;
+            }
+            if (strlen($expYear) === 4 && (int)$expMonth >= 1 && (int)$expMonth <= 12) {
+                $expirationDate = $expYear . '-' . $expMonth;
+            }
+        }
+        if (!$expirationDate && !empty($expirationInput)) {
+            $expirationDate = \Carbon\Carbon::parse($expirationInput)->format('Y-m');
+        }
         // dd($expirationDate);
         $cvv = preg_replace('/[^0-9]/', '', trim($request->input('cvv')));
+        if (empty($expirationDate)) {
+            return back()->with('error', 'Invalid expiration date');
+        }
+        if (strlen($cvv) < 3 || strlen($cvv) > 4) {
+            return back()->with('error', 'Invalid security code');
+        }
 
         // Use website-specific credentials instead of environment variables
         $merchantAuthentication = $paymentGatewayService->createAuthorizeNetAuth($website);
@@ -127,13 +147,16 @@ class AuthorizeNetController extends Controller
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
 
-        // Only set zip and state for AVS (skip street address to avoid mismatch failures)
+        // Only set billing address if minimal AVS fields are present (no dummy defaults)
         if (!empty($request->zipcode) && !empty($request->state)) {
             $billTo = new AnetAPI\CustomerAddressType();
             if ($request->first_name) $billTo->setFirstName($request->first_name);
             if ($request->last_name) $billTo->setLastName($request->last_name);
             if ($request->zipcode) $billTo->setZip($request->zipcode);
             if ($request->state) $billTo->setState($request->state);
+            if ($request->city) $billTo->setCity($request->city);
+            if ($request->address) $billTo->setAddress($request->address);
+            if ($request->country) $billTo->setCountry($request->country);
         }
 
         // Include customer email (and optional names) in CustomerData
