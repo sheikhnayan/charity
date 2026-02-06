@@ -161,7 +161,7 @@ class AuthorizeNetController extends Controller
         $controller = new AnetController\CreateTransactionController($requests);
         // Use website-specific environment (sandbox/production)
         $environment = $paymentGatewayService->getAuthorizeNetEnvironment($website);
-        dd($environment);
+        // dd($environment);
         $response = $controller->executeWithApiResponse($environment);
 
         if ($response != null) {
