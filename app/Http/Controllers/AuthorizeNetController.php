@@ -108,6 +108,7 @@ class AuthorizeNetController extends Controller
         $cardNumber = $request->input('card_number');
         $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
+        dd($expirationDate);
         $cvv = $request->input('cvv');
 
         // Use website-specific credentials instead of environment variables
