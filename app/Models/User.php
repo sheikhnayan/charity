@@ -33,6 +33,9 @@ class User extends Authenticatable
         'password_reset_code',
         'password_reset_expires',
         'email_verified_at',
+        'goal',
+        'tshirt_size',
+        'description'
     ];
 
     /**

@@ -796,7 +796,6 @@ class AdminController extends Controller
         // Create student user
         $student = User::create([
             'name' => $request->first_name,
-            'fist_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $randomEmail,
             'password' => Hash::make($randomPassword),
@@ -819,7 +818,7 @@ class AdminController extends Controller
             $student->save();
         }
 
-        return redirect()->back()->with('success', 'Student added successfully!');
+        return redirect()->back()->with('success', 'Participant added successfully!');
     }
 
     public function userProfile($id)
