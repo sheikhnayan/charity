@@ -1052,25 +1052,78 @@ class AuthorizeNetController extends Controller
                 return ['success' => false, 'message' => 'Payment gateway not configured'];
             }
 
-            // Build card payload
+            // Build card payload (match paymentPost behavior)
+            $cardNumber = preg_replace('/[^0-9]/', '', trim($request->input('card_number')));
             $expirationInput = $request->input('expiration_date') ?? $request->input('date');
             $digits = preg_replace('/[^0-9]/', '', (string)$expirationInput);
-            $month = substr($digits, 0, 2);
-            $year = substr($digits, 2, 2);
-            $expirationDate = $month . '/' . $year;
+            $expirationDate = null;
+            if (strlen($digits) >= 4) {
+                $expMonth = substr($digits, 0, 2);
+                $expYear = substr($digits, 2);
+                if (strlen($expYear) === 2) {
+                    $expYear = '20' . $expYear;
+                }
+                if (strlen($expYear) === 4 && (int)$expMonth >= 1 && (int)$expMonth <= 12) {
+                    $expirationDate = $expYear . '-' . $expMonth;
+                }
+            }
+            if (!$expirationDate && !empty($expirationInput)) {
+                $expirationDate = \Carbon\Carbon::parse($expirationInput)->format('Y-m');
+            }
+            $cvv = preg_replace('/[^0-9]/', '', trim($request->input('cvv')));
+            if (empty($expirationDate)) {
+                return ['success' => false, 'message' => 'Invalid expiration date'];
+            }
+            if (strlen($cvv) < 3 || strlen($cvv) > 4) {
+                return ['success' => false, 'message' => 'Invalid security code'];
+            }
 
             $creditCard = new AnetAPI\CreditCardType();
-            $creditCard->setCardNumber($request->input('card_number'));
+            $creditCard->setCardNumber($cardNumber);
             $creditCard->setExpirationDate($expirationDate);
-            $creditCard->setCardCode($request->input('cvv'));
+            $creditCard->setCardCode($cvv);
 
             $paymentType = new AnetAPI\PaymentType();
             $paymentType->setCreditCard($creditCard);
+
+            // Optional billing & customer data (match paymentPost behavior)
+            if (!empty($request->zipcode) && !empty($request->state)) {
+                $billTo = new AnetAPI\CustomerAddressType();
+                if ($request->first_name) $billTo->setFirstName($request->first_name);
+                if ($request->last_name) $billTo->setLastName($request->last_name);
+                if ($request->zipcode) $billTo->setZip($request->zipcode);
+                if ($request->state) $billTo->setState($request->state);
+                if ($request->city) $billTo->setCity($request->city);
+                if ($request->address) $billTo->setAddress($request->address);
+                if ($request->country) $billTo->setCountry($request->country);
+            }
+
+            if (!empty($request->email) || !empty($request->first_name) || !empty($request->last_name)) {
+                $customerData = new AnetAPI\CustomerDataType();
+                $customerData->setType('individual');
+                if (!empty($request->email)) {
+                    $customerData->setEmail($request->email);
+                }
+                if (!empty($request->first_name) || !empty($request->last_name)) {
+                    $customerData->setId(trim(($request->first_name ?? '') . ' ' . ($request->last_name ?? '')));
+                }
+            }
 
             $transactionRequest = new AnetAPI\TransactionRequestType();
             $transactionRequest->setTransactionType('authCaptureTransaction');
             $transactionRequest->setAmount(number_format($amount, 2, '.', ''));
             $transactionRequest->setPayment($paymentType);
+            if (isset($billTo)) {
+                $transactionRequest->setBillTo($billTo);
+            }
+            if (isset($customerData)) {
+                $transactionRequest->setCustomer($customerData);
+            }
+
+            $clientIp = $request->getClientIp();
+            if ($clientIp && filter_var($clientIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                $transactionRequest->setCustomerIP($clientIp);
+            }
 
             $transactionReq = new AnetAPI\CreateTransactionRequest();
             $transactionReq->setMerchantAuthentication($merchantAuthentication);
