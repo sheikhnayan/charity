@@ -173,7 +173,7 @@ class AuthorizeNetController extends Controller
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
 
-            dd(tresponse);
+            dd($tresponse);
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
                 $type = $request->type;
