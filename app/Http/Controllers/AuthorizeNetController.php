@@ -127,19 +127,17 @@ class AuthorizeNetController extends Controller
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
 
-        $billTo = new AnetAPI\CustomerAddressType();
-        $billTo->setFirstName($request->first_name ?? 'N/A');
-        $billTo->setLastName($request->last_name ?? 'N/A');
-        $billTo->setAddress($request->address ?? 'N/A');
-        $billTo->setCity($request->city ?? 'N/A');
-        $billTo->setState($request->state ?? 'N/A');
-        $billTo->setZip($request->zipcode ?? '0000'); // IMPORTANT
-        $billTo->setCountry($request->country ?? 'BD');
-
-        // dd($billTo);
-
-
-        // dd($payment);
+        // Only set billing address if minimal required fields are provided
+        if (!empty($request->zipcode) && !empty($request->state)) {
+            $billTo = new AnetAPI\CustomerAddressType();
+            if ($request->first_name) $billTo->setFirstName($request->first_name);
+            if ($request->last_name) $billTo->setLastName($request->last_name);
+            if ($request->address) $billTo->setAddress($request->address);
+            if ($request->city) $billTo->setCity($request->city);
+            if ($request->state) $billTo->setState($request->state);
+            if ($request->zipcode) $billTo->setZip($request->zipcode);
+            if ($request->country) $billTo->setCountry($request->country);
+        }
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
         if ($request->type == 'auction') {
@@ -150,7 +148,9 @@ class AuthorizeNetController extends Controller
         $amount = number_format((float)$request->amount, 2, '.', '');
         $transactionRequestType->setAmount($amount);
         $transactionRequestType->setPayment($payment);
-        $transactionRequestType->setBillTo($billTo);
+        if (isset($billTo)) {
+            $transactionRequestType->setBillTo($billTo);
+        }
 
         // Pass real customer IP (only if it's a public IP; avoid local/proxy placeholders)
         $clientIp = $request->getClientIp();
@@ -172,6 +172,8 @@ class AuthorizeNetController extends Controller
 
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
+
+            dd(tresponse);
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
                 $type = $request->type;
