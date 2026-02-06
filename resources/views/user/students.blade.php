@@ -131,7 +131,7 @@
                                                     <tr>
                                                         <td>{{ $item->id }}</td>
                                                         <td>
-                                                            <a href="/users/student/profile/{{ $item->id }}" class="text-decoration-none fw-bold text-primary">
+                                                            <a href="/users/profile" class="text-decoration-none fw-bold text-primary">
                                                                 {{ $item->name }} {{ $item->last_name }}
                                                             </a>
                                                         </td>

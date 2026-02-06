@@ -11,7 +11,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>James' Masterpiece</title>
+    <title>Raise Builder</title>
 
     <meta name="description" content="" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -362,7 +362,7 @@
                   </svg>
                 </span>
               </span>
-              <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size: 1rem;">James' Masterpiece</span>
+              <span class="app-brand-text demo menu-text fw-bold ms-2" style="font-size: 1rem;">Raise Builder</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -431,7 +431,7 @@
                         @if (Auth::user()->role == 'user')
                         {{ Auth::user()->setting->participant_name }}
                         @elseif (Auth::user()->role == 'parents')
-                        Participant
+                        Participants
                         @else
                         Group Member
                         @endif
