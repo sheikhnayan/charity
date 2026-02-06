@@ -10,6 +10,7 @@ use App\Models\Setting;
 use Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistrationConfirmation;
+use App\Mail\AccountApproval;
 
 class AuthController extends Controller
 {
@@ -69,6 +70,7 @@ class AuthController extends Controller
             'role' => $request->register_as,
             'teacher_id' => $teacher_id,
             'website_id' => $check->id,
+            'status' => 1,
         ]);
 
         $updat = User::find($user->id);
@@ -77,15 +79,15 @@ class AuthController extends Controller
 
         // dd($updat);
 
-        // Send registration confirmation email for parents and individual registrations
+        // Auto-approve and send approval email for parents and individual registrations
         if (in_array($request->register_as, ['parents', 'individual'])) {
             try {
                 // Apply website-specific mail configuration
                 \App\Services\WebsiteMailService::applyForWebsite($check);
-                Mail::to($user->email)->send(new RegistrationConfirmation($user, $check));
+                Mail::to($user->email)->send(new AccountApproval($user, $check));
             } catch (\Exception $e) {
                 // Log error but don't stop registration process
-                \Log::error('Registration confirmation email failed: ' . $e->getMessage());
+                \Log::error('Account approval email failed: ' . $e->getMessage());
             }
 
             // Send admin notification emails for parent registrations
@@ -120,8 +122,8 @@ class AuthController extends Controller
         }
 
         $successMessage = "Thanks for signing up!
-        Your registration has been submitted and is currently under review.
-        After approval, you'll receive an email with login access details. Be sure to check your spam or junk folder just in case!";
+        Your account has been approved and is ready to use.
+        Please check your email for login access details. Be sure to check your spam or junk folder just in case!";
 
         // If registration came from a page (not login page), redirect back with message
         // Otherwise redirect to login
