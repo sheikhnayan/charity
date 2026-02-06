@@ -87,6 +87,8 @@ class AuthorizeNetController extends Controller
      */
     public function paymentPost(Request $request)
     {
+
+        dd($request->all());    
         // Get website from current domain
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -127,7 +129,18 @@ class AuthorizeNetController extends Controller
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
 
-        dd($payment);
+        $billTo = new AnetAPI\CustomerAddressType();
+        $billTo->setFirstName($request->first_name ?? 'N/A');
+        $billTo->setLastName($request->last_name ?? 'N/A');
+        $billTo->setAddress($request->address ?? 'N/A');
+        $billTo->setCity($request->city ?? 'N/A');
+        $billTo->setState($request->state ?? 'N/A');
+        $billTo->setZip($request->zip ?? '0000'); // IMPORTANT
+        $billTo->setCountry($request->country ?? 'BD');
+
+        $transactionRequestType->setBillTo($billTo);
+
+        // dd($payment);
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
         if ($request->type == 'auction') {
