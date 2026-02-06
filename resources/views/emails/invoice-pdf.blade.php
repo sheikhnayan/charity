@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Transaction Invoice - {{ $transaction->transaction_id }}</title>
+    <title>Transaction Invoice - {{ $transactions->first()->transaction_id }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -143,14 +143,12 @@
 <body>
     <div class="invoice-container">
         <div class="header">
-            <div class="logo">{{ $website->name }}</div>
+            <div class="logo">{{ $website->name ?? 'Invoice' }}</div>
             <h1 class="invoice-title">TRANSACTION INVOICE</h1>
             <div class="invoice-meta">
-                Invoice #: {{ $transaction->transaction_id }}<br>
-                Date: {{ $transaction->created_at->format('M d, Y') }}<br>
-                {{-- Status: <span class="status-badge {{ $transaction->status == 1 ? 'status-approved' : 'status-pending' }}">
-                    {{ $transaction->status == 1 ? 'Approved' : 'Pending' }}
-                </span> --}}
+                Invoice #: {{ $transactions->first()->transaction_id }}<br>
+                Date: {{ $transactions->first()->created_at->format('M d, Y') }}<br>
+                Items: {{ $transactions->count() }}
             </div>
         </div>
 
@@ -160,24 +158,24 @@
                 <div class="details-grid">
                     <div class="details-row">
                         <div class="detail-label">Transaction ID:</div>
-                        <div class="detail-value">{{ $transaction->transaction_id }}</div>
+                        <div class="detail-value">{{ $transactions->first()->transaction_id }}</div>
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Type:</div>
-                        <div class="detail-value">{{ ucfirst($transaction->type) }}</div>
+                        <div class="detail-value">{{ ucfirst($transactions->first()->type) }}</div>
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Payment Method:</div>
-                        <div class="detail-value">{{ ctype_digit($transaction->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}</div>
+                        <div class="detail-value">{{ ctype_digit($transactions->first()->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}</div>
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Website:</div>
-                        <div class="detail-value">{{ $website->name }}</div>
+                        <div class="detail-value">{{ $website->name ?? 'N/A' }}</div>
                     </div>
-                    @if($transaction->ip_address)
+                    @if($transactions->first()->ip_address)
                     <div class="details-row">
                         <div class="detail-label">IP Address:</div>
-                        <div class="detail-value">{{ $transaction->ip_address }}</div>
+                        <div class="detail-value">{{ $transactions->first()->ip_address }}</div>
                     </div>
                     @endif
                 </div>
@@ -188,26 +186,26 @@
                 <div class="details-grid">
                     <div class="details-row">
                         <div class="detail-label">Name:</div>
-                        <div class="detail-value">{{ $transaction->name }} {{ $transaction->last_name }}</div>
+                        <div class="detail-value">{{ $transactions->first()->name }} {{ $transactions->first()->last_name }}</div>
                     </div>
                     <div class="details-row">
                         <div class="detail-label">Email:</div>
-                        <div class="detail-value">{{ $transaction->email }}</div>
+                        <div class="detail-value">{{ $transactions->first()->email }}</div>
                     </div>
-                    @if($transaction->phone)
+                    @if($transactions->first()->phone)
                     <div class="details-row">
                         <div class="detail-label">Phone:</div>
-                        <div class="detail-value">{{ $transaction->phone }}</div>
+                        <div class="detail-value">{{ $transactions->first()->phone }}</div>
                     </div>
                     @endif
-                    @if($transaction->address)
+                    @if($transactions->first()->address)
                     <div class="details-row">
                         <div class="detail-label">Address:</div>
                         <div class="detail-value">
-                            @if($transaction->apartment){{ $transaction->apartment }}, @endif
-                            {{ $transaction->address }}<br>
-                            {{ $transaction->city }}, {{ $transaction->state }} {{ $transaction->zip }}<br>
-                            {{ $transaction->country }}
+                            @if($transactions->first()->apartment){{ $transactions->first()->apartment }}, @endif
+                            {{ $transactions->first()->address }}<br>
+                            {{ $transactions->first()->city }}, {{ $transactions->first()->state }} {{ $transactions->first()->zip }}<br>
+                            {{ $transactions->first()->country }}
                         </div>
                     </div>
                     @endif
@@ -215,79 +213,72 @@
             </div>
         </div>
 
-        @if($transaction->type === 'investment' && $transaction->investment)
+        <!-- Items Table -->
         <div class="details-section">
-            <div class="section-title">Investment Information</div>
-            <div class="details-grid">
-                <div class="details-row">
-                    <div class="detail-label">Investor Name:</div>
-                    <div class="detail-value">{{ $transaction->investment->investor_name }}</div>
-                </div>
-                <div class="details-row">
-                    <div class="detail-label">Investment Type:</div>
-                    <div class="detail-value">{{ $transaction->investment->investor_type }}</div>
-                </div>
-                <div class="details-row">
-                    <div class="detail-label">Share Quantity:</div>
-                    <div class="detail-value">{{ number_format($transaction->investment->share_quantity) }}</div>
-                </div>
-                <div class="details-row">
-                    <div class="detail-label">Investment Amount:</div>
-                    <div class="detail-value">${{ number_format($transaction->investment->investment_amount, 2) }}</div>
-                </div>
-                @if($transaction->investment->notes)
-                <div class="details-row">
-                    <div class="detail-label">Notes:</div>
-                    <div class="detail-value">{{ $transaction->investment->notes }}</div>
-                </div>
-                @endif
-            </div>
+            <div class="section-title">Items Purchased</div>
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; border: 1px solid #dee2e6;">Item #</th>
+                        <th style="padding: 12px; text-align: left; font-weight: bold; border: 1px solid #dee2e6;">Type</th>
+                        <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Amount</th>
+                        <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Fee</th>
+                        <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Tip</th>
+                        <th style="padding: 12px; text-align: right; font-weight: bold; border: 1px solid #dee2e6;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($transactions as $idx => $transaction)
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ $idx + 1 }}</td>
+                        <td style="padding: 12px; border: 1px solid #dee2e6;">{{ ucfirst($transaction->type) }}</td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->amount, 2) }}</td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->fee ?? 0, 2) }}</td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${{ number_format($transaction->tip_amount ?? 0, 2) }}</td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6; font-weight: bold;">
+                            ${{ number_format(($transaction->amount + ($transaction->fee ?? 0) + ($transaction->tip_amount ?? 0)), 2) }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" style="padding: 12px; text-align: center; border: 1px solid #dee2e6;">No items found</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-        @endif
 
         <div class="financial-summary">
             <div class="section-title">Financial Summary</div>
             <div class="financial-row">
-                <div class="financial-label">Amount:</div>
-                <div class="financial-amount">${{ number_format($transaction->amount, 2) }}</div>
+                <div class="financial-label">Subtotal ({{ $transactions->count() }} items):</div>
+                <div class="financial-amount">${{ number_format($totalAmount, 2) }}</div>
             </div>
-            @if($transaction->fee_paid)
+            @if($totalFee > 0)
             <div class="financial-row">
-                @php
-                    $pay = \App\Models\PaymentSetting::first();
-                @endphp
-                <div class="financial-label">Platform Fee ({{ $pay->fee ?? 5 }}%):</div>
-                <div class="financial-amount">${{ number_format($transaction->fee, 2) }}</div>
+                <div class="financial-label">Platform Fees:</div>
+                <div class="financial-amount">${{ number_format($totalFee, 2) }}</div>
             </div>
             @endif
-            @if($transaction->tip_amount && $transaction->tip_amount > 0)
+            @if($totalTip > 0)
             <div class="financial-row">
-                <div class="financial-label">Tip:</div>
-                <div class="financial-amount">${{ number_format($transaction->tip_amount, 2) }}</div>
+                <div class="financial-label">Tips:</div>
+                <div class="financial-amount">${{ number_format($totalTip, 2) }}</div>
             </div>
             @endif
             <div class="financial-row total">
-                <div class="financial-label">Total Paid:</div>
-                @php
-                    $totalPaid = $transaction->amount;
-                    if ($transaction->fee_paid) {
-                        $totalPaid += $transaction->fee;
-                    }
-                    if ($transaction->tip_amount && $transaction->tip_amount > 0) {
-                        $totalPaid += $transaction->tip_amount;
-                    }
-                @endphp
-                <div class="financial-amount">${{ number_format($totalPaid, 2) }}</div>
+                <div class="financial-label">Grand Total:</div>
+                <div class="financial-amount">${{ number_format($grandTotal, 2) }}</div>
             </div>
         </div>
 
         <div class="footer">
             <p><strong>For complete transaction details of your purchase please login to your customer dashboard.</strong></p>
-            <p>{{ $website->name }} | {{ $website->domain }}</p>
+            <p>{{ $website->name ?? 'Organization' }} | {{ $website->domain ?? 'N/A' }}</p>
             <p>
                 <small>
                     This invoice was generated on {{ now()->format('M d, Y \a\t g:i A') }}<br>
-                    For questions about this transaction, please contact us at {{ config('mail.from.address', 'noreply@' . $website->domain) }}
+                    For questions about this transaction, please contact us at {{ config('mail.from.address', 'noreply@charity.local') }}
                 </small>
             </p>
         </div>

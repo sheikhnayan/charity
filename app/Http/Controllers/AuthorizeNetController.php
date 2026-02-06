@@ -181,7 +181,7 @@ class AuthorizeNetController extends Controller
                         // Check if goal is reached and send notification
                         $website = Website::find($donation->website_id);
                         if ($website) {
-                            $setting = Setting::where('website_id', $website->id)->first();
+                            $setting = Setting::where('user_id', $website->user_id)->first();
                             if ($setting && $setting->goal > 0) {
                                 // Calculate total donations
                                 $totalDonations = Donation::where('website_id', $website->id)

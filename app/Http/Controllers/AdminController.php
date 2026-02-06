@@ -777,7 +777,14 @@ class AdminController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'teacher_id' => 'required|exists:teachers,id',
-            'goal' => 'nullable|numeric|min:0'
+            'goal' => 'nullable|numeric|min:0',
+            'tshirt_size' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,pjpeg|max:5120'
+        ], [
+            'photo.image' => 'The photo must be a valid image file.',
+            'photo.mimes' => 'The photo must be in JPG, JPEG, PNG, or GIF format.',
+            'photo.max' => 'The photo must not exceed 5MB in size.',
         ]);
 
         $parent = Auth::user();
@@ -798,8 +805,19 @@ class AdminController extends Controller
             'teacher_id' => $request->teacher_id,
             'website_id' => $parent->website_id,
             'goal' => $request->goal ?? 0,
+            'tshirt_size' => $request->tshirt_size,
+            'description' => $request->description,
             'status' => 1, // Auto-approve for parent-created students
         ]);
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads'), $filename);
+            $student->photo = 'uploads/' . $filename;
+            $student->save();
+        }
 
         return redirect()->back()->with('success', 'Student added successfully!');
     }

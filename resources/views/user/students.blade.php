@@ -294,13 +294,13 @@
             <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('parent.add-student') }}" method="POST">
+                        <form action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                                 <div class="mb-3">
                                     <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="first_name" name="first_name" required>
@@ -321,10 +321,38 @@
                                         @endif
                                     </select>
                                 </div>
-                                {{-- <div class="mb-3">
-                                    <label for="goal" class="form-label">Fundraising Goal ($)</label>
-                                    <input type="number" class="form-control" id="goal" name="goal" min="0" step="0.01">
-                                </div> --}}
+                                <div class="mb-3">
+                                    <label for="modal_goal" class="form-label">Fundraising Goal</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="modal_goal" name="goal" min="0" step="0.01">
+                                        <span class="input-group-text">.00 USD</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modal_tshirt_size" class="form-label">T-Shirt Size</label>
+                                    <select class="form-select" id="modal_tshirt_size" name="tshirt_size">
+                                        <option value="">Select a size</option>
+                                        <option value="Youth Extra Small">Youth Extra Small</option>
+                                        <option value="Extra Small">Extra Small</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Large">Large</option>
+                                        <option value="Adult Small">Adult Small</option>
+                                        <option value="Adult Medium">Adult Medium</option>
+                                        <option value="Adult Large">Adult Large</option>
+                                        <option value="Extra Large">Extra Large</option>
+                                        <option value="Extra Extra Large">Extra Extra Large</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modal_description" class="form-label">Profile Description</label>
+                                    <textarea class="form-control" id="modal_description" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modal_photo" class="form-label">Upload Photo</label>
+                                    <input class="form-control" type="file" id="modal_photo" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
+                                    <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
