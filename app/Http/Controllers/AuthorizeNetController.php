@@ -152,6 +152,9 @@ class AuthorizeNetController extends Controller
         $transactionRequestType->setPayment($payment);
         $transactionRequestType->setBillTo($billTo);
 
+        // Pass real customer IP (important for FDS)
+        $transactionRequestType->setCustomerIP($request->ip());
+
 
         $requests = new AnetAPI\CreateTransactionRequest();
         $requests->setMerchantAuthentication($merchantAuthentication);
