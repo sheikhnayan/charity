@@ -135,7 +135,7 @@ class AuthorizeNetController extends Controller
         $billTo->setAddress($request->address ?? 'N/A');
         $billTo->setCity($request->city ?? 'N/A');
         $billTo->setState($request->state ?? 'N/A');
-        $billTo->setZip($request->zip ?? '0000'); // IMPORTANT
+        $billTo->setZip($request->zipcode ?? '0000'); // IMPORTANT
         $billTo->setCountry($request->country ?? 'BD');
 
         $transactionRequestType->setBillTo($billTo);
