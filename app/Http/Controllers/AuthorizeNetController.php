@@ -127,16 +127,11 @@ class AuthorizeNetController extends Controller
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
 
-        // Only set billing address if minimal required fields are provided
+        // Only set zip and state for AVS (skip street address to avoid mismatch failures)
         if (!empty($request->zipcode) && !empty($request->state)) {
             $billTo = new AnetAPI\CustomerAddressType();
-            if ($request->first_name) $billTo->setFirstName($request->first_name);
-            if ($request->last_name) $billTo->setLastName($request->last_name);
-            if ($request->address) $billTo->setAddress($request->address);
-            if ($request->city) $billTo->setCity($request->city);
-            if ($request->state) $billTo->setState($request->state);
             if ($request->zipcode) $billTo->setZip($request->zipcode);
-            if ($request->country) $billTo->setCountry($request->country);
+            if ($request->state) $billTo->setState($request->state);
         }
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
