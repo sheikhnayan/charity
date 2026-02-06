@@ -111,7 +111,7 @@ class AuthorizeNetController extends Controller
         $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
         // dd($expirationDate);
-        $cvv = $request->input('cvv');
+        $cvv = preg_replace('/[^0-9]/', '', trim($request->input('cvv')));
 
         // Use website-specific credentials instead of environment variables
         $merchantAuthentication = $paymentGatewayService->createAuthorizeNetAuth($website);
