@@ -385,7 +385,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                             @endif
                                                         </td>
                                                         <td>{{ $item->website->name }}</td>
-                                                        <td>{{ $item->type }}</td>
+                                                        <td>{{ ($item->type == 'student' || $item->type == 'general') ? 'Donation' : ucfirst($item->type) }}</td>
                                                         <td>
                                                             @if ($item->type == 'auction')
                                                                 Pending
