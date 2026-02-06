@@ -122,10 +122,12 @@ class AuthorizeNetController extends Controller
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
 
-        dd($creditCard);
+        
 
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
+
+        dd($payment);
 
         $transactionRequestType = new AnetAPI\TransactionRequestType();
         if ($request->type == 'auction') {
