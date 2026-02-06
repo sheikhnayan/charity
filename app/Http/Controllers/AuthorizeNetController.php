@@ -88,7 +88,7 @@ class AuthorizeNetController extends Controller
     public function paymentPost(Request $request)
     {
 
-        dd($request->all());    
+        // dd($request->all());    
         // Get website from current domain
         $url = url()->current();
         $domain = parse_url($url, PHP_URL_HOST);
@@ -124,7 +124,7 @@ class AuthorizeNetController extends Controller
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
 
-        
+        dd($creditCard);
 
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
