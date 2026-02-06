@@ -108,7 +108,7 @@ class AuthorizeNetController extends Controller
         $cardNumber = $request->input('card_number');
         $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
-        dd($expirationDate);
+        // dd($expirationDate);
         $cvv = $request->input('cvv');
 
         // Use website-specific credentials instead of environment variables
@@ -121,6 +121,8 @@ class AuthorizeNetController extends Controller
         $creditCard->setCardNumber($cardNumber);
         $creditCard->setExpirationDate($expirationDate);
         $creditCard->setCardCode($cvv);
+
+        dd($creditCard);
 
         $payment = new AnetAPI\PaymentType();
         $payment->setCreditCard($creditCard);
