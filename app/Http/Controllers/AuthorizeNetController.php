@@ -138,6 +138,8 @@ class AuthorizeNetController extends Controller
         $billTo->setZip($request->zipcode ?? '0000'); // IMPORTANT
         $billTo->setCountry($request->country ?? 'BD');
 
+        dd($billTo);
+
 
         // dd($payment);
 
