@@ -107,7 +107,7 @@ class AuthorizeNetController extends Controller
             return back()->with('error', 'Payment configuration error: ' . implode(', ', $validationErrors));
         }
 
-        $cardNumber = $request->input('card_number');
+        $cardNumber = preg_replace('/[^0-9]/', '', trim($request->input('card_number')));
         $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
         // dd($expirationDate);
