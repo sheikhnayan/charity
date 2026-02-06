@@ -1245,7 +1245,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                         
                         // Welcome step (both mobile and desktop)
                         tutorialSteps.push({
-                            title: 'Welcome Parents! 👋',
+                            title: 'Welcome! 👋',
                             intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
                         });
                         
