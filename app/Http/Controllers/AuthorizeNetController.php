@@ -108,7 +108,7 @@ class AuthorizeNetController extends Controller
         }
 
         $cardNumber = preg_replace('/[^0-9]/', '', trim($request->input('card_number')));
-        $date = \Carbon\Carbon::parse($request->input('date'))->format('m/Y');
+        $date = \Carbon\Carbon::parse($request->input('date'))->format('Y-m');
         $expirationDate = $date;
         // dd($expirationDate);
         $cvv = preg_replace('/[^0-9]/', '', trim($request->input('cvv')));
@@ -169,8 +169,6 @@ class AuthorizeNetController extends Controller
 
         if ($response != null) {
             $tresponse = $response->getTransactionResponse();
-
-            dd($tresponse);
 
             if ($tresponse != null & $tresponse->getResponseCode() == "1") {
                 $type = $request->type;
