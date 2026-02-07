@@ -994,14 +994,14 @@ class AdminController extends Controller
         // }
         
         // Delete AB test assignments (check if model exists)
-        if (class_exists('\App\Models\ABTestAssignment')) {
-            \App\Models\ABTestAssignment::where('user_id', $user->id)->delete();
-        }
+        // if (class_exists('\App\Models\ABTestAssignment')) {
+        //     \App\Models\ABTestAssignment::where('user_id', $user->id)->delete();
+        // }
         
         // Delete cohort memberships (check if model exists)
-        if (class_exists('\App\Models\CohortMember')) {
-            \App\Models\CohortMember::where('user_id', $user->id)->delete();
-        }
+        // if (class_exists('\App\Models\CohortMember')) {
+        //     \App\Models\CohortMember::where('user_id', $user->id)->delete();
+        // }
     }
 
     public function menu($id)
