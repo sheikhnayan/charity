@@ -563,6 +563,10 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
         AdminController::class, 'userProfile'
     ])->name('admin.user.profile');
 
+    Route::delete('/user/delete/{id}', [
+        AdminController::class, 'deleteUser'
+    ])->name('admin.user.delete');
+
     // Analytics Routes
     Route::get('/analytics', [\App\Http\Controllers\User\AnalyticsController::class, 'dashboard'])->name('users.analytics.dashboard');
     Route::get('/analytics/utm', [\App\Http\Controllers\User\AnalyticsController::class, 'utm'])->name('users.analytics.utm');

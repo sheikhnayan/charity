@@ -82,7 +82,7 @@
                 @endif
                 
                 @auth
-                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
+                <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/profile'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important; font-size: 0.9rem;">
                     DASHBOARD
                 </button>
                 @endauth
@@ -137,9 +137,9 @@
                     
                     {{-- Dashboard/Invest Now Button --}}
                     @auth
-                    <a class="navbar-brand" href="/users/donation">
+                    <a class="navbar-brand" href="/users/profile">
                         <div class="invest-button-section">
-                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/profile'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
                             DASHBOARD
                         </button>
                     </div>
@@ -170,9 +170,9 @@
                     
                     {{-- Dashboard Button (only for authenticated fundraiser users) --}}
                     @auth
-                    <a class="navbar-brand" href="/users/donation">
+                    <a class="navbar-brand" href="/users/profile">
                     <div class="invest-button-section close-on-mobile">
-                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/donation'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
+                        <button class="invest-now-btn sssssttttt" onclick="window.location.href='/users/profile'" style="background-color: {{ $check->sticky_footer_button_bg }} !important; color: {{ $check->sticky_footer_button_text }} !important; padding: 0.6rem !important;">
                             DASHBOARD
                         </button>
                     </div>

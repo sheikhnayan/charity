@@ -18,6 +18,7 @@ use App\Models\TaxReceipt;
 use App\Models\Transaction;
 use Auth;
 use Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AccountApproval;
 use Illuminate\Support\Str;
@@ -895,6 +896,109 @@ class AdminController extends Controller
         $student->save();
         
         return redirect()->back()->with('success', 'Student profile updated successfully!');
+    }
+
+    public function deleteUser($id)
+    {
+        // Only admin can delete users
+        // if (Auth::user()->role != 'admin') {
+        //     return redirect()->back()->with('error', 'Unauthorized access');
+        // }
+
+        $user = User::findOrFail($id);
+        
+        // Only allow deletion of students (individual), parents
+        if (!in_array($user->role, ['student', 'individual', 'parents'])) {
+            return redirect()->back()->with('error', 'Only students and parents can be deleted');
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            if ($user->role === 'parents') {
+                // Delete parent: First delete all their children and related data
+                $children = User::where('parent_id', $user->id)->get();
+                
+                foreach ($children as $child) {
+                    // Delete child's related data
+                    $this->deleteUserRelatedData($child);
+                    
+                    // Delete the child user
+                    $child->delete();
+                }
+                
+                // Now delete parent's own related data
+                $this->deleteUserRelatedData($user);
+                
+                // Delete parent user
+                $user->delete();
+                
+            } elseif ($user->role === 'student' || $user->role === 'individual') {
+                // Delete student: Delete all their related data
+                $this->deleteUserRelatedData($user);
+                
+                // Delete the student user
+                $user->delete();
+            }
+            
+            DB::commit();
+            
+            return redirect()->route('admin.student')->with('success', 'User and all related data deleted successfully');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return redirect()->back()->with('error', 'Error deleting user: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper method to delete all data related to a user
+     */
+    private function deleteUserRelatedData($user)
+    {
+        // Delete donations and related transactions
+        $donations = Donation::where('user_id', $user->id)->get();
+        
+        foreach ($donations as $donation) {
+            // Delete transactions related to this donation
+            Transaction::where('reference_id', $donation->id)
+                ->whereIn('type', ['student', 'general'])
+                ->delete();
+        }
+        
+        // Delete all donations for this user
+        Donation::where('user_id', $user->id)->delete();
+        
+        // Delete student messages if any (check if model exists)
+        if (class_exists('\App\Models\StudentMessage')) {
+            \App\Models\StudentMessage::where('student_id', $user->id)->delete();
+        }
+        
+        // Delete notification preferences (check if model exists)
+        if (class_exists('\App\Models\NotificationPreference')) {
+            \App\Models\NotificationPreference::where('user_id', $user->id)->delete();
+        }
+        
+        // Delete notification tokens (check if model exists)
+        if (class_exists('\App\Models\UserNotificationToken')) {
+            \App\Models\UserNotificationToken::where('user_id', $user->id)->delete();
+        }
+        
+        // Delete user sessions (check if model exists)
+        if (class_exists('\App\Models\UserSession')) {
+            \App\Models\UserSession::where('user_id', $user->id)->delete();
+        }
+        
+        // Delete AB test assignments (check if model exists)
+        if (class_exists('\App\Models\ABTestAssignment')) {
+            \App\Models\ABTestAssignment::where('user_id', $user->id)->delete();
+        }
+        
+        // Delete cohort memberships (check if model exists)
+        if (class_exists('\App\Models\CohortMember')) {
+            \App\Models\CohortMember::where('user_id', $user->id)->delete();
+        }
     }
 
     public function menu($id)

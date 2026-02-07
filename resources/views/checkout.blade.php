@@ -779,7 +779,7 @@
                         <div data-testid="form-field-wrapper" class="sc-jnLVoO gJUOyx">
                             <div class="sc-hUpaCq iQeRTc">
                                 <div class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative" style="width:100%;">
-                                    <input type="text" class="form-control pr-5" name="card_number" autocomplete="off" maxlength="16" placeholder="Card number" required style="padding:0.8rem;height:auto;">
+                                    <input type="text" class="form-control pr-5" name="card_number" autocomplete="off" maxlength="30" placeholder="Card number" required style="padding:0.8rem;height:auto;">
                                     <span class="position-absolute" style="right:15px;top:50%;transform:translateY(-50%);pointer-events:none;">
                                         <i class="fa fa-lock" aria-hidden="true" style="color:#888;"></i>
                                     </span>

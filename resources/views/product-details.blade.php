@@ -1029,14 +1029,6 @@
 
             <div style="height:12px"></div>
 
-            <div class="small muted">Payment methods</div>
-            <div class="payment-icons">
-              <span>VISA</span>
-              <span>Mastercard</span>
-              <span>PayPal</span>
-              <span>Apple Pay</span>
-            </div>
-
             {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:12px;padding-top:12px">
               <div class="small muted">Delivery</div>
               <div class="small muted">Ships from: China • Import charges may apply</div>
