@@ -989,9 +989,9 @@ class AdminController extends Controller
         }
         
         // Delete user sessions (check if model exists)
-        if (class_exists('\App\Models\UserSession')) {
-            \App\Models\UserSession::where('user_id', $user->id)->delete();
-        }
+        // if (class_exists('\App\Models\UserSession')) {
+        //     \App\Models\UserSession::where('user_id', $user->id)->delete();
+        // }
         
         // Delete AB test assignments (check if model exists)
         if (class_exists('\App\Models\ABTestAssignment')) {
