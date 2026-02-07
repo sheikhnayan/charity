@@ -861,13 +861,17 @@ function updateSummary(items) {
 
 function handleCheckout() {
     // Validate student donation amounts before checkout
-    const studentDonationInputs = document.querySelectorAll('.cart-item .donation-amount');
+    const studentDonationInputs = document.querySelectorAll('.cart-item .donation-amount-section[style*="display: block"] .donation-amount, .cart-item .donation-amount-section:not([style*="display: none"]) .donation-amount');
     let hasInvalidStudentDonation = false;
 
     studentDonationInputs.forEach(input => {
-        const value = parseFloat(input.value);
-        if (isNaN(value) || value <= 0) {
-            hasInvalidStudentDonation = true;
+        // Only validate if the parent donation-amount-section is visible (student items)
+        const donationSection = input.closest('.donation-amount-section');
+        if (donationSection && donationSection.style.display !== 'none') {
+            const value = parseFloat(input.value);
+            if (isNaN(value) || value <= 0) {
+                hasInvalidStudentDonation = true;
+            }
         }
     });
 
