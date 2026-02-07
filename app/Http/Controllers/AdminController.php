@@ -909,6 +909,7 @@ class AdminController extends Controller
         
         // Only allow deletion of students (individual), parents
         if (!in_array($user->role, ['student', 'individual', 'parents'])) {
+            dd('sss');
             return redirect()->back()->with('error', 'Only students and parents can be deleted');
         }
 
@@ -947,6 +948,8 @@ class AdminController extends Controller
             
         } catch (\Exception $e) {
             DB::rollBack();
+
+            dd($e->getMessage());
             
             return redirect()->back()->with('error', 'Error deleting user: ' . $e->getMessage());
         }
