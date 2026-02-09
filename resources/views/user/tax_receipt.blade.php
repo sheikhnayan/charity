@@ -122,7 +122,9 @@
                         </label>
                         <input type="file" class="form-control" id="logo" name="logo">
 
-                        <img class="mt-4" src="{{ asset('storage/'.$data->logo ?? '') }}" width="200px">
+                        @if($data && $data->logo)
+                            <img class="mt-4" src="{{ asset('storage/'.$data->logo) }}" width="200px">
+                        @endif
                     </div>
                     <div class="col-12" style="order: -1;">
                         <label for="signature" class="form-label required">
@@ -130,7 +132,9 @@
                         </label>
                         <input type="file" class="form-control" id="signature" name="signature">
 
-                        <img class="mt-4" src="{{ asset('storage/'.$data->signature ?? '') }}" width="200px">
+                        @if($data && $data->signature)
+                            <img class="mt-4" src="{{ asset('storage/'.$data->signature) }}" width="200px">
+                        @endif
                     </div>
                     <div class="col-12 mt-4">
                         <button type="submit" class="btn btn-success">Update</button>
