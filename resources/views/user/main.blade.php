@@ -972,9 +972,6 @@
           loader.style.display = 'flex';
         }
         document.body.classList.add('parent-portal-locked');
-        window.onbeforeunload = function() {
-          return 'Please wait while your request is being processed.';
-        };
       }
 
       document.addEventListener('submit', function(event) {
