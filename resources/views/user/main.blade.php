@@ -583,7 +583,7 @@
                 </li>
             @endif
 
-              @if(auth()->user()->role !== 'individual' && auth()->user()->role !== 'parents')
+              @if(auth()->user()->role !== 'individual' && auth()->user()->role !== 'parents' && auth()->user()->role !== 'user')
               <!-- Analytics -->
               <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Analytics</span>
