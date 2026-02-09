@@ -195,7 +195,7 @@
                                 </div>
                             @endif
                             
-                            <form action="{{ route('parent.update-student', $user->id) }}" method="POST" enctype="multipart/form-data">
+                            <form id="editStudentForm" action="{{ route('parent.update-student', $user->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row gy-3">
 
@@ -275,6 +275,7 @@
                                         </label>
                                         <input class="form-control @error('photo') is-invalid @enderror" type="file" id="photo-image-file" name="photo"
                                             accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
+                                        <div class="invalid-feedback" id="photo_error" style="display: none;"></div>
                                         @error('photo')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
@@ -650,5 +651,71 @@
                 .catch(error => {
                     console.error(error);
                 });
+        </script>
+
+        <!-- Photo Upload Validation -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const photoInput = document.getElementById('photo-image-file');
+            const photoError = document.getElementById('photo_error');
+            const form = document.getElementById('editStudentForm');
+            let hasFileError = false;
+            
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    
+                    // Clear previous errors
+                    photoInput.classList.remove('is-invalid');
+                    if (photoError) {
+                        photoError.style.display = 'none';
+                        photoError.textContent = '';
+                    }
+                    hasFileError = false;
+                    
+                    if (file) {
+                        // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                        const maxSize = 5 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                            photoInput.classList.add('is-invalid');
+                            if (photoError) {
+                                photoError.style.display = 'block';
+                                photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
+                            }
+                            photoInput.value = '';
+                            hasFileError = true;
+                            return;
+                        }
+                        
+                        // Check file type
+                        const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                        if (!allowedTypes.includes(file.type)) {
+                            photoInput.classList.add('is-invalid');
+                            if (photoError) {
+                                photoError.style.display = 'block';
+                                photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                            }
+                            photoInput.value = '';
+                            hasFileError = true;
+                            return;
+                        }
+                    }
+                });
+            }
+            
+            // Prevent form submission if there's a file error
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (hasFileError || (photoInput && photoInput.classList.contains('is-invalid'))) {
+                        e.preventDefault();
+                        if (photoError) {
+                            photoError.style.display = 'block';
+                            photoError.textContent = photoError.textContent || 'Please fix the file upload error before submitting.';
+                        }
+                        return false;
+                    }
+                });
+            }
+        });
         </script>
 @endsection
