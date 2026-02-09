@@ -664,14 +664,14 @@
                 photoInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     
-                    // Clear previous errors
-                    photoInput.classList.remove('is-invalid');
-                    if (photoError) {
-                        photoError.style.display = 'none';
-                        photoError.textContent = '';
-                    }
-                    
                     if (file) {
+                        // Clear previous errors only when a new file is selected
+                        photoInput.classList.remove('is-invalid');
+                        if (photoError) {
+                            photoError.style.display = 'none';
+                            photoError.textContent = '';
+                        }
+                        
                         // Check file size (5MB = 5 * 1024 * 1024 bytes)
                         const maxSize = 5 * 1024 * 1024;
                         if (file.size > maxSize) {
@@ -680,7 +680,7 @@
                                 photoError.style.display = 'block';
                                 photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
                             }
-                            photoInput.value = '';
+                            e.target.value = '';
                             return;
                         }
                         
@@ -692,7 +692,7 @@
                                 photoError.style.display = 'block';
                                 photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
                             }
-                            photoInput.value = '';
+                            e.target.value = '';
                             return;
                         }
                     }
@@ -703,12 +703,11 @@
                     if (photoInput.classList.contains('is-invalid')) {
                         e.preventDefault();
                         e.stopPropagation();
+                        e.stopImmediatePropagation();
                         if (photoError) {
                             photoError.style.display = 'block';
                             photoError.textContent = photoError.textContent || 'Please fix the file upload error before submitting.';
                         }
-                        
-                        // Scroll to the error
                         photoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         return false;
                     }
