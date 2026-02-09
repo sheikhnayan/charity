@@ -593,7 +593,8 @@
                             <div class="rounded-profile-picture border border-3 border-primary mx-auto"
                                 style="border-radius: 50%; border-color: #2e4053 !important; overflow: hidden;">
                                 <img src="{{ asset($data->photo ?? null) }}"
-                                    style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;">
+                                    style="width: 80px; min-width: 80px; height: 80px; min-height: 80px;"
+                                    onerror="this.src='{{ asset('uploads/'.$check->setting->logo) }}';">
                             </div>
                         </div>
 

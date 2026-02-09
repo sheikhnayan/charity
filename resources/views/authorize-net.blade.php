@@ -460,14 +460,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
+                        ${{ number_format($data->amount, 2, '.', ',') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Platform Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ','), '0'), '.') }}
+                        ${{ number_format((($data->amount / 100) * $payment->fee), 2, '.', ',') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -483,7 +483,7 @@
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;" id="checkout-total">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ','), '0'), '.') }}
+                        <h5 style="font-weight: bold;" id="checkout-total">${{ number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ',') }}
                         </h5>
                     </div>
                 </div>
@@ -804,14 +804,14 @@
                         Subtotal
                     </div>
                     <div class="col-md-4 col-4">
-                        ${{ rtrim(rtrim(number_format($data->amount, 2, '.', ','), '0'), '.') }}
+                        ${{ number_format($data->amount, 2, '.', ',') }}
                     </div>
 
                     <div class="col-md-8 col-8 text-start mt-2">
                         Platform Fee
                     </div>
                     <div class="col-md-4 col-4 mt-2">
-                        ${{ rtrim(rtrim(number_format((($data->amount / 100) * $payment->fee), 2, '.', ','), '0'), '.') }}
+                        ${{ number_format((($data->amount / 100) * $payment->fee), 2, '.', ',') }}
                     </div>
 
                     @if ($type == 'donation')
@@ -827,7 +827,7 @@
                         <h5 style="font-weight: bold;">Total</h5>
                     </div>
                     <div class="col-md-4 col-4 mt-4">
-                        <h5 style="font-weight: bold;" id="checkout-total-desktop">${{ rtrim(rtrim(number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ''), '0'), '.') }}
+                        <h5 style="font-weight: bold;" id="checkout-total-desktop">${{ number_format(((($data->amount / 100) * $payment->fee) + $data->amount), 2, '.', ',') }}
                         </h5>
                     </div>
                 </div>

@@ -265,6 +265,7 @@ class WebsiteController extends Controller
         $update->custom_sticky_button_text = $request->custom_sticky_button_text;
         // Add investment fields for all website types
         $update->share_price = $request->share_price ?? null;
+        $update->google_analytics_id = $request->google_analytics_id ?? null;
         $update->investment_title = $request->investment_title ?? null;
         $update->min_investment = $request->min_investment ?? null;
         $update->investment_tiers = $request->investment_tiers ?? null;
