@@ -97,6 +97,40 @@
         color: var(--text);
       }
 
+      @if(Auth::check() && Auth::user()->role == 'parents')
+      .parent-portal-locked {
+        pointer-events: none;
+        user-select: none;
+      }
+      #parent-portal-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      #parent-portal-loader .loader-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+      }
+      #parent-portal-loader .loader-container {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        padding: 32px;
+        border-radius: 12px;
+        max-width: 520px;
+        width: calc(100% - 40px);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      }
+      @endif
+
       /* Sidebar Modern Styling */
       .layout-menu {
         background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
@@ -908,7 +942,57 @@
     </div>
     @endif
 
+    @if(Auth::check() && Auth::user()->role == 'parents')
+    <!-- Parent Portal Processing Loader -->
+    <div id="parent-portal-loader" aria-hidden="true">
+      <div class="loader-overlay"></div>
+      <div class="loader-container">
+        <div class="loader-content">
+          <div class="spinner-border text-primary mb-4" role="status">
+            <span class="visually-hidden">Processing...</span>
+          </div>
+          <h3 class="mb-3">Processing</h3>
+          <p class="loader-message">Please wait while your request is being completed...</p>
+          <div class="loader-warnings mt-4">
+            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+          </div>
+          <p class="loader-subtext mt-4">This may take a few moments...</p>
+        </div>
+      </div>
+    </div>
+    @endif
+
     <script>
+      @if(Auth::check() && Auth::user()->role == 'parents')
+      function showParentPortalLoader() {
+        const loader = document.getElementById('parent-portal-loader');
+        if (loader) {
+          loader.style.display = 'flex';
+        }
+        document.body.classList.add('parent-portal-locked');
+        window.onbeforeunload = function() {
+          return 'Please wait while your request is being processed.';
+        };
+      }
+
+      document.addEventListener('submit', function(event) {
+        const form = event.target;
+        if (!form) return;
+        // Only handle real form submissions (not prevented)
+        showParentPortalLoader();
+      }, true);
+
+      document.addEventListener('click', function(event) {
+        if (!document.body.classList.contains('parent-portal-locked')) return;
+        const link = event.target.closest('a');
+        if (link) {
+          event.preventDefault();
+        }
+      }, true);
+      @endif
+
       // Populate teachers dropdown dynamically via API
       function loadTeachersForModal() {
         const teacherSelect = document.getElementById('teacher_id');

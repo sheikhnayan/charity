@@ -661,7 +661,7 @@ body.tutorial-first-visit .introjs-skipbutton {
             <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">
+                        <form id="addStudentForm" action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addStudentModalLabel">Add Participant</h5>
@@ -731,6 +731,28 @@ body.tutorial-first-visit .introjs-skipbutton {
             </div>
             @endif
 
+            <!-- Add Participant Processing Loader -->
+            @if(Auth::user()->role == 'parents')
+            <div id="participant-loader" style="display: none;">
+                <div class="payment-loader-overlay"></div>
+                <div class="payment-loader-container">
+                    <div class="payment-loader-content">
+                        <div class="spinner-border text-primary mb-4" role="status">
+                            <span class="visually-hidden">Processing...</span>
+                        </div>
+                        <h3 class="mb-3">Adding Participant</h3>
+                        <p class="loader-message">Please wait while we save the participant...</p>
+                        <div class="loader-warnings mt-4">
+                            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                            <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+                        </div>
+                        <p class="loader-subtext mt-4">This may take a few moments...</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- jQuery -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <!-- DataTables CSS -->
@@ -740,6 +762,38 @@ body.tutorial-first-visit .introjs-skipbutton {
                 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
                 .dataTables_wrapper .dataTables_paginate .paginate_button {
                     color: #000 !important;
+                }
+                .page-locked {
+                    pointer-events: none;
+                    user-select: none;
+                }
+                .page-locked #participant-loader,
+                #participant-loader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 9999;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                }
+                #participant-loader .payment-loader-overlay {
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.6);
+                }
+                #participant-loader .payment-loader-container {
+                    position: relative;
+                    z-index: 1;
+                    background: #fff;
+                    padding: 32px;
+                    border-radius: 12px;
+                    max-width: 520px;
+                    width: calc(100% - 40px);
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 }
             </style>
             <!-- Date Range Picker CSS -->
@@ -765,6 +819,22 @@ body.tutorial-first-visit .introjs-skipbutton {
 
             <script>
                 $(document).ready(function() {
+                    const addStudentForm = document.getElementById('addStudentForm');
+                    const participantLoader = document.getElementById('participant-loader');
+
+                    if (addStudentForm) {
+                        addStudentForm.addEventListener('submit', function() {
+                            if (participantLoader) {
+                                participantLoader.style.display = 'flex';
+                            }
+                            document.body.classList.add('page-locked');
+                            // Prevent navigation away
+                            window.onbeforeunload = function() {
+                                return 'Please wait while the participant is being added.';
+                            };
+                        });
+                    }
+
                     // Initialize Select2 for teacher select if available
                     if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
                         jQuery('.teacher-select').select2({
