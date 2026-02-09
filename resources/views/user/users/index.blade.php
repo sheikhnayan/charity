@@ -102,55 +102,93 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                 @endif
+
+                                @php
+                                    $isRoleUser = auth()->user() && auth()->user()->role === 'user';
+                                @endphp
+
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                    <span class="text-dark fw-semibold">Filter:</span>
+                                    <a href="{{ route('users.manage-users.index', ['type' => 'participant']) }}"
+                                       class="btn btn-sm {{ ($filterType ?? null) === 'participant' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                        Participants
+                                    </a>
+                                    <a href="{{ route('users.manage-users.index', ['type' => 'parent']) }}"
+                                       class="btn btn-sm {{ ($filterType ?? null) === 'parent' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                        Parents
+                                    </a>
+                                </div>
                                 
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Website</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
+                                            @if($isRoleUser)
+                                                <th>Name</th>
+                                                <th>Parent Email</th>
+                                                <th>Teacher</th>
+                                                <th>Shirt Size</th>
+                                                <th>Amount Raised</th>
+                                                <th>Goal</th>
+                                            @else
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Website</th>
+                                                <th>Role</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if ($users->isEmpty())
                                             <tr>
-                                                <td colspan="7" class="text-center">No users found.</td>
+                                                <td colspan="{{ $isRoleUser ? 6 : 7 }}" class="text-center">No users found.</td>
                                             </tr>
                                         @else
                                             @foreach ($users as $user)
                                                 <tr>
-                                                    <td>{{ $user->id }}</td>
-                                                    <td>
-                                                        <a href="{{ route('admin.user.profile', $user->id) }}" class="text-decoration-none fw-bold text-primary">
-                                                            {{ $user->name }} {{ $user->last_name ?? '' }}
-                                                        </a>
-                                                    </td>
-                                                    <td>{{ $user->email }}</td>
-                                                    <td>{{ $user->website->name ?? 'N/A' }}</td>
-                                                    <td>
-                                                        <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
-                                                    </td>
-                                                    <td>
-                                                        @if ($user->status == 1)
-                                                            <span class="badge bg-success">Approved</span>
-                                                        @else
-                                                            <span class="badge bg-warning">Pending</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('users.manage-users.edit', $user->id) }}" class="btn btn-sm btn-primary me-1" title="Edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        @if ($user->status != 1)
-                                                            <a href="/admins/student/approve/{{ $user->id }}" class="btn btn-sm btn-success" title="Approve">
-                                                                <i class="fas fa-check"></i>
+                                                    @if($isRoleUser)
+                                                        <td>
+                                                            <a href="{{ route('admin.user.profile', $user->id) }}" class="text-decoration-none fw-bold text-primary">
+                                                                {{ $user->name }} {{ $user->last_name ?? '' }}
                                                             </a>
-                                                        @endif
-                                                    </td>
+                                                        </td>
+                                                        <td>{{ $user->parent->email ?? 'N/A' }}</td>
+                                                        <td>{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
+                                                        <td>{{ $user->tshirt_size ?? 'N/A' }}</td>
+                                                        <td>${{ number_format($user->donations->sum('amount'), 2) }}</td>
+                                                        <td>${{ number_format($user->goal ?? 0, 2) }}</td>
+                                                    @else
+                                                        <td>{{ $user->id }}</td>
+                                                        <td>
+                                                            <a href="{{ route('admin.user.profile', $user->id) }}" class="text-decoration-none fw-bold text-primary">
+                                                                {{ $user->name }} {{ $user->last_name ?? '' }}
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ $user->email }}</td>
+                                                        <td>{{ $user->website->name ?? 'N/A' }}</td>
+                                                        <td>
+                                                            <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
+                                                        </td>
+                                                        <td>
+                                                            @if ($user->status == 1)
+                                                                <span class="badge bg-success">Approved</span>
+                                                            @else
+                                                                <span class="badge bg-warning">Pending</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a href="{{ route('users.manage-users.edit', $user->id) }}" class="btn btn-sm btn-primary me-1" title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            @if ($user->status != 1)
+                                                                <a href="/admins/student/approve/{{ $user->id }}" class="btn btn-sm btn-success" title="Approve">
+                                                                    <i class="fas fa-check"></i>
+                                                                </a>
+                                                            @endif
+                                                        </td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @endif

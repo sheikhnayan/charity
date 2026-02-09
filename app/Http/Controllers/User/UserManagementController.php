@@ -12,16 +12,27 @@ use Illuminate\Support\Facades\Auth;
 
 class UserManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $currentUser = Auth::user();
         $websiteId = $currentUser->website_id;
-        
-        $users = User::with(['roles', 'website'])
-            ->where('website_id', $websiteId)
-            ->paginate(20);
-            
-        return view('user.users.index', compact('users'));
+
+        $filterType = $request->query('type');
+        $roleMap = [
+            'participant' => 'individual',
+            'parent' => 'parents',
+        ];
+
+        $usersQuery = User::with(['roles', 'website', 'parent', 'teacher', 'donations'])
+            ->where('website_id', $websiteId);
+
+        if (isset($roleMap[$filterType])) {
+            $usersQuery->where('role', $roleMap[$filterType]);
+        }
+
+        $users = $usersQuery->paginate(20)->appends($request->query());
+
+        return view('user.users.index', compact('users', 'filterType'));
     }
 
     public function create()
