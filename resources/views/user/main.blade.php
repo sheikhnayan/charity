@@ -585,11 +585,11 @@
 
             
             @if(auth()->user()->role !== 'individual' && auth()->user()->role !== 'parents')
+            @if (auth()->user()->role !== 'user')
             <!-- Analytics -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Analytics</span>
               </li>
-              @if (auth()->user()->role !== 'user')
                 <li class="menu-item {{ request()->is('users/analytics') || request()->is('users/analytics/*') ? 'active open' : '' }}">
                   <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-chart"></i>
@@ -650,20 +650,21 @@
                   <div class="text-truncate">Users</div>
                 </a>
               </li>
+              @if (auth()->user()->role !== 'user')
+                <li class="menu-item {{ request()->is('users/roles*') ? 'active' : '' }}">
+                  <a href="/users/roles" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
+                    <div class="text-truncate">Roles</div>
+                  </a>
+                </li>
 
-              <li class="menu-item {{ request()->is('users/roles*') ? 'active' : '' }}">
-                <a href="/users/roles" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
-                  <div class="text-truncate">Roles</div>
-                </a>
-              </li>
-
-              <li class="menu-item {{ request()->is('users/permissions*') ? 'active' : '' }}">
-                <a href="/users/permissions" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-check-shield"></i>
-                  <div class="text-truncate">Permissions</div>
-                </a>
-              </li>
+                <li class="menu-item {{ request()->is('users/permissions*') ? 'active' : '' }}">
+                  <a href="/users/permissions" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-check-shield"></i>
+                    <div class="text-truncate">Permissions</div>
+                  </a>
+                </li>
+              @endif
               @endif
               <li class="menu-item menu-logout-sticky">
                 <a href="{{ url('/logout') }}" class="menu-link">
