@@ -1487,7 +1487,21 @@ body.tutorial-first-visit .introjs-skipbutton {
                                         return;
                                     }
                                     
-                                    // Check file type
+                                    // Get file extension
+                                    const fileName = file.name.toLowerCase();
+                                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                                    const fileExtension = fileName.split('.').pop();
+                                    
+                                    // Check file extension first (catches HEIC, WEBP, etc.)
+                                    if (!allowedExtensions.includes(fileExtension)) {
+                                        photoInput.classList.add('is-invalid');
+                                        photoError.style.display = 'block';
+                                        photoError.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                                        e.target.value = '';
+                                        return;
+                                    }
+                                    
+                                    // Check file type (MIME type)
                                     const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
                                     if (!allowedTypes.includes(file.type)) {
                                         photoInput.classList.add('is-invalid');
