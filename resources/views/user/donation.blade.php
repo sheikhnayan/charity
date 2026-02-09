@@ -824,9 +824,16 @@ body.tutorial-first-visit .introjs-skipbutton {
                 $(document).ready(function() {
                     const addStudentForm = document.getElementById('addStudentForm');
                     const participantLoader = document.getElementById('participant-loader');
+                    const photoInput = document.getElementById('modal_photo');
 
                     if (addStudentForm) {
-                        addStudentForm.addEventListener('submit', function() {
+                        addStudentForm.addEventListener('submit', function(e) {
+                            // Check if photo has validation error before showing loader
+                            if (photoInput && photoInput.classList.contains('is-invalid')) {
+                                // Don't show loader if there's a validation error
+                                return false;
+                            }
+                            
                             if (participantLoader) {
                                 participantLoader.style.display = 'flex';
                             }
@@ -837,6 +844,15 @@ body.tutorial-first-visit .introjs-skipbutton {
                             };
                         });
                     }
+                    
+                    // Hide loader if there are backend validation errors
+                    @if($errors->any())
+                        if (participantLoader) {
+                            participantLoader.style.display = 'none';
+                        }
+                        document.body.classList.remove('page-locked');
+                        window.onbeforeunload = null;
+                    @endif
 
                     // Initialize Select2 for teacher select if available
                     if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {

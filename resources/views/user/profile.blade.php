@@ -1007,6 +1007,39 @@
             });
         }
 
+        $(document).ready(function() {
+            const addStudentForm = document.getElementById('addStudentForm');
+            const participantLoader = document.getElementById('participant-loader');
+            const photoInput = document.getElementById('modal_photo');
+
+            if (addStudentForm) {
+                addStudentForm.addEventListener('submit', function(e) {
+                    // Check if photo has validation error before showing loader
+                    if (photoInput && photoInput.classList.contains('is-invalid')) {
+                        // Don't show loader if there's a validation error
+                        return false;
+                    }
+                    
+                    if (participantLoader) {
+                        participantLoader.style.display = 'flex';
+                    }
+                    document.body.classList.add('page-locked');
+                    window.onbeforeunload = function() {
+                        return 'Please wait while the participant is being added.';
+                    };
+                });
+            }
+            
+            // Hide loader if there are backend validation errors
+            @if($errors->any())
+                if (participantLoader) {
+                    participantLoader.style.display = 'none';
+                }
+                document.body.classList.remove('page-locked');
+                window.onbeforeunload = null;
+            @endif
+        });
+        
         // Photo upload validation
         document.addEventListener('DOMContentLoaded', function() {
             // Reopen modal if there are backend validation errors

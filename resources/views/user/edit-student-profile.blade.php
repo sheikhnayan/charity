@@ -731,4 +731,94 @@
             }
         });
         </script>
+
+        <!-- Student Edit Form Processing Loader -->
+        <div id="student-edit-loader" style="display: none;">
+            <div class="payment-loader-overlay"></div>
+            <div class="payment-loader-container">
+                <div class="payment-loader-content">
+                    <div class="spinner-border text-primary mb-4" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <h3 class="mb-3">Updating Profile</h3>
+                    <p class="loader-message">Please wait while we save the changes...</p>
+                    <div class="loader-warnings mt-4">
+                        <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                        <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                        <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+                    </div>
+                    <p class="loader-subtext mt-4">This may take a few moments...</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .page-locked {
+                pointer-events: none;
+                user-select: none;
+            }
+            .page-locked #student-edit-loader,
+            #student-edit-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                display: none;
+                align-items: center;
+                justify-content: center;
+            }
+            #student-edit-loader .payment-loader-overlay {
+                position: absolute;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.6);
+            }
+            #student-edit-loader .payment-loader-container {
+                position: relative;
+                z-index: 1;
+                background: #fff;
+                padding: 32px;
+                border-radius: 12px;
+                max-width: 520px;
+                width: calc(100% - 40px);
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+        </style>
+
+        <script>
+            $(document).ready(function() {
+                const editStudentForm = document.getElementById('editStudentForm');
+                const studentEditLoader = document.getElementById('student-edit-loader');
+                const photoInput = document.getElementById('photo-image-file');
+
+                if (editStudentForm) {
+                    editStudentForm.addEventListener('submit', function(e) {
+                        // Check if photo has validation error before showing loader
+                        if (photoInput && photoInput.classList.contains('is-invalid')) {
+                            // Don't show loader if there's a validation error
+                            return false;
+                        }
+                        
+                        if (studentEditLoader) {
+                            studentEditLoader.style.display = 'flex';
+                        }
+                        document.body.classList.add('page-locked');
+                        window.onbeforeunload = function() {
+                            return 'Please wait while the profile is being updated.';
+                        };
+                    });
+                }
+                
+                // Hide loader if there are backend validation errors
+                @if($errors->any())
+                    if (studentEditLoader) {
+                        studentEditLoader.style.display = 'none';
+                    }
+                    document.body.classList.remove('page-locked');
+                    window.onbeforeunload = null;
+                @endif
+            });
+        </script>
 @endsection

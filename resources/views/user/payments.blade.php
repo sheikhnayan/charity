@@ -817,6 +817,63 @@
 </div>
 @endif
 
+<!-- Add Participant Processing Loader -->
+@if(Auth::user()->role == 'parents')
+<div id="participant-loader" style="display: none;">
+    <div class="payment-loader-overlay"></div>
+    <div class="payment-loader-container">
+        <div class="payment-loader-content">
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h3 class="mb-3">Adding Participant</h3>
+            <p class="loader-message">Please wait while we save the participant...</p>
+            <div class="loader-warnings mt-4">
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not refresh the page</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not close this window</p>
+                <p class="warning-item"><i class="fas fa-exclamation-circle me-2"></i> Do not navigate away</p>
+            </div>
+            <p class="loader-subtext mt-4">This may take a few moments...</p>
+        </div>
+    </div>
+</div>
+@endif
+
+<style>
+    .page-locked {
+        pointer-events: none;
+        user-select: none;
+    }
+    .page-locked #participant-loader,
+    #participant-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    #participant-loader .payment-loader-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+    #participant-loader .payment-loader-container {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        padding: 32px;
+        border-radius: 12px;
+        max-width: 520px;
+        width: calc(100% - 40px);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+</style>
+
 <!-- jQuery (Required for Select2) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Select2 CSS -->
@@ -841,6 +898,39 @@
 
 <!-- Photo Upload Validation -->
 <script>
+    $(document).ready(function() {
+        const addStudentForm = document.getElementById('addStudentForm');
+        const participantLoader = document.getElementById('participant-loader');
+        const photoInput = document.getElementById('modal_photo');
+
+        if (addStudentForm) {
+            addStudentForm.addEventListener('submit', function(e) {
+                // Check if photo has validation error before showing loader
+                if (photoInput && photoInput.classList.contains('is-invalid')) {
+                    // Don't show loader if there's a validation error
+                    return false;
+                }
+                
+                if (participantLoader) {
+                    participantLoader.style.display = 'flex';
+                }
+                document.body.classList.add('page-locked');
+                window.onbeforeunload = function() {
+                    return 'Please wait while the participant is being added.';
+                };
+            });
+        }
+        
+        // Hide loader if there are backend validation errors
+        @if($errors->any())
+            if (participantLoader) {
+                participantLoader.style.display = 'none';
+            }
+            document.body.classList.remove('page-locked');
+            window.onbeforeunload = null;
+        @endif
+    });
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Reopen modal if there are backend validation errors
         @if($errors->has('photo') || $errors->has('first_name') || $errors->has('last_name') || $errors->has('teacher_id'))
