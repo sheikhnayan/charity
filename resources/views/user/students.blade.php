@@ -367,30 +367,9 @@
 
             <script>
             $(document).ready(function() {
-                const addStudentForm = document.getElementById('addStudentForm');
-                const participantLoader = document.getElementById('participant-loader');
-                const photoInput = document.getElementById('modal_photo');
-
-                if (addStudentForm) {
-                    addStudentForm.addEventListener('submit', function(e) {
-                        // Check if photo has validation error before showing loader
-                        if (photoInput && photoInput.classList.contains('is-invalid')) {
-                            // Don't show loader if there's a validation error
-                            return false;
-                        }
-                        
-                        if (participantLoader) {
-                            participantLoader.style.display = 'flex';
-                        }
-                        document.body.classList.add('page-locked');
-                        window.onbeforeunload = function() {
-                            return 'Please wait while the participant is being added.';
-                        };
-                    });
-                }
-                
                 // Hide loader if there are backend validation errors
                 @if($errors->any())
+                    const participantLoader = document.getElementById('participant-loader');
                     if (participantLoader) {
                         participantLoader.style.display = 'none';
                     }
@@ -486,6 +465,16 @@
                             photoError.textContent = photoError.textContent || 'Please fix the file upload error before submitting.';
                             photoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             return false;
+                        } else {
+                            // Only show loader if validation passed
+                            const participantLoader = document.getElementById('participant-loader');
+                            if (participantLoader) {
+                                participantLoader.style.display = 'flex';
+                            }
+                            document.body.classList.add('page-locked');
+                            window.onbeforeunload = function() {
+                                return 'Please wait while the participant is being added.';
+                            };
                         }
                     });
                 }

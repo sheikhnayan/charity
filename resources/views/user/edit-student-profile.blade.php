@@ -726,6 +726,16 @@
                         }
                         photoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         return false;
+                    } else {
+                        // Only show loader if validation passed
+                        const studentEditLoader = document.getElementById('student-edit-loader');
+                        if (studentEditLoader) {
+                            studentEditLoader.style.display = 'flex';
+                        }
+                        document.body.classList.add('page-locked');
+                        window.onbeforeunload = function() {
+                            return 'Please wait while the profile is being updated.';
+                        };
                     }
                 });
             }
@@ -789,30 +799,9 @@
 
         <script>
             $(document).ready(function() {
-                const editStudentForm = document.getElementById('editStudentForm');
-                const studentEditLoader = document.getElementById('student-edit-loader');
-                const photoInput = document.getElementById('photo-image-file');
-
-                if (editStudentForm) {
-                    editStudentForm.addEventListener('submit', function(e) {
-                        // Check if photo has validation error before showing loader
-                        if (photoInput && photoInput.classList.contains('is-invalid')) {
-                            // Don't show loader if there's a validation error
-                            return false;
-                        }
-                        
-                        if (studentEditLoader) {
-                            studentEditLoader.style.display = 'flex';
-                        }
-                        document.body.classList.add('page-locked');
-                        window.onbeforeunload = function() {
-                            return 'Please wait while the profile is being updated.';
-                        };
-                    });
-                }
-                
                 // Hide loader if there are backend validation errors
                 @if($errors->any())
+                    const studentEditLoader = document.getElementById('student-edit-loader');
                     if (studentEditLoader) {
                         studentEditLoader.style.display = 'none';
                     }
