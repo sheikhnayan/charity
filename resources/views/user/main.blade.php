@@ -583,58 +583,61 @@
                 </li>
             @endif
 
-              @if(auth()->user()->role !== 'individual' && auth()->user()->role !== 'parents' && auth()->user()->role !== 'user')
-              <!-- Analytics -->
-              <li class="menu-header small text-uppercase">
-                <span class="menu-header-text">Analytics</span>
+            
+            @if(auth()->user()->role !== 'individual' && auth()->user()->role !== 'parents')
+            <!-- Analytics -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Analytics</span>
               </li>
+              @if (auth()->user()->role !== 'user')
+                <li class="menu-item {{ request()->is('users/analytics') || request()->is('users/analytics/*') ? 'active open' : '' }}">
+                  <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-chart"></i>
+                    <div class="text-truncate">Analytics</div>
+                  </a>
+                  <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('users/analytics') && !request()->is('users/analytics/*') ? 'active' : '' }}">
+                      <a href="/users/analytics" class="menu-link">
+                        <div class="text-truncate">Dashboard</div>
+                      </a>
+                    </li>
+                    <li class="menu-item {{ request()->is('users/analytics/utm') ? 'active' : '' }}">
+                      <a href="/users/analytics/utm" class="menu-link">
+                        <div class="text-truncate">UTM Attribution</div>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                
 
-              <li class="menu-item {{ request()->is('users/analytics') || request()->is('users/analytics/*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                  <i class="menu-icon tf-icons bx bx-chart"></i>
-                  <div class="text-truncate">Analytics</div>
-                </a>
-                <ul class="menu-sub">
-                  <li class="menu-item {{ request()->is('users/analytics') && !request()->is('users/analytics/*') ? 'active' : '' }}">
-                    <a href="/users/analytics" class="menu-link">
-                      <div class="text-truncate">Dashboard</div>
-                    </a>
-                  </li>
-                  <li class="menu-item {{ request()->is('users/analytics/utm') ? 'active' : '' }}">
-                    <a href="/users/analytics/utm" class="menu-link">
-                      <div class="text-truncate">UTM Attribution</div>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              
+                <li class="menu-item {{ request()->is('users/qr-codes*') ? 'active' : '' }}">
+                  <a href="/users/qr-codes" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-qr"></i>
+                    <div class="text-truncate">QR Codes</div>
+                  </a>
+                </li>
 
-              <li class="menu-item {{ request()->is('users/qr-codes*') ? 'active' : '' }}">
-                <a href="/users/qr-codes" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-qr"></i>
-                  <div class="text-truncate">QR Codes</div>
-                </a>
-              </li>
+                <!-- User Behavior -->
+                <li class="menu-item {{ request()->is('users/hotjar*') || request()->is('users/heatmaps*') || request()->is('users/recordings*') ? 'active open' : '' }}">
+                  <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-map"></i>
+                    <div class="text-truncate">User Behavior</div>
+                  </a>
+                  <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('users/hotjar/heatmaps') ? 'active' : '' }}">
+                      <a href="/users/hotjar/heatmaps" class="menu-link">
+                        <div class="text-truncate">Heatmaps</div>
+                      </a>
+                    </li>
+                    <li class="menu-item {{ request()->is('users/hotjar/recordings') ? 'active' : '' }}">
+                      <a href="/users/hotjar/recordings" class="menu-link">
+                        <div class="text-truncate">Session Recordings</div>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              @endif
 
-              <!-- User Behavior -->
-              <li class="menu-item {{ request()->is('users/hotjar*') || request()->is('users/heatmaps*') || request()->is('users/recordings*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                  <i class="menu-icon tf-icons bx bx-map"></i>
-                  <div class="text-truncate">User Behavior</div>
-                </a>
-                <ul class="menu-sub">
-                  <li class="menu-item {{ request()->is('users/hotjar/heatmaps') ? 'active' : '' }}">
-                    <a href="/users/hotjar/heatmaps" class="menu-link">
-                      <div class="text-truncate">Heatmaps</div>
-                    </a>
-                  </li>
-                  <li class="menu-item {{ request()->is('users/hotjar/recordings') ? 'active' : '' }}">
-                    <a href="/users/hotjar/recordings" class="menu-link">
-                      <div class="text-truncate">Session Recordings</div>
-                    </a>
-                  </li>
-                </ul>
-              </li>
 
               <!-- User Management -->
               <li class="menu-header small text-uppercase">

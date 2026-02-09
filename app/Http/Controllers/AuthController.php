@@ -84,7 +84,17 @@ class AuthController extends Controller
             try {
                 // Apply website-specific mail configuration
                 \App\Services\WebsiteMailService::applyForWebsite($check);
+                
+                // Send approval email to the registrant
                 Mail::to($user->email)->send(new AccountApproval($user, $check));
+                
+                // Also send approval notification to contact emails (same pattern as transaction emails)
+                $contactEmails = $check->getContactFormEmails();
+                foreach ($contactEmails as $contactEmail) {
+                    if ($contactEmail !== $user->email) {  // Don't send duplicate
+                        Mail::to($contactEmail)->send(new AccountApproval($user, $check));
+                    }
+                }
             } catch (\Exception $e) {
                 // Log error but don't stop registration process
                 \Log::error('Account approval email failed: ' . $e->getMessage());
@@ -92,7 +102,7 @@ class AuthController extends Controller
 
             // Send admin notification emails for parent registrations
             try {
-                // Get admin emails from contact form settings
+                // Get admin emails from contact form settings (using new Website model methods)
                 $adminEmails = [];
                 
                 // Get site owner (user with role 'user' for this website)
@@ -103,12 +113,9 @@ class AuthController extends Controller
                     $adminEmails[] = $siteOwner->email;
                 }
 
-                // Get contact form admin emails from settings
-                $setting = Setting::where('user_id', $check->user_id)->first();
-                if ($setting && $setting->contact_email_admin) {
-                    $contactEmails = array_filter(array_map('trim', explode(',', $setting->contact_email_admin)));
-                    $adminEmails = array_merge($adminEmails, $contactEmails);
-                }
+                // Get contact form emails from Website model (respects preferences)
+                $websiteContactEmails = $check->getContactFormEmails();
+                $adminEmails = array_merge($adminEmails, $websiteContactEmails);
 
                 // Remove duplicates and send notifications
                 $adminEmails = array_unique($adminEmails);
