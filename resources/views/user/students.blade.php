@@ -370,9 +370,8 @@
                 const photoInput = document.getElementById('modal_photo');
                 const photoError = document.getElementById('modal_photo_error');
                 const form = document.getElementById('addStudentForm');
-                let hasFileError = false;
                 
-                if (photoInput) {
+                if (photoInput && form) {
                     photoInput.addEventListener('change', function(e) {
                         const file = e.target.files[0];
                         
@@ -380,7 +379,6 @@
                         photoInput.classList.remove('is-invalid');
                         photoError.style.display = 'none';
                         photoError.textContent = '';
-                        hasFileError = false;
                         
                         if (file) {
                             // Check file size (5MB max)
@@ -390,7 +388,6 @@
                                 photoError.style.display = 'block';
                                 photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
                                 photoInput.value = '';
-                                hasFileError = true;
                                 return;
                             }
                             
@@ -401,20 +398,21 @@
                                 photoError.style.display = 'block';
                                 photoError.textContent = 'Invalid file type. Please upload an image file (PNG, JPG, GIF).';
                                 photoInput.value = '';
-                                hasFileError = true;
                                 return;
                             }
                         }
                     });
-                }
-                
-                // Prevent form submission if there's a file error
-                if (form) {
+                    
+                    // Prevent form submission if there's a validation error
                     form.addEventListener('submit', function(e) {
-                        if (hasFileError || photoInput.classList.contains('is-invalid')) {
+                        if (photoInput.classList.contains('is-invalid')) {
                             e.preventDefault();
+                            e.stopPropagation();
                             photoError.style.display = 'block';
                             photoError.textContent = photoError.textContent || 'Please fix the file upload error before submitting.';
+                            
+                            // Scroll to the error
+                            photoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             return false;
                         }
                     });
