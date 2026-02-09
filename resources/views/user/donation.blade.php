@@ -719,6 +719,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                     <label for="modal_photo" class="form-label">Upload Photo</label>
                                     <input class="form-control" type="file" id="modal_photo" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
                                     <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
+                                    <div class="invalid-feedback" id="modal_photo_error" style="display: none;"></div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -1456,4 +1457,45 @@ body.tutorial-first-visit .introjs-skipbutton {
                     @endif
                 </script>
                 @endif
+
+                <!-- Photo Upload Validation -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const photoInput = document.getElementById('modal_photo');
+                        const photoError = document.getElementById('modal_photo_error');
+                        
+                        if (photoInput) {
+                            photoInput.addEventListener('change', function(e) {
+                                const file = e.target.files[0];
+                                
+                                // Clear previous errors
+                                photoInput.classList.remove('is-invalid');
+                                photoError.style.display = 'none';
+                                photoError.textContent = '';
+                                
+                                if (file) {
+                                    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                                    const maxSize = 5 * 1024 * 1024;
+                                    if (file.size > maxSize) {
+                                        photoInput.classList.add('is-invalid');
+                                        photoError.style.display = 'block';
+                                        photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
+                                        photoInput.value = '';
+                                        return;
+                                    }
+                                    
+                                    // Check file type
+                                    const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                                    if (!allowedTypes.includes(file.type)) {
+                                        photoInput.classList.add('is-invalid');
+                                        photoError.style.display = 'block';
+                                        photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                                        photoInput.value = '';
+                                        return;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
         @endsection
