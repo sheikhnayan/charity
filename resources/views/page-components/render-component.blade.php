@@ -4808,7 +4808,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                             <div class="row lsls gy-3" style="padding: 0.5rem;">
                                 <div class="col-lg-3 d-flex align-items-center">
                                     <div class="rounded-profile-picture border border-3 border-primary mx-auto" style="border-radius: 50% !important; border-color: #2e4053 !important; overflow: hidden; width: 80px; height: 80px; aspect-ratio: 1/1;">
-                                        <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%;" onerror="this.src='{{ asset('uploads/'.$check->setting->logo) ?? asset('images/default-logo.png') }}';">
+                                        <img src="{{ asset($student->photo) }}" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 50%;" onerror="this.src='{{ asset('uploads/'.$check->setting->logo) ?? asset('images/default-logo.png') }}';">
                                     </div>
                                 </div>
 

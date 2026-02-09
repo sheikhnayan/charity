@@ -955,15 +955,15 @@
                         <label for="modal_tshirt_size" class="form-label">T-Shirt Size</label>
                         <select class="form-select" id="modal_tshirt_size" name="tshirt_size">
                             <option value="">Select a size</option>
-                            <option value="Youth Extra Small">Youth Extra Small</option>
-                            <option value="Extra Small">Extra Small</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Large">Large</option>
+                            <option value="Youth XS">Youth XS</option>
+                            <option value="Youth Small">Youth Small</option>
+                            <option value="Youth Medium">Youth Medium</option>
+                            <option value="Youth Large">Youth Large</option>
                             <option value="Adult Small">Adult Small</option>
                             <option value="Adult Medium">Adult Medium</option>
                             <option value="Adult Large">Adult Large</option>
-                            <option value="Extra Large">Extra Large</option>
-                            <option value="Extra Extra Large">Extra Extra Large</option>
+                            <option value="Adult XL">Adult XL</option>
+                            <option value="Adult XXL">Adult XXL</option>
                         </select>
                     </div>
                     <div class="mb-3">

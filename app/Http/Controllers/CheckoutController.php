@@ -121,6 +121,19 @@ class CheckoutController extends Controller
             $checkoutData['tip_percentage'] = (float)$request->input('tip_percentage', 0);
             $checkoutData['tip_enabled'] = (bool)$request->input('tip_enabled', false);
 
+            // Calculate processing fee BEFORE payment
+            $websiteId = $this->resolveWebsiteId();
+            $processingFeePercentage = $this->getProcessingFeePercentage($websiteId);
+            $processingFee = ($checkoutData['total'] / 100) * $processingFeePercentage;
+            $checkoutData['processing_fee'] = round($processingFee, 2);
+            
+            // Calculate final charge amount including fee and tip
+            $finalChargeAmount = $checkoutData['total'] + $checkoutData['processing_fee'];
+            if ($checkoutData['tip_enabled']) {
+                $finalChargeAmount += $checkoutData['tip_amount'];
+            }
+            $checkoutData['final_charge_amount'] = $finalChargeAmount;
+
             // Add user/payer information
             $checkoutData['email'] = $validated['email'];
             $checkoutData['first_name'] = $validated['first_name'];
@@ -191,14 +204,17 @@ class CheckoutController extends Controller
 
             // Create charge
             $charge = $stripe->charges->create([
-                'amount' => (int)(($checkoutData['total'] ?? 0) * 100), // Convert to cents
+                'amount' => (int)(($checkoutData['final_charge_amount'] ?? $checkoutData['total']) * 100), // Convert to cents - includes fee and tip
                 'currency' => 'usd',
                 'source' => $paymentToken,
                 'description' => $this->buildChargeDescription($checkoutData),
                 'metadata' => [
                     'type' => 'cart',
                     'item_count' => count($checkoutData['items']),
-                    'email' => $checkoutData['email']
+                    'email' => $checkoutData['email'],
+                    'base_amount' => $checkoutData['total'],
+                    'processing_fee' => $checkoutData['processing_fee'] ?? 0,
+                    'tip_amount' => $checkoutData['tip_amount'] ?? 0
                 ]
             ]);
 
@@ -230,7 +246,9 @@ class CheckoutController extends Controller
                 'type' => 'cart',
                 'payment_token' => $paymentToken,
                 'cart_data' => $checkoutData,
-                'amount' => $checkoutData['total'],
+                'amount' => $checkoutData['final_charge_amount'], // Use final amount with fee and tip
+                'base_amount' => $checkoutData['total'],
+                'processing_fee' => $checkoutData['processing_fee'] ?? 0,
                 'email' => $checkoutData['email'],
                 'first_name' => $checkoutData['first_name'],
                 'last_name' => $checkoutData['last_name'],
@@ -309,7 +327,7 @@ class CheckoutController extends Controller
 
             // Calculate grand total including processing fee and tip
             $processingFeePercentage = $this->getProcessingFeePercentage($checkoutData['website_id'] ?? $this->resolveWebsiteId());
-            $processingFee = ($checkoutData['total'] / 100) * $processingFeePercentage;
+            $processingFee = $checkoutData['processing_fee'] ?? (($checkoutData['total'] / 100) * $processingFeePercentage);
             $tipAmount = $checkoutData['tip_amount'] ?? 0;
             $grandTotal = $checkoutData['total'] + $processingFee + $tipAmount;
             
