@@ -68,7 +68,7 @@
 
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
-                            <strong>Note:</strong> This individual will be registered under your Caregiver account and will be able to login independently.
+                            <strong>Note:</strong> This individual will be registered under your Parent/Guardian account and will be able to login independently.
                         </div>
 
                         <div class="d-flex justify-content-between">

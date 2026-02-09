@@ -213,15 +213,15 @@
                                         <label for="tshirt_size" class="form-label">T-Shirt Size</label>
                                         <select class="form-select" id="tshirt_size" name="tshirt_size">
                                             <option value="">Select a size</option>
-                                            <option value="Youth Extra Small" {{ $user->tshirt_size == 'Youth Extra Small' ? 'selected' : '' }}>Youth Extra Small</option>
-                                            <option value="Extra Small" {{ $user->tshirt_size == 'Extra Small' ? 'selected' : '' }}>Extra Small</option>
-                                            <option value="Medium" {{ $user->tshirt_size == 'Medium' ? 'selected' : '' }}>Medium</option>
-                                            <option value="Large" {{ $user->tshirt_size == 'Large' ? 'selected' : '' }}>Large</option>
+                                            <option value="Youth XS" {{ $user->tshirt_size == 'Youth XS' ? 'selected' : '' }}>Youth XS</option>
+                                            <option value="Youth Small" {{ $user->tshirt_size == 'Youth Small' ? 'selected' : '' }}>Youth Small</option>
+                                            <option value="Youth Medium" {{ $user->tshirt_size == 'Youth Medium' ? 'selected' : '' }}>Youth Medium</option>
+                                            <option value="Youth Large" {{ $user->tshirt_size == 'Youth Large' ? 'selected' : '' }}>Youth Large</option>
                                             <option value="Adult Small" {{ $user->tshirt_size == 'Adult Small' ? 'selected' : '' }}>Adult Small</option>
                                             <option value="Adult Medium" {{ $user->tshirt_size == 'Adult Medium' ? 'selected' : '' }}>Adult Medium</option>
                                             <option value="Adult Large" {{ $user->tshirt_size == 'Adult Large' ? 'selected' : '' }}>Adult Large</option>
-                                            <option value="Extra Large" {{ $user->tshirt_size == 'Extra Large' ? 'selected' : '' }}>Extra Large</option>
-                                            <option value="Extra Extra Large" {{ $user->tshirt_size == 'Extra Extra Large' ? 'selected' : '' }}>Extra Extra Large</option>
+                                            <option value="Adult XL" {{ $user->tshirt_size == 'Adult XL' ? 'selected' : '' }}>Adult XL</option>
+                                            <option value="Adult XXL" {{ $user->tshirt_size == 'Adult XXL' ? 'selected' : '' }}>Adult XXL</option>
                                         </select>
                                     </div>
 

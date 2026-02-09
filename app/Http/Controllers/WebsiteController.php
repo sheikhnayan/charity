@@ -312,7 +312,7 @@ class WebsiteController extends Controller
         if ($user) {
             $user->name = $request->first_name;
             $user->last_name = $request->last_name;
-            $user->email = $request->email;
+            // $user->email = $request->email;
             if ($request->filled('password')) {
                 $user->password = Hash::make($request->password);
             }

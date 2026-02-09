@@ -219,7 +219,7 @@
                                                     </a>
                                                 </h5>
                                                 <h6 class="menu-header-subtitle text-capitalize">
-                                                    Caregiver
+                                                    Parent/Guardian
                                                 </h6>
                                             </div>
                                         </div>

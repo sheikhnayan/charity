@@ -112,7 +112,7 @@
                                                 <th>Email</th>
                                                 <th>Role</th>
                                                 <th>Teacher</th>
-                                                <th>Caregiver</th>
+                                                <th>Parent/Guardian</th>
                                                 <th>Goal</th>
                                                 @if(Auth::user()->role == 'parents')
                                                 <th>Raised</th>
