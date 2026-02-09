@@ -61,9 +61,9 @@
 
                             </div>
                             <div class="page-title-actions">
-                                <a href="{{ route('users.manage-users.create') }}" class="btn btn-primary">
+                                {{-- <a href="{{ route('users.manage-users.create') }}" class="btn btn-primary">
                                     <i class="fas fa-plus me-2"></i> Create User
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
 
