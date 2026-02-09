@@ -460,48 +460,66 @@
                         // Check if there's a file and validate it immediately
                         const file = photoInput.files[0];
                         let hasError = false;
+                        let errorMessage = '';
                         
                         if (file) {
                             // Check file size
                             const maxSize = 5 * 1024 * 1024;
                             if (file.size > maxSize) {
                                 hasError = true;
+                                errorMessage = 'File size exceeds 5MB. Please choose a smaller image.';
                             }
                             
                             // Check file extension
                             const fileName = file.name.toLowerCase();
                             const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
                             const fileExtension = fileName.split('.').pop();
-                            if (!allowedExtensions.includes(fileExtension)) {
+                            if (!hasError && !allowedExtensions.includes(fileExtension)) {
                                 hasError = true;
+                                errorMessage = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
                             }
                             
                             // Check MIME type
-                            const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
-                            if (!allowedTypes.includes(file.type)) {
-                                hasError = true;
+                            if (!hasError) {
+                                const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                                if (!allowedTypes.includes(file.type)) {
+                                    hasError = true;
+                                    errorMessage = 'Invalid file type. Please upload an image file (PNG, JPG, GIF).';
+                                }
                             }
                         }
                         
-                        if (hasError || photoInput.classList.contains('is-invalid')) {
+                        // Also check if input already has invalid class
+                        if (!hasError && photoInput.classList.contains('is-invalid')) {
+                            hasError = true;
+                            errorMessage = 'Please fix the file upload error before submitting.';
+                        }
+                        
+                        if (hasError) {
+                            // PREVENT submission completely
                             e.preventDefault();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
+                            
+                            // Show error message
+                            photoInput.classList.add('is-invalid');
                             photoError.style.display = 'block';
-                            photoError.textContent = photoError.textContent || 'Please fix the file upload error before submitting.';
+                            photoError.textContent = errorMessage;
                             photoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // DO NOT show loader
                             return false;
-                        } else {
-                            // Only show loader if validation passed
-                            const participantLoader = document.getElementById('participant-loader');
-                            if (participantLoader) {
-                                participantLoader.style.display = 'flex';
-                            }
-                            document.body.classList.add('page-locked');
-                            window.onbeforeunload = function() {
-                                return 'Please wait while the participant is being added.';
-                            };
                         }
+                        
+                        // ONLY show loader if we reach here (no errors)
+                        const participantLoader = document.getElementById('participant-loader');
+                        if (participantLoader) {
+                            participantLoader.style.display = 'flex';
+                        }
+                        document.body.classList.add('page-locked');
+                        window.onbeforeunload = function() {
+                            return 'Please wait while the participant is being added.';
+                        };
                     });
                 }
             });

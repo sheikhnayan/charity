@@ -64,7 +64,7 @@ class User extends Authenticatable
 
     public function donations()
     {
-        return $this->hasMany(Donation::class);
+        return $this->hasMany(Donation::class)->where('status', 1);
     }
 
     /**
