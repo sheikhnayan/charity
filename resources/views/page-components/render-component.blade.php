@@ -4587,7 +4587,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
             <div class="col-md-12 mt-4">
                 <p class="lead text-center mt-3" style="color: {{ $style['color'] }} !important">
                     @php
-                        $count = App\Models\Donation::where('website_id',$check->id)->count();
+                        $count = App\Models\Donation::where('website_id',$check->id)->where('status', 1)->count();
                     @endphp
                     {{ $count }} donations have been made to this site
                 </p>
