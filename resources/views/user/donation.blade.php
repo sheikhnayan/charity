@@ -317,141 +317,143 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                 </tr>
                                             @else
                                                 @foreach ($data as $item)
-                                                    <tr>
-                                                        <td><input type="checkbox" class="row-check" value="{{ $item->id }}"></td>
-                                                        <td class="text-break"> {{ $item->transaction_id }} </td>
-                                                        <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
-                                                        @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->name ?? null}} {{ $item->donation->user->last_name ?? null}}</td>
-                                                        @elseif($item->type == 'general')
-                                                            <td>{{ $item->website->name }}</td>
-                                                        @elseif($item->type == 'sponsor')
-                                                            <td>{{ $item->name }}</td>
-                                                        @elseif($item->type == 'auction')
-                                                            <td>{{ $item->auction->title }}</td>
-                                                        @elseif($item->type == 'ticket')
-                                                            <td>@if ($item->ticket->details[0]->ticket)
-                                                                {{ $item->ticket->details[0]->ticket->name }}
-                                                                @else
-                                                                N/A
-                                                            @endif
+                                                    @if ($item->amount > 0)
+                                                        <tr>
+                                                            <td><input type="checkbox" class="row-check" value="{{ $item->id }}"></td>
+                                                            <td class="text-break"> {{ $item->transaction_id }} </td>
+                                                            <td>{{ $item->first_name ?? $item->name }} {{ $item->last_name }}</td>
+                                                            @if ($item->type == 'student')
+                                                                <td>{{ $item->donation->user->name ?? null}} {{ $item->donation->user->last_name ?? null}}</td>
+                                                            @elseif($item->type == 'general')
+                                                                <td>{{ $item->website->name }}</td>
+                                                            @elseif($item->type == 'sponsor')
+                                                                <td>{{ $item->name }}</td>
+                                                            @elseif($item->type == 'auction')
+                                                                <td>{{ $item->auction->title }}</td>
+                                                            @elseif($item->type == 'ticket')
+                                                                <td>@if ($item->ticket->details[0]->ticket)
+                                                                    {{ $item->ticket->details[0]->ticket->name }}
+                                                                    @else
+                                                                    N/A
+                                                                @endif
 
-                                                            </td>
-                                                            {{-- <td>{{ $item->ticket->details[0]->ticket->name }}</td> --}}
-                                                        @elseif ($item->type == 'investment')
-                                                            <td>{{ $item->investment->investor_name }}</td>
-                                                        @elseif ($item->type == 'product')
-                                                            <td>{{ $item->name }}</td>
-                                                        @endif
-                                                        @if ($item->type == 'student')
-                                                            <td>{{ $item->donation->user->group_name ?? null}}</td>
-                                                        @else
-                                                            <td></td>
-                                                        @endif
-                                                        @if ($item->type == 'investment')
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
-                                                            
-                                                        @else
-                                                        <td>${{ number_format($item->amount, 2) }}</td>
-                                                            
-                                                        @endif
-                                                        <td>
-                                                            @php
-                                                                // Calculate fee for Donation objects, use existing fee for Transaction objects
-                                                                if (isset($item->fee)) {
-                                                                    $fee = $item->fee;
-                                                                } else {
-                                                                    // For Donation objects, calculate fee based on website settings
-                                                                    $website = \App\Models\Website::find($item->website_id);
-                                                                    $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
-                                                                    $fee = ($item->amount / 100) * $processingFeePercentage;
-                                                                }
-                                                            @endphp
-                                                            ${{ number_format($fee, 2) }}
-                                                        </td>
-                                                        <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
-                                                        @if ($item->type == 'investment')
-                                                        <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
-                                                        @else
-                                                            
-                                                        <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
-                                                        @endif
-                                                        {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
-                                                        <td>
-                                                            @if ($item->type != 'sponsor')
-                                                            @if ($item->transaction_id)
-                                                                {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                                </td>
+                                                                {{-- <td>{{ $item->ticket->details[0]->ticket->name }}</td> --}}
+                                                            @elseif ($item->type == 'investment')
+                                                                <td>{{ $item->investment->investor_name }}</td>
+                                                            @elseif ($item->type == 'product')
+                                                                <td>{{ $item->name }}</td>
                                                             @endif
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $item->website->name }}</td>
-                                                        <td>{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}</td>
-                                                        <td>
-                                                            @if ($item->type == 'auction')
-                                                                Pending
-                                                            @elseif ($item->status == 1)
-                                                                Approved
+                                                            @if ($item->type == 'student')
+                                                                <td>{{ $item->donation->user->group_name ?? null}}</td>
                                                             @else
-                                                                Pending
+                                                                <td></td>
                                                             @endif
-                                                        </td>
-                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-info btn-sm view-btn"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#viewDonationModal"
-                                                                data-transaction="{{ $item->transaction_id }}"
-                                                                data-ip-address="{{ $item->ip_address ?? 'N/A' }}"
-                                                                data-first-name="{{ $item->first_name ?? $item->name }}"
-                                                                data-last-name="{{ $item->last_name }}"
-                                                                data-email="{{ $item->email }}"
-                                                                data-phone="{{ $item->phone }}"
-                                                                data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
-                                                                @if ($item->type == 'investment')
-                                                                data-gross="${{ number_format($item->amount, 2) }}"                                                                    
+                                                            @if ($item->type == 'investment')
+                                                            <td>${{ number_format($item->amount, 2) }}</td>
+                                                                
+                                                            @else
+                                                            <td>${{ number_format($item->amount, 2) }}</td>
+                                                                
+                                                            @endif
+                                                            <td>
+                                                                @php
+                                                                    // Calculate fee for Donation objects, use existing fee for Transaction objects
+                                                                    if (isset($item->fee)) {
+                                                                        $fee = $item->fee;
+                                                                    } else {
+                                                                        // For Donation objects, calculate fee based on website settings
+                                                                        $website = \App\Models\Website::find($item->website_id);
+                                                                        $processingFeePercentage = $website ? $website->getProcessingFee() : 2.9;
+                                                                        $fee = ($item->amount / 100) * $processingFeePercentage;
+                                                                    }
+                                                                @endphp
+                                                                ${{ number_format($fee, 2) }}
+                                                            </td>
+                                                            <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
+                                                            @if ($item->type == 'investment')
+                                                            <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
+                                                            @else
+                                                                
+                                                            <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
+                                                            @endif
+                                                            {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
+                                                            <td>
+                                                                @if ($item->type != 'sponsor')
+                                                                @if ($item->transaction_id)
+                                                                    {{ ctype_digit($item->transaction_id[0]) ? 'Authorize.net' : 'Stripe' }}
+                                                                @endif
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $item->website->name }}</td>
+                                                            <td>{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}</td>
+                                                            <td>
+                                                                @if ($item->type == 'auction')
+                                                                    Pending
+                                                                @elseif ($item->status == 1)
+                                                                    Approved
                                                                 @else
-                                                                data-gross="${{ number_format($item->amount, 2) }}"                                                                    
+                                                                    Pending
                                                                 @endif
-                                                                data-fee="${{ number_format($fee, 2) }}"
-                                                                data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
-                                                                data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
-                                                                data-website="{{ $item->website->name }}"
-                                                                data-type="{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}"
-                                                                data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
-                                                                data-timestamp="{{ $item->created_at->getTimestamp() }}"
-                                                                @if($item->type === 'investment' && $item->investment)
-                                                                    data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
-                                                                    data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"
-                                                                    data-investor-phone="{{ $item->investment->investor_phone ?? 'N/A' }}"
-                                                                    data-investor-type="{{ $item->investment->investor_type ?? 'N/A' }}"
-                                                                    data-share-quantity="{{ $item->investment->share_quantity ?? 'N/A' }}"
-                                                                    data-investment-amount="${{ number_format($item->investment->investment_amount ?? 0, 2) }}"
-                                                                    data-investment-notes="{{ $item->investment->notes ?? 'N/A' }}"
-                                                                    data-investor-data="{{ $item->investment->investor_data ? json_encode($item->investment->investor_data) : '{}' }}"
-                                                                @endif
-                                                                data-payment-first-name="{{ $item->payment_first_name ?? $item->name }}"
-                                                                data-payment-last-name="{{ $item->payment_last_name ?? $item->last_name }}"
-                                                                data-payment-phone="{{ $item->payment_phone ?? $item->phone }}"
-                                                                data-payment-email="{{ $item->payment_email ?? $item->email }}"
-                                                                data-payment-address="{{ $item->payment_address ?? $item->address }}"
-                                                                data-payment-city="{{ $item->payment_city ?? $item->city }}"
-                                                                data-payment-state="{{ $item->payment_state ?? $item->state }}"
-                                                                data-payment-country="{{ $item->payment_country ?? $item->country }}"
-                                                                data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
-                                                                data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
-                                                                data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
-                                                                @if ($item->type == 'investment')
-                                                                data-total-paid="${{ number_format($item->amount + $fee, 2) }}"
-                                                                @else
-                                                                data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
-                                                                @endif
-                
-                
-                                                                title="View">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
+                                                            </td>
+                                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}</td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-info btn-sm view-btn"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#viewDonationModal"
+                                                                    data-transaction="{{ $item->transaction_id }}"
+                                                                    data-ip-address="{{ $item->ip_address ?? 'N/A' }}"
+                                                                    data-first-name="{{ $item->first_name ?? $item->name }}"
+                                                                    data-last-name="{{ $item->last_name }}"
+                                                                    data-email="{{ $item->email }}"
+                                                                    data-phone="{{ $item->phone }}"
+                                                                    data-address="{{ $item->apartment }}, {{ $item->address }}, {{ $item->state }}, {{ $item->city }}, {{ $item->zip }} {{ $item->country }}"
+                                                                    @if ($item->type == 'investment')
+                                                                    data-gross="${{ number_format($item->amount, 2) }}"                                                                    
+                                                                    @else
+                                                                    data-gross="${{ number_format($item->amount, 2) }}"                                                                    
+                                                                    @endif
+                                                                    data-fee="${{ number_format($fee, 2) }}"
+                                                                    data-tip-amount="${{ number_format($item->tip_amount ?? 0, 2) }}"
+                                                                    data-status="{{ $item->type == 'auction' ? 'Pending' : ($item->status == 1 ? 'Approved' : 'Pending') }}"
+                                                                    data-website="{{ $item->website->name }}"
+                                                                    data-type="{{ $item->type == 'student' ? 'Donation' : ($item->type == 'general' ? 'General Donation' : ucfirst($item->type)) }}"
+                                                                    data-date="{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}"
+                                                                    data-timestamp="{{ $item->created_at->getTimestamp() }}"
+                                                                    @if($item->type === 'investment' && $item->investment)
+                                                                        data-investor-name="{{ $item->investment->investor_name ?? 'N/A' }}"
+                                                                        data-investor-email="{{ $item->investment->investor_email ?? 'N/A' }}"
+                                                                        data-investor-phone="{{ $item->investment->investor_phone ?? 'N/A' }}"
+                                                                        data-investor-type="{{ $item->investment->investor_type ?? 'N/A' }}"
+                                                                        data-share-quantity="{{ $item->investment->share_quantity ?? 'N/A' }}"
+                                                                        data-investment-amount="${{ number_format($item->investment->investment_amount ?? 0, 2) }}"
+                                                                        data-investment-notes="{{ $item->investment->notes ?? 'N/A' }}"
+                                                                        data-investor-data="{{ $item->investment->investor_data ? json_encode($item->investment->investor_data) : '{}' }}"
+                                                                    @endif
+                                                                    data-payment-first-name="{{ $item->payment_first_name ?? $item->name }}"
+                                                                    data-payment-last-name="{{ $item->payment_last_name ?? $item->last_name }}"
+                                                                    data-payment-phone="{{ $item->payment_phone ?? $item->phone }}"
+                                                                    data-payment-email="{{ $item->payment_email ?? $item->email }}"
+                                                                    data-payment-address="{{ $item->payment_address ?? $item->address }}"
+                                                                    data-payment-city="{{ $item->payment_city ?? $item->city }}"
+                                                                    data-payment-state="{{ $item->payment_state ?? $item->state }}"
+                                                                    data-payment-country="{{ $item->payment_country ?? $item->country }}"
+                                                                    data-payment-zip="{{ $item->payment_zip_code ?? $item->zip }}"
+                                                                    data-total-amount="${{ number_format($item->total_amount ?? $item->amount, 2) }}"
+                                                                    data-total-due="${{ number_format($item->total_due ?? 0, 2) }}"
+                                                                    @if ($item->type == 'investment')
+                                                                    data-total-paid="${{ number_format($item->amount + $fee, 2) }}"
+                                                                    @else
+                                                                    data-total-paid="${{ number_format($item->amount + $item->fee, 2) }}"
+                                                                    @endif
+                    
+                    
+                                                                    title="View">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                             @endif
                                         </tbody>
