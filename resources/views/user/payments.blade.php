@@ -989,7 +989,33 @@
             
             // Prevent form submission if there's a validation error
             form.addEventListener('submit', function(e) {
-                if (photoInput.classList.contains('is-invalid')) {
+                // Check if there's a file and validate it immediately
+                const file = photoInput.files[0];
+                let hasError = false;
+                
+                if (file) {
+                    // Check file size
+                    const maxSize = 5 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        hasError = true;
+                    }
+                    
+                    // Check file extension
+                    const fileName = file.name.toLowerCase();
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                    const fileExtension = fileName.split('.').pop();
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        hasError = true;
+                    }
+                    
+                    // Check MIME type
+                    const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                    if (!allowedTypes.includes(file.type)) {
+                        hasError = true;
+                    }
+                }
+                
+                if (hasError || photoInput.classList.contains('is-invalid')) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
