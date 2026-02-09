@@ -972,9 +972,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="modal_photo" class="form-label">Upload Photo</label>
-                        <input class="form-control" type="file" id="modal_photo" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
+                        <input class="form-control @error('photo') is-invalid @enderror" type="file" id="modal_photo" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
                         <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
-                        <div class="invalid-feedback" id="modal_photo_error" style="display: none;"></div>
+                        <div class="invalid-feedback" id="modal_photo_error" style="@error('photo') display: block; @else display: none; @enderror">@error('photo'){{ $message }}@enderror</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1007,6 +1007,35 @@
             });
         }
 
+        // Photo upload validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reopen modal if there are backend validation errors
+            @if($errors->has('photo') || $errors->has('first_name') || $errors->has('last_name') || $errors->has('teacher_id'))
+                var addStudentModal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+                addStudentModal.show();
+                
+                // Restore form values
+                @if(old('first_name'))
+                    document.getElementById('first_name').value = "{{ old('first_name') }}";
+                @endif
+                @if(old('last_name'))
+                    document.getElementById('last_name').value = "{{ old('last_name') }}";
+                @endif
+                @if(old('teacher_id'))
+                    document.getElementById('teacher_id').value = "{{ old('teacher_id') }}";
+                @endif
+                @if(old('goal'))
+                    document.getElementById('modal_goal').value = "{{ old('goal') }}";
+                @endif
+                @if(old('tshirt_size'))
+                    document.getElementById('modal_tshirt_size').value = "{{ old('tshirt_size') }}";
+                @endif
+                @if(old('description'))
+                    document.getElementById('modal_description').value = `{{ old('description') }}`;
+                @endif
+            @endif
+        });
+        
         // Photo upload validation
         const photoInput = document.getElementById('modal_photo');
         const photoError = document.getElementById('modal_photo_error');

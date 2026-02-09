@@ -774,6 +774,19 @@ class AdminController extends Controller
 
     public function addStudentByParent(Request $request)
     {
+        // Custom validation for file extension to catch HEIC and other unsupported formats
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            
+            if (!in_array($extension, $allowedExtensions)) {
+                return back()->withErrors([
+                    'photo' => "Unsupported file format (.{$extension}). Please upload JPG, JPEG, PNG, or GIF images only."
+                ])->withInput()->with('show_add_student_modal', true);
+            }
+        }
+        
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
