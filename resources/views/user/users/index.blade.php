@@ -109,6 +109,10 @@
 
                                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                                     <span class="text-dark fw-semibold">Filter:</span>
+                                    <a href="{{ route('users.manage-users.index') }}"
+                                       class="btn btn-sm {{ empty($filterType) ? 'btn-primary' : 'btn-outline-primary' }}">
+                                        All
+                                    </a>
                                     <a href="{{ route('users.manage-users.index', ['type' => 'participant']) }}"
                                        class="btn btn-sm {{ ($filterType ?? null) === 'participant' ? 'btn-primary' : 'btn-outline-primary' }}">
                                         Participants
