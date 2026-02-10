@@ -600,7 +600,7 @@
 
                         <div class="col-lg-9 d-flex flex-column justify-content-center">
                             <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
-                                {{ $data->name }}
+                                {{ $data->name }} {{ $data->last_name }}
                             </h2>
                             <span class="opacity-75 text-center text-lg-start mt-2"></span>
                             <div class="progress mt-3" role="progressbar"

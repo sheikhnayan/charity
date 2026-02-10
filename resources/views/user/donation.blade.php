@@ -1486,6 +1486,27 @@ body.tutorial-first-visit .introjs-skipbutton {
                         const photoInput = document.getElementById('modal_photo');
                         const photoError = document.getElementById('modal_photo_error');
                         const form = document.getElementById('addStudentForm');
+                        const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+                        let removeFileBtn = document.getElementById('removeFileBtn');
+                        
+                        // Create remove file button if not exists
+                        if (!removeFileBtn && photoInput) {
+                            removeFileBtn = document.createElement('button');
+                            removeFileBtn.id = 'removeFileBtn';
+                            removeFileBtn.type = 'button';
+                            removeFileBtn.className = 'btn btn-sm btn-danger ms-2';
+                            removeFileBtn.innerHTML = '<i class="fas fa-times me-1"></i>Remove File';
+                            removeFileBtn.style.display = 'none';
+                            removeFileBtn.addEventListener('click', function() {
+                                photoInput.value = '';
+                                photoInput.classList.remove('is-invalid');
+                                photoError.style.display = 'none';
+                                photoError.textContent = '';
+                                removeFileBtn.style.display = 'none';
+                                if (submitBtn) submitBtn.disabled = false;
+                            });
+                            photoInput.parentNode.appendChild(removeFileBtn);
+                        }
                         
                         if (photoInput && form) {
                             photoInput.addEventListener('change', function(e) {
@@ -1504,6 +1525,8 @@ body.tutorial-first-visit .introjs-skipbutton {
                                         photoError.style.display = 'block';
                                         photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
                                         e.target.value = '';
+                                        if (submitBtn) submitBtn.disabled = true;
+                                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
                                         return;
                                     }
                                     
@@ -1518,6 +1541,8 @@ body.tutorial-first-visit .introjs-skipbutton {
                                         photoError.style.display = 'block';
                                         photoError.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
                                         e.target.value = '';
+                                        if (submitBtn) submitBtn.disabled = true;
+                                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
                                         return;
                                     }
                                     
@@ -1528,8 +1553,18 @@ body.tutorial-first-visit .introjs-skipbutton {
                                         photoError.style.display = 'block';
                                         photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
                                         e.target.value = '';
+                                        if (submitBtn) submitBtn.disabled = true;
+                                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
                                         return;
                                     }
+                                    
+                                    // File is valid - enable submit button and hide remove button
+                                    if (submitBtn) submitBtn.disabled = false;
+                                    if (removeFileBtn) removeFileBtn.style.display = 'none';
+                                } else {
+                                    // No file selected - enable submit button (photo is optional)
+                                    if (submitBtn) submitBtn.disabled = false;
+                                    if (removeFileBtn) removeFileBtn.style.display = 'none';
                                 }
                             });
                             

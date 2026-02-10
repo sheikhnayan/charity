@@ -940,55 +940,90 @@
         const photoInput = document.getElementById('modal_photo');
         const photoError = document.getElementById('modal_photo_error');
         const form = document.getElementById('addStudentForm');
-        
-        if (photoInput && form) {
-            photoInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                
-                if (file) {
-                    // Clear previous errors only when a new file is selected
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            let removeFileBtn = document.getElementById('removeFileBtn');
+            
+            // Create remove file button if not exists
+            if (!removeFileBtn && photoInput) {
+                removeFileBtn = document.createElement('button');
+                removeFileBtn.id = 'removeFileBtn';
+                removeFileBtn.type = 'button';
+                removeFileBtn.className = 'btn btn-sm btn-danger ms-2';
+                removeFileBtn.innerHTML = '<i class="fas fa-times me-1"></i>Remove File';
+                removeFileBtn.style.display = 'none';
+                removeFileBtn.addEventListener('click', function() {
+                    photoInput.value = '';
                     photoInput.classList.remove('is-invalid');
                     photoError.style.display = 'none';
                     photoError.textContent = '';
-                    
-                    // Check file size (5MB = 5 * 1024 * 1024 bytes)
-                    const maxSize = 5 * 1024 * 1024;
-                    if (file.size > maxSize) {
-                        photoInput.classList.add('is-invalid');
-                        photoError.style.display = 'block';
-                        photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
-                        e.target.value = '';
-                        return;
-                    }
-                    
-                    // Get file extension
-                    const fileName = file.name.toLowerCase();
-                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-                    const fileExtension = fileName.split('.').pop();
-                    
-                    // Check file extension first (catches HEIC, WEBP, etc.)
-                    if (!allowedExtensions.includes(fileExtension)) {
-                        photoInput.classList.add('is-invalid');
-                        photoError.style.display = 'block';
-                        photoError.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
-                        e.target.value = '';
-                        return;
-                    }
-                    
-                    // Check file type (MIME type)
-                    const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
-                    if (!allowedTypes.includes(file.type)) {
-                        photoInput.classList.add('is-invalid');
-                        photoError.style.display = 'block';
-                        photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
-                        e.target.value = '';
-                        return;
-                    }
-                }
-            });
+                    removeFileBtn.style.display = 'none';
+                    if (submitBtn) submitBtn.disabled = false;
+                });
+                photoInput.parentNode.appendChild(removeFileBtn);
+            }
             
-            // Prevent form submission if there's a validation error
-            form.addEventListener('submit', function(e) {
+            if (photoInput && form) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    
+                    if (file) {
+                        // Clear previous errors only when a new file is selected
+                        photoInput.classList.remove('is-invalid');
+                        photoError.style.display = 'none';
+                        photoError.textContent = '';
+                        
+                        // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                        const maxSize = 5 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                            photoInput.classList.add('is-invalid');
+                            photoError.style.display = 'block';
+                            photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // Get file extension
+                        const fileName = file.name.toLowerCase();
+                        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                        const fileExtension = fileName.split('.').pop();
+                        
+                        // Check file extension first (catches HEIC, WEBP, etc.)
+                        if (!allowedExtensions.includes(fileExtension)) {
+                            photoInput.classList.add('is-invalid');
+                            photoError.style.display = 'block';
+                            photoError.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // Check file type (MIME type)
+                        const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                        if (!allowedTypes.includes(file.type)) {
+                            photoInput.classList.add('is-invalid');
+                            photoError.style.display = 'block';
+                            photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // File is valid - enable submit button and hide remove button
+                        if (submitBtn) submitBtn.disabled = false;
+                        if (removeFileBtn) removeFileBtn.style.display = 'none';
+                    } else {
+                        // No file selected - enable submit button (photo is optional)
+                        if (submitBtn) submitBtn.disabled = false;
+                        if (removeFileBtn) removeFileBtn.style.display = 'none';
+                    }
+                });
+                
+                // Prevent form submission if there's a validation error
+                form.addEventListener('submit', function(e) {
                 // Check if there's a file and validate it immediately
                 const file = photoInput.files[0];
                 let hasError = false;
@@ -1055,6 +1090,6 @@
             });
         }
     });
-</script>
+    </script>
 
 @endsection

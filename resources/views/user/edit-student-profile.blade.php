@@ -659,6 +659,29 @@
             const photoInput = document.getElementById('photo-image-file');
             const photoError = document.getElementById('photo_error');
             const form = document.getElementById('editStudentForm');
+            const editSubmitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            let editRemoveFileBtn = document.getElementById('removeFileBtn');
+            
+            // Create remove file button if not exists
+            if (!editRemoveFileBtn && photoInput) {
+                editRemoveFileBtn = document.createElement('button');
+                editRemoveFileBtn.id = 'removeFileBtn';
+                editRemoveFileBtn.type = 'button';
+                editRemoveFileBtn.className = 'btn btn-sm btn-danger ms-2';
+                editRemoveFileBtn.innerHTML = '<i class="fas fa-times me-1"></i>Remove File';
+                editRemoveFileBtn.style.display = 'none';
+                editRemoveFileBtn.addEventListener('click', function() {
+                    photoInput.value = '';
+                    photoInput.classList.remove('is-invalid');
+                    if (photoError) {
+                        photoError.style.display = 'none';
+                        photoError.textContent = '';
+                    }
+                    editRemoveFileBtn.style.display = 'none';
+                    if (editSubmitBtn) editSubmitBtn.disabled = false;
+                });
+                photoInput.parentNode.appendChild(editRemoveFileBtn);
+            }
             
             if (photoInput && form) {
                 photoInput.addEventListener('change', function(e) {
@@ -681,6 +704,8 @@
                                 photoError.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
                             }
                             e.target.value = '';
+                            if (editSubmitBtn) editSubmitBtn.disabled = true;
+                            if (editRemoveFileBtn) editRemoveFileBtn.style.display = 'inline-block';
                             return;
                         }
                         
@@ -697,6 +722,8 @@
                                 photoError.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
                             }
                             e.target.value = '';
+                            if (editSubmitBtn) editSubmitBtn.disabled = true;
+                            if (editRemoveFileBtn) editRemoveFileBtn.style.display = 'inline-block';
                             return;
                         }
                         
@@ -709,8 +736,18 @@
                                 photoError.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
                             }
                             e.target.value = '';
+                            if (editSubmitBtn) editSubmitBtn.disabled = true;
+                            if (editRemoveFileBtn) editRemoveFileBtn.style.display = 'inline-block';
                             return;
                         }
+                        
+                        // File is valid - enable submit button and hide remove button
+                        if (editSubmitBtn) editSubmitBtn.disabled = false;
+                        if (editRemoveFileBtn) editRemoveFileBtn.style.display = 'none';
+                    } else {
+                        // No file selected - enable submit button (photo is optional)
+                        if (editSubmitBtn) editSubmitBtn.disabled = false;
+                        if (editRemoveFileBtn) editRemoveFileBtn.style.display = 'none';
                     }
                 });
                 
