@@ -552,9 +552,6 @@
                             participantLoader.style.display = 'flex';
                         }
                         document.body.classList.add('page-locked');
-                        window.onbeforeunload = function() {
-                            return 'Please wait while the participant is being added.';
-                        };
                     });
                 }
             });

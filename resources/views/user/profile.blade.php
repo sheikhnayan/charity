@@ -660,6 +660,171 @@
             
             document.body.removeChild(textarea);
         }
+        
+        // Profile photo validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePhotoInput = document.getElementById('photo-image-file');
+            const profileForm = profilePhotoInput ? profilePhotoInput.closest('form') : null;
+            const submitBtn = profileForm ? profileForm.querySelector('button[type="submit"]') : null;
+            let removeFileBtn = document.getElementById('removeProfileFileBtn');
+            
+            // Create remove file button if not exists
+            if (!removeFileBtn && profilePhotoInput) {
+                removeFileBtn = document.createElement('button');
+                removeFileBtn.id = 'removeProfileFileBtn';
+                removeFileBtn.type = 'button';
+                removeFileBtn.className = 'btn btn-sm btn-danger ms-2';
+                removeFileBtn.innerHTML = '<i class="fas fa-times me-1"></i>Remove File';
+                removeFileBtn.style.display = 'none';
+                removeFileBtn.addEventListener('click', function() {
+                    profilePhotoInput.value = '';
+                    profilePhotoInput.classList.remove('is-invalid');
+                    const errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+                    if (errorDiv && !errorDiv.classList.contains('permanent-error')) {
+                        errorDiv.style.display = 'none';
+                        errorDiv.textContent = '';
+                    }
+                    removeFileBtn.style.display = 'none';
+                    if (submitBtn) submitBtn.disabled = false;
+                });
+                profilePhotoInput.parentNode.appendChild(removeFileBtn);
+            }
+            
+            if (profilePhotoInput && profileForm) {
+                profilePhotoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    let errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+                    
+                    // Create error div if it doesn't exist
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback d-block';
+                        errorDiv.style.display = 'none';
+                        profilePhotoInput.parentNode.appendChild(errorDiv);
+                    }
+                    
+                    if (file) {
+                        // Clear previous errors only when a new file is selected
+                        profilePhotoInput.classList.remove('is-invalid');
+                        if (!errorDiv.classList.contains('permanent-error')) {
+                            errorDiv.style.display = 'none';
+                            errorDiv.textContent = '';
+                        }
+                        
+                        // Check file size (5MB max)
+                        const maxSize = 5 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                            profilePhotoInput.classList.add('is-invalid');
+                            errorDiv.style.display = 'block';
+                            errorDiv.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // Get file extension
+                        const fileName = file.name.toLowerCase();
+                        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                        const fileExtension = fileName.split('.').pop();
+                        
+                        // Check file extension first (catches HEIC, WEBP, etc.)
+                        if (!allowedExtensions.includes(fileExtension)) {
+                            profilePhotoInput.classList.add('is-invalid');
+                            errorDiv.style.display = 'block';
+                            errorDiv.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // Check file type (MIME type)
+                        const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                        if (!allowedTypes.includes(file.type)) {
+                            profilePhotoInput.classList.add('is-invalid');
+                            errorDiv.style.display = 'block';
+                            errorDiv.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                            e.target.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                            return;
+                        }
+                        
+                        // File is valid - enable submit button and hide remove button
+                        if (submitBtn) submitBtn.disabled = false;
+                        if (removeFileBtn) removeFileBtn.style.display = 'none';
+                    } else {
+                        // No file selected - enable submit button (photo is optional)
+                        if (submitBtn) submitBtn.disabled = false;
+                        if (removeFileBtn) removeFileBtn.style.display = 'none';
+                    }
+                });
+                
+                // Prevent form submission if there's a validation error
+                profileForm.addEventListener('submit', function(e) {
+                    const file = profilePhotoInput.files[0];
+                    let hasError = false;
+                    let errorMessage = '';
+                    
+                    if (file) {
+                        // Check file size
+                        const maxSize = 5 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                            hasError = true;
+                            errorMessage = 'File size exceeds 5MB. Please choose a smaller image.';
+                        }
+                        
+                        // Check file extension
+                        const fileName = file.name.toLowerCase();
+                        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                        const fileExtension = fileName.split('.').pop();
+                        if (!hasError && !allowedExtensions.includes(fileExtension)) {
+                            hasError = true;
+                            errorMessage = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                        }
+                        
+                        // Check MIME type
+                        if (!hasError) {
+                            const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                            if (!allowedTypes.includes(file.type)) {
+                                hasError = true;
+                                errorMessage = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                            }
+                        }
+                    }
+                    
+                    // Also check if input already has invalid class
+                    if (!hasError && profilePhotoInput.classList.contains('is-invalid')) {
+                        hasError = true;
+                        errorMessage = 'Please fix the file upload error before submitting.';
+                    }
+                    
+                    if (hasError) {
+                        // PREVENT submission completely
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        
+                        // Show error message
+                        profilePhotoInput.classList.add('is-invalid');
+                        let errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback d-block';
+                            profilePhotoInput.parentNode.appendChild(errorDiv);
+                        }
+                        if (!errorDiv.classList.contains('permanent-error')) {
+                            errorDiv.style.display = 'block';
+                            errorDiv.textContent = errorMessage;
+                        }
+                        profilePhotoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        return false;
+                    }
+                });
+            }
+        });
         </script>
         
         <!-- Share Modal -->
@@ -913,7 +1078,7 @@
 
 <!-- Add Student Modal -->
 @if(Auth::user()->role == 'parents')
-<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+<div class="modal fade" style="margin-top: 90px;" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="addStudentForm" action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">
@@ -1196,9 +1361,6 @@
                     participantLoader.style.display = 'flex';
                 }
                 document.body.classList.add('page-locked');
-                window.onbeforeunload = function() {
-                    return 'Please wait while the participant is being added.';
-                };
             });
         }
     });

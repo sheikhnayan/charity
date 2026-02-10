@@ -577,7 +577,7 @@
                     </a>
                 </div>
             </div>
-            <script>
+            
 
             <script>
             // Payment loader helpers shared by all payment methods
@@ -616,6 +616,8 @@
                 }
             }
             </script>
+
+            <script>
                 function updateNavbarHeights() {
                     const navbar = document.querySelector('.navbar');
                     const contactTopbar = document.querySelector('.contact-topbar');
@@ -673,10 +675,16 @@
                                             ? asset('/uploads/' . $auctionItem->images[0]->image) 
                                             : null;
                                     } elseif ($item['type'] === 'student' || $item['type'] === 'donation') {
-                                        // Student/Donation: use website logo
-                                        $imagePath = $check && $check->user && $check->user->setting && $check->user->setting->logo
-                                            ? asset(\App\Models\User::where('id',$item['id'])->first()->photo)
+                                        // Student/Donation: use student photo with fallback to website logo
+                                        $student = \App\Models\User::where('id', $item['id'])->first();
+                                        $studentPhoto = $student ? $student->photo : null;
+                                        $websiteLogo = $check && $check->user && $check->user->setting && $check->user->setting->logo
+                                            ? '/uploads/' . $check->user->setting->logo
                                             : null;
+                                        
+                                        $imagePath = $studentPhoto && file_exists(public_path($studentPhoto))
+                                            ? asset($studentPhoto)
+                                            : ($websiteLogo ? asset($websiteLogo) : null);
                                     } elseif ($item['type'] === 'product') {
                                         // Product: fetch from database
                                         $product = \App\Models\Ticket::find($item['id']);

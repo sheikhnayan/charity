@@ -687,31 +687,7 @@
               </a>
             </div>
 
-            <div class="navbar-nav-right d-flex align-items-center justify-content-between w-100" id="navbar-collapse">
-              <!-- Left Side: Sidebar Toggle & Welcome -->
-              <div class="d-flex align-items-center gap-3">
-                <button id="sidebarToggle" class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
-                  <i class="bx bx-menu"></i>
-                </button>
-                <div>
-                  <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
-                  <small style="color: rgba(0,0,0,0.5)">Welcome back — insights updated</small>
-                </div>
-              </div>
-
-              <!-- Right Side: Theme Controls -->
-              <div class="d-flex align-items-center gap-2">
-                <select id="themeSelect" class="form-select form-select-sm" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;width:auto;">
-                  <option value="theme-purple">Purple</option>
-                  <option value="theme-cyan">Cyan</option>
-                  <option value="theme-amber">Amber</option>
-                  <option value="theme-emerald">Emerald</option>
-                </select>
-                <button id="darkToggle" class="btn btn-sm" title="Toggle dark mode" style="background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2);padding:8px 12px;border-radius:8px;">
-                  <i class="bx bx-moon"></i>
-                </button>
-              </div>
-            </div>
+ 
           </nav>
 
           <!-- / Navbar -->
@@ -878,7 +854,7 @@
 
     <!-- Add Participant Modal (Parents) - Available on All Pages -->
     @if(Auth::user() && Auth::user()->role === 'parents')
-    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addStudentModal" tabindex="-1" style="margin-top: 90px;" aria-labelledby="addStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">
