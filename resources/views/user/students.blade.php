@@ -109,7 +109,7 @@
                         <div class="row">
                             <div class="col-lg">
                                 <div class="card-shadow-primary p-4 card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
-
+                                    <div class="table-responsive" style="overflow-x: auto;">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -192,6 +192,7 @@
                                             @endif
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
