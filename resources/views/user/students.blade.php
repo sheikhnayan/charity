@@ -171,11 +171,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if ($item->role != 'parents' || $item->role == 'individual')
-                                                            ${{ number_format($item->website->setting->goal ?? 0, 2) }}
-                                                            @else
                                                             ${{ number_format($item->goal ?? 0, 2) }}
-                                                            @endif
                                                         </td>
                                                         @if(Auth::user()->role == 'parents')
                                                         <td>

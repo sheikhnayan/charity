@@ -33,6 +33,10 @@
     .paginate_buttons a {
         color: #000 !important;
     }
+
+    #DataTables_Table_0_filter label {
+        color: #000 !important;
+    }
 </style>
 
 <!-- Content wrapper -->
@@ -107,25 +111,35 @@
                                     $isRoleUser = auth()->user() && auth()->user()->role === 'user';
                                 @endphp
 
-                                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                                    <span class="text-dark fw-semibold">Filter:</span>
-                                    <a href="{{ route('users.manage-users.index') }}"
-                                       class="btn btn-sm {{ empty($filterType) ? 'btn-primary' : 'btn-outline-primary' }}">
-                                        All
-                                    </a>
-                                    <a href="{{ route('users.manage-users.index', ['type' => 'participant']) }}"
-                                       class="btn btn-sm {{ ($filterType ?? null) === 'participant' ? 'btn-primary' : 'btn-outline-primary' }}">
-                                        Participants
-                                    </a>
-                                    <a href="{{ route('users.manage-users.index', ['type' => 'parent']) }}"
-                                       class="btn btn-sm {{ ($filterType ?? null) === 'parent' ? 'btn-primary' : 'btn-outline-primary' }}">
-                                        Parents
-                                    </a>
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="text-dark fw-semibold">Filter:</span>
+                                        <a href="{{ route('users.manage-users.index') }}"
+                                           class="btn btn-sm {{ empty($filterType) ? 'btn-primary' : 'btn-outline-primary' }}">
+                                            All
+                                        </a>
+                                        <a href="{{ route('users.manage-users.index', ['type' => 'participant']) }}"
+                                           class="btn btn-sm {{ ($filterType ?? null) === 'participant' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                            Participants
+                                        </a>
+                                        <a href="{{ route('users.manage-users.index', ['type' => 'parent']) }}"
+                                           class="btn btn-sm {{ ($filterType ?? null) === 'parent' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                            Parents
+                                        </a>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-sm btn-success" id="exportSelectedBtn" disabled>
+                                            <i class="fas fa-file-excel me-1"></i> Export Selected
+                                        </button>
+                                    </div>
                                 </div>
                                 
-                                <table class="table table-striped">
+                                <table class="table table-striped" id="usersTable">
                                     <thead>
                                         <tr>
+                                            <th style="width: 40px;">
+                                                <input type="checkbox" id="selectAll" class="form-check-input">
+                                            </th>
                                             <th>ID</th>
                                             <th>Name</th>
                                             <th>Email</th>
@@ -147,11 +161,14 @@
                                     <tbody>
                                         @if ($users->isEmpty())
                                             <tr>
-                                                <td colspan="{{ $isRoleUser ? 13 : 7 }}" class="text-center">No users found.</td>
+                                                <td colspan="{{ $isRoleUser ? 14 : 8 }}" class="text-center">No users found.</td>
                                             </tr>
                                         @else
                                             @foreach ($users as $user)
-                                                <tr>
+                                                <tr data-user-id="{{ $user->id }}">
+                                                    <td>
+                                                        <input type="checkbox" class="form-check-input row-checkbox" value="{{ $user->id }}">
+                                                    </td>
                                                     <td>{{ $user->id }}</td>
                                                     <td>
                                                         <a href="{{ route('admin.user.profile', $user->id) }}" class="text-decoration-none fw-bold text-primary">
@@ -231,12 +248,101 @@
         <script>
             $(document).ready(function() {
                 // Initialize DataTable with export/import buttons
-                let table = new DataTable('.table', {
+                let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
+                    ],
                     buttons: [
                         'copy', 'csv', 'excel', 'pdf', 'print'
                     ]
+                });
+
+                // Select All functionality
+                $('#selectAll').on('click', function() {
+                    const isChecked = $(this).prop('checked');
+                    $('.row-checkbox:visible').prop('checked', isChecked);
+                    updateExportButton();
+                });
+
+                // Individual checkbox change
+                $(document).on('change', '.row-checkbox', function() {
+                    updateSelectAll();
+                    updateExportButton();
+                });
+
+                // Update Select All checkbox state
+                function updateSelectAll() {
+                    const totalVisible = $('.row-checkbox:visible').length;
+                    const totalChecked = $('.row-checkbox:visible:checked').length;
+                    $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
+                }
+
+                // Update export button state
+                function updateExportButton() {
+                    const checkedCount = $('.row-checkbox:checked').length;
+                    $('#exportSelectedBtn').prop('disabled', checkedCount === 0);
+                    if (checkedCount > 0) {
+                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected (' + checkedCount + ')');
+                    } else {
+                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected');
+                    }
+                }
+
+                // Export selected rows
+                $('#exportSelectedBtn').on('click', function() {
+                    const selectedIds = [];
+                    $('.row-checkbox:checked').each(function() {
+                        selectedIds.push($(this).val());
+                    });
+
+                    if (selectedIds.length === 0) {
+                        alert('Please select at least one user to export.');
+                        return;
+                    }
+
+                    // Create CSV content
+                    let csvContent = 'ID,Name,Email,Website,Role,Status';
+                    @if($isRoleUser)
+                        csvContent = 'ID,Name,Email,Website,Parent Email,Teacher,Shirt Size,Amount Raised,Goal,Status';
+                    @endif
+                    csvContent += '\n';
+
+                    selectedIds.forEach(function(id) {
+                        const row = $('tr[data-user-id="' + id + '"]');
+                        const cells = row.find('td');
+                        
+                        const rowData = [];
+                        // Skip first cell (checkbox) and last cell (actions)
+                        for (let i = 1; i < cells.length - 1; i++) {
+                            let cellText = $(cells[i]).text().trim();
+                            // Escape quotes and wrap in quotes if contains comma
+                            cellText = cellText.replace(/"/g, '""');
+                            if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
+                                cellText = '"' + cellText + '"';
+                            }
+                            rowData.push(cellText);
+                        }
+                        csvContent += rowData.join(',') + '\n';
+                    });
+
+                    // Create download link
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'selected_users_' + new Date().getTime() + '.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+                // Update checkboxes after DataTable draw
+                table.on('draw', function() {
+                    updateSelectAll();
+                    updateExportButton();
                 });
             });
         </script>
