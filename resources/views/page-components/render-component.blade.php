@@ -6171,13 +6171,6 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                         <div class="container fade-in">
                             <form action="/login" method="POST" id="loginForm">
                                 @csrf
-                                @php
-                                    // Check if current page is investment type
-                                    $isInvestmentPage = isset($data) && isset($data->page_type) && ($data->page_type === 'investment' || $data->page_type === 'fundraiser');
-                                @endphp
-                                @if($isInvestmentPage)
-                                    <input type="hidden" name="redirect_to" value="/users/profile">
-                                @endif
                                 <div class="row justify-content-center form-row">
                                     <div class="col-md-4">
                                         <div class="modern-form-group">

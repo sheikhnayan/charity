@@ -16,6 +16,9 @@ if (isset($state['components'])) {
     
     <!-- Cart Queue Stub - Initialize before any scripts use addToCart -->
     <script>
+      // Flag for auth modal redirect detection
+      window._isInvestmentPage = true;
+      
       if (!window._cartQueue) {
         window._cartQueue = [];
       }

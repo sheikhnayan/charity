@@ -472,16 +472,21 @@
                 // Check if there's an intended URL to redirect to (from payment pages)
                 const intendedUrl = '{{ session("url.intended") }}';
                 
+                // Check if we're on an investment/fundraiser page via flag set by page-investment.blade.php
+                const isInvestmentPage = window._isInvestmentPage === true;
+                
                 // Redirect after a short delay
                 setTimeout(async () => {
                     let redirectUrl = null;
                     
-                    // Priority: checkout redirect > intended URL
+                    // Priority: checkout redirect > intended URL > investment page redirect
                     if (checkoutRedirectUrl) {
                         redirectUrl = checkoutRedirectUrl;
                         window.checkoutRedirectUrl = null; // Clear the flag
                     } else if (intendedUrl && intendedUrl !== '') {
                         redirectUrl = intendedUrl;
+                    } else if (isInvestmentPage) {
+                        redirectUrl = '/users/profile';
                     }
                     
                     if (redirectUrl) {
