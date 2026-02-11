@@ -180,13 +180,15 @@
 
       /* Mobile spacing for navbar title area */
       @media (max-width: 768px) {
+        .layout-navbar {
+          background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+          border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+          color: #fff !important;
+        }
+
         .layout-navbar.container-xxl {
           padding-left: 12px !important;
           padding-right: 12px !important;
-        }
-
-        .layout-navbar {
-          color: #fff !important;
         }
 
         .layout-navbar .nav-item .nav-link,
@@ -697,7 +699,7 @@
         <div class="layout-page">
           <!-- Navbar -->
 
-          <nav class="layout-navbar container-xxl navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar" style="background: linear-gradient(135deg, var(--primary), var(--accent)) !important; border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05);">
             <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
               <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
                 <i class="icon-base bx bx-menu icon-md"></i>
