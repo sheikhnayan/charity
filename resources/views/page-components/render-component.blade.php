@@ -6604,34 +6604,34 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         <input type="hidden" name="register_as" value="parents">
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="first_name" class="form-label">PARENT/GUARDIAN FIRST NAME<span class="required-asterisk">*</span></label>
+                                                <label for="first_name" class="form-label">Parent/Guardian First Name<span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="first_name" name="name">
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="last_name" class="form-label">PARENT/GUARDIAN LAST NAME<span class="required-asterisk">*</span></label>
+                                                <label for="last_name" class="form-label">Parent/Guardian Last Name<span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="last_name" name="last_name">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="email" class="form-label">PARENT/GUARDIAN EMAIL ADDRESS<span class="required-asterisk">*</span></label>
+                                                <label for="email" class="form-label">Parent/Guardian Email Address<span class="required-asterisk">*</span></label>
                                                 <input type="email" class="form-control" id="email" name="email">
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="confirm_email" class="form-label">CONFIRM PARENT/GUARDIAN EMAIL ADDRESS<span class="required-asterisk">*</span></label>
+                                                <label for="confirm_email" class="form-label">Confirm Parent/Guardian Email Address<span class="required-asterisk">*</span></label>
                                                 <input type="email" class="form-control" id="confirm_email" name="confirm_email">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
                                             <div class="col-md-4">
-                                                <label for="password" class="form-label">PARENT/GUARDIAN PASSWORD<span class="required-asterisk">*</span></label>
+                                                <label for="password" class="form-label">Parent/Guardian Password<span class="required-asterisk">*</span></label>
                                                 <div class="password-input-wrapper">
                                                     <input type="password" class="form-control" id="password" name="password">
                                                     <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('password')"><i class="fa-solid fa-eye"></i></button>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="confirm_password" class="form-label">CONFIRM PARENT/GUARDIAN PASSWORD<span class="required-asterisk">*</span></label>
+                                                <label for="confirm_password" class="form-label">Confirm Parent/Guardian Password<span class="required-asterisk">*</span></label>
                                                 <div class="password-input-wrapper">
                                                     <input type="password" class="form-control" id="confirm_password" name="confirm_password">
                                                     <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirm_password')"><i class="fa-solid fa-eye"></i></button>
