@@ -1043,7 +1043,12 @@ class AdminController extends Controller
             
             DB::commit();
             
-            return redirect()->route('admin.student')->with('success', 'User and all related data deleted successfully');
+            // Redirect based on the role of the person deleting
+            if (Auth::user()->role === 'user') {
+                return redirect()->route('users.manage-users.index')->with('success', 'User and all related data deleted successfully');
+            } else {
+                return redirect()->route('admin.student')->with('success', 'User and all related data deleted successfully');
+            }
             
         } catch (\Exception $e) {
             DB::rollBack();

@@ -212,9 +212,14 @@
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         @if ($user->status != 1)
-                                                            <a href="/admins/student/approve/{{ $user->id }}" class="btn btn-sm btn-success" title="Approve">
+                                                            <a href="/admins/student/approve/{{ $user->id }}" class="btn btn-sm btn-success me-1" title="Approve">
                                                                 <i class="fas fa-check"></i>
                                                             </a>
+                                                        @endif
+                                                        @if(auth()->user()->role === 'user' && in_array($user->role, ['individual', 'parents']))
+                                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ $user->id }}" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -230,6 +235,68 @@
             </div>
         </div>
         <!-- / Content -->
+
+        {{-- Delete User Modals --}}
+        @foreach ($users as $user)
+            @if(auth()->user()->role === 'user' && in_array($user->role, ['individual', 'parents']))
+            <div class="modal fade" id="deleteUserModal{{ $user->id }}" tabindex="-1" aria-labelledby="deleteUserModalLabel{{ $user->id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="deleteUserModalLabel{{ $user->id }}">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Warning:</strong> This action cannot be undone!
+                            </div>
+                            
+                            @if($user->role === 'parents')
+                                <p class="mb-3"><strong>Deleting this parent will:</strong></p>
+                                <ul class="mb-3">
+                                    <li>Delete all students (participants) under this parent</li>
+                                    <li>Delete all donations received by those students</li>
+                                    <li>Delete all transactions related to those donations</li>
+                                    <li>Delete all donations and transactions for this parent</li>
+                                </ul>
+                            @else
+                                <p class="mb-3"><strong>Deleting this student will:</strong></p>
+                                <ul class="mb-3">
+                                    <li>Delete all donations received by this student</li>
+                                    <li>Delete all transactions related to those donations</li>
+                                </ul>
+                            @endif
+                            
+                            @if($user->donations->count() > 0)
+                                <div class="alert alert-info">
+                                    <strong>{{ $user->donations->count() }} donation record(s) will be deleted</strong>
+                                    <br>
+                                    <small>Total amount: ${{ number_format($user->donations->sum('amount') + $user->donations->sum('tip_amount'), 2) }}</small>
+                                </div>
+                            @endif
+                            
+                            <p class="mb-0">Are you sure you want to delete <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                            <form action="{{ route('admin.user.delete', $user->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash me-2"></i>Yes, Delete Permanently
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        @endforeach
 
         <!-- Include DataTables and jQuery CDN -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
