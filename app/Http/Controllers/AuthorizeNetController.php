@@ -551,7 +551,7 @@ class AuthorizeNetController extends Controller
                 $this->trackPaymentFunnel('failed', $type, $amount, null, 'Payment failed - Response error');
                 
                 // dd($response);
-                return back()->with('error', "Payment failed");
+                return back()->with('error', "Oops! This payment was declined or entered incorrectly. Please review your card information and try again, or use another card.");
             }
         } else {
             // Track payment failure
@@ -561,7 +561,7 @@ class AuthorizeNetController extends Controller
             
             // dd($response);
                 // dd($response);
-            return back()->with('error', "Payment failed ");
+            return back()->with('error', "Oops! This payment was declined or entered incorrectly. Please review your card information and try again, or use another card.");
         }
 
     }
