@@ -28,6 +28,11 @@ class AuthController extends Controller
                     return redirect('login')->with('error', 'Your account is pending approval. Please wait for administrator approval before logging in.');
                 }
                 
+                // Check if redirect_to parameter is provided (e.g., from page-investment)
+                if ($request->has('redirect_to') && $request->redirect_to) {
+                    return redirect($request->redirect_to)->with('success', 'Login successful');
+                }
+                
                 if ($user->role == 'admin') {
                     return redirect()->intended('/admins')->with('success', 'Login successful');
                 } else {
