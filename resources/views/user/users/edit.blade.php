@@ -72,6 +72,7 @@
                             @error('roles')<div class="text-danger">{{ $message }}</div>@enderror
                         </div>
                     @endif
+                    {{ $user->role }}
 
                     @if($user->role === 'student')
                     <div id="student-fields" class="mb-3">
