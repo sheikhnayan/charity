@@ -846,6 +846,10 @@ body.tutorial-first-visit .introjs-skipbutton {
                     let table = new DataTable('.table', {
                         dom: 'Bfrtip',
                         pageLength: 25,
+                        language: {
+                            search: 'Search',
+                            searchPlaceholder: ''
+                        },
                         buttons: [
                             {
                                 extend: 'csv',

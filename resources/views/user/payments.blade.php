@@ -466,6 +466,17 @@
                 .dataTables_wrapper .dataTables_paginate .paginate_button {
                     color: #000 !important;
                 }
+                
+        .dataTables_filter {
+            margin-bottom: 15px;
+        }
+        
+        .dataTables_filter input {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
     </style>
     <!-- Date Range Picker CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -491,6 +502,10 @@
             let table = new DataTable('.table', {
                 dom: 'Bfrtip',
                 pageLength: 25,
+                language: {
+                    search: 'Search',
+                    searchPlaceholder: ''
+                },
                 buttons: [
                     {
                         extend: 'csv',
