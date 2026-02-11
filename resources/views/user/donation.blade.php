@@ -766,6 +766,22 @@ body.tutorial-first-visit .introjs-skipbutton {
                 .dataTables_wrapper .dataTables_paginate .paginate_button {
                     color: #000 !important;
                 }
+                
+                .dataTables_filter {
+                    margin-bottom: 15px;
+                }
+                
+                .dataTables_filter input {
+                    margin-left: 10px;
+                    padding: 5px 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                }
+                
+                #DataTables_Table_0_filter label {
+                    color: #000 !important;
+                }
+                
                 .page-locked {
                     pointer-events: none;
                     user-select: none;

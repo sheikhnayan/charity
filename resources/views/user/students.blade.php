@@ -45,6 +45,10 @@
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
+#DataTables_Table_0_filter label {
+  color: #000 !important;
+}
 </style>
     <!-- Content wrapper -->
     <div class="content-wrapper">

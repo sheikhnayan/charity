@@ -477,6 +477,10 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+        
+        #DataTables_Table_0_filter label {
+            color: #000 !important;
+        }
     </style>
     <!-- Date Range Picker CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
