@@ -94,15 +94,13 @@ class UserManagementController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $selectedRoles = $request->input('roles', []);
-        $hasStudentRole = in_array('student', $selectedRoles);
+        $hasStudentRole = $user->role === 'individual';
 
         $rules = [
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6|confirmed',
-            'roles' => 'required|array|min:1',
             'goal' => 'nullable|numeric|min:0',
             'tshirt_size' => 'nullable|string|max:50',
             'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,pjpeg|max:5120',

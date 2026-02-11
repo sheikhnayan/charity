@@ -50,7 +50,7 @@
                                 <img src="{{ asset($user->photo) }}" width="120" alt="Profile photo" style="border-radius: 8px;">
                             </div>
                         @endif
-                        <input class="form-control @error('photo') is-invalid @enderror" type="file" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
+                        <input class="form-control @error('photo') is-invalid @enderror" type="file" id="photo-image-file" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
                         @error('photo')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
                     </div>
@@ -129,5 +129,156 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Profile photo validation (matches parents portal behavior)
+    document.addEventListener('DOMContentLoaded', function() {
+        const profilePhotoInput = document.getElementById('photo-image-file');
+        const profileForm = profilePhotoInput ? profilePhotoInput.closest('form') : null;
+        const submitBtn = profileForm ? profileForm.querySelector('button[type="submit"]') : null;
+        let removeFileBtn = document.getElementById('removeProfileFileBtn');
+
+        if (!removeFileBtn && profilePhotoInput) {
+            removeFileBtn = document.createElement('button');
+            removeFileBtn.id = 'removeProfileFileBtn';
+            removeFileBtn.type = 'button';
+            removeFileBtn.className = 'btn btn-sm btn-danger ms-2';
+            removeFileBtn.innerHTML = '<i class="fas fa-times me-1"></i>Remove File';
+            removeFileBtn.style.display = 'none';
+            removeFileBtn.addEventListener('click', function() {
+                profilePhotoInput.value = '';
+                profilePhotoInput.classList.remove('is-invalid');
+                const errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+                if (errorDiv && !errorDiv.classList.contains('permanent-error')) {
+                    errorDiv.style.display = 'none';
+                    errorDiv.textContent = '';
+                }
+                removeFileBtn.style.display = 'none';
+                if (submitBtn) submitBtn.disabled = false;
+            });
+            profilePhotoInput.parentNode.appendChild(removeFileBtn);
+        }
+
+        if (profilePhotoInput && profileForm) {
+            profilePhotoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                let errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-block';
+                    errorDiv.style.display = 'none';
+                    profilePhotoInput.parentNode.appendChild(errorDiv);
+                }
+
+                if (file) {
+                    profilePhotoInput.classList.remove('is-invalid');
+                    if (!errorDiv.classList.contains('permanent-error')) {
+                        errorDiv.style.display = 'none';
+                        errorDiv.textContent = '';
+                    }
+
+                    const maxSize = 5 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        profilePhotoInput.classList.add('is-invalid');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = 'File size exceeds 5MB. Please choose a smaller image.';
+                        e.target.value = '';
+                        if (submitBtn) submitBtn.disabled = true;
+                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                        return;
+                    }
+
+                    const fileName = file.name.toLowerCase();
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                    const fileExtension = fileName.split('.').pop();
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        profilePhotoInput.classList.add('is-invalid');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                        e.target.value = '';
+                        if (submitBtn) submitBtn.disabled = true;
+                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                        return;
+                    }
+
+                    const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                    if (!allowedTypes.includes(file.type)) {
+                        profilePhotoInput.classList.add('is-invalid');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                        e.target.value = '';
+                        if (submitBtn) submitBtn.disabled = true;
+                        if (removeFileBtn) removeFileBtn.style.display = 'inline-block';
+                        return;
+                    }
+
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (removeFileBtn) removeFileBtn.style.display = 'none';
+                } else {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (removeFileBtn) removeFileBtn.style.display = 'none';
+                }
+            });
+
+            profileForm.addEventListener('submit', function(e) {
+                const file = profilePhotoInput.files[0];
+                let hasError = false;
+                let errorMessage = '';
+
+                if (file) {
+                    const maxSize = 5 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        hasError = true;
+                        errorMessage = 'File size exceeds 5MB. Please choose a smaller image.';
+                    }
+
+                    const fileName = file.name.toLowerCase();
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                    const fileExtension = fileName.split('.').pop();
+                    if (!hasError && !allowedExtensions.includes(fileExtension)) {
+                        hasError = true;
+                        errorMessage = `Unsupported file format (.${fileExtension}). Please upload JPG, JPEG, PNG, or GIF images only.`;
+                    }
+
+                    if (!hasError) {
+                        const allowedTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+                        if (!allowedTypes.includes(file.type)) {
+                            hasError = true;
+                            errorMessage = 'Invalid file type. Please upload JPG, JPEG, PNG, or GIF images only.';
+                        }
+                    }
+                }
+
+                if (!hasError && profilePhotoInput.classList.contains('is-invalid')) {
+                    hasError = true;
+                    errorMessage = 'Please fix the file upload error before submitting.';
+                }
+
+                if (hasError) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+
+                    profilePhotoInput.classList.add('is-invalid');
+                    let errorDiv = profilePhotoInput.parentNode.querySelector('.invalid-feedback.d-block');
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback d-block';
+                        profilePhotoInput.parentNode.appendChild(errorDiv);
+                    }
+                    if (!errorDiv.classList.contains('permanent-error')) {
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = errorMessage;
+                    }
+                    profilePhotoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    return false;
+                }
+            });
+        }
+    });
+</script>
 
 @endsection
