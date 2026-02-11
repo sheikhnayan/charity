@@ -72,9 +72,8 @@
                             @error('roles')<div class="text-danger">{{ $message }}</div>@enderror
                         </div>
                     @endif
-                    {{ $user->role }}
 
-                    @if($user->role === 'student')
+                    @if($user->role === 'individual')
                     <div id="student-fields" class="mb-3">
                         <div class="mb-3">
                             <label class="form-label">Select Teacher <span class="text-danger">*</span></label>
