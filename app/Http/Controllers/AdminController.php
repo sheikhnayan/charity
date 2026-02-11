@@ -781,6 +781,22 @@ class AdminController extends Controller
             'form_data' => $request->except(['photo', 'password'])
         ]);
         
+        // CRITICAL: Check if photo field exists but file upload failed
+        if ($request->has('photo') && !$request->hasFile('photo')) {
+            \Log::error('Photo upload failed - file too large or upload error', [
+                'php_upload_max_filesize' => ini_get('upload_max_filesize'),
+                'php_post_max_size' => ini_get('post_max_size'),
+                'request_method' => $request->method(),
+            ]);
+            
+            $uploadMaxMB = ini_get('upload_max_filesize');
+            $postMaxMB = ini_get('post_max_size');
+            
+            return back()->withErrors([
+                'photo' => "Photo upload failed. Your file may be too large for server limits (max: {$uploadMaxMB}). Safari converts HEIC photos to PNG which can be 3-5x larger. Try compressing your image first or use a different photo."
+            ])->withInput()->with('show_add_student_modal', true);
+        }
+        
         // Log photo upload details for debugging
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
