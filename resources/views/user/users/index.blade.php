@@ -168,7 +168,13 @@
                                                         <td>{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
                                                         <td>{{ $user->tshirt_size ?? 'N/A' }}</td>
                                                         <td>${{ number_format($user->donations->sum('amount'), 2) }}</td>
-                                                        <td>${{ number_format($user->goal ?? 0, 2) }}</td>
+                                                        <td>
+                                                            @if ($user->role != 'parents' || $user->role == 'individual')
+                                                            ${{ number_format($user->website->setting->goal ?? 0, 2) }}
+                                                            @else
+                                                            ${{ number_format($user->goal ?? 0, 2) }}
+                                                            @endif
+                                                        </td>
                                                     @else
                                                         <td>
                                                             <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
