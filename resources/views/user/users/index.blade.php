@@ -34,7 +34,7 @@
         color: #000 !important;
     }
 
-    #DataTables_Table_0_filter label {
+    #usersTable_filter label {
         color: #000 !important;
     }
 </style>
