@@ -154,6 +154,7 @@
                                             @else
                                                 <th>Role</th>
                                             @endif
+                                            <th>Registration Date</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -161,7 +162,7 @@
                                     <tbody>
                                         @if ($users->isEmpty())
                                             <tr>
-                                                <td colspan="{{ $isRoleUser ? 14 : 8 }}" class="text-center">No users found.</td>
+                                                <td colspan="{{ $isRoleUser ? 15 : 9 }}" class="text-center">No users found.</td>
                                             </tr>
                                         @else
                                             @foreach ($users as $user)
@@ -197,6 +198,7 @@
                                                             <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
                                                         </td>
                                                     @endif
+                                                    <td class="registration-date" data-timestamp="{{ $user->created_at->getTimestamp() }}">{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d h:i A') }}</td>
                                                     <td>
                                                         @if ($user->status == 1)
                                                             <span class="badge bg-success">Approved</span>
@@ -343,7 +345,67 @@
                 table.on('draw', function() {
                     updateSelectAll();
                     updateExportButton();
+                    addTimezoneToRegistrationDates();
                 });
+
+                // Function to calculate UTC offset
+                function getUTCOffset(date, timeZone) {
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: timeZone,
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    });
+                    
+                    const parts = formatter.formatToParts(date);
+                    const timeZoneDate = new Date(
+                        parts.find(p => p.type === 'year').value,
+                        parts.find(p => p.type === 'month').value - 1,
+                        parts.find(p => p.type === 'day').value,
+                        parts.find(p => p.type === 'hour').value,
+                        parts.find(p => p.type === 'minute').value,
+                        parts.find(p => p.type === 'second').value
+                    );
+                    
+                    const offset = date.getTime() - timeZoneDate.getTime();
+                    const hours = Math.floor(Math.abs(offset) / 3600000);
+                    const minutes = Math.floor((Math.abs(offset) % 3600000) / 60000);
+                    const sign = offset <= 0 ? '+' : '-';
+                    
+                    return sign + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+                }
+
+                // Function to add timezone info to registration dates
+                function addTimezoneToRegistrationDates() {
+                    $('.registration-date').each(function() {
+                        const $cell = $(this);
+                        const timestamp = $cell.data('timestamp');
+                        
+                        if (timestamp && !$cell.data('timezone-added')) {
+                            const appTimezone = '{{ config('app.timezone') }}';
+                            const date = new Date(timestamp * 1000);
+                            const formatter = new Intl.DateTimeFormat('en-US', {
+                                timeZone: appTimezone,
+                                timeZoneName: 'short'
+                            });
+                            const parts = formatter.formatToParts(date);
+                            const tzPart = parts.find(p => p.type === 'timeZoneName');
+                            const tzName = tzPart ? tzPart.value : 'UTC';
+                            const offset = getUTCOffset(date, appTimezone);
+                            
+                            const currentText = $cell.text();
+                            $cell.html(currentText + ' <span style="color: #666; font-size: 0.85em;">(" + tzName + " " + offset + ")</span>');
+                            $cell.data('timezone-added', true);
+                        }
+                    });
+                }
+
+                // Add timezone to initial load
+                addTimezoneToRegistrationDates();
             });
         </script>
     </div>

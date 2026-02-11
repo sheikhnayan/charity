@@ -1023,10 +1023,6 @@
 
             <div class="small muted">Shipping: <strong>US $0.00</strong> • Estimated delivery: 7-18 Oct</div> --}}
 
-            <div style="height:10px"></div>
-
-            <div class="small muted">Return policy: 30-day returns. See details.</div>
-
             <div style="height:12px"></div>
 
             {{-- <div style="height:12px;border-top:1px solid #f0f0f1;margin-top:12px;padding-top:12px">
