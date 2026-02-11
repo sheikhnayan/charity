@@ -239,6 +239,7 @@
                     let table = new DataTable('.table', {
                         dom: 'Bfrtip',
                         pageLength: 25,
+                        scrollX: true,
                         buttons: [
                             'copy', 'csv', 'excel', 'pdf', 'print'
                         ]

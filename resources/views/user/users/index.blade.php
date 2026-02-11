@@ -134,6 +134,7 @@
                                     </div>
                                 </div>
                                 
+                                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-striped" id="usersTable">
                                     <thead>
                                         <tr>
@@ -221,6 +222,7 @@
                                         @endif
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -253,6 +255,7 @@
                 let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
+                    scrollX: true,
                     columnDefs: [
                         { orderable: false, targets: 0 }
                     ],
