@@ -152,7 +152,7 @@
                                                         </td>
                                                         <td>{{ $item->teacher->name ?? 'N/A' }}</td>
                                                         <td>${{ number_format($item->goal ?? 0, 2) }}</td>
-                                                        <td class="registration-date" data-timestamp="{{ $item->created_at->getTimestamp() }}">{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d h:i A') }}</td>
                                                         <td>
                                                             @if ($item->status == 1)
                                                                 <span class="badge bg-success">Approved</span>
@@ -346,66 +346,6 @@
                         });
                     });
                 });
-
-                // Function to calculate UTC offset
-                function getUTCOffset(date, timeZone) {
-                    const formatter = new Intl.DateTimeFormat('en-US', {
-                        timeZone: timeZone,
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    });
-                    
-                    const parts = formatter.formatToParts(date);
-                    const timeZoneDate = new Date(
-                        parts.find(p => p.type === 'year').value,
-                        parts.find(p => p.type === 'month').value - 1,
-                        parts.find(p => p.type === 'day').value,
-                        parts.find(p => p.type === 'hour').value,
-                        parts.find(p => p.type === 'minute').value,
-                        parts.find(p => p.type === 'second').value
-                    );
-                    
-                    const offset = date.getTime() - timeZoneDate.getTime();
-                    const hours = Math.floor(Math.abs(offset) / 3600000);
-                    const minutes = Math.floor((Math.abs(offset) % 3600000) / 60000);
-                    const sign = offset <= 0 ? '+' : '-';
-                    
-                    return sign + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
-                }
-
-                // Function to add timezone info to registration dates
-                function addTimezoneToRegistrationDates() {
-                    $('.registration-date').each(function() {
-                        const $cell = $(this);
-                        const timestamp = $cell.data('timestamp');
-                        
-                        if (timestamp && !$cell.data('timezone-added')) {
-                            const appTimezone = '{{ config('app.timezone') }}';
-                            const date = new Date(timestamp * 1000);
-                            const formatter = new Intl.DateTimeFormat('en-US', {
-                                timeZone: appTimezone,
-                                timeZoneName: 'short'
-                            });
-                            const parts = formatter.formatToParts(date);
-                            const tzPart = parts.find(p => p.type === 'timeZoneName');
-                            const tzName = tzPart ? tzPart.value : 'UTC';
-                            const offset = getUTCOffset(date, appTimezone);
-                            
-                            const currentText = $cell.text();
-                            $cell.html(currentText + ' <span style="color: #666; font-size: 0.85em;">(" + tzName + " " + offset + ")</span>');
-                            $cell.data('timezone-added', true);
-                        }
-                    });
-                }
-
-                // Add timezone to initial load
-                addTimezoneToRegistrationDates();
-            });
 
             </script>
         @endsection
