@@ -10,7 +10,7 @@
                 <h5 class="mb-0">Edit User: {{ $user->name }}</h5>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ route('users.manage-users.update', $user->id) }}">
+                <form method="POST" action="{{ route('users.manage-users.update', $user->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -43,6 +43,20 @@
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
+                    <div class="mb-3">
+                        <label class="form-label">Profile Photo</label>
+                        @if($user->photo)
+                            <div class="mb-2">
+                                <img src="{{ asset($user->photo) }}" width="120" alt="Profile photo" style="border-radius: 8px;">
+                            </div>
+                        @endif
+                        <input class="form-control @error('photo') is-invalid @enderror" type="file" name="photo" accept="image/png, image/gif, image/jpeg, image/jpg, image/pjpeg">
+                        @error('photo')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <div class="form-text">Maximum file size: <strong>5MB</strong> | Accepted formats: <strong>JPG, JPEG, PNG, GIF</strong> | Recommended: Square format</div>
+                    </div>
+
+                    
+
                     @if (Auth::user()->role != 'user')
                         <div class="mb-3">
                             <label class="form-label">Roles *</label>
@@ -59,6 +73,50 @@
                         </div>
                     @endif
 
+                    <div id="student-fields" class="mb-3" style="display: none;" data-current-role="{{ $user->role }}">
+                        <div class="mb-3">
+                            <label class="form-label">Select Teacher <span class="text-danger">*</span></label>
+                            <select class="form-select @error('teacher_id') is-invalid @enderror" name="teacher_id">
+                                <option value="">Choose a teacher</option>
+                                @if(isset($teachers))
+                                    @foreach($teachers as $teacher)
+                                        <option value="{{ $teacher->id }}" {{ (string) old('teacher_id', $user->teacher_id) === (string) $teacher->id ? 'selected' : '' }}>
+                                            {{ trim($teacher->name . ' ' . ($teacher->last_name ?? '')) }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            @error('teacher_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fundraising Goal</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control @error('goal') is-invalid @enderror" name="goal" min="0" step="0.01" value="{{ old('goal', $user->goal) }}">
+                                <span class="input-group-text">.00 USD</span>
+                                @error('goal')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">T-Shirt Size</label>
+                            <select class="form-select @error('tshirt_size') is-invalid @enderror" name="tshirt_size">
+                                <option value="">Select a size</option>
+                                <option value="Youth XS" {{ old('tshirt_size', $user->tshirt_size) == 'Youth XS' ? 'selected' : '' }}>Youth XS</option>
+                                <option value="Youth Small" {{ old('tshirt_size', $user->tshirt_size) == 'Youth Small' ? 'selected' : '' }}>Youth Small</option>
+                                <option value="Youth Medium" {{ old('tshirt_size', $user->tshirt_size) == 'Youth Medium' ? 'selected' : '' }}>Youth Medium</option>
+                                <option value="Youth Large" {{ old('tshirt_size', $user->tshirt_size) == 'Youth Large' ? 'selected' : '' }}>Youth Large</option>
+                                <option value="Adult Small" {{ old('tshirt_size', $user->tshirt_size) == 'Adult Small' ? 'selected' : '' }}>Adult Small</option>
+                                <option value="Adult Medium" {{ old('tshirt_size', $user->tshirt_size) == 'Adult Medium' ? 'selected' : '' }}>Adult Medium</option>
+                                <option value="Adult Large" {{ old('tshirt_size', $user->tshirt_size) == 'Adult Large' ? 'selected' : '' }}>Adult Large</option>
+                                <option value="Adult XL" {{ old('tshirt_size', $user->tshirt_size) == 'Adult XL' ? 'selected' : '' }}>Adult XL</option>
+                                <option value="Adult XXL" {{ old('tshirt_size', $user->tshirt_size) == 'Adult XXL' ? 'selected' : '' }}>Adult XXL</option>
+                            </select>
+                            @error('tshirt_size')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">Update User</button>
@@ -69,4 +127,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleInputs = document.querySelectorAll('input[name="roles[]"]');
+        const studentFields = document.getElementById('student-fields');
+        const studentRoleNames = ['student'];
+
+        function syncStudentFields() {
+            let isStudentRoleSelected = Array.from(roleInputs).some((input) => input.checked && studentRoleNames.includes(input.value));
+            if (!roleInputs.length && studentFields) {
+                const currentRole = studentFields.getAttribute('data-current-role');
+                isStudentRoleSelected = studentRoleNames.includes(currentRole);
+            }
+            if (studentFields) {
+                studentFields.style.display = isStudentRoleSelected ? 'block' : 'none';
+            }
+        }
+
+        roleInputs.forEach((input) => input.addEventListener('change', syncStudentFields));
+        syncStudentFields();
+    });
+</script>
 @endsection

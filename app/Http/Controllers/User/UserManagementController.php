@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Website;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,6 +73,8 @@ class UserManagementController extends Controller
     {
         $user = User::findOrFail($id);
         $roles = Role::orderBy('name')->get();
+        $websiteId = Auth::user()->website_id;
+        $teachers = Teacher::where('website_id', $websiteId)->orderBy('name')->get();
 
         $assigned = \DB::table('role_user_website')
             ->where('user_id', $user->id)
@@ -84,29 +87,60 @@ class UserManagementController extends Controller
             $assignedNames = $roleModels->pluck('name')->toArray();
         }
 
-        return view('user.users.edit', compact('user', 'roles', 'assignedNames'));
+        return view('user.users.edit', compact('user', 'roles', 'assignedNames', 'teachers'));
     }
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $request->validate([
+        $selectedRoles = $request->input('roles', []);
+        $hasStudentRole = in_array('student', $selectedRoles);
+
+        $rules = [
             'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6|confirmed',
-            'roles' => 'required|array|min:1'
+            'roles' => 'required|array|min:1',
+            'goal' => 'nullable|numeric|min:0',
+            'tshirt_size' => 'nullable|string|max:50',
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,pjpeg|max:5120',
+            'teacher_id' => $hasStudentRole ? 'required|exists:teachers,id' : 'nullable|exists:teachers,id',
+        ];
+
+        $request->validate($rules, [
+            'photo.image' => 'The photo must be a valid image file.',
+            'photo.mimes' => 'The photo must be in JPG, JPEG, PNG, or GIF format.',
+            'photo.max' => 'The photo must not exceed 5MB in size.',
+            'teacher_id.required' => 'Please select a teacher.',
         ]);
 
         $currentUser = Auth::user();
         $websiteId = $currentUser->website_id;
 
         $user->name = $request->name;
+        $user->last_name = $request->last_name;
         $user->email = $request->email;
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
         $user->website_id = $websiteId;
+
+        if ($hasStudentRole) {
+            $user->goal = $request->goal;
+            $user->tshirt_size = $request->tshirt_size;
+            $user->teacher_id = $request->teacher_id;
+        }
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $uploadFolder = $hasStudentRole ? 'uploads' : 'images';
+            $file->move(public_path($uploadFolder), $filename);
+            $user->photo = $uploadFolder . '/' . $filename;
+        }
+
         $user->save();
 
         $user->syncRolesForWebsite($request->input('roles', []), $websiteId);
