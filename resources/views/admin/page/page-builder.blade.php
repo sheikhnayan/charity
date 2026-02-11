@@ -7095,34 +7095,34 @@ break;
                     </style>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="first_name" class="form-label">First name<span class="required-asterisk">*</span></label>
+                            <label for="first_name" class="form-label">PARENT/GUARDIAN FIRST NAME<span class="required-asterisk">*</span></label>
                             <input type="text" class="form-control" id="first_name" name="name">
                         </div>
                         <div class="col-md-4">
-                            <label for="last_name" class="form-label">Last name<span class="required-asterisk">*</span></label>
+                            <label for="last_name" class="form-label">PARENT/GUARDIAN LAST NAME<span class="required-asterisk">*</span></label>
                             <input type="text" class="form-control" id="last_name" name="last_name">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="email" class="form-label">Email address<span class="required-asterisk">*</span></label>
+                            <label for="email" class="form-label">PARENT/GUARDIAN EMAIL ADDRESS<span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control" id="email" name="email">
                         </div>
                         <div class="col-md-4">
-                            <label for="confirm_email" class="form-label">Confirm email address<span class="required-asterisk">*</span></label>
+                            <label for="confirm_email" class="form-label">CONFIRM PARENT/GUARDIAN EMAIL ADDRESS<span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control" id="confirm_email" name="confirm_email">
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-md-4">
-                            <label for="password" class="form-label">Password<span class="required-asterisk">*</span></label>
+                            <label for="password" class="form-label">PARENT/GUARDIAN PASSWORD<span class="required-asterisk">*</span></label>
                             <div class="password-input-wrapper">
                                 <input type="password" class="form-control" id="password" name="password">
                                 <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event, 'password')"><i class="fa-solid fa-eye"></i></button>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label for="confirm_password" class="form-label">Confirm password<span class="required-asterisk">*</span></label>
+                            <label for="confirm_password" class="form-label">CONFIRM PARENT/GUARDIAN PASSWORD<span class="required-asterisk">*</span></label>
                             <div class="password-input-wrapper">
                                 <input type="password" class="form-control" id="confirm_password" name="confirm_password">
                                 <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event, 'confirm_password')"><i class="fa-solid fa-eye"></i></button>
@@ -7134,7 +7134,7 @@ break;
                             <div class="d-grid gap-3 mt-2">
                                 <button class="btn btn-lg text-white" type="submit" style="background-color: ${data.buttonColor} !important; border-color: transparent; color: ${data.buttonTextColor} !important;">
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                    Register
+                                    Parent/Guardian Registration
                                 </button>
                             </div>
                         </div>

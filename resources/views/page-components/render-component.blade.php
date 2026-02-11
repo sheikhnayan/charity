@@ -6054,7 +6054,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <div class="col-md-4">
                                         <div class="modern-form-group">
                                             <label for="first_name">
-                                                <i class="fa-solid fa-user"></i> First name
+                                                <i class="fa-solid fa-user"></i> PARENT/GUARDIAN FIRST NAME
                                                 <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="text" class="form-control" id="first_name" name="name" required>
@@ -6063,7 +6063,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <div class="col-md-4">
                                         <div class="modern-form-group">
                                             <label for="last_name">
-                                                <i class="fa-solid fa-user"></i> Last name
+                                                <i class="fa-solid fa-user"></i> PARENT/GUARDIAN LAST NAME
                                                 <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="text" class="form-control" id="last_name" name="last_name" required>
@@ -6075,7 +6075,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <div class="col-md-4">
                                         <div class="modern-form-group">
                                             <label for="email">
-                                                <i class="fa-solid fa-envelope"></i> Email address
+                                                <i class="fa-solid fa-envelope"></i> PARENT/GUARDIAN EMAIL ADDRESS
                                                 <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="email" name="email" required>
@@ -6084,7 +6084,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <div class="col-md-4">
                                         <div class="modern-form-group">
                                             <label for="confirm_email">
-                                                <i class="fa-solid fa-envelope-circle-check"></i> Confirm email
+                                                <i class="fa-solid fa-envelope-circle-check"></i> CONFIRM PARENT/GUARDIAN EMAIL ADDRESS
                                                 <span class="required-asterisk">*</span>
                                             </label>
                                             <input type="email" class="form-control" id="confirm_email" name="confirm_email" required>
