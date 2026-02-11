@@ -496,7 +496,7 @@
               <li class="menu-header small text-uppercase ">
                 <span class="menu-header-text">Donations</span>
               </li>
-              <li class="menu-item {{ request()->is('users/donation') ? 'active' : '' }}">
+              <li class="menu-item {{ request()->is('users/donation') ? 'active' : '' }}" id="donation-menu-item">
                 <a
                   href="/users/donation"
                   class="menu-link">
@@ -504,7 +504,7 @@
                   <div class="text-truncate" data-i18n="Email">Received</div>
                 </a>
               </li>
-              <li class="menu-item {{ request()->is('users/payments') ? 'active' : '' }}">
+              <li class="menu-item {{ request()->is('users/payments') ? 'active' : '' }}" id="payments-menu-item">
                 <a
                   href="/users/payments"
                   class="menu-link">

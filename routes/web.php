@@ -543,7 +543,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
     Route::get('/profile', function () {
         $user = Auth::user()->load('website', 'website.setting');
-        return view('user.profile', compact('user'));
+        $showTutorial = false;
+        if ($user->role == 'parents') {
+            $showTutorial = !$user->parent_tutorial_seen;
+        }
+        return view('user.profile', compact('user', 'showTutorial'));
     });
 
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');

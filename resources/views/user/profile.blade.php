@@ -16,6 +16,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+    <!-- Intro.js for Tutorial -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
     <style>
@@ -137,8 +140,11 @@
                                 </div>
                                 <div class="page-title-actions">
                                     @if(Auth::user()->role == 'parents')
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                                             <i class="fas fa-plus me-2"></i>Add Participants
+                                        </button>
+                                        <button type="button" class="btn btn-info" onclick="startParentTutorial()" id="tutorialBtn">
+                                            <i class="fas fa-graduation-cap me-2"></i>View Tutorial
                                         </button>
                                     @endif
                                 </div>
@@ -1364,5 +1370,161 @@
             });
         }
     });
+
+    <!-- Parent Tutorial Script -->
+    @if(Auth::user()->role == 'parents')
+    <script>
+        let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
+        
+        function startParentTutorial() {
+            const intro = introJs();
+            
+            // Add class to body to hide skip button via CSS
+            if (isFirstVisit) {
+                document.body.classList.add('tutorial-first-visit');
+            }
+            
+            // Detect if user is on mobile
+            const isMobile = window.innerWidth < 768;
+            
+            // Build steps based on device type
+            let tutorialSteps = [];
+            
+            // Welcome step (both mobile and desktop)
+            tutorialSteps.push({
+                title: 'Welcome! 👋',
+                intro: 'Welcome to your Profile page! Here you can manage your personal information and settings.'
+            });
+            
+            if (isMobile) {
+                // Mobile-specific tutorial steps
+                tutorialSteps.push({
+                    title: 'Navigation Menu 📱',
+                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like Profile, Participants, and Payments.',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Managing Your Profile',
+                    intro: 'On this page you can:<br><br>• Update your personal information<br>• Change your contact details<br>• Manage your account settings<br>• View your profile URL',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by tapping this button anytime!',
+                    position: 'bottom'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! Your profile is ready. Tap the menu icon (☰) to explore other sections!',
+                    tooltipClass: 'introjs-floating'
+                });
+            } else {
+                // Desktop tutorial steps
+                tutorialSteps.push({
+                    element: document.querySelector('#profile-menu-item'),
+                    title: 'Your Profile',
+                    intro: 'This is your profile page where you manage your personal information.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#students-menu-item'),
+                    title: 'Participants',
+                    intro: 'Click here to view and manage all your participants.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Managing Your Profile',
+                    intro: 'On this page you can:<br><br>• Update your personal information<br>• Change your contact details<br>• Manage your account settings<br>• View your profile URL',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by clicking this button anytime!',
+                    position: 'left'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! Your profile is ready. Use the sidebar to explore other sections!',
+                    tooltipClass: 'introjs-floating'
+                });
+            }
+            
+            intro.setOptions({
+                steps: tutorialSteps,
+                showProgress: true,
+                showBullets: false,
+                exitOnOverlayClick: isFirstVisit ? false : true,
+                exitOnEsc: isFirstVisit ? false : true,
+                nextLabel: 'Next →',
+                prevLabel: '← Back',
+                doneLabel: 'Finish',
+                scrollToElement: true,
+                scrollPadding: 30,
+                disableInteraction: true,
+                overlayOpacity: 0.7
+            });
+            
+            // Prevent exit on first visit via any method
+            intro.onbeforeexit(function() {
+                if (isFirstVisit) {
+                    console.log('Blocking exit on first visit');
+                    return false;
+                }
+                return true;
+            });
+            
+            intro.oncomplete(function() {
+                isFirstVisit = false;
+                document.body.classList.remove('tutorial-first-visit');
+                markTutorialAsSeen();
+            });
+            
+            intro.onexit(function() {
+                if (!isFirstVisit) {
+                    document.body.classList.remove('tutorial-first-visit');
+                    markTutorialAsSeen();
+                }
+            });
+            
+            intro.start();
+        }
+        
+        function markTutorialAsSeen() {
+            fetch('{{ route("parent.tutorial.seen") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            }).then(response => response.json())
+              .then(data => console.log('Tutorial marked as seen'))
+              .catch(error => console.error('Error:', error));
+        }
+        
+        // Auto-start tutorial on first visit for parents
+        @if(isset($showTutorial) && $showTutorial)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure page is fully loaded
+            setTimeout(function() {
+                startParentTutorial();
+            }, 500);
+        });
+        @endif
+    </script>
+    <style>
+        body.tutorial-first-visit .introjs-skipbutton {
+            display: none !important;
+        }
+    </style>
+    @endif
     </script>
 @endsection
