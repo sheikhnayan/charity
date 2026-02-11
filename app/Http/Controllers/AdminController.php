@@ -774,15 +774,41 @@ class AdminController extends Controller
 
     public function addStudentByParent(Request $request)
     {
-        // Custom validation for file extension to catch HEIC and other unsupported formats
+        // Log photo upload details for debugging
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
+            \Log::info('Photo upload attempt', [
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size_bytes' => $file->getSize(),
+                'size_mb' => round($file->getSize() / 1024 / 1024, 2),
+                'is_valid' => $file->isValid(),
+                'error' => $file->getError()
+            ]);
+            
+            // Custom validation for file extension to catch HEIC and other unsupported formats
             $extension = strtolower($file->getClientOriginalExtension());
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             
             if (!in_array($extension, $allowedExtensions)) {
+                \Log::warning('Photo upload rejected: unsupported extension', ['extension' => $extension]);
                 return back()->withErrors([
                     'photo' => "Unsupported file format (.{$extension}). Please upload JPG, JPEG, PNG, or GIF images only."
+                ])->withInput()->with('show_add_student_modal', true);
+            }
+            
+            // Check file size before validation (5MB = 5242880 bytes)
+            $maxSize = 5 * 1024 * 1024;
+            if ($file->getSize() > $maxSize) {
+                $sizeMB = round($file->getSize() / 1024 / 1024, 2);
+                \Log::warning('Photo upload rejected: file too large', [
+                    'size_mb' => $sizeMB,
+                    'max_mb' => 5,
+                    'original_name' => $file->getClientOriginalName()
+                ]);
+                return back()->withErrors([
+                    'photo' => "The photo size is {$sizeMB}MB, which exceeds the 5MB limit. Please choose a smaller image or compress it before uploading."
                 ])->withInput()->with('show_add_student_modal', true);
             }
         }
@@ -798,7 +824,7 @@ class AdminController extends Controller
         ], [
             'photo.image' => 'The photo must be a valid image file.',
             'photo.mimes' => 'The photo must be in JPG, JPEG, PNG, or GIF format.',
-            'photo.max' => 'The photo must not exceed 5MB in size.',
+            'photo.max' => 'The photo size exceeds 5MB. Please compress or resize your image.',
         ]);
 
         $parent = Auth::user();
