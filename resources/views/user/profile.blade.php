@@ -1527,5 +1527,4 @@
         }
     </style>
     @endif
-    </script>
 @endsection
