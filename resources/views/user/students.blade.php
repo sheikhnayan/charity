@@ -560,11 +560,12 @@
                         document.body.classList.add('page-locked');
                     });
                 }
+            </script>
 
-                <!-- Parent Tutorial Script -->
-                @if(Auth::user()->role == 'parents')
-                <script>
-                    let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
+            <!-- Parent Tutorial Script -->
+            @if(Auth::user()->role == 'parents')
+            <script>
+                let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
                     
                     function startParentTutorial() {
                         const intro = introJs();

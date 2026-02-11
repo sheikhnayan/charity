@@ -1370,6 +1370,7 @@
             });
         }
     });
+    </script>
 
     <!-- Parent Tutorial Script -->
     @if(Auth::user()->role == 'parents')
