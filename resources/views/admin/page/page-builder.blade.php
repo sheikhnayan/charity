@@ -7056,7 +7056,7 @@ break;
                 content.innerHTML = `<div class="row">
             <div class="col-md-12 mt-4 mb-4 text-center">
                 <i class="fa-solid fa-circle-user fa-fw mb-3" aria-hidden="true" style="font-size: 8rem; color: ${data.avatarIconColor} !important;"></i>
-                <h2 class="display-6 tit">Register</h2>
+                <h2 class="display-6 tit">Parent/Guardian Registration</h2>
             </div>
         </div>
         <div class="register">
@@ -7134,7 +7134,7 @@ break;
                             <div class="d-grid gap-3 mt-2">
                                 <button class="btn btn-lg text-white" type="submit" style="background-color: ${data.buttonColor} !important; border-color: transparent; color: ${data.buttonTextColor} !important;">
                                     <i class="fa-solid fa-door-open me-1" aria-hidden="true"></i>
-                                    Parent/Guardian Registration
+                                    Register
                                 </button>
                             </div>
                         </div>
