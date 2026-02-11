@@ -15,9 +15,15 @@
                     @method('PUT')
 
                     <div class="mb-3">
-                        <label class="form-label">Name *</label>
+                        <label class="form-label">First Name *</label>
                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required>
                         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Name *</label>
+                        <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" value="{{ old('last_name', $user->last_name) }}" required>
+                        @error('last_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
                     <div class="mb-3">
@@ -37,19 +43,22 @@
                         <input type="password" name="password_confirmation" class="form-control">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Roles *</label>
-                        @foreach($roles as $role)
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $role->name }}" 
-                                    id="role{{ $role->id }}" {{ in_array($role->name, $assignedNames) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="role{{ $role->id }}">
-                                    {{ $role->label ?? $role->name }}
-                                </label>
-                            </div>
-                        @endforeach
-                        @error('roles')<div class="text-danger">{{ $message }}</div>@enderror
-                    </div>
+                    @if (Auth::user()->role != 'user')
+                        <div class="mb-3">
+                            <label class="form-label">Roles *</label>
+                            @foreach($roles as $role)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $role->name }}" 
+                                        id="role{{ $role->id }}" {{ in_array($role->name, $assignedNames) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="role{{ $role->id }}">
+                                        {{ $role->label ?? $role->name }}
+                                    </label>
+                                </div>
+                            @endforeach
+                            @error('roles')<div class="text-danger">{{ $message }}</div>@enderror
+                        </div>
+                    @endif
+
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">Update User</button>
