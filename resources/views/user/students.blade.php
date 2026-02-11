@@ -170,7 +170,13 @@
                                                                 <span class="text-muted">N/A</span>
                                                             @endif
                                                         </td>
-                                                        <td>${{ number_format($item->goal ?? 0, 2) }}</td>
+                                                        <td>
+                                                            @if ($item->role == 'user')
+                                                            ${{ number_format($item->website->setting->goal ?? 0, 2) }}
+                                                            @else
+                                                            ${{ number_format($item->goal ?? 0, 2) }}
+                                                            @endif
+                                                        </td>
                                                         @if(Auth::user()->role == 'parents')
                                                         <td>
                                                             @php
