@@ -774,6 +774,13 @@ class AdminController extends Controller
 
     public function addStudentByParent(Request $request)
     {
+        // LOG: Method called
+        \Log::info('=== addStudentByParent METHOD CALLED ===', [
+            'has_photo' => $request->hasFile('photo'),
+            'all_files' => array_keys($request->allFiles()),
+            'form_data' => $request->except(['photo', 'password'])
+        ]);
+        
         // Log photo upload details for debugging
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
@@ -897,11 +904,33 @@ class AdminController extends Controller
 
     public function updateStudentProfile(Request $request, $id)
     {
+        // LOG: Method called
+        \Log::info('=== updateStudentProfile METHOD CALLED ===', [
+            'student_id' => $id,
+            'has_photo' => $request->hasFile('photo'),
+            'all_files' => array_keys($request->allFiles()),
+            'form_data' => $request->except(['photo', 'password'])
+        ]);
+        
         $student = User::findOrFail($id);
         
         // Check if the current user is a parent and this student belongs to them
         if (Auth::user()->role != 'parents' || $student->parent_id != Auth::user()->id) {
             return redirect()->back()->with('error', 'Unauthorized access');
+        }
+        
+        // LOG: Before validation
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            \Log::info('Photo upload in updateStudentProfile', [
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size_bytes' => $file->getSize(),
+                'size_mb' => round($file->getSize() / 1024 / 1024, 2),
+                'is_valid' => $file->isValid(),
+                'error' => $file->getError()
+            ]);
         }
         
         $request->validate([
