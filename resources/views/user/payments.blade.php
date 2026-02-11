@@ -4,6 +4,9 @@
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+<!-- Intro.js for Tutorial -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
 <style>
     .dt-buttons button span {
@@ -45,8 +48,11 @@
                             </div>
                             <div class="page-title-actions">
                                 @if(Auth::user()->role == 'parents')
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                                         <i class="fas fa-plus me-2"></i>Add Participants
+                                    </button>
+                                    <button type="button" class="btn btn-info" onclick="startParentTutorial()" id="tutorialBtn">
+                                        <i class="fas fa-graduation-cap me-2"></i>View Tutorial
                                     </button>
                                 @endif
                             </div>
@@ -1088,5 +1094,173 @@
         }
     });
     </script>
+
+    <!-- Parent Tutorial Script -->
+    @if(Auth::user()->role == 'parents')
+    <script>
+        let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
+        
+        function startParentTutorial() {
+            const intro = introJs();
+            
+            // Add class to body to hide skip button via CSS
+            if (isFirstVisit) {
+                document.body.classList.add('tutorial-first-visit');
+            }
+            
+            // Detect if user is on mobile
+            const isMobile = window.innerWidth < 768;
+            
+            // Build steps based on device type
+            let tutorialSteps = [];
+            
+            // Welcome step (both mobile and desktop)
+            tutorialSteps.push({
+                title: 'Welcome! 👋',
+                intro: 'Welcome to your Payments dashboard! Let me show you how to view and manage your payment history.'
+            });
+            
+            if (isMobile) {
+                // Mobile-specific tutorial steps (skip sidebar references)
+                tutorialSteps.push({
+                    title: 'Navigation Menu 📱',
+                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like Payments, Participants, and Profile.',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Viewing Payments 💳',
+                    intro: 'This table shows all the payments made:<br><br>• Transaction ID: Unique payment reference<br>• Participant/Individual: Who the payment was for<br>• Amount: Total donation amount<br>• Status: Payment completion status<br>• Date: When the payment was made',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Payment Actions',
+                    intro: 'You can:<br><br>• View transaction details<br>• Check payment status<br>• Export payment records<br>• Manage payment history',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by tapping this button anytime!',
+                    position: 'bottom'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! You\'re ready to manage your payments. Tap the menu icon (☰) and select "Payments" anytime!',
+                    tooltipClass: 'introjs-floating'
+                });
+            } else {
+                // Desktop tutorial steps (original with sidebar references)
+                tutorialSteps.push({
+                    element: document.querySelector('#payments-menu-item'),
+                    title: 'Payments',
+                    intro: 'Click here to view all your payment history and transaction details.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#students-menu-item'),
+                    title: 'Participants',
+                    intro: 'Click here to manage all your participants.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Viewing Payments 💳',
+                    intro: 'This table shows all the payments made:<br><br>• Transaction ID: Unique payment reference<br>• Participant/Individual: Who the payment was for<br>• Amount: Total donation amount<br>• Status: Payment completion status<br>• Date: When the payment was made',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Payment Actions',
+                    intro: 'You can:<br><br>• View transaction details<br>• Check payment status<br>• Export payment records<br>• Manage payment history',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by clicking this button anytime!',
+                    position: 'left'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! You\'re ready to manage your payments. Click "Payments" in the sidebar anytime!',
+                    tooltipClass: 'introjs-floating'
+                });
+            }
+            
+            intro.setOptions({
+                steps: tutorialSteps,
+                showProgress: true,
+                showBullets: false,
+                exitOnOverlayClick: isFirstVisit ? false : true,
+                exitOnEsc: isFirstVisit ? false : true,
+                nextLabel: 'Next →',
+                prevLabel: '← Back',
+                doneLabel: 'Finish',
+                scrollToElement: true,
+                scrollPadding: 30,
+                disableInteraction: true,
+                overlayOpacity: 0.7
+            });
+            
+            // Prevent exit on first visit via any method
+            intro.onbeforeexit(function() {
+                if (isFirstVisit) {
+                    console.log('Blocking exit on first visit');
+                    return false;
+                }
+                return true;
+            });
+            
+            intro.oncomplete(function() {
+                isFirstVisit = false;
+                document.body.classList.remove('tutorial-first-visit');
+                markTutorialAsSeen();
+            });
+            
+            intro.onexit(function() {
+                if (!isFirstVisit) {
+                    document.body.classList.remove('tutorial-first-visit');
+                    markTutorialAsSeen();
+                }
+            });
+            
+            intro.start();
+        }
+        
+        function markTutorialAsSeen() {
+            fetch('{{ route("parent.tutorial.seen") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            }).then(response => response.json())
+              .then(data => console.log('Tutorial marked as seen'))
+              .catch(error => console.error('Error:', error));
+        }
+        
+        // Auto-start tutorial on first visit for parents
+        @if(isset($showTutorial) && $showTutorial)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure page is fully loaded
+            setTimeout(function() {
+                startParentTutorial();
+            }, 500);
+        });
+        @endif
+    </script>
+    <style>
+        body.tutorial-first-visit .introjs-skipbutton {
+            display: none !important;
+        }
+    </style>
+    @endif
 
 @endsection

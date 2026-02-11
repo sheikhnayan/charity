@@ -5,6 +5,9 @@
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+<!-- Intro.js for Tutorial -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
 <style>
     .forms-wizard li.done em::before, .lnr-checkmark-circle::before {
@@ -67,8 +70,11 @@
                                 </div>
                                 <div class="page-title-actions">
                                     @if(Auth::user()->role == 'parents')
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                        <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                                             <i class="fas fa-plus me-2"></i>Add Participants
+                                        </button>
+                                        <button type="button" class="btn btn-info" onclick="startParentTutorial()" id="tutorialBtn">
+                                            <i class="fas fa-graduation-cap me-2"></i>View Tutorial
                                         </button>
                                     @endif
                                 </div>
@@ -554,6 +560,174 @@
                         document.body.classList.add('page-locked');
                     });
                 }
+
+                <!-- Parent Tutorial Script -->
+                @if(Auth::user()->role == 'parents')
+                <script>
+                    let isFirstVisit = @if(isset($showTutorial) && $showTutorial) true @else false @endif;
+                    
+                    function startParentTutorial() {
+                        const intro = introJs();
+                        
+                        // Add class to body to hide skip button via CSS
+                        if (isFirstVisit) {
+                            document.body.classList.add('tutorial-first-visit');
+                        }
+                        
+                        // Detect if user is on mobile
+                        const isMobile = window.innerWidth < 768;
+                        
+                        // Build steps based on device type
+                        let tutorialSteps = [];
+                        
+                        // Welcome step (both mobile and desktop)
+                        tutorialSteps.push({
+                            title: 'Welcome! 👋',
+                            intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
+                        });
+                        
+                        if (isMobile) {
+                            // Mobile-specific tutorial steps (skip sidebar references)
+                            tutorialSteps.push({
+                                title: 'Navigation Menu 📱',
+                                intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like participants, Profile, and Payments.',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Adding Participants 🎓',
+                                intro: 'To add a new participant:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Participant" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Managing Participants',
+                                intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#tutorialBtn'),
+                                title: 'Need Help Later?',
+                                intro: 'You can always replay this tutorial by tapping this button anytime!',
+                                position: 'bottom'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'You\'re All Set! 🎉',
+                                intro: 'That\'s it! You\'re ready to start managing your participants. Tap the menu icon (☰) and select "Participant" to get started!',
+                                tooltipClass: 'introjs-floating'
+                            });
+                        } else {
+                            // Desktop tutorial steps (original with sidebar references)
+                            tutorialSteps.push({
+                                element: document.querySelector('#students-menu-item'),
+                                title: 'Participants',
+                                intro: 'Click here to view and manage all your participants. This is where you\'ll spend most of your time!',
+                                position: 'right'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#profile-menu-item'),
+                                title: 'Your Profile',
+                                intro: 'Update your personal information and profile settings here.',
+                                position: 'right'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Adding Participants 🎓',
+                                intro: 'To add a new participant:<br><br>1. Click on "Participant" in the sidebar<br>2. Click the "Add Participant" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'Managing Participants',
+                                intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                                tooltipClass: 'introjs-floating'
+                            });
+                            
+                            tutorialSteps.push({
+                                element: document.querySelector('#tutorialBtn'),
+                                title: 'Need Help Later?',
+                                intro: 'You can always replay this tutorial by clicking this button anytime!',
+                                position: 'left'
+                            });
+                            
+                            tutorialSteps.push({
+                                title: 'You\'re All Set! 🎉',
+                                intro: 'That\'s it! You\'re ready to start managing your participants. Click "Participant" in the sidebar to get started!',
+                                tooltipClass: 'introjs-floating'
+                            });
+                        }
+                        
+                        intro.setOptions({
+                            steps: tutorialSteps,
+                            showProgress: true,
+                            showBullets: false,
+                            exitOnOverlayClick: isFirstVisit ? false : true,
+                            exitOnEsc: isFirstVisit ? false : true,
+                            nextLabel: 'Next →',
+                            prevLabel: '← Back',
+                            doneLabel: 'Finish',
+                            scrollToElement: true,
+                            scrollPadding: 30,
+                            disableInteraction: true,
+                            overlayOpacity: 0.7
+                        });
+                        
+                        // Prevent exit on first visit via any method
+                        intro.onbeforeexit(function() {
+                            if (isFirstVisit) {
+                                console.log('Blocking exit on first visit');
+                                return false;
+                            }
+                            return true;
+                        });
+                        
+                        intro.oncomplete(function() {
+                            isFirstVisit = false;
+                            document.body.classList.remove('tutorial-first-visit');
+                            markTutorialAsSeen();
+                        });
+                        
+                        intro.onexit(function() {
+                            if (!isFirstVisit) {
+                                document.body.classList.remove('tutorial-first-visit');
+                                markTutorialAsSeen();
+                            }
+                        });
+                        
+                        intro.start();
+                    }
+                    
+                    function markTutorialAsSeen() {
+                        fetch('{{ route("parent.tutorial.seen") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        }).then(response => response.json())
+                          .then(data => console.log('Tutorial marked as seen'))
+                          .catch(error => console.error('Error:', error));
+                    }
+                    
+                    // Auto-start tutorial on first visit for parents
+                    @if(isset($showTutorial) && $showTutorial)
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Small delay to ensure page is fully loaded
+                        setTimeout(function() {
+                            startParentTutorial();
+                        }, 500);
+                    });
+                    @endif
+                </script>
+                <style>
+                    body.tutorial-first-visit .introjs-skipbutton {
+                        display: none !important;
+                    }
+                </style>
+                @endif
             });
             </script>
         @endsection

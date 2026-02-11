@@ -759,8 +759,11 @@ class AdminController extends Controller
             
             // Get teachers for the parent's website from teachers table
             $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
+            
+            // Check if parent has seen tutorial
+            $showTutorial = !Auth::user()->parent_tutorial_seen;
 
-            return view('user.students', compact('data', 'teachers'));
+            return view('user.students', compact('data', 'teachers', 'showTutorial'));
         }else{
             $websites = Website::where('user_id', Auth::user()->id)->select('id')->get();
             $websites = $websites->pluck('id')->toArray();
@@ -831,7 +834,7 @@ class AdminController extends Controller
                     'original_name' => $file->getClientOriginalName()
                 ]);
                 return back()->withErrors([
-                    'photo' => "The photo size is {$sizeMB}MB, which exceeds the 5MB limit. Please choose a smaller image or compress it before uploading."
+                    'photo' => "Photo upload failed. Your file may be too large for server limits (max: 2M). Safari converts HEIC photos to PNG which can be 3-5x larger. Try compressing your image first or use a different photo."
                 ])->withInput()->with('show_add_student_modal', true);
             }
         }
@@ -947,6 +950,18 @@ class AdminController extends Controller
                 'is_valid' => $file->isValid(),
                 'error' => $file->getError()
             ]);
+        }
+        
+        // Check if photo field was submitted but PHP rejected it (file too large)
+        if ($request->has('photo') && !$request->hasFile('photo')) {
+            \Log::warning('Photo upload rejected: file too large in updateStudentProfile', [
+                'student_id' => $id,
+                'has_photo_field' => true,
+                'has_file' => false
+            ]);
+            return back()->withErrors([
+                'photo' => "Photo upload failed. Your file may be too large for server limits (max: 2M). Safari converts HEIC photos to PNG which can be 3-5x larger. Try compressing your image first or use a different photo."
+            ])->withInput();
         }
         
         $request->validate([
