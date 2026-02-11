@@ -73,7 +73,8 @@
                         </div>
                     @endif
 
-                    <div id="student-fields" class="mb-3" style="display: none;" data-current-role="{{ $user->role }}">
+                    @if($user->role === 'student')
+                    <div id="student-fields" class="mb-3">
                         <div class="mb-3">
                             <label class="form-label">Select Teacher <span class="text-danger">*</span></label>
                             <select class="form-select @error('teacher_id') is-invalid @enderror" name="teacher_id">
@@ -116,6 +117,7 @@
                             @error('tshirt_size')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
                     </div>
+                    @endif
 
 
                     <div class="d-flex gap-2">
@@ -128,25 +130,4 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const roleInputs = document.querySelectorAll('input[name="roles[]"]');
-        const studentFields = document.getElementById('student-fields');
-        const studentRoleNames = ['student'];
-
-        function syncStudentFields() {
-            let isStudentRoleSelected = Array.from(roleInputs).some((input) => input.checked && studentRoleNames.includes(input.value));
-            if (!roleInputs.length && studentFields) {
-                const currentRole = studentFields.getAttribute('data-current-role');
-                isStudentRoleSelected = studentRoleNames.includes(currentRole);
-            }
-            if (studentFields) {
-                studentFields.style.display = isStudentRoleSelected ? 'block' : 'none';
-            }
-        }
-
-        roleInputs.forEach((input) => input.addEventListener('change', syncStudentFields));
-        syncStudentFields();
-    });
-</script>
 @endsection
