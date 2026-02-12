@@ -25,7 +25,7 @@ class AuthController extends Controller
                 // Check if user is parent or individual and if their status is not active
                 if (in_array($user->role, ['parents', 'individual']) && $user->status != 1) {
                     Auth::logout();
-                    return redirect('login')->with('error', 'Your account is pending approval. Please wait for administrator approval before logging in.');
+                    return redirect('/')->with('error', 'Your account is pending approval. Please wait for administrator approval before logging in.');
                 }
                 
                 // Check if redirect_to parameter is provided (e.g., from page-investment)
@@ -151,7 +151,15 @@ class AuthController extends Controller
 
     public function logout()
     {
+        $user = Auth::user();
+        
         Auth::logout();
+        
+        // If user is parent or individual, redirect to homepage instead of login
+        if ($user && in_array($user->role, ['parents', 'individual'])) {
+            return redirect('/')->with('success', 'Logout successful');
+        }
+        
         return redirect('login')->with('success', 'Logout successful');
     }
 
