@@ -917,7 +917,7 @@
                             <p class="text-muted mt-2">Generating QR Code...</p>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer pt-2">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-warning" onclick="downloadProfileQR()">
                             <i class="fas fa-download me-1"></i> Download QR
