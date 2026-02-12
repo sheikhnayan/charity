@@ -1464,6 +1464,37 @@ if (isset($state['components'])) {
             margin-top: 8rem !important;
         }
     }
+    
+    /* Alert Styling - Ensure visibility */
+    .alert {
+        position: relative !important;
+        width: 100% !important;
+        z-index: 100 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 8px !important;
+        padding: 16px 20px !important;
+    }
+    
+    .alert.alert-success {
+        background-color: #d4edda !important;
+        border: 1px solid #c3e6cb !important;
+        color: #155724 !important;
+    }
+    
+    .alert.alert-danger {
+        background-color: #f8d7da !important;
+        border: 1px solid #f5c6cb !important;
+        color: #721c24 !important;
+    }
+    
+    .alert .btn-close {
+        opacity: 0.5 !important;
+    }
+    
+    .alert .btn-close:hover {
+        opacity: 0.8 !important;
+    }
     </style>
     <!-- Shopping Cart System - Load with explicit completion handler -->
     <script>
@@ -1893,15 +1924,18 @@ if (isset($state['components'])) {
                 });
             @endif
             
-            // Auto-dismiss alerts after 5 seconds
+            // Auto-dismiss alerts after 10 seconds
             const alerts = ['successAlert', 'errorAlert', 'errorsAlert'];
             alerts.forEach(alertId => {
                 const alertElement = document.getElementById(alertId);
+                console.log('Checking alert:', alertId, 'Found:', !!alertElement);
                 if (alertElement) {
+                    console.log('Alert found, will dismiss in 10 seconds:', alertId);
                     setTimeout(() => {
                         const alert = new bootstrap.Alert(alertElement);
                         alert.close();
-                    }, 5000); // 5 seconds
+                        console.log('Alert dismissed:', alertId);
+                    }, 10000); // 10 seconds
                 }
             });
             
