@@ -188,7 +188,7 @@
                                                         <td>{{ $user->tshirt_size ?? 'N/A' }}</td>
                                                         <td>${{ number_format($user->donations->sum('amount'), 2) }}</td>
                                                         <td>
-                                                            @if ($user->role != 'parents' || $user->role != 'individual')
+                                                            @if ($user->role == 'user')
                                                             ${{ number_format($user->website->setting->goal ?? 0, 2) }}
                                                             @else
                                                             ${{ number_format($user->goal ?? 0, 2) }}
