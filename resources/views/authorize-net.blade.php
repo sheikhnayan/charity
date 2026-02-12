@@ -556,7 +556,7 @@
                                 font-size="14px" class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative">
                                 <input notranslate="true" type="text" class="form-control pr-5"
                                     @error('card_number') is-invalid @enderror name="card_number" required
-                                    autocomplete="off" maxlength="30" placeholder="Card number" color="#2B2A35"
+                                    autocomplete="off" maxlength="60" placeholder="Card number" color="#2B2A35"
                                     id="card_number" width="100%"
                                     font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
                                     font-size="14px" class="sc-hBUSln kIfaoz" value="" style="width: 100%; padding-right: 2.5rem;" required>
@@ -601,7 +601,7 @@
                                 font-size="14px" class="sc-bkkeKt cNnlrr sc-ieecCq hEbWVQ position-relative">
                                 <input notranslate="true" type="text" class="form-control pr-5"
                                     @error('card_number') is-invalid @enderror name="name_on_card" required
-                                    autocomplete="off" maxlength="16" placeholder="Name on card" color="#2B2A35"
+                                    autocomplete="off" maxlength="60" placeholder="Name on card" color="#2B2A35"
                                     id="card_number" width="100%"
                                     font-family="Lato, Helvetica Neue, HelveticaNeue, Helvetica, Arial, sans-serif"
                                     font-size="14px" class="sc-hBUSln kIfaoz" value="" style="width: 100%; padding-right: 2.5rem;" required>
