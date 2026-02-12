@@ -1394,8 +1394,7 @@
             // Welcome step (both mobile and desktop)
             tutorialSteps.push({
                 title: 'Welcome! 👋',
-                intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.',
-                tooltipClass: 'introjs-floating'
+                intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
             });
             
             if (isMobile) {
@@ -1481,12 +1480,10 @@
                 nextLabel: 'Next →',
                 prevLabel: '← Back',
                 doneLabel: 'Finish',
-                scrollToElement: false,
+                scrollToElement: true,
                 scrollPadding: 30,
                 disableInteraction: true,
-                overlayOpacity: 0.7,
-                tooltipPosition: 'auto',
-                positionPrecedence: ['top', 'bottom', 'left', 'right']
+                overlayOpacity: 0.7
             });
             
             // Prevent exit on first visit via any method
@@ -1539,47 +1536,6 @@
     <style>
         body.tutorial-first-visit .introjs-skipbutton {
             display: none !important;
-        }
-        
-        /* Floating tooltip positioning for mobile */
-        .introjs-floating.introjs-tooltip {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            max-width: 90vw !important;
-            margin: 0 !important;
-            z-index: 999999999 !important;
-        }
-        
-        /* Ensure tooltip is above overlay */
-        .introjs-tooltip {
-            z-index: 999999999 !important;
-        }
-        
-        .introjs-overlay {
-            z-index: 999999998 !important;
-        }
-        
-        /* Mobile specific fixes */
-        @media (max-width: 768px) {
-            .introjs-tooltip {
-                max-width: 90vw !important;
-                width: 90vw !important;
-            }
-            
-            .introjs-tooltiptext {
-                font-size: 14px !important;
-            }
-            
-            .introjs-tooltip-title {
-                font-size: 16px !important;
-            }
-            
-            .introjs-button {
-                padding: 8px 12px !important;
-                font-size: 14px !important;
-            }
         }
     </style>
     @endif
