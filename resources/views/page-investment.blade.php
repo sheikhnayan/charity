@@ -1716,21 +1716,24 @@ if (isset($state['components'])) {
         {{-- Main content area with universal inner-section handling --}}
         <div id="rendered-page">
             @session('success')
-                <div class="alert alert-success mt-4" role="alert">
+                <div class="alert alert-success alert-dismissible fade show mt-4" role="alert" id="successAlert">
                     {{ $value }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endsession
 
             @session('error')
-                <div class="alert alert-danger mt-4" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert" id="errorAlert">
                     {{ $value }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endsession
             @session('errors')
-                <div class="alert alert-danger mt-4" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert" id="errorsAlert">
                     @foreach($errors->all() as $value)
                         <div>{{ $value }}</div>
                     @endforeach
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endsession
             @foreach($state as $index => $component)
@@ -1889,6 +1892,18 @@ if (isset($state['components'])) {
                     }
                 });
             @endif
+            
+            // Auto-dismiss alerts after 5 seconds
+            const alerts = ['successAlert', 'errorAlert', 'errorsAlert'];
+            alerts.forEach(alertId => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    setTimeout(() => {
+                        const alert = new bootstrap.Alert(alertElement);
+                        alert.close();
+                    }, 5000); // 5 seconds
+                }
+            });
             
             // Enhanced Parallax Fix - Force CSS and add JavaScript fallback
             initParallaxFix();
