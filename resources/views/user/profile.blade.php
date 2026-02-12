@@ -1391,85 +1391,71 @@
             // Build steps based on device type
             let tutorialSteps = [];
             
-            // Welcome step (both mobile and desktop)
+            // Welcome step
             tutorialSteps.push({
                 title: 'Welcome! 👋',
-                intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
+                intro: 'Let me show you how to add a new participant to your profile!'
             });
             
-            if (isMobile) {
-                // Mobile-specific tutorial steps (skip sidebar references)
-                tutorialSteps.push({
-                    title: 'Navigation Menu 📱',
-                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like participants, Profile, and Payments.',
-                    tooltipClass: 'introjs-floating'
-                });
-                
-                tutorialSteps.push({
-                    title: 'Adding Participants 🎓',
-                    intro: 'To add a new participant:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Participant" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
-                    tooltipClass: 'introjs-floating'
-                });
-                
-                tutorialSteps.push({
-                    title: 'Managing Participants',
-                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
-                    tooltipClass: 'introjs-floating'
-                });
-                
-                tutorialSteps.push({
-                    element: document.querySelector('#tutorialBtn'),
-                    title: 'Need Help Later?',
-                    intro: 'You can always replay this tutorial by tapping this button anytime!',
-                    position: 'bottom'
-                });
-                
-                tutorialSteps.push({
-                    title: 'You\'re All Set! 🎉',
-                    intro: 'That\'s it! You\'re ready to start managing your participants. Tap the menu icon (☰) and select "Participant" to get started!',
-                    tooltipClass: 'introjs-floating'
-                });
-            } else {
-                // Desktop tutorial steps (original with sidebar references)
-                tutorialSteps.push({
-                    element: document.querySelector('#students-menu-item'),
-                    title: 'Participants',
-                    intro: 'Click here to view and manage all your participants. This is where you\'ll spend most of your time!',
-                    position: 'right'
-                });
-                
-                tutorialSteps.push({
-                    element: document.querySelector('#profile-menu-item'),
-                    title: 'Your Profile',
-                    intro: 'Update your personal information and profile settings here.',
-                    position: 'right'
-                });
-                
-                tutorialSteps.push({
-                    title: 'Adding Participants 🎓',
-                    intro: 'To add a new participant:<br><br>1. Click on "Participant" in the sidebar<br>2. Click the "Add Participant" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
-                    tooltipClass: 'introjs-floating'
-                });
-                
-                tutorialSteps.push({
-                    title: 'Managing Participants',
-                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
-                    tooltipClass: 'introjs-floating'
-                });
-                
-                tutorialSteps.push({
-                    element: document.querySelector('#tutorialBtn'),
-                    title: 'Need Help Later?',
-                    intro: 'You can always replay this tutorial by clicking this button anytime!',
-                    position: 'left'
-                });
-                
-                tutorialSteps.push({
-                    title: 'You\'re All Set! 🎉',
-                    intro: 'That\'s it! You\'re ready to start managing your participants. Click "Participant" in the sidebar to get started!',
-                    tooltipClass: 'introjs-floating'
-                });
-            }
+            // Step 1: Add Participant Button
+            tutorialSteps.push({
+                element: document.querySelector('.page-title-actions .btn-primary'),
+                title: 'Add Participant 👨‍🎓',
+                intro: isMobile ? 'Tap this button to open the form to add a new participant.' : 'Click this button to open the form to add a new participant.',
+                position: isMobile ? 'bottom' : 'left'
+            });
+            
+            // Step 2: First Name
+            tutorialSteps.push({
+                element: document.querySelector('#first_name') || document.querySelector('input[name="first_name"]'),
+                title: 'First Name ✏️',
+                intro: 'Enter your participant\'s first name here.',
+                position: 'bottom',
+                tooltipClass: 'introjs-floating'
+            });
+            
+            // Step 3: Last Name
+            tutorialSteps.push({
+                element: document.querySelector('#last_name') || document.querySelector('input[name="last_name"]'),
+                title: 'Last Name ✏️',
+                intro: 'Enter your participant\'s last name here.',
+                position: 'bottom',
+                tooltipClass: 'introjs-floating'
+            });
+            
+            // Step 4: Teacher Selection
+            tutorialSteps.push({
+                element: document.querySelector('#teacher_id') || document.querySelector('select[name="teacher_id"]'),
+                title: 'Select Teacher 🧑‍🏫',
+                intro: 'Choose which teacher is helping this participant. This helps track fundraising by teacher.',
+                position: 'bottom',
+                tooltipClass: 'introjs-floating'
+            });
+            
+            // Step 5: Goal Amount
+            tutorialSteps.push({
+                element: document.querySelector('#modal_goal'),
+                title: 'Fundraising Goal 🎣',
+                intro: 'Set a fundraising goal for this participant. This helps track their progress.',
+                position: 'bottom',
+                tooltipClass: 'introjs-floating'
+            });
+            
+            // Step 6: T-Shirt Size
+            tutorialSteps.push({
+                element: document.querySelector('#modal_tshirt_size'),
+                title: 'T-Shirt Size 👕',
+                intro: 'Select a t-shirt size for this participant as a reward item.',
+                position: 'bottom',
+                tooltipClass: 'introjs-floating'
+            });
+            
+            // Step 7: Done
+            tutorialSteps.push({
+                title: 'You\'re All Set! 🎉',
+                intro: 'That\'s it! Once you fill in all the information and click "Add Participant", they\'ll be added to your account and ready to start fundraising!',
+                tooltipClass: 'introjs-floating'
+            });
             
             intro.setOptions({
                 steps: tutorialSteps,
@@ -1487,6 +1473,7 @@
                 tooltipPosition: 'auto',
                 positionPrecedence: ['top', 'bottom', 'left', 'right']
             });
+            
             
             // Prevent exit on first visit via any method
             intro.onbeforeexit(function() {
