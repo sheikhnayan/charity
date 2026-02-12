@@ -557,10 +557,20 @@ class AdminController extends Controller
             // Get donations from those students (donations table has user_id)
             $data = Donation::whereIn('user_id', $studentIds)->where('status',1)->latest()->get();
             
-            // Get teachers for the parent's website, sorted alphabetically
+            // Get teachers for the parent's website, sorted alphabetically by name (ignoring prefixes)
             $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
-                ->orderBy('name', 'asc')
-                ->get();
+                ->get()
+                ->sortBy(function($teacher) {
+                    // Remove common prefixes for sorting
+                    $name = $teacher->name;
+                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
+                    foreach ($prefixes as $prefix) {
+                        if (stripos($name, $prefix) === 0) {
+                            return substr($name, strlen($prefix));
+                        }
+                    }
+                    return $name;
+                })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
@@ -591,10 +601,20 @@ class AdminController extends Controller
             // Get transaction records from those students
             $data = Transaction::where('email', Auth::user()->email)->latest()->get();
             
-            // Get teachers for the parent's website, sorted alphabetically
+            // Get teachers for the parent's website, sorted alphabetically by name (ignoring prefixes)
             $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
-                ->orderBy('name', 'asc')
-                ->get();
+                ->get()
+                ->sortBy(function($teacher) {
+                    // Remove common prefixes for sorting
+                    $name = $teacher->name;
+                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
+                    foreach ($prefixes as $prefix) {
+                        if (stripos($name, $prefix) === 0) {
+                            return substr($name, strlen($prefix));
+                        }
+                    }
+                    return $name;
+                })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
@@ -767,10 +787,20 @@ class AdminController extends Controller
             // For parents, show only their children
             $data = User::with(['parent', 'teacher'])->where('parent_id', Auth::user()->id)->get();
             
-            // Get teachers for the parent's website from teachers table, sorted alphabetically
+            // Get teachers for the parent's website from teachers table, sorted alphabetically by name (ignoring prefixes)
             $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)
-                ->orderBy('name', 'asc')
-                ->get();
+                ->get()
+                ->sortBy(function($teacher) {
+                    // Remove common prefixes for sorting
+                    $name = $teacher->name;
+                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
+                    foreach ($prefixes as $prefix) {
+                        if (stripos($name, $prefix) === 0) {
+                            return substr($name, strlen($prefix));
+                        }
+                    }
+                    return $name;
+                })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !Auth::user()->parent_tutorial_seen;
