@@ -1716,18 +1716,18 @@ if (isset($state['components'])) {
         {{-- Main content area with universal inner-section handling --}}
         <div id="rendered-page">
             @session('success')
-                <div class="alert alert-success mt-4" role="alert">
+                <div class="alert alert-success mt-4 alert-auto-dismiss" role="alert">
                     {{ $value }}
                 </div>
             @endsession
 
             @session('error')
-                <div class="alert alert-danger mt-4" role="alert">
+                <div class="alert alert-danger mt-4 alert-auto-dismiss" role="alert">
                     {{ $value }}
                 </div>
             @endsession
             @session('errors')
-                <div class="alert alert-danger mt-4" role="alert">
+                <div class="alert alert-danger mt-4 alert-auto-dismiss" role="alert">
                     @foreach($errors->all() as $value)
                         <div>{{ $value }}</div>
                     @endforeach
@@ -2670,6 +2670,26 @@ function moveFontClassesToParent() {
         })();
 </script>
 @endif
+
+<!-- Auto-dismiss alerts after 10 seconds -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert-auto-dismiss');
+    
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            // Fade out animation
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+            
+            // Remove from DOM after fade out
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        }, 10000); // 10 seconds
+    });
+});
+</script>
 
 <!-- Payment Funnel Tracking -->
 <script src="{{ asset('js/payment-funnel-tracking.js') }}"></script>

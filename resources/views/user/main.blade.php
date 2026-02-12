@@ -307,7 +307,7 @@
         margin-top: auto !important;
         position: sticky !important;
         bottom: 0 !important;
-        background: linear-gradient(to top, var(--primary) 80%, transparent) !important;
+        background: transparent !important;
         padding: 10px 8px !important;
         z-index: 10;
       }
