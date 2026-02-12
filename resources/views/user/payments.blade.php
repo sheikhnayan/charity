@@ -793,8 +793,8 @@
                             <option value="">Choose a teacher</option>
                             @if(isset($teachers))
                                 @foreach($teachers->sort(function($a, $b) {
-                                    $nameA = preg_replace('/^(Mr\\.|Ms\\.|Mrs\\.|Dr\\.)\\s*/i', '', $a->name);
-                                    $nameB = preg_replace('/^(Mr\\.|Ms\\.|Mrs\\.|Dr\\.)\\s*/i', '', $b->name);
+                                    $nameA = preg_replace('/^(Mr|Ms|Mrs|Dr)\\.?\\s*/i', '', $a->name);
+                                    $nameB = preg_replace('/^(Mr|Ms|Mrs|Dr)\\.?\\s*/i', '', $b->name);
                                     return strcasecmp($nameA, $nameB);
                                 }) as $teacher)
                                     <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
