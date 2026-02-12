@@ -4820,7 +4820,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     <div class="progress mt-3" role="progressbar"
                                         aria-valuenow="{{ $student->donations->sum('amount') }}"
                                         aria-valuemin="0"
-                                        aria-valuemax="{{ $student->goal }}"
+                                        aria-valuemax="{{ $student->goal == 0 ? 1 : $student->goal }}"
                                         data-primary-color="#2e4053"
                                         data-secondary-color="#b7bcc4"
                                         data-duration="5"
