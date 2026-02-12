@@ -122,7 +122,7 @@
 
             <!-- Alert -->
             <div class="highlight-box">
-                <strong>A new {{ $userRole }} has registered and requires approval.</strong>
+                <strong>A new {{ $userRole == 'Parents' ? 'Parents/Guardian' : $userRole }} has registered and requires approval.</strong>
             </div>
 
             <!-- Registration Details -->
@@ -139,7 +139,13 @@
                     </tr>
                     <tr>
                         <td class="label">Account Type:</td>
-                        <td class="value">{{ $userRole }}</td>
+                        <td class="value">
+                            @if ($userRole == 'Parents')
+                                Parents/Guardian
+                            @else
+                            {{ $userRole }}
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <td class="label">Registered:</td>
