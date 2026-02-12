@@ -557,10 +557,15 @@ class AdminController extends Controller
             // Get donations from those students (donations table has user_id)
             $data = Donation::whereIn('user_id', $studentIds)->where('status',1)->latest()->get();
             
+            // Get teachers for the parent's website, sorted alphabetically
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
+                ->orderBy('name', 'asc')
+                ->get();
+            
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
 
-            return view('user.donation', compact('data', 'showTutorial'));
+            return view('user.donation', compact('data', 'showTutorial', 'teachers'));
         }elseif($user->role == 'customer'){ 
             $data = Transaction::where('email',$user->email)->get();
 
@@ -586,10 +591,15 @@ class AdminController extends Controller
             // Get transaction records from those students
             $data = Transaction::where('email', Auth::user()->email)->latest()->get();
             
+            // Get teachers for the parent's website, sorted alphabetically
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
+                ->orderBy('name', 'asc')
+                ->get();
+            
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
 
-            return view('user.payments', compact('data', 'showTutorial'));
+            return view('user.payments', compact('data', 'showTutorial', 'teachers'));
         }
 
         return redirect('/users');
@@ -757,8 +767,10 @@ class AdminController extends Controller
             // For parents, show only their children
             $data = User::with(['parent', 'teacher'])->where('parent_id', Auth::user()->id)->get();
             
-            // Get teachers for the parent's website from teachers table
-            $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
+            // Get teachers for the parent's website from teachers table, sorted alphabetically
+            $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)
+                ->orderBy('name', 'asc')
+                ->get();
             
             // Check if parent has seen tutorial
             $showTutorial = !Auth::user()->parent_tutorial_seen;

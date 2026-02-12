@@ -544,10 +544,15 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/profile', function () {
         $user = Auth::user()->load('website', 'website.setting');
         $showTutorial = false;
+        $teachers = collect();
         if ($user->role == 'parents') {
             $showTutorial = !$user->parent_tutorial_seen;
+            // Get teachers for the parent's website, sorted alphabetically
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
+                ->orderBy('name', 'asc')
+                ->get();
         }
-        return view('user.profile', compact('user', 'showTutorial'));
+        return view('user.profile', compact('user', 'showTutorial', 'teachers'));
     });
 
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
