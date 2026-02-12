@@ -1480,10 +1480,12 @@
                 nextLabel: 'Next →',
                 prevLabel: '← Back',
                 doneLabel: 'Finish',
-                scrollToElement: true,
+                scrollToElement: false,
                 scrollPadding: 30,
                 disableInteraction: true,
-                overlayOpacity: 0.7
+                overlayOpacity: 0.7,
+                tooltipPosition: 'auto',
+                positionPrecedence: ['top', 'bottom', 'left', 'right']
             });
             
             // Prevent exit on first visit via any method
