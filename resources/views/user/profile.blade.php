@@ -1397,42 +1397,34 @@
                 intro: 'Let me show you how to add a new participant to your profile!'
             });
             
-            // Step 1: Add Participant Button
+            // Step 1: First Name (modal will auto-open before this step)
             tutorialSteps.push({
-                element: document.querySelector('.page-title-actions .btn-primary'),
-                title: 'Add Participant 👨‍🎓',
-                intro: isMobile ? 'Tap this button to open the form to add a new participant.' : 'Click this button to open the form to add a new participant.',
-                position: isMobile ? 'bottom' : 'left'
-            });
-            
-            // Step 2: First Name
-            tutorialSteps.push({
-                element: document.querySelector('#first_name') || document.querySelector('input[name="first_name"]'),
+                element: document.querySelector('#first_name'),
                 title: 'First Name ✏️',
                 intro: 'Enter your participant\'s first name here.',
                 position: 'bottom',
                 tooltipClass: 'introjs-floating'
             });
             
-            // Step 3: Last Name
+            // Step 2: Last Name
             tutorialSteps.push({
-                element: document.querySelector('#last_name') || document.querySelector('input[name="last_name"]'),
+                element: document.querySelector('#last_name'),
                 title: 'Last Name ✏️',
                 intro: 'Enter your participant\'s last name here.',
                 position: 'bottom',
                 tooltipClass: 'introjs-floating'
             });
             
-            // Step 4: Teacher Selection
+            // Step 3: Teacher Selection
             tutorialSteps.push({
-                element: document.querySelector('#teacher_id') || document.querySelector('select[name="teacher_id"]'),
+                element: document.querySelector('#teacher_id'),
                 title: 'Select Teacher 🧑‍🏫',
                 intro: 'Choose which teacher is helping this participant. This helps track fundraising by teacher.',
                 position: 'bottom',
                 tooltipClass: 'introjs-floating'
             });
             
-            // Step 5: Goal Amount
+            // Step 4: Goal Amount
             tutorialSteps.push({
                 element: document.querySelector('#modal_goal'),
                 title: 'Fundraising Goal 🎣',
@@ -1441,7 +1433,7 @@
                 tooltipClass: 'introjs-floating'
             });
             
-            // Step 6: T-Shirt Size
+            // Step 5: T-Shirt Size
             tutorialSteps.push({
                 element: document.querySelector('#modal_tshirt_size'),
                 title: 'T-Shirt Size 👕',
@@ -1450,7 +1442,7 @@
                 tooltipClass: 'introjs-floating'
             });
             
-            // Step 7: Done
+            // Step 6: Done
             tutorialSteps.push({
                 title: 'You\'re All Set! 🎉',
                 intro: 'That\'s it! Once you fill in all the information and click "Add Participant", they\'ll be added to your account and ready to start fundraising!',
@@ -1484,14 +1476,44 @@
                 return true;
             });
             
+            // Handle step changes to open/close modal appropriately
+            intro.onchange(function(targetElement) {
+                const currentStep = intro._currentStep;
+                console.log('Tutorial step:', currentStep);
+                
+                // Open modal when moving to Add Participant button step (step 1)
+                if (currentStep === 1) {
+                    const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+                    modal.show();
+                    
+                    // Give modal time to open before highlighting elements
+                    setTimeout(() => {
+                        intro.updateStepElement(currentStep);
+                    }, 300);
+                }
+            });
+            
             intro.oncomplete(function() {
                 isFirstVisit = false;
                 document.body.classList.remove('tutorial-first-visit');
+                
+                // Close the modal when tutorial is complete
+                const addStudentModal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+                if (addStudentModal) {
+                    addStudentModal.hide();
+                }
+                
                 markTutorialAsSeen();
             });
             
             intro.onexit(function() {
                 if (!isFirstVisit) {
+                    // Close the modal when exiting
+                    const addStudentModal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+                    if (addStudentModal) {
+                        addStudentModal.hide();
+                    }
+                    
                     document.body.classList.remove('tutorial-first-visit');
                     markTutorialAsSeen();
                 }
