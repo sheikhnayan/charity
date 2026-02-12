@@ -1393,31 +1393,47 @@
             .introjs-button {
                 font-size: 11px;
                 padding: 6px 12px;
+                flex: 1;
             }
         }
 
-        /* iOS Safari fixes */
-        @supports (-webkit-touch-callout: none) {
-            .introjs-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                z-index: 999999998;
-            }
-
+        /* Safari-specific fixes for Intro.js */
+        @supports (-webkit-appearance:none) {
             .introjs-tooltip {
-                position: fixed;
-                z-index: 999999999;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+                will-change: transform, opacity;
             }
-
-            .introjs-floating.introjs-tooltip {
+            
+            .introjs-helperLayer {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+            
+            .introjs-overlay {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+            }
+            
+            /* Ensure tooltips are always visible in Safari */
+            .introjs-tooltipReferenceLayer {
+                visibility: visible !important;
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+            }
+            
+            /* Fix for centered tooltips without elements in Safari */
+            .introjs-tooltip.introjs-floating {
                 position: fixed !important;
-                top: 50% !important;
                 left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                z-index: 999999999 !important;
+                top: 50% !important;
+                -webkit-transform: translate(-50%, -50%) translateZ(0) !important;
+                transform: translate(-50%, -50%) translateZ(0) !important;
+                margin: 0 !important;
             }
         }
     </style>
