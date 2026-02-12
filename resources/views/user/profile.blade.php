@@ -1108,7 +1108,11 @@
                         <select class="form-select teacher-select" id="teacher_id" name="teacher_id" required>
                             <option value="">Choose a teacher</option>
                             @if(isset($teachers))
-                                @foreach($teachers as $teacher)
+                                @foreach($teachers->sort(function($a, $b) {
+                                    $nameA = preg_replace('/^(Mr\\.|Ms\\.|Mrs\\.|Dr\\.)\\s*/i', '', $a->name);
+                                    $nameB = preg_replace('/^(Mr\\.|Ms\\.|Mrs\\.|Dr\\.)\\s*/i', '', $b->name);
+                                    return strcasecmp($nameA, $nameB);
+                                }) as $teacher)
                                     <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                                 @endforeach
                             @endif
