@@ -4833,7 +4833,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                     </div>
                                     <span class="fw-semibold d-block text-center mt-2">
                                         @php $to = $student->donations->sum('amount'); @endphp
-                                        ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">raised</small>
+                                        ${{ $to }} <small class="opacity-75 fw-light">of</small> ${{ $student->goal ?? 0 }} <small class="opacity-75 fw-light">Goal</small>
                                     </span>
                                 </div>
                             </div>
