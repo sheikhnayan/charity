@@ -1366,5 +1366,4 @@
     });
     </script>
 
-    @endif
 @endsection
