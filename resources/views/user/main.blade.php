@@ -999,6 +999,11 @@
           .then(response => response.json())
           .then(data => {
             console.log('📚 Teachers loaded:', data);
+
+            const stripPrefix = (name) => {
+              if (!name) return '';
+              return name.replace(/^(Mr|Ms|Mrs|Dr)\.?\s*/i, '');
+            };
             
             // Clear existing options except placeholder
             while (teacherSelect.options.length > 1) {
@@ -1007,7 +1012,10 @@
             
             // Add teachers from API
             if (data.teachers && data.teachers.length > 0) {
-              data.teachers.forEach(teacher => {
+              data.teachers
+                .slice()
+                .sort((a, b) => stripPrefix(a.name).localeCompare(stripPrefix(b.name), undefined, { sensitivity: 'base' }))
+                .forEach(teacher => {
                 const option = document.createElement('option');
                 option.value = teacher.id;
                 option.textContent = teacher.name;
