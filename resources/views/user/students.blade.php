@@ -383,7 +383,7 @@
                                     <div class="invalid-feedback" id="modal_photo_error" style="@error('photo') display: block; @else display: none; @enderror">@error('photo'){{ $message }}@enderror</div>
                                 </div>
                             </div>
-                            <div class="modal-footer pt-2">
+                            <div class="modal-footer pt-4">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Add Student</button>
                             </div>
