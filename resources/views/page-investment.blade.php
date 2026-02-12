@@ -2686,7 +2686,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 alert.remove();
             }, 500);
-        }, 10000); // 10 seconds
+        }, 2000); // 2 seconds
     });
 });
 </script>
