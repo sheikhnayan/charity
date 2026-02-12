@@ -1391,63 +1391,85 @@
             // Build steps based on device type
             let tutorialSteps = [];
             
-            // Welcome step
+            // Welcome step (both mobile and desktop)
             tutorialSteps.push({
                 title: 'Welcome! 👋',
-                intro: 'Let me show you how to add a new participant to your profile!'
+                intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.'
             });
             
-            // Step 1: First Name (modal will auto-open before this step)
-            tutorialSteps.push({
-                element: document.querySelector('#first_name'),
-                title: 'First Name ✏️',
-                intro: 'Enter your participant\'s first name here.',
-                position: 'bottom',
-                tooltipClass: 'introjs-floating'
-            });
-            
-            // Step 2: Last Name
-            tutorialSteps.push({
-                element: document.querySelector('#last_name'),
-                title: 'Last Name ✏️',
-                intro: 'Enter your participant\'s last name here.',
-                position: 'bottom',
-                tooltipClass: 'introjs-floating'
-            });
-            
-            // Step 3: Teacher Selection
-            tutorialSteps.push({
-                element: document.querySelector('#teacher_id'),
-                title: 'Select Teacher 🧑‍🏫',
-                intro: 'Choose which teacher is helping this participant. This helps track fundraising by teacher.',
-                position: 'bottom',
-                tooltipClass: 'introjs-floating'
-            });
-            
-            // Step 4: Goal Amount
-            tutorialSteps.push({
-                element: document.querySelector('#modal_goal'),
-                title: 'Fundraising Goal 🎣',
-                intro: 'Set a fundraising goal for this participant. This helps track their progress.',
-                position: 'bottom',
-                tooltipClass: 'introjs-floating'
-            });
-            
-            // Step 5: T-Shirt Size
-            tutorialSteps.push({
-                element: document.querySelector('#modal_tshirt_size'),
-                title: 'T-Shirt Size 👕',
-                intro: 'Select a t-shirt size for this participant as a reward item.',
-                position: 'bottom',
-                tooltipClass: 'introjs-floating'
-            });
-            
-            // Step 6: Done
-            tutorialSteps.push({
-                title: 'You\'re All Set! 🎉',
-                intro: 'That\'s it! Once you fill in all the information and click "Add Participant", they\'ll be added to your account and ready to start fundraising!',
-                tooltipClass: 'introjs-floating'
-            });
+            if (isMobile) {
+                // Mobile-specific tutorial steps (skip sidebar references)
+                tutorialSteps.push({
+                    title: 'Navigation Menu 📱',
+                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like participants, Profile, and Payments.',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Adding Participants 🎓',
+                    intro: 'To add a new participant:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Participant" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Managing Participants',
+                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by tapping this button anytime!',
+                    position: 'bottom'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! You\'re ready to start managing your participants. Tap the menu icon (☰) and select "Participant" to get started!',
+                    tooltipClass: 'introjs-floating'
+                });
+            } else {
+                // Desktop tutorial steps (original with sidebar references)
+                tutorialSteps.push({
+                    element: document.querySelector('#students-menu-item'),
+                    title: 'Participants',
+                    intro: 'Click here to view and manage all your participants. This is where you\'ll spend most of your time!',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#profile-menu-item'),
+                    title: 'Your Profile',
+                    intro: 'Update your personal information and profile settings here.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Adding Participants 🎓',
+                    intro: 'To add a new participant:<br><br>1. Click on "Participant" in the sidebar<br>2. Click the "Add Participant" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Managing Participants',
+                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
+                    tooltipClass: 'introjs-floating'
+                });
+                
+                tutorialSteps.push({
+                    element: document.querySelector('#tutorialBtn'),
+                    title: 'Need Help Later?',
+                    intro: 'You can always replay this tutorial by clicking this button anytime!',
+                    position: 'left'
+                });
+                
+                tutorialSteps.push({
+                    title: 'You\'re All Set! 🎉',
+                    intro: 'That\'s it! You\'re ready to start managing your participants. Click "Participant" in the sidebar to get started!',
+                    tooltipClass: 'introjs-floating'
+                });
+            }
             
             intro.setOptions({
                 steps: tutorialSteps,
@@ -1458,14 +1480,11 @@
                 nextLabel: 'Next →',
                 prevLabel: '← Back',
                 doneLabel: 'Finish',
-                scrollToElement: false,
+                scrollToElement: true,
                 scrollPadding: 30,
                 disableInteraction: true,
-                overlayOpacity: 0.7,
-                tooltipPosition: 'auto',
-                positionPrecedence: ['top', 'bottom', 'left', 'right']
+                overlayOpacity: 0.7
             });
-            
             
             // Prevent exit on first visit via any method
             intro.onbeforeexit(function() {
@@ -1476,44 +1495,14 @@
                 return true;
             });
             
-            // Handle step changes to open/close modal appropriately
-            intro.onchange(function(targetElement) {
-                const currentStep = intro._currentStep;
-                console.log('Tutorial step:', currentStep);
-                
-                // Open modal when moving to Add Participant button step (step 1)
-                if (currentStep === 1) {
-                    const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
-                    modal.show();
-                    
-                    // Give modal time to open before highlighting elements
-                    setTimeout(() => {
-                        intro.updateStepElement(currentStep);
-                    }, 300);
-                }
-            });
-            
             intro.oncomplete(function() {
                 isFirstVisit = false;
                 document.body.classList.remove('tutorial-first-visit');
-                
-                // Close the modal when tutorial is complete
-                const addStudentModal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
-                if (addStudentModal) {
-                    addStudentModal.hide();
-                }
-                
                 markTutorialAsSeen();
             });
             
             intro.onexit(function() {
                 if (!isFirstVisit) {
-                    // Close the modal when exiting
-                    const addStudentModal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
-                    if (addStudentModal) {
-                        addStudentModal.hide();
-                    }
-                    
                     document.body.classList.remove('tutorial-first-visit');
                     markTutorialAsSeen();
                 }
