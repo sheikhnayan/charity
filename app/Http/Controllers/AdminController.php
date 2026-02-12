@@ -558,19 +558,13 @@ class AdminController extends Controller
             $data = Donation::whereIn('user_id', $studentIds)->where('status',1)->latest()->get();
             
             // Get teachers for the parent's website, sorted alphabetically by name (ignoring prefixes)
-            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
-                ->get()
-                ->sortBy(function($teacher) {
-                    // Remove common prefixes for sorting
-                    $name = $teacher->name;
-                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
-                    foreach ($prefixes as $prefix) {
-                        if (stripos($name, $prefix) === 0) {
-                            return substr($name, strlen($prefix));
-                        }
-                    }
-                    return $name;
-                })->values();
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)->get();
+            $teachers = $teachers->sort(function($a, $b) {
+                // Strip common prefixes for sorting
+                $nameA = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $a->name);
+                $nameB = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $b->name);
+                return strcasecmp($nameA, $nameB);
+            })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
@@ -602,19 +596,13 @@ class AdminController extends Controller
             $data = Transaction::where('email', Auth::user()->email)->latest()->get();
             
             // Get teachers for the parent's website, sorted alphabetically by name (ignoring prefixes)
-            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
-                ->get()
-                ->sortBy(function($teacher) {
-                    // Remove common prefixes for sorting
-                    $name = $teacher->name;
-                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
-                    foreach ($prefixes as $prefix) {
-                        if (stripos($name, $prefix) === 0) {
-                            return substr($name, strlen($prefix));
-                        }
-                    }
-                    return $name;
-                })->values();
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)->get();
+            $teachers = $teachers->sort(function($a, $b) {
+                // Strip common prefixes for sorting
+                $nameA = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $a->name);
+                $nameB = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $b->name);
+                return strcasecmp($nameA, $nameB);
+            })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !$user->parent_tutorial_seen;
@@ -788,19 +776,13 @@ class AdminController extends Controller
             $data = User::with(['parent', 'teacher'])->where('parent_id', Auth::user()->id)->get();
             
             // Get teachers for the parent's website from teachers table, sorted alphabetically by name (ignoring prefixes)
-            $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)
-                ->get()
-                ->sortBy(function($teacher) {
-                    // Remove common prefixes for sorting
-                    $name = $teacher->name;
-                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
-                    foreach ($prefixes as $prefix) {
-                        if (stripos($name, $prefix) === 0) {
-                            return substr($name, strlen($prefix));
-                        }
-                    }
-                    return $name;
-                })->values();
+            $teachers = \App\Models\Teacher::where('website_id', Auth::user()->website_id)->get();
+            $teachers = $teachers->sort(function($a, $b) {
+                // Strip common prefixes for sorting
+                $nameA = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $a->name);
+                $nameB = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $b->name);
+                return strcasecmp($nameA, $nameB);
+            })->values();
             
             // Check if parent has seen tutorial
             $showTutorial = !Auth::user()->parent_tutorial_seen;

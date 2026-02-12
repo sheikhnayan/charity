@@ -548,19 +548,13 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
         if ($user->role == 'parents') {
             $showTutorial = !$user->parent_tutorial_seen;
             // Get teachers for the parent's website, sorted alphabetically by name (ignoring prefixes)
-            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)
-                ->get()
-                ->sortBy(function($teacher) {
-                    // Remove common prefixes for sorting
-                    $name = $teacher->name;
-                    $prefixes = ['Mr. ', 'Ms. ', 'Mrs. ', 'Dr. ', 'Mr ', 'Ms ', 'Mrs ', 'Dr '];
-                    foreach ($prefixes as $prefix) {
-                        if (stripos($name, $prefix) === 0) {
-                            return substr($name, strlen($prefix));
-                        }
-                    }
-                    return $name;
-                })->values();
+            $teachers = \App\Models\Teacher::where('website_id', $user->website_id)->get();
+            $teachers = $teachers->sort(function($a, $b) {
+                // Strip common prefixes for sorting
+                $nameA = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $a->name);
+                $nameB = preg_replace('/^(Mr\.|Ms\.|Mrs\.|Dr\.)\s*/i', '', $b->name);
+                return strcasecmp($nameA, $nameB);
+            })->values();
         }
         return view('user.profile', compact('user', 'showTutorial', 'teachers'));
     });
