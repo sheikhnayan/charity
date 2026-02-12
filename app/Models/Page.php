@@ -19,6 +19,7 @@ class Page extends Model
         'position',
         'meta_title',
         'meta_description',
+        'meta_image',
         'background_color',
         'default',
         'is_main_site',

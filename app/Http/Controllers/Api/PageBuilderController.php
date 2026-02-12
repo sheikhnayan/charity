@@ -159,6 +159,15 @@ class PageBuilderController extends Controller
             $add->name = $request->name;
             $add->meta_title = $request->meta_title;
             $add->meta_description = $request->meta_description;
+            
+            // Handle meta image upload
+            if ($request->hasFile('meta_image')) {
+                $file = $request->file('meta_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('meta_images', $filename, 'public');
+                $add->meta_image = 'storage/' . $path;
+            }
+            
             $add->background_color = $request->background_color;
             $add->default = $request->default;
             $add->is_homepage = $request->default == 1; // Set homepage status
@@ -185,6 +194,15 @@ class PageBuilderController extends Controller
             $add->name = $request->name;
             $add->meta_title = $request->meta_title;
             $add->meta_description = $request->meta_description;
+            
+            // Handle meta image upload
+            if ($request->hasFile('meta_image')) {
+                $file = $request->file('meta_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('meta_images', $filename, 'public');
+                $add->meta_image = 'storage/' . $path;
+            }
+            
             $add->background_color = $request->background_color;
             $add->default = $request->default;
             $add->is_homepage = $request->default == 1; // Set homepage status
@@ -215,6 +233,20 @@ class PageBuilderController extends Controller
         $update->name = $request->name;
         $update->meta_title = $request->meta_title;
         $update->meta_description = $request->meta_description;
+        
+        // Handle meta image upload
+        if ($request->hasFile('meta_image')) {
+            // Delete old image if exists
+            if ($update->meta_image && file_exists(public_path($update->meta_image))) {
+                unlink(public_path($update->meta_image));
+            }
+            
+            $file = $request->file('meta_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('meta_images', $filename, 'public');
+            $update->meta_image = 'storage/' . $path;
+        }
+        
         $update->background_color = $request->background_color;
         $update->default = $request->default;
         $update->status = $request->status;

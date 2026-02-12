@@ -83,7 +83,7 @@ label{
                         <div class="row">
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
-                                    <form action="{{ route('admin.page.update',[$data->id]) }}" method="post">
+                                    <form action="{{ route('admin.page.update',[$data->id]) }}" method="post" enctype="multipart/form-data">
                                         @csrf
 
                                         <div class="card-body">
@@ -173,6 +173,22 @@ label{
                                                     <div class="mb-3">
                                                         <label for="name" class="form-label">Meta Description</label>
                                                         <textarea name="meta_description" class="form-control" id="meta_description" placeholder="Meta Description">{{ $data->meta_description }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="meta_image" class="form-label">Meta Image (Open Graph)</label>
+                                                        <input type="file" name="meta_image" class="form-control" id="meta_image" accept="image/*">
+                                                        @if($data->meta_image)
+                                                            <div class="mt-2">
+                                                                <small class="text-muted">Current image:</small><br>
+                                                                <img src="{{ asset($data->meta_image) }}" alt="Meta Image" style="max-width: 200px; max-height: 100px; object-fit: cover;" class="mt-1">
+                                                            </div>
+                                                        @endif
+                                                        <small class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>
+                                                            Upload an image for social media sharing (recommended: 1200x630px)
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>

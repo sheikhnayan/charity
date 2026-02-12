@@ -12,7 +12,32 @@ if (isset($state['components'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $data->name ?? 'Page' }}</title>
+    <title>{{ $data->meta_title ?? $data->name ?? 'Page' }}</title>
+    
+    @if(isset($data->meta_description))
+    <meta name="description" content="{{ $data->meta_description }}">
+    @endif
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ $data->meta_title ?? $data->name ?? 'Page' }}">
+    @if(isset($data->meta_description))
+    <meta property="og:description" content="{{ $data->meta_description }}">
+    @endif
+    @if(isset($data->meta_image))
+    <meta property="og:image" content="{{ asset($data->meta_image) }}">
+    @endif
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $data->meta_title ?? $data->name ?? 'Page' }}">
+    @if(isset($data->meta_description))
+    <meta name="twitter:description" content="{{ $data->meta_description }}">
+    @endif
+    @if(isset($data->meta_image))
+    <meta name="twitter:image" content="{{ asset($data->meta_image) }}">
+    @endif
     
     <!-- Cart Queue Stub - Initialize before any scripts use addToCart -->
     <script>

@@ -150,7 +150,7 @@
 
             <!-- Action Button -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="{{ $approvalLink }}" class="btn-primary">Review & Approve Registrations</a>
+                <a href="{{ $approvalLink }}" class="btn-primary" style="color: #fff !important;">Review & Approve Registrations</a>
             </div>
 
             <!-- Status Info -->

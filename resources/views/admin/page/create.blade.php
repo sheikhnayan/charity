@@ -83,7 +83,7 @@ label{
                         <div class="row">
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary" style="background: #fff !important;">
-                                    <form action="{{ route('admin.page.store') }}" method="post">
+                                    <form action="{{ route('admin.page.store') }}" method="post" enctype="multipart/form-data">
                                         @csrf
 
                                         <div class="card-body">
@@ -182,6 +182,16 @@ label{
                                                     <div class="mb-3">
                                                         <label for="name" class="form-label">Meta Description</label>
                                                         <textarea name="meta_description" class="form-control" id="meta_description" placeholder="Meta Description"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="meta_image" class="form-label">Meta Image (Open Graph)</label>
+                                                        <input type="file" name="meta_image" class="form-control" id="meta_image" accept="image/*">
+                                                        <small class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>
+                                                            Upload an image for social media sharing (recommended: 1200x630px)
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
