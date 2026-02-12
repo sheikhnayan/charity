@@ -1394,26 +1394,27 @@
             // Welcome step (both mobile and desktop)
             tutorialSteps.push({
                 title: 'Welcome! 👋',
-                intro: 'Welcome to your Payments dashboard! Let me show you how to view and manage your payment history.'
+                intro: 'Welcome to your dashboard! Let me show you how to add and manage participants under your profile.',
+                tooltipClass: 'introjs-floating'
             });
             
             if (isMobile) {
                 // Mobile-specific tutorial steps (skip sidebar references)
                 tutorialSteps.push({
                     title: 'Navigation Menu 📱',
-                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like Payments, Participants, and Profile.',
+                    intro: 'On mobile, tap the menu icon (☰) at the top to access all sections like participants, Profile, and Payments.',
                     tooltipClass: 'introjs-floating'
                 });
                 
                 tutorialSteps.push({
-                    title: 'Viewing Payments 💳',
-                    intro: 'This table shows all the payments made:<br><br>• Transaction ID: Unique payment reference<br>• Participant/Individual: Who the payment was for<br>• Amount: Total donation amount<br>• Status: Payment completion status<br>• Date: When the payment was made',
+                    title: 'Adding Participants 🎓',
+                    intro: 'To add a new participant:<br><br>1. Tap the menu icon (☰) at the top<br>2. Select "Participant"<br>3. Tap "Add Participant" button<br>4. Fill in their information<br>5. Tap "Save" to add them',
                     tooltipClass: 'introjs-floating'
                 });
                 
                 tutorialSteps.push({
-                    title: 'Payment Actions',
-                    intro: 'You can:<br><br>• View transaction details<br>• Check payment status<br>• Export payment records<br>• Manage payment history',
+                    title: 'Managing Participants',
+                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
                     tooltipClass: 'introjs-floating'
                 });
                 
@@ -1426,34 +1427,34 @@
                 
                 tutorialSteps.push({
                     title: 'You\'re All Set! 🎉',
-                    intro: 'That\'s it! You\'re ready to manage your payments. Tap the menu icon (☰) and select "Payments" anytime!',
+                    intro: 'That\'s it! You\'re ready to start managing your participants. Tap the menu icon (☰) and select "Participant" to get started!',
                     tooltipClass: 'introjs-floating'
                 });
             } else {
                 // Desktop tutorial steps (original with sidebar references)
                 tutorialSteps.push({
-                    element: document.querySelector('#payments-menu-item'),
-                    title: 'Payments',
-                    intro: 'Click here to view all your payment history and transaction details.',
-                    position: 'right'
-                });
-                
-                tutorialSteps.push({
                     element: document.querySelector('#students-menu-item'),
                     title: 'Participants',
-                    intro: 'Click here to manage all your participants.',
+                    intro: 'Click here to view and manage all your participants. This is where you\'ll spend most of your time!',
                     position: 'right'
                 });
                 
                 tutorialSteps.push({
-                    title: 'Viewing Payments 💳',
-                    intro: 'This table shows all the payments made:<br><br>• Transaction ID: Unique payment reference<br>• Participant/Individual: Who the payment was for<br>• Amount: Total donation amount<br>• Status: Payment completion status<br>• Date: When the payment was made',
+                    element: document.querySelector('#profile-menu-item'),
+                    title: 'Your Profile',
+                    intro: 'Update your personal information and profile settings here.',
+                    position: 'right'
+                });
+                
+                tutorialSteps.push({
+                    title: 'Adding Participants 🎓',
+                    intro: 'To add a new participant:<br><br>1. Click on "Participant" in the sidebar<br>2. Click the "Add Participant" button<br>3. Fill in their information<br>4. Click "Save" to add them to your account',
                     tooltipClass: 'introjs-floating'
                 });
                 
                 tutorialSteps.push({
-                    title: 'Payment Actions',
-                    intro: 'You can:<br><br>• View transaction details<br>• Check payment status<br>• Export payment records<br>• Manage payment history',
+                    title: 'Managing Participants',
+                    intro: 'Once you\'ve added participants, you can:<br><br>• View their fundraising progress<br>• Edit their profile information<br>• Track donations received<br>• Share their fundraising page',
                     tooltipClass: 'introjs-floating'
                 });
                 
@@ -1466,7 +1467,7 @@
                 
                 tutorialSteps.push({
                     title: 'You\'re All Set! 🎉',
-                    intro: 'That\'s it! You\'re ready to manage your payments. Click "Payments" in the sidebar anytime!',
+                    intro: 'That\'s it! You\'re ready to start managing your participants. Click "Participant" in the sidebar to get started!',
                     tooltipClass: 'introjs-floating'
                 });
             }
