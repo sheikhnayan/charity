@@ -746,8 +746,149 @@
                 @endif
             </script>
             <style>
+                /* Intro.js Custom Styling */
+                .introjs-overlay {
+                    background: rgba(0, 0, 0, 0.5);
+                }
+
+                .introjs-tooltip {
+                    max-width: 450px;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    background: white;
+                }
+
+                .introjs-tooltip-title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    padding: 15px 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border-radius: 8px 8px 0 0;
+                }
+
+                .introjs-tooltiptext {
+                    font-size: 14px;
+                    line-height: 1.6;
+                    padding: 15px 20px;
+                    color: #333;
+                }
+
+                .introjs-tooltipbuttons {
+                    padding: 0 20px 15px;
+                    display: flex;
+                    gap: 8px;
+                    justify-content: flex-end;
+                }
+
+                .introjs-button {
+                    border-radius: 5px;
+                    padding: 8px 16px;
+                    font-weight: 600;
+                    text-shadow: none;
+                    cursor: pointer;
+                    font-size: 12px;
+                    border: none;
+                    transition: all 0.2s ease;
+                }
+
+                .introjs-button:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+
+                .introjs-nextbutton {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                }
+
+                .introjs-prevbutton {
+                    background: #e2e8f0;
+                    color: #2d3748;
+                }
+
+                .introjs-donebutton {
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                }
+
+                .introjs-skipbutton {
+                    color: #475569;
+                    background: #f8fafc;
+                    padding: 0;
+                    width: 15px;
+                    height: 15px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 999px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 28px;
+                    text-align: center;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+                    margin-top: 21px;
+                    margin-right: 4px;
+                }
+
+                .introjs-skipbutton:hover {
+                    background: #f1f5f9;
+                    color: #0f172a;
+                }
+
+                .introjs-skipbutton:disabled,
+                .introjs-skipbutton.disabled {
+                    display: none !important;
+                }
+
                 body.tutorial-first-visit .introjs-skipbutton {
                     display: none !important;
+                }
+
+                .introjs-progressbar {
+                    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                }
+
+                /* Mobile responsive */
+                @media(max-width: 768px) {
+                    .introjs-tooltip {
+                        max-width: 90vw;
+                    }
+                    
+                    .introjs-tooltipbuttons {
+                        flex-wrap: wrap;
+                    }
+                    
+                    .introjs-button {
+                        font-size: 11px;
+                        padding: 6px 12px;
+                    }
+                }
+
+                /* iOS Safari fixes */
+                @supports (-webkit-touch-callout: none) {
+                    .introjs-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100vh;
+                        z-index: 999999998;
+                    }
+
+                    .introjs-tooltip {
+                        position: fixed;
+                        z-index: 999999999;
+                    }
+
+                    .introjs-floating.introjs-tooltip {
+                        position: fixed !important;
+                        top: 50% !important;
+                        left: 50% !important;
+                        transform: translate(-50%, -50%) !important;
+                        z-index: 999999999 !important;
+                    }
                 }
             </style>
             @endif
