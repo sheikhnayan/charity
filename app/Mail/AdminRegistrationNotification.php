@@ -34,7 +34,7 @@ class AdminRegistrationNotification extends Mailable
             \App\Services\WebsiteMailService::applyForWebsite($this->website);
         }
 
-        $subject = 'New Parent Registration - Approval Required | ' . $this->website->name;
+        $subject = 'New Parent/Guardian Registration - Approval Required | ' . $this->website->name;
 
         $message = $this->subject($subject)
                     ->view('emails.admin-registration-notification')
