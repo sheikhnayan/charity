@@ -197,6 +197,13 @@
                 font-size: 13px;
                 min-width: 120px;
             }
+
+            .sssssttttt{
+                font-family: sans-serif !important;
+                font-size: 100%;
+                line-height: 1.15 !important;
+                margin: 0 !important;
+            }
         }
 
     /* ---- Left column - gallery + product details ---- */
