@@ -204,6 +204,10 @@
                 line-height: 1.15 !important;
                 margin: 0 !important;
             }
+
+            .navbar-nav{
+                margin-left: 1.5rem !important;
+            }
         }
 
     /* ---- Left column - gallery + product details ---- */
