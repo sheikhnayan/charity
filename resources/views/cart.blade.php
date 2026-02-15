@@ -409,18 +409,6 @@
                                 <!-- Items will be populated here by JavaScript -->
                             </div>
 
-                            <!-- Subtotal -->
-                            <div class="d-flex justify-content-between mb-2" id="subtotalRow" style="display: none; padding-bottom: 10px; border-bottom: 1px solid #e9ecef;">
-                                <span style="color: #666;">Subtotal:</span>
-                                <span id="summarySubtotal" style="font-weight: 600; color: #2c3e50;">$0.00</span>
-                            </div>
-
-                            <!-- Donations Section -->
-                            <div class="d-flex justify-content-between mb-2" id="donationRow" style="display: none;">
-                                <span style="color: #666;"><i class="fas fa-heart text-danger"></i> Donations:</span>
-                                <span id="summaryDonation" style="font-weight: 600; color: #e74c3c;">$0.00</span>
-                            </div>
-
                             <hr style="margin: 15px 0;">
                             
                             <!-- Total -->
@@ -818,26 +806,6 @@ function updateSummary(items) {
                 }
             });
             breakdownContainer.innerHTML = breakdownHTML;
-        }
-    }
-
-    // Show/hide subtotal row - only show if there are products AND NO donations
-    const subtotalRow = document.getElementById('subtotalRow');
-    if (subtotalRow && totalItems > 0 && totalDonation === 0) {
-        subtotalRow.style.display = 'flex';
-        document.getElementById('summarySubtotal').textContent = '$' + totalItems.toFixed(2);
-    } else if (subtotalRow) {
-        subtotalRow.style.display = 'none';
-    }
-
-    // Show/hide donation row
-    const donationRow = document.getElementById('donationRow');
-    if (donationRow) {
-        if (totalDonation > 0) {
-            donationRow.style.display = 'flex';
-            document.getElementById('summaryDonation').textContent = '$' + totalDonation.toFixed(2);
-        } else {
-            donationRow.style.display = 'none';
         }
     }
 
