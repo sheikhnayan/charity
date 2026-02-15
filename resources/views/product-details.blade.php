@@ -886,7 +886,7 @@
         @endif
     @endif
 
-  <main class="container" style="margin-top: 14rem;">
+  <main class="container" style="margin-top: 5rem;">
     <div class="grid">
       <div class="row">
         <!-- LEFT: Gallery, similar, specifics, description -->

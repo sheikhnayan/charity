@@ -821,9 +821,9 @@ function updateSummary(items) {
         }
     }
 
-    // Show/hide subtotal row
+    // Show/hide subtotal row - only show if there are products AND NO donations
     const subtotalRow = document.getElementById('subtotalRow');
-    if (subtotalRow && totalItems > 0) {
+    if (subtotalRow && totalItems > 0 && totalDonation === 0) {
         subtotalRow.style.display = 'flex';
         document.getElementById('summarySubtotal').textContent = '$' + totalItems.toFixed(2);
     } else if (subtotalRow) {
@@ -841,7 +841,7 @@ function updateSummary(items) {
         }
     }
 
-    // Update total
+    // Update total - correctly shows sum of all products + all donations
     document.getElementById('summaryTotal').textContent = '$' + totalAmount.toFixed(2);
     
     // Disable/enable checkout button based on total
