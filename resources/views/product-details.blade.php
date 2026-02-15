@@ -147,6 +147,17 @@
         }
     }
 
+    @media screen and (max-width: 767px) {
+        .invest-mobile{
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+
         .invest-now-btn {
             background: #28a745;
             color: #ffffff;
