@@ -162,6 +162,11 @@
             min-width: 140px;
         }
 
+        .sssssttttt {
+            padding: 1.25rem 2.7rem !important;
+            border-radius: 0px !important;
+        }
+
         .invest-now-btn:hover {
             background: #218838;
             transform: translateY(-1px);
