@@ -1059,9 +1059,15 @@
         const originalTitle = btn.title;
         btn.title = 'Link copied!';
         btn.classList.add('active');
+
+        const tooltipInstance = bootstrap.Tooltip.getOrCreateInstance(btn);
+        tooltipInstance.setContent({ '.tooltip-inner': 'Link copied!' });
+        tooltipInstance.show();
         
         setTimeout(() => {
             btn.title = originalTitle;
+            tooltipInstance.setContent({ '.tooltip-inner': originalTitle });
+            tooltipInstance.hide();
             btn.classList.remove('active');
         }, 2000);
     }
