@@ -709,6 +709,7 @@ function updateSummary(items) {
     if (!items) {
         // Calculate from DOM if items not provided
         document.querySelectorAll('.cart-item').forEach(cartItem => {
+            const donationSection = cartItem.querySelector('.donation-amount-section');
             const donationInput = cartItem.querySelector('.donation-amount');
             const quantityInput = cartItem.querySelector('.item-quantity');
             const itemNameEl = cartItem.querySelector('.item-name');
@@ -718,7 +719,8 @@ function updateSummary(items) {
                 const itemName = itemNameEl.textContent || 'Unknown Item';
                 const price = parseFloat(priceText.replace(/[$,]/g, '')) || 0;
                 const qty = quantityInput ? (parseInt(quantityInput.value) || 1) : 1;
-                const isStudent = donationInput ? true : false;
+                // Check if this is a student item by seeing if donation section is VISIBLE
+                const isStudent = donationSection && donationSection.style.display !== 'none';
                 
                 if (isStudent && donationInput) {
                     const donationAmt = parseFloat(donationInput.value) || 0;
