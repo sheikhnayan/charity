@@ -147,6 +147,42 @@
         }
     }
 
+        .invest-now-btn {
+            background: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .invest-now-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .invest-now-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+
+        @media (max-width: 360px) {
+            
+            .invest-now-btn {
+                padding: 10px 24px;
+                font-size: 13px;
+                min-width: 120px;
+            }
+        }
+
     /* ---- Left column - gallery + product details ---- */
     .gallery-wrap{background:var(--card);border-radius:12px;padding:18px;border:1px solid #e9e9ea}
     .gallery-top{display:flex;gap:18px}
