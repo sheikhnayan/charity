@@ -1189,5 +1189,8 @@
   
   @include('partials.ticket-auth-modal')
   @include('partials.investor-info-modal')
+  
+  <!-- Bootstrap JS Bundle - Required for navbar collapse toggle functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
