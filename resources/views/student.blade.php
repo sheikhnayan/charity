@@ -1057,7 +1057,7 @@
         // Show success feedback
         const btn = event.currentTarget;
         const originalTitle = btn.title;
-        btn.title = 'Copied!';
+        btn.title = 'Link copied!';
         btn.classList.add('active');
         
         setTimeout(() => {
