@@ -24,6 +24,9 @@
   </script>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  
+  <link rel="stylesheet" href="{{ asset('auction.css') }}">
+  
   <!-- Tailwind CSS for modals -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- jQuery - Required for cart.js -->
