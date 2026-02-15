@@ -467,23 +467,23 @@ class HotjarViewController extends Controller
 
             // Save events to session_events table
             $eventsInserted = 0;
-            foreach ($request->events as $event) {
-                try {
-                    \DB::table('session_events')->insert([
-                        'session_recording_id' => $recording->id,
-                        'timestamp' => $event['timestamp'] ?? 0,
-                        'event_type' => $event['type'] ?? 0, // rrweb event type
-                        'data' => json_encode($event['data'] ?? $event), // Store full event data
-                        'created_at' => now(),
-                    ]);
-                    $eventsInserted++;
-                } catch (\Exception $e) {
-                    \Log::error('Failed to insert event', [
-                        'error' => $e->getMessage(),
-                        'event' => $event
-                    ]);
-                }
-            }
+            // foreach ($request->events as $event) {
+            //     try {
+            //         \DB::table('session_events')->insert([
+            //             'session_recording_id' => $recording->id,
+            //             'timestamp' => $event['timestamp'] ?? 0,
+            //             'event_type' => $event['type'] ?? 0, // rrweb event type
+            //             'data' => json_encode($event['data'] ?? $event), // Store full event data
+            //             'created_at' => now(),
+            //         ]);
+            //         $eventsInserted++;
+            //     } catch (\Exception $e) {
+            //         \Log::error('Failed to insert event', [
+            //             'error' => $e->getMessage(),
+            //             'event' => $event
+            //         ]);
+            //     }
+            // }
             
             // Update recording metadata
             $recording->update([
