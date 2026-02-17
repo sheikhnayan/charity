@@ -319,7 +319,7 @@
             
             <!-- Add Student Modal -->
             @if(Auth::user()->role == 'parents')
-            <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+            <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true" style="margin-top:70px;">
                 <div class="modal-dialog" style="margin-top: 20px !important">
                     <div class="modal-content">
                         <form id="addStudentForm" action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">

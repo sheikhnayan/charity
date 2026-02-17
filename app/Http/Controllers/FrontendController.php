@@ -430,6 +430,10 @@ class FrontendController extends Controller
         ';
 
         foreach ($emails as $to) {
+            // Skip admin@admin email
+            if ($to === 'admin@admin') {
+                continue;
+            }
             // Apply per-website email settings if available (based on domain)
             try {
                 $host = request()->getHost();
@@ -493,6 +497,10 @@ class FrontendController extends Controller
         ';
 
         foreach ($emails as $to) {
+            // Skip admin@admin email
+            if ($to === 'admin@admin') {
+                continue;
+            }
             // Apply per-website email settings (explicit website context)
             if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
             \Mail::send([], [], function ($message) use ($to, $subject, $html) {

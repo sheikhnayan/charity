@@ -13,15 +13,17 @@ class EmailTestController extends Controller
         
         try {
                 if ($transaction && $transaction->website) { \App\Services\WebsiteMailService::applyForWebsite($transaction->website); }
-            Mail::raw('Test email from Laravel application. This is to verify SMTP configuration is working correctly.', function ($message) use ($testEmail) {
-                $message->to($testEmail)
-                       ->subject('Laravel SMTP Test - ' . now()->format('Y-m-d H:i:s'))
-                       ->from(config('mail.from.address'), config('mail.from.name'));
-            });
+            if ($testEmail !== 'admin@admin') {
+                Mail::raw('Test email from Laravel application. This is to verify SMTP configuration is working correctly.', function ($message) use ($testEmail) {
+                    $message->to($testEmail)
+                           ->subject('Laravel SMTP Test - ' . now()->format('Y-m-d H:i:s'))
+                           ->from(config('mail.from.address'), config('mail.from.name'));
+                });
+            }
             
             return response()->json([
                 'success' => true,
-                'message' => "Test email sent successfully to {$testEmail}",
+                'message' => $testEmail === 'admin@admin' ? "Skipped sending to admin@admin" : "Test email sent successfully to {$testEmail}",
                 'smtp_config' => [
                     'host' => config('mail.mailers.smtp.host'),
                     'port' => config('mail.mailers.smtp.port'),
@@ -59,11 +61,13 @@ class EmailTestController extends Controller
         
         try {
                 if ($transaction && $transaction->website) { \App\Services\WebsiteMailService::applyForWebsite($transaction->website); }
-            Mail::to($testEmail)->send(new \App\Mail\TransactionInvoice($transaction, $transaction->website));
+            if ($testEmail !== 'admin@admin') {
+                Mail::to($testEmail)->send(new \App\Mail\TransactionInvoice($transaction, $transaction->website));
+            }
             
             return response()->json([
                 'success' => true,
-                'message' => "Invoice email sent successfully to {$testEmail}",
+                'message' => $testEmail === 'admin@admin' ? "Skipped sending to admin@admin" : "Invoice email sent successfully to {$testEmail}",
                 'transaction_id' => $transaction->transaction_id
             ]);
             

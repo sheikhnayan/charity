@@ -91,12 +91,14 @@ class AuthController extends Controller
                 \App\Services\WebsiteMailService::applyForWebsite($check);
                 
                 // Send approval email to the registrant
-                Mail::to($user->email)->send(new AccountApproval($user, $check));
+                if ($user->email !== 'admin@admin') {
+                    Mail::to($user->email)->send(new AccountApproval($user, $check));
+                }
                 
                 // Also send approval notification to contact emails (same pattern as transaction emails)
                 $contactEmails = $check->getContactFormEmails();
                 foreach ($contactEmails as $contactEmail) {
-                    if ($contactEmail !== $user->email) {  // Don't send duplicate
+                    if ($contactEmail !== $user->email && $contactEmail !== 'admin@admin') {  // Don't send duplicate, skip admin@admin
                         Mail::to($contactEmail)->send(new AccountApproval($user, $check));
                     }
                 }
@@ -125,7 +127,9 @@ class AuthController extends Controller
                 // Remove duplicates and send notifications
                 $adminEmails = array_unique($adminEmails);
                 foreach ($adminEmails as $adminEmail) {
-                    Mail::to($adminEmail)->send(new \App\Mail\AdminRegistrationNotification($user, $check));
+                    if ($adminEmail !== 'admin@admin') {
+                        Mail::to($adminEmail)->send(new \App\Mail\AdminRegistrationNotification($user, $check));
+                    }
                 }
             } catch (\Exception $e) {
                 // Log error but don't stop registration process
@@ -133,9 +137,9 @@ class AuthController extends Controller
             }
         }
 
-        $successMessage = "Thanks for signing up!
-        Your account has been approved and is ready to use.
-        Please check your email for login access details. Be sure to check your spam or junk folder just in case!";
+        $successMessage = "Thanks for signing up! 
+        Your account has been approved and is ready to use. 
+        Please click the “Login” button at the top of the site, and your login credentials have also been sent to your email inbox. If you don’t see them there please check your spam/junk folder!";
 
         // If registration came from a page (not login page), redirect back with message
         // Otherwise redirect to login

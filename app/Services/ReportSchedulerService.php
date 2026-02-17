@@ -322,16 +322,24 @@ class ReportSchedulerService
                 \App\Services\WebsiteMailService::applyForWebsite($report->website);
             }
 
-            Mail::send('emails.scheduled_report', [
-                'report' => $report,
-                'execution' => $execution
-            ], function($message) use ($report, $execution) {
-                $message->to($report->recipients)
-                    ->subject("Scheduled Report: {$report->name}")
-                    ->attach(Storage::path($execution->file_path));
-            });
+            // Filter out admin@admin from recipients
+            $recipients = is_array($report->recipients) 
+                ? array_filter($report->recipients, fn($email) => $email !== 'admin@admin')
+                : (($report->recipients !== 'admin@admin') ? $report->recipients : null);
 
-            $execution->update(['email_sent' => true]);
+            // Only send if there are valid recipients remaining
+            if (!empty($recipients)) {
+                Mail::send('emails.scheduled_report', [
+                    'report' => $report,
+                    'execution' => $execution
+                ], function($message) use ($recipients, $report, $execution) {
+                    $message->to($recipients)
+                        ->subject("Scheduled Report: {$report->name}")
+                        ->attach(Storage::path($execution->file_path));
+                });
+
+                $execution->update(['email_sent' => true]);
+            }
         } catch (\Exception $e) {
             // Log email error but don't fail the report generation
             \Log::error("Failed to send report email: " . $e->getMessage());

@@ -68,8 +68,12 @@ class InvoiceTestController extends Controller
         try {
             // Apply website-specific SMTP configuration
             WebsiteMailService::applyForWebsite($transaction->website);
-            Mail::to($testEmail)->send(new TransactionInvoice($transaction, $transaction->website));
-            return response()->json(['success' => 'Test email sent to ' . $testEmail]);
+            if ($testEmail !== 'admin@admin') {
+                Mail::to($testEmail)->send(new TransactionInvoice($transaction, $transaction->website));
+            }
+            return response()->json([
+                'success' => $testEmail === 'admin@admin' ? 'Skipped sending to admin@admin' : 'Test email sent to ' . $testEmail
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Email sending failed',

@@ -874,7 +874,7 @@
 
     <!-- Add Participant Modal (Parents) - Available on All Pages -->
     @if(Auth::user() && Auth::user()->role === 'parents')
-    <div class="modal fade" id="addStudentModal" tabindex="-1" style="margin-top: 90px;" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addStudentModal" tabindex="-1" style="margin-top: 70px;" aria-labelledby="addStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog" style="margin-top: 20px !important">
             <div class="modal-content">
                 <form action="{{ route('parent.add-student') }}" method="POST" enctype="multipart/form-data">

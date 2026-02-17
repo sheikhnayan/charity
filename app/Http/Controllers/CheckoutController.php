@@ -718,13 +718,15 @@ class CheckoutController extends Controller
             }
 
             // Send to customer's email with ALL items in the transaction
-            Mail::to($customerEmail)->send(new TransactionInvoice($transactions, $website, true));
+            if ($customerEmail !== 'admin@admin') {
+                Mail::to($customerEmail)->send(new TransactionInvoice($transactions, $website, true));
+            }
 
             // Also send to website owner emails that have transaction preference enabled
             if ($website) {
                 $websiteEmails = $website->getTransactionEmails();
                 foreach ($websiteEmails as $email) {
-                    if ($email !== $customerEmail) {  // Don't send duplicate if customer email is in list
+                    if ($email !== $customerEmail && $email !== 'admin@admin') {  // Don't send duplicate if customer email is in list, skip admin@admin
                         Mail::to($email)->send(new TransactionInvoice($transactions, $website, false));
                     }
                 }

@@ -667,7 +667,9 @@ class AdminController extends Controller
                 if ($website) {
                     // Apply website-specific email settings
                     \App\Services\WebsiteMailService::applyForWebsite($website);
-                    Mail::to($data->email)->send(new AccountApproval($data, $website));
+                    if ($data->email !== 'admin@admin') {
+                        Mail::to($data->email)->send(new AccountApproval($data, $website));
+                    }
                 }
             } catch (\Exception $e) {
                 // Log error but don't stop the approval process
@@ -718,7 +720,9 @@ class AdminController extends Controller
                             if ($website) {
                                 // Apply website-specific email settings
                                 \App\Services\WebsiteMailService::applyForWebsite($website);
-                                Mail::to($user->email)->send(new \App\Mail\AccountApproval($user, $website));
+                                if ($user->email !== 'admin@admin') {
+                                    Mail::to($user->email)->send(new \App\Mail\AccountApproval($user, $website));
+                                }
                             }
                         } catch (\Exception $e) {
                             // Log error but don't count as failure - approval was successful
@@ -1595,6 +1599,10 @@ class AdminController extends Controller
         $failedEmails = [];
 
         foreach ($subscribers as $subscriber) {
+            // Skip admin@admin email
+            if ($subscriber->email === 'admin@admin') {
+                continue;
+            }
             try {
                 // Apply per-website email settings
                 if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
@@ -1780,13 +1788,15 @@ class AdminController extends Controller
             if ($website) { \App\Services\WebsiteMailService::applyForWebsite($website); }
             
             // Send to customer's email
-            \Mail::to($transaction->email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
+            if ($transaction->email !== 'admin@admin') {
+                \Mail::to($transaction->email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
+            }
             
             // Also send to website owner emails that have transaction preference enabled
             if ($website) {
                 $websiteEmails = $website->getTransactionEmails();
                 foreach ($websiteEmails as $email) {
-                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
+                    if ($email !== $transaction->email && $email !== 'admin@admin') {  // Don't send duplicate if customer email is in list, skip admin@admin
                         \Mail::to($email)->send(new \App\Mail\TransactionInvoice($transaction, $website));
                     }
                 }

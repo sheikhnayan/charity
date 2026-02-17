@@ -1185,13 +1185,15 @@ class AuthorizeNetController extends Controller
             }
             
             // Send to customer's email
-            Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+            if ($transaction->email !== 'admin@admin') {
+                Mail::to($transaction->email)->send(new TransactionInvoice($transaction, $website));
+            }
             
             // Also send to website owner emails that have transaction preference enabled
             if ($website) {
                 $websiteEmails = $website->getTransactionEmails();
                 foreach ($websiteEmails as $email) {
-                    if ($email !== $transaction->email) {  // Don't send duplicate if customer email is in list
+                    if ($email !== $transaction->email && $email !== 'admin@admin') {  // Don't send duplicate if customer email is in list, skip admin@admin
                         Mail::to($email)->send(new TransactionInvoice($transaction, $website));
                     }
                 }
