@@ -133,9 +133,15 @@
                             </div>
                         </div>
                         <div class="col-md-auto text-center text-md-end mt-3 mt-md-0">
-                            <a href="{{ route('admin.student') }}" class="btn btn-light btn-lg">
-                                <i class="fas fa-arrow-left me-2"></i>Back to List
-                            </a>
+                            @if (Auth::user()->role == 'user')
+                                <a href="{{ route('users.manage-users.index') }}" class="btn btn-light btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                                </a>
+                            @else
+                                <a href="{{ route('admin.student') }}" class="btn btn-light btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                                </a>
+                            @endif
                             @if($user->status != 1)
                                 <a href="/admins/student/approve/{{ $user->id }}" class="btn btn-success btn-lg ms-2">
                                     <i class="fas fa-check me-2"></i>Approve User
