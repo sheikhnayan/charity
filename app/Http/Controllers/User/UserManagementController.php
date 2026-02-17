@@ -31,7 +31,7 @@ class UserManagementController extends Controller
             $usersQuery->where('role', $roleMap[$filterType]);
         }
 
-        $users = $usersQuery->paginate(20)->appends($request->query());
+        $users = $usersQuery->appends($request->query());
 
         return view('user.users.index', compact('users', 'filterType'));
     }
