@@ -228,6 +228,11 @@
                                     </tbody>
                                 </table>
                                 </div>
+                                
+                                <!-- Pagination Links -->
+                                <div class="d-flex justify-content-center mt-4">
+                                    {{ $users->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>
