@@ -4813,7 +4813,7 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                 </div>
 
                                 <div class="col-lg-8 d-flex flex-column justify-content-center">
-                                    <h2 class="fs-1.25 fw-semibold text-center text-lg-start break-all" style="font-size: 1.25rem;">
+                                    <h2 class="fs-1.25 fw-semibold text-center text-lg-start" style="font-size: 1.25rem; word-break: normal; overflow-wrap: break-word;">
                                         {{ $student->name }} {{ $student->last_name }}
                                     </h2>
                                     <span class="opacity-75 text-center text-lg-start mt-2"></span>
