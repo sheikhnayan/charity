@@ -4912,16 +4912,23 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                     allStudentCards.forEach(function(card) {
                         const studentContent = card.textContent.toLowerCase();
                         const matches = !keyword || studentContent.includes(keyword);
+                        const index = parseInt(card.getAttribute('data-index'));
                         
                         if (!matches) {
+                            // Doesn't match search - hide it
                             card.style.display = 'none';
                             card.setAttribute('data-hidden-by-search', 'true');
                         } else {
+                            // Matches search
                             card.removeAttribute('data-hidden-by-search');
-                            // Check if it should be shown based on pagination
-                            const index = parseInt(card.getAttribute('data-index'));
-                            if (index < currentlyVisible) {
-                                card.style.display = '';
+                            // If there's an active search, show ALL matching results regardless of pagination
+                            // If no search, respect the pagination limit
+                            if (keyword) {
+                                card.style.display = ''; // Show all search matches
+                            } else if (index < currentlyVisible) {
+                                card.style.display = ''; // Respect pagination when not searching
+                            } else {
+                                card.style.display = 'none'; // Hide from pagination
                             }
                         }
                     });
