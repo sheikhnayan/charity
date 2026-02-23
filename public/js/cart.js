@@ -1015,6 +1015,12 @@ window.ShoppingCart = {
     async proceedToCheckout() {
         console.log('🛒 CHECKOUT CLICKED - Validating cart...');
         
+        // ============================================================================
+        // CONFIGURATION FLAG: Set to true to require authentication before checkout
+        // Set to false to allow guests to proceed directly to checkout form
+        // ============================================================================
+        const REQUIRE_AUTH_FOR_CHECKOUT = false;  // Change to true to re-enable auth modal
+        
         // Validate cart
         const validation = await this.validateForCheckout();
         console.log('✅ Validation result:', validation);
@@ -1025,50 +1031,55 @@ window.ShoppingCart = {
             return;
         }
 
-        // Check if user is authenticated
-        try {
-            const authCheck = await fetch('/ajax/ticket-auth/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-            const authStatus = await authCheck.json();
-            
-            console.log('Auth status:', authStatus);
-            
-            if (!authStatus.authenticated) {
-                // User NOT authenticated - open auth modal and STOP
-                console.log('🔐 User NOT authenticated, opening auth modal on current page...');
+        // Optional: Check if user is authenticated (only if REQUIRE_AUTH_FOR_CHECKOUT is true)
+        if (REQUIRE_AUTH_FOR_CHECKOUT) {
+            try {
+                const authCheck = await fetch('/ajax/ticket-auth/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                const authStatus = await authCheck.json();
                 
-                // Store the checkout URL for redirect after successful login
-                window.checkoutRedirectUrl = '/checkout';
+                console.log('Auth status:', authStatus);
                 
-                // Open the auth modal (prefer custom handler, fallback to Bootstrap or inline display)
-                const authModal = document.getElementById('authModal');
-                if (typeof window.openAuthModal === 'function') {
-                    window.openAuthModal();
-                } else if (authModal && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    const modal = new bootstrap.Modal(authModal);
-                    modal.show();
-                } else if (authModal) {
-                    authModal.classList.remove('hidden');
-                    authModal.style.display = 'flex';
+                if (!authStatus.authenticated) {
+                    // User NOT authenticated - open auth modal and STOP
+                    console.log('🔐 User NOT authenticated, opening auth modal on current page...');
+                    
+                    // Store the checkout URL for redirect after successful login
+                    window.checkoutRedirectUrl = '/checkout';
+                    
+                    // Open the auth modal (prefer custom handler, fallback to Bootstrap or inline display)
+                    const authModal = document.getElementById('authModal');
+                    if (typeof window.openAuthModal === 'function') {
+                        window.openAuthModal();
+                    } else if (authModal && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modal = new bootstrap.Modal(authModal);
+                        modal.show();
+                    } else if (authModal) {
+                        authModal.classList.remove('hidden');
+                        authModal.style.display = 'flex';
+                    }
+                    // IMPORTANT: Return here to prevent redirect
+                    return;
+                } else {
+                    // User IS authenticated, safe to proceed
+                    console.log('✅ User authenticated, proceeding to checkout...');
                 }
-                // IMPORTANT: Return here to prevent redirect
+            } catch (error) {
+                console.error('❌ Error checking authentication:', error);
+                this.showNotification('Error checking authentication. Please try again.', 'error');
                 return;
-            } else {
-                // User IS authenticated, safe to proceed
-                console.log('✅ User authenticated, proceeding to checkout...');
             }
-        } catch (error) {
-            console.error('❌ Error checking authentication:', error);
-            this.showNotification('Error checking authentication. Please try again.', 'error');
-            return;
+        } else {
+            // Auth check disabled - allowing guest checkout
+            console.log('✅ Guest checkout enabled, proceeding directly to checkout form...');
         }
 
-        // User is authenticated - redirect to checkout
+        // Redirect to checkout (authenticated users or guests)
         console.log('🎯 Redirecting to checkout page...');
         window.location.href = '/checkout';
     },
