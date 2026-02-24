@@ -4827,8 +4827,8 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         data-goal-reached="true"
                                         style="height: 14px">
                                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary fs-1"
-                                            style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}% @else 0% @endif;">
-                                            <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@else 0 @endif%</span>
+                                            style="width: @if($student->goal > 0){{ ($student->donations->sum('amount') / $student->goal) * 100 }}% @elseif($student->donations->sum('amount') > 0)100% @else 0% @endif;">
+                                            <span style="font-size: 13px; font-weight: bold;">@if($student->goal > 0){{ round(($student->donations->sum('amount') / $student->goal) * 100) }}@elseif($student->donations->sum('amount') > 0)100 @else 0 @endif%</span>
                                         </div>
                                     </div>
                                     <span class="fw-semibold d-block text-center mt-2">

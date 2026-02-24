@@ -725,7 +725,7 @@
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;margin-bottom:20px;">
                     <span style="color:#2c3e50;font-weight:500;">Platform Fee</span>
-                    <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ rtrim(rtrim(number_format((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9), 2, '.', ','), '0'), '.') }}</span>
+                    <span id="processing-fee-amount" style="text-align:right;font-weight:600;color:#2c3e50;">${{ preg_replace('/\.00$/', '', number_format((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9), 2, '.', ',')) }}</span>
                 </div>
                 @if($tippingEnabled)
                 <!-- Tip row in summary (managed by tipping component) -->
@@ -736,7 +736,7 @@
                 @endif
                 <div style="display:grid;grid-template-columns:1fr 120px;gap:15px;border-top:2px solid #eee;padding-top:15px;">
                     <span style="font-size:18px;font-weight:700;color:#2c3e50;">Total</span>
-                    <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ rtrim(rtrim(number_format(((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9)) + ($subtotal ?? $total), 2, '.', ''), '0'), '.') }}</span>
+                    <span id="checkout-total" style="text-align:right;font-size:20px;font-weight:700;color:#667eea;">${{ preg_replace('/\.00$/', '', number_format(((($subtotal ?? $total) / 100) * ($processingFee ?? 2.9)) + ($subtotal ?? $total), 2, '.', '')) }}</span>
                 </div>
             </div>
             
