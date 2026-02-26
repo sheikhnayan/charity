@@ -7,8 +7,6 @@
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <!-- Date Range Picker CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
@@ -141,16 +139,18 @@
                                 @if($isRoleUser)
                                 <div class="row mb-3">
                                     <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Teacher(s):</label>
-                                        <select id="teacherFilter" class="form-select" multiple="multiple" style="width: 100%;">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Teacher:</label>
+                                        <select id="teacherFilter" class="form-select">
+                                            <option value="">All Teachers</option>
                                             @foreach($teachers as $teacher)
                                                 <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name ?? '' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Parent(s):</label>
-                                        <select id="parentFilter" class="form-select" multiple="multiple" style="width: 100%;">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Parent:</label>
+                                        <select id="parentFilter" class="form-select">
+                                            <option value="">All Parents</option>
                                             @foreach($parents as $parent)
                                                 <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
                                             @endforeach
@@ -338,12 +338,6 @@
             .dataTables_wrapper .dataTables_paginate .paginate_button {
                 color: #000 !important;
             }
-            .select2-container--default .select2-selection--multiple {
-                border: 1px solid #d9dee3;
-            }
-            .select2-container--default.select2-container--focus .select2-selection--multiple {
-                border-color: #696cff;
-            }
         </style>
         
         <!-- Ensure jQuery is available (don't reload if already loaded) -->
@@ -355,8 +349,6 @@
         <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <!-- Date Range Picker JS -->
         <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        <!-- Select2 JS - Stable Version -->
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
         <!-- DataTables Scripts -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -451,18 +443,6 @@
 
                 // Initialize Select2 for multi-select dropdowns (only if isRoleUser)
                 if (isRoleUser) {
-                    $('#teacherFilter').select2({
-                        placeholder: 'Select teacher(s)',
-                        allowClear: true,
-                        closeOnSelect: false
-                    });
-
-                    $('#parentFilter').select2({
-                        placeholder: 'Select parent(s)',
-                        allowClear: true,
-                        closeOnSelect: false
-                    });
-
                     // Initialize Date Range Picker
                     let startDate = null;
                     let endDate = null;
@@ -511,25 +491,19 @@
                         const dateCell = $(row).find('td').eq(11); // Registration Date column
 
                         // Teacher filter
-                        const selectedTeachers = $('#teacherFilter').val() || [];
-                        if (selectedTeachers.length > 0) {
+                        const selectedTeacher = $('#teacherFilter').val();
+                        if (selectedTeacher) {
                             const teacherId = teacherCell.data('teacher-id');
-                            const teacherText = teacherCell.text().trim();
-                            // Show if teacher ID matches OR if row has N/A (no teacher assigned)
-                            const teacherMatch = teacherId && selectedTeachers.includes(teacherId.toString());
-                            if (!teacherMatch) {
+                            if (teacherId !== parseInt(selectedTeacher)) {
                                 return false;
                             }
                         }
 
                         // Parent filter
-                        const selectedParents = $('#parentFilter').val() || [];
-                        if (selectedParents.length > 0) {
+                        const selectedParent = $('#parentFilter').val();
+                        if (selectedParent) {
                             const parentId = parentCell.data('parent-id');
-                            const parentText = parentCell.text().trim();
-                            // Show if parent ID matches OR if row has N/A (no parent assigned)
-                            const parentMatch = parentId && selectedParents.includes(parentId.toString());
-                            if (!parentMatch) {
+                            if (parentId !== parseInt(selectedParent)) {
                                 return false;
                             }
                         }
