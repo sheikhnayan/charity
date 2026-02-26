@@ -299,9 +299,9 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                 </select>
                                             </div>
                                             <div class="col-md-3">
-                                                <label>Filter by Parent:</label>
+                                                <label>Filter by Parent / Guardian:</label>
                                                 <select id="parentFilter" class="form-select">
-                                                    <option value="">All Parents</option>
+                                                    <option value="">All Parents / Guardians</option>
                                                     @foreach($parents ?? [] as $parent)
                                                         <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
                                                     @endforeach
