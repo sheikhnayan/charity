@@ -335,57 +335,84 @@
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- DataTables CSS -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+        
+        <!-- DataTables JS -->
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+        <style>
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                color: #000 !important;
+            }
+        </style>
 
         <script>
             $(document).ready(function() {
                 @if($isRoleUser)
-                // Simple vanilla JavaScript filtering without DataTables
-                function filterTable() {
-                    const teacherFilter = $('#teacherFilter').val().toLowerCase();
-                    const parentFilter = $('#parentFilter').val().toLowerCase();
-                    const dateFrom = $('#dateFrom').val();
-                    const dateTo = $('#dateTo').val();
+                // Initialize DataTable with custom filtering
+                var table = $('#usersTable').DataTable({
+                    pageLength: 25,
+                    scrollX: true,
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
+                    ]
+                });
 
-                    $('#usersTable tbody tr').each(function() {
-                        let showRow = true;
-                        
-                        // Get cell values (indices: 6=Parent Email, 7=Teacher, 11=Date)
-                        const cells = $(this).find('td');
-                        const parentEmail = cells.eq(6).text().toLowerCase();
-                        const teacher = cells.eq(7).text().toLowerCase();
-                        const dateStr = cells.eq(11).text().trim();
-                        
+                // Custom search function for filtering
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        const teacherFilter = $('#teacherFilter').val().toLowerCase();
+                        const parentFilter = $('#parentFilter').val().toLowerCase();
+                        const dateFrom = $('#dateFrom').val();
+                        const dateTo = $('#dateTo').val();
+
+                        // Data indices: 6=Parent Email, 7=Teacher, 11=Registration Date
+                        const parentEmail = data[6].toLowerCase();
+                        const teacher = data[7].toLowerCase();
+                        const dateStr = data[11]; // Format: "YYYY-MM-DD HH:MM AM/PM"
+
                         // Filter by teacher
                         if (teacherFilter && teacher.indexOf(teacherFilter) === -1) {
-                            showRow = false;
+                            return false;
                         }
-                        
+
                         // Filter by parent
                         if (parentFilter && parentEmail.indexOf(parentFilter) === -1) {
-                            showRow = false;
+                            return false;
                         }
-                        
+
                         // Filter by date range
-                        if (showRow && (dateFrom || dateTo)) {
-                            const rowDate = dateStr.split(' ')[0]; // Get just date part
+                        if (dateFrom || dateTo) {
+                            // Extract date part from "YYYY-MM-DD HH:MM AM/PM"
+                            const rowDate = dateStr.substring(0, 10); // Get first 10 chars (YYYY-MM-DD)
+                            
                             if (dateFrom && rowDate < dateFrom) {
-                                showRow = false;
+                                return false;
                             }
                             if (dateTo && rowDate > dateTo) {
-                                showRow = false;
+                                return false;
                             }
                         }
-                        
-                        $(this).toggle(showRow);
-                    });
-                    
-                    updateSelectAll();
-                    updateExportButton();
-                }
-                
-                // Trigger filter on any filter change
+
+                        return true;
+                    }
+                );
+
+                // Trigger table redraw when filters change
                 $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
-                    filterTable();
+                    table.draw();
+                });
+                @else
+                // Basic DataTable for non-role users
+                $('#usersTable').DataTable({
+                    pageLength: 25,
+                    scrollX: true,
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
+                    ]
                 });
                 @endif
 
