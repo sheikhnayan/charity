@@ -133,6 +133,33 @@
                                         </button>
                                     </div>
                                 </div>
+
+                                @if($isRoleUser)
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Teacher:</label>
+                                        <select id="teacherFilter" class="form-select">
+                                            <option value="">All Teachers</option>
+                                            @foreach($teachers as $teacher)
+                                                <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name ?? '' }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Parent:</label>
+                                        <select id="parentFilter" class="form-select">
+                                            <option value="">All Parents</option>
+                                            @foreach($parents as $parent)
+                                                <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Registration Date:</label>
+                                        <input type="text" id="dateRangeFilter" class="form-control" placeholder="Select date range">
+                                    </div>
+                                </div>
+                                @endif
                                 
                                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-striped" id="usersTable">
@@ -183,8 +210,8 @@
                                                         <td style="display: none;">
                                                             <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
                                                         </td>
-                                                        <td>{{ $user->parent->email ?? 'N/A' }}</td>
-                                                        <td>{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
+                                                        <td data-parent-id="{{ $user->parent_id ?? '' }}">{{ $user->parent->email ?? 'N/A' }}</td>
+                                                        <td data-teacher-id="{{ $user->teacher_id ?? '' }}">{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
                                                         <td>{{ $user->tshirt_size ?? 'N/A' }}</td>
                                                         <td>${{ number_format($user->donations->sum('amount'), 2) }}</td>
                                                         <td>
@@ -302,6 +329,12 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+        
+        <!-- Date Range Picker -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        
         <style>
             .dataTables_wrapper .dataTables_paginate .paginate_button.current,
             .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -318,7 +351,9 @@
 
         <script>
             $(document).ready(function() {
-                // Initialize DataTable with export/import buttons
+                const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
+                
+                // Initialize DataTable with proper export functionality
                 let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
@@ -327,9 +362,151 @@
                         { orderable: false, targets: 0 }
                     ],
                     buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
+                        {
+                            extend: 'copy',
+                            exportOptions: {
+                                rows: function(idx, data, node) {
+                                    // If rows are selected, export only selected
+                                    let checked = $('.row-checkbox:checked');
+                                    if (checked.length === 0) {
+                                        // No rows selected, export filtered rows
+                                        return $(node).is(':visible');
+                                    }
+                                    return $(node).find('.row-checkbox').prop('checked');
+                                },
+                                columns: ':visible:not(:first-child):not(:last-child)'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            exportOptions: {
+                                rows: function(idx, data, node) {
+                                    let checked = $('.row-checkbox:checked');
+                                    if (checked.length === 0) {
+                                        return $(node).is(':visible');
+                                    }
+                                    return $(node).find('.row-checkbox').prop('checked');
+                                },
+                                columns: ':visible:not(:first-child):not(:last-child)'
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                rows: function(idx, data, node) {
+                                    let checked = $('.row-checkbox:checked');
+                                    if (checked.length === 0) {
+                                        return $(node).is(':visible');
+                                    }
+                                    return $(node).find('.row-checkbox').prop('checked');
+                                },
+                                columns: ':visible:not(:first-child):not(:last-child)'
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            exportOptions: {
+                                rows: function(idx, data, node) {
+                                    let checked = $('.row-checkbox:checked');
+                                    if (checked.length === 0) {
+                                        return $(node).is(':visible');
+                                    }
+                                    return $(node).find('.row-checkbox').prop('checked');
+                                },
+                                columns: ':visible:not(:first-child):not(:last-child)'
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            exportOptions: {
+                                rows: function(idx, data, node) {
+                                    let checked = $('.row-checkbox:checked');
+                                    if (checked.length === 0) {
+                                        return $(node).is(':visible');
+                                    }
+                                    return $(node).find('.row-checkbox').prop('checked');
+                                },
+                                columns: ':visible:not(:first-child):not(:last-child)'
+                            }
+                        }
                     ]
                 });
+
+                // Custom filtering for $isRoleUser
+                if (isRoleUser) {
+                    // Date range picker
+                    let startDate = null;
+                    let endDate = null;
+
+                    $('#dateRangeFilter').daterangepicker({
+                        autoUpdateInput: false,
+                        locale: {
+                            cancelLabel: 'Clear',
+                            format: 'YYYY-MM-DD'
+                        }
+                    });
+
+                    $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                        startDate = picker.startDate.format('YYYY-MM-DD');
+                        endDate = picker.endDate.format('YYYY-MM-DD');
+                        table.draw();
+                    });
+
+                    $('#dateRangeFilter').on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).val('');
+                        startDate = null;
+                        endDate = null;
+                        table.draw();
+                    });
+
+                    // Custom search function for advanced filtering
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        if (settings.nTable.id !== 'usersTable') {
+                            return true;
+                        }
+
+                        const row = table.row(dataIndex).node();
+                        
+                        // Teacher filter
+                        const selectedTeacher = $('#teacherFilter').val();
+                        if (selectedTeacher) {
+                            const teacherCell = $(row).find('td[data-teacher-id]');
+                            const teacherId = teacherCell.attr('data-teacher-id');
+                            if (teacherId !== selectedTeacher) {
+                                return false;
+                            }
+                        }
+
+                        // Parent filter
+                        const selectedParent = $('#parentFilter').val();
+                        if (selectedParent) {
+                            const parentCell = $(row).find('td[data-parent-id]');
+                            const parentId = parentCell.attr('data-parent-id');
+                            if (parentId !== selectedParent) {
+                                return false;
+                            }
+                        }
+
+                        // Date range filter (column index for Registration Date)
+                        if (startDate && endDate) {
+                            const dateColumnIndex = isRoleUser ? 11 : 6; // Adjust based on column position
+                            const dateText = data[dateColumnIndex] || '';
+                            const rowDate = moment(dateText, 'YYYY-MM-DD HH:mm A').format('YYYY-MM-DD');
+                            
+                            if (rowDate < startDate || rowDate > endDate) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
+
+                    // Trigger filtering when dropdowns change
+                    $('#teacherFilter, #parentFilter').on('change', function() {
+                        table.draw();
+                    });
+                }
 
                 // Select All functionality
                 $('#selectAll').on('click', function() {
