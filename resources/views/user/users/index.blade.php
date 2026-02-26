@@ -356,6 +356,13 @@
 
         <script>
             $(document).ready(function() {
+                // Wait for DataTables to be fully loaded
+                if (typeof $.fn.DataTable === 'undefined') {
+                    console.error('DataTables not loaded yet, retrying...');
+                    setTimeout(arguments.callee, 100);
+                    return;
+                }
+                
                 const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
                 
                 // Add custom search function before initializing DataTable
