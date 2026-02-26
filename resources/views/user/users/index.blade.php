@@ -353,6 +353,19 @@
 
         <script>
             $(document).ready(function() {
+                // Initialize DataTable with export/import buttons
+                let table = $('#usersTable').DataTable({
+                    dom: 'Bfrtip',
+                    pageLength: 25,
+                    scrollX: true,
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
+                    ],
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                });
+
                 @if($isRoleUser)
                 // Custom search function for filtering
                 $.fn.dataTable.ext.search.push(
@@ -400,19 +413,6 @@
                     table.draw();
                 });
                 @endif
-
-                // Initialize DataTable with export/import buttons
-                let table = new DataTable('#usersTable', {
-                    dom: 'Bfrtip',
-                    pageLength: 25,
-                    scrollX: true,
-                    columnDefs: [
-                        { orderable: false, targets: 0 }
-                    ],
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                });
 
                 // Select All functionality
                 $('#selectAll').on('click', function() {
