@@ -33,7 +33,21 @@ class UserManagementController extends Controller
 
         $users = $usersQuery->get();
 
-        return view('user.users.index', compact('users', 'filterType'));
+        // Get unique teachers and parents for filtering (only for role 'user')
+        $teachers = [];
+        $parents = [];
+        if ($currentUser->role === 'user') {
+            $teachers = Teacher::where('website_id', $websiteId)
+                ->orderBy('name')
+                ->get(['id', 'name', 'last_name']);
+            
+            $parents = User::where('website_id', $websiteId)
+                ->where('role', 'parents')
+                ->orderBy('name')
+                ->get(['id', 'name', 'last_name', 'email']);
+        }
+
+        return view('user.users.index', compact('users', 'filterType', 'teachers', 'parents'));
     }
 
     public function create()

@@ -133,6 +133,41 @@
                                         </button>
                                     </div>
                                 </div>
+
+                                @if($isRoleUser)
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-3">
+                                        <label for="teacherFilter" class="form-label text-dark fw-semibold">Filter by Teacher:</label>
+                                        <select id="teacherFilter" class="form-select form-select-sm">
+                                            <option value="">All Teachers</option>
+                                            @foreach($teachers as $teacher)
+                                                <option value="{{ trim($teacher->name . ' ' . ($teacher->last_name ?? '')) }}">
+                                                    {{ trim($teacher->name . ' ' . ($teacher->last_name ?? '')) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="parentFilter" class="form-label text-dark fw-semibold">Filter by Parent:</label>
+                                        <select id="parentFilter" class="form-select form-select-sm">
+                                            <option value="">All Parents</option>
+                                            @foreach($parents as $parent)
+                                                <option value="{{ $parent->email }}">
+                                                    {{ trim($parent->name . ' ' . ($parent->last_name ?? '')) }} ({{ $parent->email }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="dateFrom" class="form-label text-dark fw-semibold">Date From:</label>
+                                        <input type="date" id="dateFrom" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="dateTo" class="form-label text-dark fw-semibold">Date To:</label>
+                                        <input type="date" id="dateTo" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                                @endif
                                 
                                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-striped" id="usersTable">
@@ -318,6 +353,54 @@
 
         <script>
             $(document).ready(function() {
+                @if($isRoleUser)
+                // Custom search function for filtering
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        // Get filter values
+                        const teacherFilter = $('#teacherFilter').val();
+                        const parentFilter = $('#parentFilter').val();
+                        const dateFrom = $('#dateFrom').val();
+                        const dateTo = $('#dateTo').val();
+
+                        // Get row data (Teacher column is index 7, Parent Email is index 6, Registration Date is index 11)
+                        const teacherValue = data[7] || '';
+                        const parentValue = data[6] || '';
+                        const dateValue = data[11] || '';
+
+                        // Teacher filter
+                        if (teacherFilter && teacherValue.indexOf(teacherFilter) === -1) {
+                            return false;
+                        }
+
+                        // Parent filter
+                        if (parentFilter && parentValue.indexOf(parentFilter) === -1) {
+                            return false;
+                        }
+
+                        // Date range filter
+                        if (dateFrom || dateTo) {
+                            // Extract date from "YYYY-MM-DD HH:MM AM/PM" format
+                            const rowDate = dateValue.split(' ')[0]; // Get just the date part
+                            
+                            if (dateFrom && rowDate < dateFrom) {
+                                return false;
+                            }
+                            if (dateTo && rowDate > dateTo) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                );
+
+                // Trigger table redraw when filters change
+                $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
+                    table.draw();
+                });
+                @endif
+
                 // Initialize DataTable with export/import buttons
                 let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
@@ -362,15 +445,18 @@
                     }
                 }
 
-                // Export selected rows
+                // Export selected rows (respects current filters - only exports visible rows)
                 $('#exportSelectedBtn').on('click', function() {
                     const selectedIds = [];
                     $('.row-checkbox:checked').each(function() {
-                        selectedIds.push($(this).val());
+                        // Only include if row is visible (not filtered out)
+                        if ($(this).closest('tr').is(':visible')) {
+                            selectedIds.push($(this).val());
+                        }
                     });
 
                     if (selectedIds.length === 0) {
-                        alert('Please select at least one user to export.');
+                        alert('Please select at least one user from the visible/filtered results to export.');
                         return;
                     }
 
