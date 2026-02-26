@@ -331,8 +331,10 @@
             @endif
         @endforeach
 
-        <!-- Include DataTables and jQuery CDN -->
+        <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- DataTables CSS -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
         <style>
@@ -341,6 +343,8 @@
                 color: #000 !important;
             }
         </style>
+        
+        <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
@@ -352,60 +356,8 @@
         <script>
             $(document).ready(function() {
                 const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
-                
-                // Add custom search function for filtering
-                if (isRoleUser) {
-                    $.fn.dataTable.ext.search.push(
-                        function(settings, data, dataIndex) {
-                            if (settings.nTable.id !== 'usersTable') {
-                                return true;
-                            }
 
-                            const row = settings.aoData[dataIndex].nTr;
-                            
-                            // Teacher filter
-                            const selectedTeacher = $('#teacherFilter').val();
-                            if (selectedTeacher) {
-                                const teacherCell = $(row).find('td').eq(7); // Teacher column (index 7)
-                                const teacherId = teacherCell.attr('data-teacher-id');
-                                if (teacherId != selectedTeacher) {
-                                    return false;
-                                }
-                            }
-
-                            // Parent filter
-                            const selectedParent = $('#parentFilter').val();
-                            if (selectedParent) {
-                                const parentCell = $(row).find('td').eq(6); // Parent Email column (index 6)
-                                const parentId = parentCell.attr('data-parent-id');
-                                if (parentId != selectedParent) {
-                                    return false;
-                                }
-                            }
-
-                            // Date range filter
-                            const startDate = $('#startDateFilter').val();
-                            const endDate = $('#endDateFilter').val();
-                            
-                            if (startDate || endDate) {
-                                const dateText = data[11]; // Registration Date column (index 11)
-                                const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
-                                
-                                if (startDate && datePart < startDate) {
-                                    return false;
-                                }
-                                
-                                if (endDate && datePart > endDate) {
-                                    return false;
-                                }
-                            }
-
-                            return true;
-                        }
-                    );
-                }
-                
-                // Initialize DataTable with export buttons
+                // Initialize DataTable first
                 let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
@@ -482,8 +434,58 @@
                     ]
                 });
 
-                // Filter change events
+                // Add custom search function AFTER table initialization
                 if (isRoleUser) {
+                    $.fn.dataTable.ext.search.push(
+                        function(settings, data, dataIndex) {
+                            if (settings.nTable.id !== 'usersTable') {
+                                return true;
+                            }
+
+                            const row = settings.aoData[dataIndex].nTr;
+                            
+                            // Teacher filter
+                            const selectedTeacher = $('#teacherFilter').val();
+                            if (selectedTeacher) {
+                                const teacherCell = $(row).find('td').eq(7); // Teacher column (index 7)
+                                const teacherId = teacherCell.attr('data-teacher-id');
+                                if (teacherId != selectedTeacher) {
+                                    return false;
+                                }
+                            }
+
+                            // Parent filter
+                            const selectedParent = $('#parentFilter').val();
+                            if (selectedParent) {
+                                const parentCell = $(row).find('td').eq(6); // Parent Email column (index 6)
+                                const parentId = parentCell.attr('data-parent-id');
+                                if (parentId != selectedParent) {
+                                    return false;
+                                }
+                            }
+
+                            // Date range filter
+                            const startDate = $('#startDateFilter').val();
+                            const endDate = $('#endDateFilter').val();
+                            
+                            if (startDate || endDate) {
+                                const dateText = data[11]; // Registration Date column (index 11)
+                                const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
+                                
+                                if (startDate && datePart < startDate) {
+                                    return false;
+                                }
+                                
+                                if (endDate && datePart > endDate) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+                    );
+
+                    // Filter change events
                     $('#teacherFilter, #parentFilter').on('change', function() {
                         table.draw();
                     });
