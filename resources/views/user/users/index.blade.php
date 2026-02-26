@@ -331,9 +331,6 @@
             @endif
         @endforeach
 
-        <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        
         <!-- DataTables CSS -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
@@ -343,261 +340,262 @@
                 color: #000 !important;
             }
         </style>
-        
-        <!-- DataTables JS -->
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        @push('scripts')
+            <!-- DataTables JS -->
+            <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
-        <script>
-            $(document).ready(function() {
-                const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
+            <script>
+                $(document).ready(function() {
+                    const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
 
-                // Initialize DataTable first
-                let table = new DataTable('#usersTable', {
-                    dom: 'Bfrtip',
-                    pageLength: 25,
-                    scrollX: true,
-                    columnDefs: [
-                        { orderable: false, targets: 0 }
-                    ],
-                    buttons: [
-                        {
-                            extend: 'copy',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
+                    // Initialize DataTable first
+                    let table = new DataTable('#usersTable', {
+                        dom: 'Bfrtip',
+                        pageLength: 25,
+                        scrollX: true,
+                        columnDefs: [
+                            { orderable: false, targets: 0 }
+                        ],
+                        buttons: [
+                            {
+                                extend: 'copy',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-checkbox:checked');
+                                        if (checked.length === 0) {
+                                            return $(node).is(':visible');
+                                        }
+                                        return $(node).find('.row-checkbox').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'csv',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-checkbox:checked');
+                                        if (checked.length === 0) {
+                                            return $(node).is(':visible');
+                                        }
+                                        return $(node).find('.row-checkbox').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'excel',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-checkbox:checked');
+                                        if (checked.length === 0) {
+                                            return $(node).is(':visible');
+                                        }
+                                        return $(node).find('.row-checkbox').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'pdf',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-checkbox:checked');
+                                        if (checked.length === 0) {
+                                            return $(node).is(':visible');
+                                        }
+                                        return $(node).find('.row-checkbox').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
+                            },
+                            {
+                                extend: 'print',
+                                exportOptions: {
+                                    rows: function(idx, data, node) {
+                                        let checked = $('.row-checkbox:checked');
+                                        if (checked.length === 0) {
+                                            return $(node).is(':visible');
+                                        }
+                                        return $(node).find('.row-checkbox').prop('checked');
+                                    },
+                                    columns: ':visible:not(:first-child):not(:last-child)'
+                                }
                             }
-                        },
-                        {
-                            extend: 'csv',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'excel',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'pdf',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'print',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        }
-                    ]
-                });
+                        ]
+                    });
 
-                // Add custom search function AFTER table initialization
-                if (isRoleUser) {
-                    $.fn.dataTable.ext.search.push(
-                        function(settings, data, dataIndex) {
-                            if (settings.nTable.id !== 'usersTable') {
+                    // Add custom search function AFTER table initialization
+                    if (isRoleUser) {
+                        $.fn.dataTable.ext.search.push(
+                            function(settings, data, dataIndex) {
+                                if (settings.nTable.id !== 'usersTable') {
+                                    return true;
+                                }
+
+                                const row = settings.aoData[dataIndex].nTr;
+                                
+                                // Teacher filter
+                                const selectedTeacher = $('#teacherFilter').val();
+                                if (selectedTeacher) {
+                                    const teacherCell = $(row).find('td').eq(7); // Teacher column (index 7)
+                                    const teacherId = teacherCell.attr('data-teacher-id');
+                                    if (teacherId != selectedTeacher) {
+                                        return false;
+                                    }
+                                }
+
+                                // Parent filter
+                                const selectedParent = $('#parentFilter').val();
+                                if (selectedParent) {
+                                    const parentCell = $(row).find('td').eq(6); // Parent Email column (index 6)
+                                    const parentId = parentCell.attr('data-parent-id');
+                                    if (parentId != selectedParent) {
+                                        return false;
+                                    }
+                                }
+
+                                // Date range filter
+                                const startDate = $('#startDateFilter').val();
+                                const endDate = $('#endDateFilter').val();
+                                
+                                if (startDate || endDate) {
+                                    const dateText = data[11]; // Registration Date column (index 11)
+                                    const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
+                                    
+                                    if (startDate && datePart < startDate) {
+                                        return false;
+                                    }
+                                    
+                                    if (endDate && datePart > endDate) {
+                                        return false;
+                                    }
+                                }
+
                                 return true;
                             }
+                        );
 
-                            const row = settings.aoData[dataIndex].nTr;
-                            
-                            // Teacher filter
-                            const selectedTeacher = $('#teacherFilter').val();
-                            if (selectedTeacher) {
-                                const teacherCell = $(row).find('td').eq(7); // Teacher column (index 7)
-                                const teacherId = teacherCell.attr('data-teacher-id');
-                                if (teacherId != selectedTeacher) {
-                                    return false;
-                                }
-                            }
+                        // Filter change events
+                        $('#teacherFilter, #parentFilter').on('change', function() {
+                            table.draw();
+                        });
 
-                            // Parent filter
-                            const selectedParent = $('#parentFilter').val();
-                            if (selectedParent) {
-                                const parentCell = $(row).find('td').eq(6); // Parent Email column (index 6)
-                                const parentId = parentCell.attr('data-parent-id');
-                                if (parentId != selectedParent) {
-                                    return false;
-                                }
-                            }
-
-                            // Date range filter
+                        $('#startDateFilter, #endDateFilter').on('change', function() {
                             const startDate = $('#startDateFilter').val();
                             const endDate = $('#endDateFilter').val();
                             
                             if (startDate || endDate) {
-                                const dateText = data[11]; // Registration Date column (index 11)
-                                const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
-                                
-                                if (startDate && datePart < startDate) {
-                                    return false;
-                                }
-                                
-                                if (endDate && datePart > endDate) {
-                                    return false;
-                                }
+                                $('#clearDateRange').show();
+                            } else {
+                                $('#clearDateRange').hide();
                             }
+                            
+                            table.draw();
+                        });
 
-                            return true;
-                        }
-                    );
+                        $('#clearDateRange').on('click', function() {
+                            $('#startDateFilter').val('');
+                            $('#endDateFilter').val('');
+                            $(this).hide();
+                            table.draw();
+                        });
+                    }
 
-                    // Filter change events
-                    $('#teacherFilter, #parentFilter').on('change', function() {
-                        table.draw();
+                    // Select All functionality
+                    $('#selectAll').on('click', function() {
+                        const isChecked = $(this).prop('checked');
+                        $('.row-checkbox:visible').prop('checked', isChecked);
+                        updateExportButton();
                     });
 
-                    $('#startDateFilter, #endDateFilter').on('change', function() {
-                        const startDate = $('#startDateFilter').val();
-                        const endDate = $('#endDateFilter').val();
-                        
-                        if (startDate || endDate) {
-                            $('#clearDateRange').show();
+                    // Individual checkbox change
+                    $(document).on('change', '.row-checkbox', function() {
+                        updateSelectAll();
+                        updateExportButton();
+                    });
+
+                    // Update Select All checkbox state
+                    function updateSelectAll() {
+                        const totalVisible = $('.row-checkbox:visible').length;
+                        const totalChecked = $('.row-checkbox:visible:checked').length;
+                        $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
+                    }
+
+                    // Update export button state
+                    function updateExportButton() {
+                        const checkedCount = $('.row-checkbox:checked').length;
+                        $('#exportSelectedBtn').prop('disabled', checkedCount === 0);
+                        if (checkedCount > 0) {
+                            $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected (' + checkedCount + ')');
                         } else {
-                            $('#clearDateRange').hide();
+                            $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected');
                         }
-                        
-                        table.draw();
-                    });
-
-                    $('#clearDateRange').on('click', function() {
-                        $('#startDateFilter').val('');
-                        $('#endDateFilter').val('');
-                        $(this).hide();
-                        table.draw();
-                    });
-                }
-
-                // Select All functionality
-                $('#selectAll').on('click', function() {
-                    const isChecked = $(this).prop('checked');
-                    $('.row-checkbox:visible').prop('checked', isChecked);
-                    updateExportButton();
-                });
-
-                // Individual checkbox change
-                $(document).on('change', '.row-checkbox', function() {
-                    updateSelectAll();
-                    updateExportButton();
-                });
-
-                // Update Select All checkbox state
-                function updateSelectAll() {
-                    const totalVisible = $('.row-checkbox:visible').length;
-                    const totalChecked = $('.row-checkbox:visible:checked').length;
-                    $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
-                }
-
-                // Update export button state
-                function updateExportButton() {
-                    const checkedCount = $('.row-checkbox:checked').length;
-                    $('#exportSelectedBtn').prop('disabled', checkedCount === 0);
-                    if (checkedCount > 0) {
-                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected (' + checkedCount + ')');
-                    } else {
-                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected');
-                    }
-                }
-
-                // Export selected rows
-                $('#exportSelectedBtn').on('click', function() {
-                    const selectedIds = [];
-                    $('.row-checkbox:checked').each(function() {
-                        selectedIds.push($(this).val());
-                    });
-
-                    if (selectedIds.length === 0) {
-                        alert('Please select at least one user to export.');
-                        return;
                     }
 
-                    // Create CSV content
-                    let csvContent = 'ID,Name,Email,Website,Role,Status';
-                    @if($isRoleUser)
-                        csvContent = 'ID,Name,Email,Website,Parent Email,Teacher,Shirt Size,Amount Raised,Goal,Status';
-                    @endif
-                    csvContent += '\n';
+                    // Export selected rows
+                    $('#exportSelectedBtn').on('click', function() {
+                        const selectedIds = [];
+                        $('.row-checkbox:checked').each(function() {
+                            selectedIds.push($(this).val());
+                        });
 
-                    selectedIds.forEach(function(id) {
-                        const row = $('tr[data-user-id="' + id + '"]');
-                        const cells = row.find('td');
-                        
-                        const rowData = [];
-                        // Skip first cell (checkbox) and last cell (actions)
-                        for (let i = 1; i < cells.length - 1; i++) {
-                            let cellText = $(cells[i]).text().trim();
-                            // Escape quotes and wrap in quotes if contains comma
-                            cellText = cellText.replace(/"/g, '""');
-                            if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
-                                cellText = '"' + cellText + '"';
+                        if (selectedIds.length === 0) {
+                            alert('Please select at least one user to export.');
+                            return;
+                        }
+
+                        // Create CSV content
+                        let csvContent = 'ID,Name,Email,Website,Role,Status';
+                        @if($isRoleUser)
+                            csvContent = 'ID,Name,Email,Website,Parent Email,Teacher,Shirt Size,Amount Raised,Goal,Status';
+                        @endif
+                        csvContent += '\n';
+
+                        selectedIds.forEach(function(id) {
+                            const row = $('tr[data-user-id="' + id + '"]');
+                            const cells = row.find('td');
+                            
+                            const rowData = [];
+                            // Skip first cell (checkbox) and last cell (actions)
+                            for (let i = 1; i < cells.length - 1; i++) {
+                                let cellText = $(cells[i]).text().trim();
+                                // Escape quotes and wrap in quotes if contains comma
+                                cellText = cellText.replace(/"/g, '""');
+                                if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
+                                    cellText = '"' + cellText + '"';
+                                }
+                                rowData.push(cellText);
                             }
-                            rowData.push(cellText);
-                        }
-                        csvContent += rowData.join(',') + '\n';
+                            csvContent += rowData.join(',') + '\n';
+                        });
+
+                        // Create download link
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        const url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', 'selected_users_' + new Date().getTime() + '.csv');
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                     });
 
-                    // Create download link
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    const url = URL.createObjectURL(blob);
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', 'selected_users_' + new Date().getTime() + '.csv');
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    // Update checkboxes after DataTable draw
+                    table.on('draw', function() {
+                        updateSelectAll();
+                        updateExportButton();
+                    });
                 });
-
-                // Update checkboxes after DataTable draw
-                table.on('draw', function() {
-                    updateSelectAll();
-                    updateExportButton();
-                });
-            });
-        </script>
+            </script>
+        @endpush
     </div>
 </div>
 @endsection

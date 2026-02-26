@@ -787,6 +787,7 @@
 
     <!-- Push Notifications -->
     <script src="{{asset('js/push-notifications.js')}}"></script>
+    @stack('scripts')
     
     <!-- PWA Install Prompt -->
     <script>
