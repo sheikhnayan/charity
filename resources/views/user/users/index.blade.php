@@ -366,8 +366,8 @@
                 }
 
                 $(document).ready(function() {
-                    // Initialize DataTable
-                    var table = $('#usersTable').DataTable({
+                    // Initialize DataTable - use lowercase dataTable
+                    var table = $('#usersTable').dataTable({
                         dom: 'Bfrtip',
                         pageLength: 25,
                         scrollX: true,
@@ -378,6 +378,9 @@
                             'copy', 'csv', 'excel', 'pdf', 'print'
                         ]
                     });
+                    
+                    // Get the API instance
+                    var api = table.api();
 
                     @if($isRoleUser)
                     // Custom search function for filtering
@@ -423,7 +426,7 @@
 
                     // Trigger table redraw when filters change
                     $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
-                        table.draw();
+                        api.draw();
                     });
                     @endif
 
@@ -511,7 +514,7 @@
                     });
 
                     // Update checkboxes after DataTable draw
-                    table.on('draw', function() {
+                    api.on('draw', function() {
                         updateSelectAll();
                         updateExportButton();
                     });
