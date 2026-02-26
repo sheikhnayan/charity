@@ -39,7 +39,7 @@ class UserManagementController extends Controller
         if ($currentUser->role === 'user') {
             $teachers = Teacher::where('website_id', $websiteId)
                 ->orderBy('name')
-                ->get(['id', 'name', 'last_name']);
+                ->get(['id', 'name']);
             
             $parents = User::where('website_id', $websiteId)
                 ->where('role', 'parents')
