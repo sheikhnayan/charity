@@ -33,19 +33,7 @@ class UserManagementController extends Controller
 
         $users = $usersQuery->get();
 
-        // Get all teachers for the current website for filter dropdown
-        $teachers = Teacher::where('website_id', $websiteId)
-            ->orderBy('name')
-            ->get();
-
-        // Get all parents for the current website for filter dropdown
-        $parents = User::where('website_id', $websiteId)
-            ->where('role', 'parents')
-            ->orderBy('name')
-            ->select('id', 'name', 'last_name', 'email')
-            ->get();
-
-        return view('user.users.index', compact('users', 'filterType', 'teachers', 'parents'));
+        return view('user.users.index', compact('users', 'filterType'));
     }
 
     public function create()

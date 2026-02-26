@@ -8,7 +8,6 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
 
-
 <style>
     .forms-wizard li.done em::before, .lnr-checkmark-circle::before {
         content: "\e87f";
@@ -134,39 +133,6 @@
                                         </button>
                                     </div>
                                 </div>
-
-                                @if($isRoleUser)
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Teacher:</label>
-                                        <select id="teacherFilter" class="form-select">
-                                            <option value="">All Teachers</option>
-                                            @foreach($teachers as $teacher)
-                                                <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name ?? '' }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Parent:</label>
-                                        <select id="parentFilter" class="form-select">
-                                            <option value="">All Parents</option>
-                                            @foreach($parents as $parent)
-                                                <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Date Range:</label>
-                                        <div class="d-flex gap-2">
-                                            <input type="date" id="startDateFilter" class="form-control" placeholder="Start Date">
-                                            <input type="date" id="endDateFilter" class="form-control" placeholder="End Date">
-                                        </div>
-                                        <button type="button" id="clearDateRange" class="btn btn-sm btn-outline-secondary mt-1" style="display:none;">
-                                            <i class="fas fa-times"></i> Clear Dates
-                                        </button>
-                                    </div>
-                                </div>
-                                @endif
                                 
                                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-striped" id="usersTable">
@@ -217,8 +183,8 @@
                                                         <td style="display: none;">
                                                             <span class="badge bg-info">{{ ucfirst($user->role) }}</span>
                                                         </td>
-                                                        <td data-parent-id="{{ $user->parent_id ?? '' }}">{{ $user->parent->email ?? 'N/A' }}</td>
-                                                        <td data-teacher-id="{{ $user->teacher_id ?? '' }}">{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
+                                                        <td>{{ $user->parent->email ?? 'N/A' }}</td>
+                                                        <td>{{ trim(($user->teacher->name ?? '') . ' ' . ($user->teacher->last_name ?? '')) ?: 'N/A' }}</td>
                                                         <td>{{ $user->tshirt_size ?? 'N/A' }}</td>
                                                         <td>${{ number_format($user->donations->sum('amount'), 2) }}</td>
                                                         <td>
@@ -333,6 +299,7 @@
         @endforeach
 
         <!-- Include DataTables and jQuery CDN -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
         <style>
@@ -341,108 +308,18 @@
                 color: #000 !important;
             }
         </style>
-        
-        <!-- DataTables Scripts (jQuery already loaded in main layout) -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
         <script>
             $(document).ready(function() {
-                const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
-                
-                // Add custom search function before initializing DataTable
-                if (isRoleUser) {
-                    let startDate = null;
-                    let endDate = null;
-
-                    // Register custom search function BEFORE table initialization
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                        if (settings.nTable.id !== 'usersTable') {
-                            return true;
-                        }
-
-                        const row = $(settings.nTable).DataTable().row(dataIndex).node();
-                        const teacherCell = $(row).find('td').eq(7); // Teacher column
-                        const parentCell = $(row).find('td').eq(6); // Parent Email column
-                        const dateCell = $(row).find('td').eq(11); // Registration Date column
-
-                        // Teacher filter
-                        const selectedTeacher = $('#teacherFilter').val();
-                        if (selectedTeacher) {
-                            const teacherId = teacherCell.data('teacher-id');
-                            if (teacherId !== parseInt(selectedTeacher)) {
-                                return false;
-                            }
-                        }
-
-                        // Parent filter
-                        const selectedParent = $('#parentFilter').val();
-                        if (selectedParent) {
-                            const parentId = parentCell.data('parent-id');
-                            if (parentId !== parseInt(selectedParent)) {
-                                return false;
-                            }
-                        }
-
-                        // Date range filter
-                        if (startDate || endDate) {
-                            const dateText = dateCell.text().trim();
-                            const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
-                            
-                            if (startDate && datePart < startDate) {
-                                return false;
-                            }
-                            
-                            if (endDate && datePart > endDate) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    });
-
-                    // Handle date range filter
-                    $(document).on('change', '#startDateFilter, #endDateFilter', function() {
-                        startDate = $('#startDateFilter').val();
-                        endDate = $('#endDateFilter').val();
-                        
-                        if (startDate || endDate) {
-                            $('#clearDateRange').show();
-                        } else {
-                            $('#clearDateRange').hide();
-                        }
-                        
-                        if (typeof table !== 'undefined') {
-                            table.draw();
-                        }
-                    });
-
-                    $(document).on('click', '#clearDateRange', function() {
-                        $('#startDateFilter').val('');
-                        $('#endDateFilter').val('');
-                        startDate = null;
-                        endDate = null;
-                        $(this).hide();
-                        if (typeof table !== 'undefined') {
-                            table.draw();
-                        }
-                    });
-
-                    // Filter change events
-                    $(document).on('change', '#teacherFilter, #parentFilter', function() {
-                        if (typeof table !== 'undefined') {
-                            table.draw();
-                        }
-                    });
-                }
-                
-                // Initialize DataTable AFTER custom search is registered
-                let table = $('#usersTable').DataTable({
+                // Initialize DataTable with export/import buttons
+                let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
                     scrollX: true,
@@ -450,71 +327,7 @@
                         { orderable: false, targets: 0 }
                     ],
                     buttons: [
-                        {
-                            extend: 'copy',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'csv',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'excel',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'pdf',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        },
-                        {
-                            extend: 'print',
-                            exportOptions: {
-                                rows: function(idx, data, node) {
-                                    let checked = $('.row-checkbox:checked');
-                                    if (checked.length === 0) {
-                                        return $(node).is(':visible');
-                                    }
-                                    return $(node).find('.row-checkbox').prop('checked');
-                                },
-                                columns: ':visible:not(:first-child):not(:last-child)'
-                            }
-                        }
+                        'copy', 'csv', 'excel', 'pdf', 'print'
                     ]
                 });
 
