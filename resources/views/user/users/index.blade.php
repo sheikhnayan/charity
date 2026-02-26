@@ -358,8 +358,94 @@
             $(document).ready(function() {
                 const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
                 
-                // Initialize DataTable with export/import buttons
-                let table = new DataTable('#usersTable', {
+                // Add custom search function before initializing DataTable
+                if (isRoleUser) {
+                    let startDate = null;
+                    let endDate = null;
+
+                    // Register custom search function BEFORE table initialization
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        if (settings.nTable.id !== 'usersTable') {
+                            return true;
+                        }
+
+                        const row = $(settings.nTable).DataTable().row(dataIndex).node();
+                        const teacherCell = $(row).find('td').eq(7); // Teacher column
+                        const parentCell = $(row).find('td').eq(6); // Parent Email column
+                        const dateCell = $(row).find('td').eq(11); // Registration Date column
+
+                        // Teacher filter
+                        const selectedTeacher = $('#teacherFilter').val();
+                        if (selectedTeacher) {
+                            const teacherId = teacherCell.data('teacher-id');
+                            if (teacherId !== parseInt(selectedTeacher)) {
+                                return false;
+                            }
+                        }
+
+                        // Parent filter
+                        const selectedParent = $('#parentFilter').val();
+                        if (selectedParent) {
+                            const parentId = parentCell.data('parent-id');
+                            if (parentId !== parseInt(selectedParent)) {
+                                return false;
+                            }
+                        }
+
+                        // Date range filter
+                        if (startDate || endDate) {
+                            const dateText = dateCell.text().trim();
+                            const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
+                            
+                            if (startDate && datePart < startDate) {
+                                return false;
+                            }
+                            
+                            if (endDate && datePart > endDate) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
+
+                    // Handle date range filter
+                    $(document).on('change', '#startDateFilter, #endDateFilter', function() {
+                        startDate = $('#startDateFilter').val();
+                        endDate = $('#endDateFilter').val();
+                        
+                        if (startDate || endDate) {
+                            $('#clearDateRange').show();
+                        } else {
+                            $('#clearDateRange').hide();
+                        }
+                        
+                        if (typeof table !== 'undefined') {
+                            table.draw();
+                        }
+                    });
+
+                    $(document).on('click', '#clearDateRange', function() {
+                        $('#startDateFilter').val('');
+                        $('#endDateFilter').val('');
+                        startDate = null;
+                        endDate = null;
+                        $(this).hide();
+                        if (typeof table !== 'undefined') {
+                            table.draw();
+                        }
+                    });
+
+                    // Filter change events
+                    $(document).on('change', '#teacherFilter, #parentFilter', function() {
+                        if (typeof table !== 'undefined') {
+                            table.draw();
+                        }
+                    });
+                }
+                
+                // Initialize DataTable AFTER custom search is registered
+                let table = $('#usersTable').DataTable({
                     dom: 'Bfrtip',
                     pageLength: 25,
                     scrollX: true,
@@ -371,10 +457,8 @@
                             extend: 'copy',
                             exportOptions: {
                                 rows: function(idx, data, node) {
-                                    // If checkboxes are used, export only checked rows
                                     let checked = $('.row-checkbox:checked');
                                     if (checked.length === 0) {
-                                        // Export all filtered/visible rows
                                         return $(node).is(':visible');
                                     }
                                     return $(node).find('.row-checkbox').prop('checked');
@@ -436,87 +520,6 @@
                         }
                     ]
                 });
-
-                // Initialize filters (only if isRoleUser)
-                if (isRoleUser) {
-                    let startDate = null;
-                    let endDate = null;
-
-                    // Handle date range filter
-                    $('#startDateFilter, #endDateFilter').on('change', function() {
-                        startDate = $('#startDateFilter').val();
-                        endDate = $('#endDateFilter').val();
-                        
-                        if (startDate || endDate) {
-                            $('#clearDateRange').show();
-                        } else {
-                            $('#clearDateRange').hide();
-                        }
-                        
-                        table.draw();
-                    });
-
-                    $('#clearDateRange').on('click', function() {
-                        $('#startDateFilter').val('');
-                        $('#endDateFilter').val('');
-                        startDate = null;
-                        endDate = null;
-                        $(this).hide();
-                        table.draw();
-                    });
-
-                    // Custom filtering function for DataTable
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                        if (settings.nTable.id !== 'usersTable') {
-                            return true;
-                        }
-
-                        const row = table.row(dataIndex).node();
-                        const teacherCell = $(row).find('td').eq(7); // Teacher column (0-indexed after checkbox)
-                        const parentCell = $(row).find('td').eq(6); // Parent Email column
-                        const dateCell = $(row).find('td').eq(11); // Registration Date column
-
-                        // Teacher filter
-                        const selectedTeacher = $('#teacherFilter').val();
-                        if (selectedTeacher) {
-                            const teacherId = teacherCell.data('teacher-id');
-                            if (teacherId !== parseInt(selectedTeacher)) {
-                                return false;
-                            }
-                        }
-
-                        // Parent filter
-                        const selectedParent = $('#parentFilter').val();
-                        if (selectedParent) {
-                            const parentId = parentCell.data('parent-id');
-                            if (parentId !== parseInt(selectedParent)) {
-                                return false;
-                            }
-                        }
-
-                        // Date range filter
-                        if (startDate || endDate) {
-                            const dateText = dateCell.text().trim();
-                            // Parse date in format "YYYY-MM-DD hh:mm A"
-                            const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
-                            
-                            if (startDate && datePart < startDate) {
-                                return false;
-                            }
-                            
-                            if (endDate && datePart > endDate) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    });
-
-                    // Filter change events
-                    $('#teacherFilter, #parentFilter').on('change', function() {
-                        table.draw();
-                    });
-                }
 
                 // Select All functionality
                 $('#selectAll').on('click', function() {
