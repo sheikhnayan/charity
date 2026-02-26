@@ -155,8 +155,14 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Registration Date:</label>
-                                        <input type="text" id="dateRangeFilter" class="form-control" placeholder="Select date range">
+                                        <label class="text-dark fw-semibold mb-1">Filter by Date Range:</label>
+                                        <div class="d-flex gap-2">
+                                            <input type="date" id="startDateFilter" class="form-control" placeholder="Start Date">
+                                            <input type="date" id="endDateFilter" class="form-control" placeholder="End Date">
+                                        </div>
+                                        <button type="button" id="clearDateRange" class="btn btn-sm btn-outline-secondary mt-1" style="display:none;">
+                                            <i class="fas fa-times"></i> Clear Dates
+                                        </button>
                                     </div>
                                 </div>
                                 @endif
@@ -329,12 +335,6 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-        
-        <!-- Date Range Picker -->
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        
         <style>
             .dataTables_wrapper .dataTables_paginate .paginate_button.current,
             .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -353,7 +353,59 @@
             $(document).ready(function() {
                 const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
                 
-                // Initialize DataTable with proper export functionality
+                // Add custom search function for filtering
+                if (isRoleUser) {
+                    $.fn.dataTable.ext.search.push(
+                        function(settings, data, dataIndex) {
+                            if (settings.nTable.id !== 'usersTable') {
+                                return true;
+                            }
+
+                            const row = settings.aoData[dataIndex].nTr;
+                            
+                            // Teacher filter
+                            const selectedTeacher = $('#teacherFilter').val();
+                            if (selectedTeacher) {
+                                const teacherCell = $(row).find('td').eq(7); // Teacher column (index 7)
+                                const teacherId = teacherCell.attr('data-teacher-id');
+                                if (teacherId != selectedTeacher) {
+                                    return false;
+                                }
+                            }
+
+                            // Parent filter
+                            const selectedParent = $('#parentFilter').val();
+                            if (selectedParent) {
+                                const parentCell = $(row).find('td').eq(6); // Parent Email column (index 6)
+                                const parentId = parentCell.attr('data-parent-id');
+                                if (parentId != selectedParent) {
+                                    return false;
+                                }
+                            }
+
+                            // Date range filter
+                            const startDate = $('#startDateFilter').val();
+                            const endDate = $('#endDateFilter').val();
+                            
+                            if (startDate || endDate) {
+                                const dateText = data[11]; // Registration Date column (index 11)
+                                const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
+                                
+                                if (startDate && datePart < startDate) {
+                                    return false;
+                                }
+                                
+                                if (endDate && datePart > endDate) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+                    );
+                }
+                
+                // Initialize DataTable with export buttons
                 let table = new DataTable('#usersTable', {
                     dom: 'Bfrtip',
                     pageLength: 25,
@@ -366,10 +418,8 @@
                             extend: 'copy',
                             exportOptions: {
                                 rows: function(idx, data, node) {
-                                    // If rows are selected, export only selected
                                     let checked = $('.row-checkbox:checked');
                                     if (checked.length === 0) {
-                                        // No rows selected, export filtered rows
                                         return $(node).is(':visible');
                                     }
                                     return $(node).find('.row-checkbox').prop('checked');
@@ -432,78 +482,29 @@
                     ]
                 });
 
-                // Custom filtering for $isRoleUser
+                // Filter change events
                 if (isRoleUser) {
-                    // Date range picker
-                    let startDate = null;
-                    let endDate = null;
-
-                    $('#dateRangeFilter').daterangepicker({
-                        autoUpdateInput: false,
-                        locale: {
-                            cancelLabel: 'Clear',
-                            format: 'YYYY-MM-DD'
-                        }
-                    });
-
-                    $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
-                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-                        startDate = picker.startDate.format('YYYY-MM-DD');
-                        endDate = picker.endDate.format('YYYY-MM-DD');
-                        table.draw();
-                    });
-
-                    $('#dateRangeFilter').on('cancel.daterangepicker', function(ev, picker) {
-                        $(this).val('');
-                        startDate = null;
-                        endDate = null;
-                        table.draw();
-                    });
-
-                    // Custom search function for advanced filtering
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                        if (settings.nTable.id !== 'usersTable') {
-                            return true;
-                        }
-
-                        const row = table.row(dataIndex).node();
-                        
-                        // Teacher filter
-                        const selectedTeacher = $('#teacherFilter').val();
-                        if (selectedTeacher) {
-                            const teacherCell = $(row).find('td[data-teacher-id]');
-                            const teacherId = teacherCell.attr('data-teacher-id');
-                            if (teacherId !== selectedTeacher) {
-                                return false;
-                            }
-                        }
-
-                        // Parent filter
-                        const selectedParent = $('#parentFilter').val();
-                        if (selectedParent) {
-                            const parentCell = $(row).find('td[data-parent-id]');
-                            const parentId = parentCell.attr('data-parent-id');
-                            if (parentId !== selectedParent) {
-                                return false;
-                            }
-                        }
-
-                        // Date range filter (column index for Registration Date)
-                        if (startDate && endDate) {
-                            const dateColumnIndex = isRoleUser ? 11 : 6; // Adjust based on column position
-                            const dateText = data[dateColumnIndex] || '';
-                            const rowDate = moment(dateText, 'YYYY-MM-DD HH:mm A').format('YYYY-MM-DD');
-                            
-                            if (rowDate < startDate || rowDate > endDate) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    });
-
-                    // Trigger filtering when dropdowns change
                     $('#teacherFilter, #parentFilter').on('change', function() {
+                        table.draw();
+                    });
+
+                    $('#startDateFilter, #endDateFilter').on('change', function() {
+                        const startDate = $('#startDateFilter').val();
+                        const endDate = $('#endDateFilter').val();
+                        
+                        if (startDate || endDate) {
+                            $('#clearDateRange').show();
+                        } else {
+                            $('#clearDateRange').hide();
+                        }
+                        
+                        table.draw();
+                    });
+
+                    $('#clearDateRange').on('click', function() {
+                        $('#startDateFilter').val('');
+                        $('#endDateFilter').val('');
+                        $(this).hide();
                         table.draw();
                     });
                 }
