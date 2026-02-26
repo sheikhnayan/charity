@@ -206,6 +206,9 @@ body.tutorial-first-visit .introjs-skipbutton {
         $globalPayment = \App\Models\PaymentSetting::first();
         $defaultFee = $globalPayment ? $globalPayment->fee : 2.9;
     @endphp
+        @php
+            $isRoleUser = auth()->user() && auth()->user()->role === 'user';
+        @endphp
     <!-- Content wrapper -->
     <div class="content-wrapper">
         <!-- Content -->
@@ -273,7 +276,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                             <div class="col-lg">
                                 <div class="card-shadow-primary card-border text-white mb-3 card bg-primary p-4" style="background: #fff !important;">
                                     <div class="row mb-3">
-                                        @if (Auth::user()->role == 'user')
+                                        @if ($isRoleUser)
                                             <div class="col-md-3">
                                                 <label>Filter by Type:</label>
                                                 <select id="typeFilter" class="form-select">
@@ -286,6 +289,34 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                     <option value="Investment">Investment</option>
                                                 </select>
                                             </div>
+                                            <div class="col-md-3">
+                                                <label>Filter by Teacher:</label>
+                                                <select id="teacherFilter" class="form-select">
+                                                    <option value="">All Teachers</option>
+                                                    @foreach($teachers ?? [] as $teacher)
+                                                        <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name ?? '' }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label>Filter by Parent:</label>
+                                                <select id="parentFilter" class="form-select">
+                                                    <option value="">All Parents</option>
+                                                    @foreach($parents ?? [] as $parent)
+                                                        <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label>Filter by Date Range:</label>
+                                                <div class="d-flex gap-2">
+                                                    <input type="date" id="startDateFilter" class="form-control" placeholder="Start Date">
+                                                    <input type="date" id="endDateFilter" class="form-control" placeholder="End Date">
+                                                </div>
+                                                <button type="button" id="clearDateRange" class="btn btn-sm btn-outline-secondary mt-1" style="display:none;">
+                                                    <i class="fas fa-times"></i> Clear Dates
+                                                </button>
+                                            </div>
                                         @endif
                                     </div>
                                     <div class="table-responsive" style="overflow-x: auto;">
@@ -297,6 +328,10 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                 <th>Donor Name</th>
                                                 <th>Individual Name</th>
                                                 <th>Team Name</th>
+                                                @if($isRoleUser)
+                                                    <th>Parent</th>
+                                                    <th>Teacher</th>
+                                                @endif
                                                 <th>Amount Entered</th>
                                                 <th>Platform Fee</th>
                                                 <th>Tip Amount</th>
@@ -348,6 +383,15 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                 <td>{{ $item->donation->user->group_name ?? null}}</td>
                                                             @else
                                                                 <td></td>
+                                                            @endif
+                                                            @if($isRoleUser)
+                                                                @php
+                                                                    $student = $item->donation->user ?? null;
+                                                                    $parent = $student ? $student->parent : null;
+                                                                    $teacher = $student ? $student->teacher : null;
+                                                                @endphp
+                                                                <td data-parent-id="{{ $parent->id ?? '' }}">{{ $parent->email ?? 'N/A' }}</td>
+                                                                <td data-teacher-id="{{ $teacher->id ?? '' }}">{{ trim(($teacher->name ?? '') . ' ' . ($teacher->last_name ?? '')) ?: 'N/A' }}</td>
                                                             @endif
                                                             @if ($item->type == 'investment')
                                                             <td>${{ number_format($item->amount, 2) }}</td>
@@ -459,7 +503,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="8" class="text-end">Total:</th>
+                                                <th colspan="{{ $isRoleUser ? 10 : 8 }}" class="text-end">Total:</th>
                                                 <th id="amount-total"></th>
                                                 <th colspan="6"></th>
                                             </tr>
@@ -842,6 +886,7 @@ body.tutorial-first-visit .introjs-skipbutton {
 
             <script>
                 $(document).ready(function() {
+                    const isRoleUser = {{ $isRoleUser ? 'true' : 'false' }};
                     // Hide loader if there are backend validation errors
                     @if($errors->any())
                         const participantLoader = document.getElementById('participant-loader');
@@ -924,8 +969,74 @@ body.tutorial-first-visit .introjs-skipbutton {
 
                     // Type filter
                     $('#typeFilter').on('change', function() {
-                        table.column(12).search(this.value).draw();
+                        table.column(13).search(this.value).draw();
                     });
+
+                    if (typeof isRoleUser !== 'undefined' && isRoleUser) {
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const row = settings.aoData[dataIndex].nTr;
+
+                            const selectedTeacher = $('#teacherFilter').val();
+                            if (selectedTeacher) {
+                                const teacherCell = $(row).find('td').eq(6); // Teacher column
+                                const teacherId = teacherCell.attr('data-teacher-id');
+                                if (teacherId != selectedTeacher) {
+                                    return false;
+                                }
+                            }
+
+                            const selectedParent = $('#parentFilter').val();
+                            if (selectedParent) {
+                                const parentCell = $(row).find('td').eq(5); // Parent column
+                                const parentId = parentCell.attr('data-parent-id');
+                                if (parentId != selectedParent) {
+                                    return false;
+                                }
+                            }
+
+                            const startDate = $('#startDateFilter').val();
+                            const endDate = $('#endDateFilter').val();
+
+                            if (startDate || endDate) {
+                                const dateText = data[15];
+                                const datePart = dateText.split(' ')[0];
+
+                                if (startDate && datePart < startDate) {
+                                    return false;
+                                }
+
+                                if (endDate && datePart > endDate) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        });
+
+                        $('#teacherFilter, #parentFilter').on('change', function() {
+                            table.draw();
+                        });
+
+                        $('#startDateFilter, #endDateFilter').on('change', function() {
+                            const startDate = $('#startDateFilter').val();
+                            const endDate = $('#endDateFilter').val();
+
+                            if (startDate || endDate) {
+                                $('#clearDateRange').show();
+                            } else {
+                                $('#clearDateRange').hide();
+                            }
+
+                            table.draw();
+                        });
+
+                        $('#clearDateRange').on('click', function() {
+                            $('#startDateFilter').val('');
+                            $('#endDateFilter').val('');
+                            $(this).hide();
+                            table.draw();
+                        });
+                    }
                     @endif
 
 
@@ -936,10 +1047,11 @@ body.tutorial-first-visit .introjs-skipbutton {
                     });
 
                     function updateAmountTotal() {
+                        const totalIndex = isRoleUser ? 10 : 8;
                         let total = 0;
                         table.rows({ search: 'applied' }).every(function () {
                             let data = this.data();
-                            let amountCell = data[8]; // Column 8: Total Amount (0-indexed, after adding Tip Amount column)
+                            let amountCell = data[totalIndex];
                             // Remove HTML tags if present
                             let tempDiv = document.createElement('div');
                             tempDiv.innerHTML = amountCell;

@@ -549,7 +549,16 @@ class AdminController extends Controller
 
             $data = Transaction::where('website_id',$websites->id)->get();
 
-            return view('user.donation', compact('data', 'websites'));
+            $teachers = \App\Models\Teacher::where('website_id', $websites->id)
+                ->orderBy('name')
+                ->get();
+            $parents = \App\Models\User::where('website_id', $websites->id)
+                ->where('role', 'parents')
+                ->orderBy('name')
+                ->select('id', 'name', 'last_name', 'email')
+                ->get();
+
+            return view('user.donation', compact('data', 'websites', 'teachers', 'parents'));
         }elseif($user->role == 'parents'){
             // Get all student IDs that belong to this parent
             $studentIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
