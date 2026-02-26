@@ -7,8 +7,7 @@
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
-<!-- Date Range Picker CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 
 <style>
     .forms-wizard li.done em::before, .lnr-checkmark-circle::before {
@@ -158,9 +157,12 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="text-dark fw-semibold mb-1">Filter by Date Range:</label>
-                                        <input type="text" id="dateRangeFilter" class="form-control" placeholder="Select date range" autocomplete="off">
+                                        <div class="d-flex gap-2">
+                                            <input type="date" id="startDateFilter" class="form-control" placeholder="Start Date">
+                                            <input type="date" id="endDateFilter" class="form-control" placeholder="End Date">
+                                        </div>
                                         <button type="button" id="clearDateRange" class="btn btn-sm btn-outline-secondary mt-1" style="display:none;">
-                                            <i class="fas fa-times"></i> Clear Date
+                                            <i class="fas fa-times"></i> Clear Dates
                                         </button>
                                     </div>
                                 </div>
@@ -343,11 +345,6 @@
         <!-- jQuery first -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         
-        <!-- Moment.js (MUST be before daterangepicker) -->
-        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-        <!-- Date Range Picker JS (requires jQuery and Moment) -->
-        <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
-        
         <!-- DataTables Scripts -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -440,38 +437,28 @@
                     ]
                 });
 
-                // Initialize Select2 for multi-select dropdowns (only if isRoleUser)
+                // Initialize filters (only if isRoleUser)
                 if (isRoleUser) {
-                    // Initialize Date Range Picker
                     let startDate = null;
                     let endDate = null;
 
-                    $('#dateRangeFilter').daterangepicker({
-                        autoUpdateInput: false,
-                        locale: {
-                            cancelLabel: 'Clear',
-                            format: 'YYYY-MM-DD'
+                    // Handle date range filter
+                    $('#startDateFilter, #endDateFilter').on('change', function() {
+                        startDate = $('#startDateFilter').val();
+                        endDate = $('#endDateFilter').val();
+                        
+                        if (startDate || endDate) {
+                            $('#clearDateRange').show();
+                        } else {
+                            $('#clearDateRange').hide();
                         }
-                    });
-
-                    $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
-                        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-                        startDate = picker.startDate;
-                        endDate = picker.endDate;
-                        $('#clearDateRange').show();
-                        table.draw();
-                    });
-
-                    $('#dateRangeFilter').on('cancel.daterangepicker', function(ev, picker) {
-                        $(this).val('');
-                        startDate = null;
-                        endDate = null;
-                        $('#clearDateRange').hide();
+                        
                         table.draw();
                     });
 
                     $('#clearDateRange').on('click', function() {
-                        $('#dateRangeFilter').val('');
+                        $('#startDateFilter').val('');
+                        $('#endDateFilter').val('');
                         startDate = null;
                         endDate = null;
                         $(this).hide();
@@ -508,13 +495,17 @@
                         }
 
                         // Date range filter
-                        if (startDate && endDate) {
+                        if (startDate || endDate) {
                             const dateText = dateCell.text().trim();
-                            const rowDate = moment(dateText, 'YYYY-MM-DD hh:mm A');
-                            if (rowDate.isValid()) {
-                                if (rowDate.isBefore(startDate, 'day') || rowDate.isAfter(endDate, 'day')) {
-                                    return false;
-                                }
+                            // Parse date in format "YYYY-MM-DD hh:mm A"
+                            const datePart = dateText.split(' ')[0]; // Get YYYY-MM-DD part
+                            
+                            if (startDate && datePart < startDate) {
+                                return false;
+                            }
+                            
+                            if (endDate && datePart > endDate) {
+                                return false;
                             }
                         }
 
