@@ -358,157 +358,167 @@
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
         <script>
-            $(document).ready(function() {
-                // Initialize DataTable
-                var table = $('#usersTable').DataTable({
-                    dom: 'Bfrtip',
-                    pageLength: 25,
-                    scrollX: true,
-                    columnDefs: [
-                        { orderable: false, targets: 0 }
-                    ],
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                });
-
-                @if($isRoleUser)
-                // Custom search function for filtering
-                $.fn.dataTable.ext.search.push(
-                    function(settings, data, dataIndex) {
-                        // Get filter values
-                        const teacherFilter = $('#teacherFilter').val();
-                        const parentFilter = $('#parentFilter').val();
-                        const dateFrom = $('#dateFrom').val();
-                        const dateTo = $('#dateTo').val();
-
-                        // Get row data (Teacher column is index 7, Parent Email is index 6, Registration Date is index 11)
-                        const teacherValue = data[7] || '';
-                        const parentValue = data[6] || '';
-                        const dateValue = data[11] || '';
-
-                        // Teacher filter
-                        if (teacherFilter && teacherValue.indexOf(teacherFilter) === -1) {
-                            return false;
-                        }
-
-                        // Parent filter
-                        if (parentFilter && parentValue.indexOf(parentFilter) === -1) {
-                            return false;
-                        }
-
-                        // Date range filter
-                        if (dateFrom || dateTo) {
-                            // Extract date from "YYYY-MM-DD HH:MM AM/PM" format
-                            const rowDate = dateValue.split(' ')[0]; // Get just the date part
-                            
-                            if (dateFrom && rowDate < dateFrom) {
-                                return false;
-                            }
-                            if (dateTo && rowDate > dateTo) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    }
-                );
-
-                // Trigger table redraw when filters change
-                $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
-                    table.draw();
-                });
-                @endif
-
-                // Select All functionality
-                $('#selectAll').on('click', function() {
-                    const isChecked = $(this).prop('checked');
-                    $('.row-checkbox:visible').prop('checked', isChecked);
-                    updateExportButton();
-                });
-
-                // Individual checkbox change
-                $(document).on('change', '.row-checkbox', function() {
-                    updateSelectAll();
-                    updateExportButton();
-                });
-
-                // Update Select All checkbox state
-                function updateSelectAll() {
-                    const totalVisible = $('.row-checkbox:visible').length;
-                    const totalChecked = $('.row-checkbox:visible:checked').length;
-                    $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
+            // Wait for DataTables to be available
+            function initializeDataTable() {
+                if (!$.fn.dataTable) {
+                    setTimeout(initializeDataTable, 100);
+                    return;
                 }
 
-                // Update export button state
-                function updateExportButton() {
-                    const checkedCount = $('.row-checkbox:checked').length;
-                    $('#exportSelectedBtn').prop('disabled', checkedCount === 0);
-                    if (checkedCount > 0) {
-                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected (' + checkedCount + ')');
-                    } else {
-                        $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected');
-                    }
-                }
-
-                // Export selected rows (respects current filters - only exports visible rows)
-                $('#exportSelectedBtn').on('click', function() {
-                    const selectedIds = [];
-                    $('.row-checkbox:checked').each(function() {
-                        // Only include if row is visible (not filtered out)
-                        if ($(this).closest('tr').is(':visible')) {
-                            selectedIds.push($(this).val());
-                        }
+                $(document).ready(function() {
+                    // Initialize DataTable
+                    var table = $('#usersTable').DataTable({
+                        dom: 'Bfrtip',
+                        pageLength: 25,
+                        scrollX: true,
+                        columnDefs: [
+                            { orderable: false, targets: 0 }
+                        ],
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
                     });
 
-                    if (selectedIds.length === 0) {
-                        alert('Please select at least one user from the visible/filtered results to export.');
-                        return;
-                    }
-
-                    // Create CSV content
-                    let csvContent = 'ID,Name,Email,Website,Role,Status';
                     @if($isRoleUser)
-                        csvContent = 'ID,Name,Email,Website,Parent Email,Teacher,Shirt Size,Amount Raised,Goal,Status';
-                    @endif
-                    csvContent += '\n';
+                    // Custom search function for filtering
+                    $.fn.dataTable.ext.search.push(
+                        function(settings, data, dataIndex) {
+                            // Get filter values
+                            const teacherFilter = $('#teacherFilter').val();
+                            const parentFilter = $('#parentFilter').val();
+                            const dateFrom = $('#dateFrom').val();
+                            const dateTo = $('#dateTo').val();
 
-                    selectedIds.forEach(function(id) {
-                        const row = $('tr[data-user-id="' + id + '"]');
-                        const cells = row.find('td');
-                        
-                        const rowData = [];
-                        // Skip first cell (checkbox) and last cell (actions)
-                        for (let i = 1; i < cells.length - 1; i++) {
-                            let cellText = $(cells[i]).text().trim();
-                            // Escape quotes and wrap in quotes if contains comma
-                            cellText = cellText.replace(/"/g, '""');
-                            if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
-                                cellText = '"' + cellText + '"';
+                            // Get row data (Teacher column is index 7, Parent Email is index 6, Registration Date is index 11)
+                            const teacherValue = data[7] || '';
+                            const parentValue = data[6] || '';
+                            const dateValue = data[11] || '';
+
+                            // Teacher filter
+                            if (teacherFilter && teacherValue.indexOf(teacherFilter) === -1) {
+                                return false;
                             }
-                            rowData.push(cellText);
+
+                            // Parent filter
+                            if (parentFilter && parentValue.indexOf(parentFilter) === -1) {
+                                return false;
+                            }
+
+                            // Date range filter
+                            if (dateFrom || dateTo) {
+                                // Extract date from "YYYY-MM-DD HH:MM AM/PM" format
+                                const rowDate = dateValue.split(' ')[0]; // Get just the date part
+                                
+                                if (dateFrom && rowDate < dateFrom) {
+                                    return false;
+                                }
+                                if (dateTo && rowDate > dateTo) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
                         }
-                        csvContent += rowData.join(',') + '\n';
+                    );
+
+                    // Trigger table redraw when filters change
+                    $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
+                        table.draw();
+                    });
+                    @endif
+
+                    // Select All functionality
+                    $('#selectAll').on('click', function() {
+                        const isChecked = $(this).prop('checked');
+                        $('.row-checkbox:visible').prop('checked', isChecked);
+                        updateExportButton();
                     });
 
-                    // Create download link
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    const url = URL.createObjectURL(blob);
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', 'selected_users_' + new Date().getTime() + '.csv');
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
+                    // Individual checkbox change
+                    $(document).on('change', '.row-checkbox', function() {
+                        updateSelectAll();
+                        updateExportButton();
+                    });
 
-                // Update checkboxes after DataTable draw
-                table.on('draw', function() {
-                    updateSelectAll();
-                    updateExportButton();
+                    // Update Select All checkbox state
+                    function updateSelectAll() {
+                        const totalVisible = $('.row-checkbox:visible').length;
+                        const totalChecked = $('.row-checkbox:visible:checked').length;
+                        $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
+                    }
+
+                    // Update export button state
+                    function updateExportButton() {
+                        const checkedCount = $('.row-checkbox:checked').length;
+                        $('#exportSelectedBtn').prop('disabled', checkedCount === 0);
+                        if (checkedCount > 0) {
+                            $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected (' + checkedCount + ')');
+                        } else {
+                            $('#exportSelectedBtn').html('<i class="fas fa-file-excel me-1"></i> Export Selected');
+                        }
+                    }
+
+                    // Export selected rows (respects current filters - only exports visible rows)
+                    $('#exportSelectedBtn').on('click', function() {
+                        const selectedIds = [];
+                        $('.row-checkbox:checked').each(function() {
+                            // Only include if row is visible (not filtered out)
+                            if ($(this).closest('tr').is(':visible')) {
+                                selectedIds.push($(this).val());
+                            }
+                        });
+
+                        if (selectedIds.length === 0) {
+                            alert('Please select at least one user from the visible/filtered results to export.');
+                            return;
+                        }
+
+                        // Create CSV content
+                        let csvContent = 'ID,Name,Email,Website,Role,Status';
+                        @if($isRoleUser)
+                            csvContent = 'ID,Name,Email,Website,Parent Email,Teacher,Shirt Size,Amount Raised,Goal,Status';
+                        @endif
+                        csvContent += '\n';
+
+                        selectedIds.forEach(function(id) {
+                            const row = $('tr[data-user-id="' + id + '"]');
+                            const cells = row.find('td');
+                            
+                            const rowData = [];
+                            // Skip first cell (checkbox) and last cell (actions)
+                            for (let i = 1; i < cells.length - 1; i++) {
+                                let cellText = $(cells[i]).text().trim();
+                                // Escape quotes and wrap in quotes if contains comma
+                                cellText = cellText.replace(/"/g, '""');
+                                if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
+                                    cellText = '"' + cellText + '"';
+                                }
+                                rowData.push(cellText);
+                            }
+                            csvContent += rowData.join(',') + '\n';
+                        });
+
+                        // Create download link
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        const url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', 'selected_users_' + new Date().getTime() + '.csv');
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+
+                    // Update checkboxes after DataTable draw
+                    table.on('draw', function() {
+                        updateSelectAll();
+                        updateExportButton();
+                    });
                 });
-            });
+            }
+
+            initializeDataTable();
         </script>
     </div>
 </div>
