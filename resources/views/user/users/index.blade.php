@@ -146,9 +146,9 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="text-dark fw-semibold mb-1">Filter by Parent:</label>
+                                        <label class="text-dark fw-semibold mb-1">Filter by Parent / Guardian:</label>
                                         <select id="parentFilter" class="form-select">
-                                            <option value="">All Parents</option>
+                                            <option value="">All Parents / Guardians</option>
                                             @foreach($parents as $parent)
                                                 <option value="{{ $parent->id }}">{{ $parent->name }} {{ $parent->last_name ?? '' }} ({{ $parent->email }})</option>
                                             @endforeach
