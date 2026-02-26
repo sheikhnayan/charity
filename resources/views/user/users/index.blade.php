@@ -133,41 +133,6 @@
                                         </button>
                                     </div>
                                 </div>
-
-                                @if($isRoleUser)
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-3">
-                                        <label for="teacherFilter" class="form-label text-dark fw-semibold">Filter by Teacher:</label>
-                                        <select id="teacherFilter" class="form-select form-select-sm">
-                                            <option value="">All Teachers</option>
-                                            @foreach($teachers as $teacher)
-                                                <option value="{{ trim($teacher->name . ' ' . ($teacher->last_name ?? '')) }}">
-                                                    {{ trim($teacher->name . ' ' . ($teacher->last_name ?? '')) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="parentFilter" class="form-label text-dark fw-semibold">Filter by Parent:</label>
-                                        <select id="parentFilter" class="form-select form-select-sm">
-                                            <option value="">All Parents</option>
-                                            @foreach($parents as $parent)
-                                                <option value="{{ $parent->email }}">
-                                                    {{ trim($parent->name . ' ' . ($parent->last_name ?? '')) }} ({{ $parent->email }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="dateFrom" class="form-label text-dark fw-semibold">Date From:</label>
-                                        <input type="date" id="dateFrom" class="form-control form-control-sm">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="dateTo" class="form-label text-dark fw-semibold">Date To:</label>
-                                        <input type="date" id="dateTo" class="form-control form-control-sm">
-                                    </div>
-                                </div>
-                                @endif
                                 
                                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-striped" id="usersTable">
@@ -333,93 +298,43 @@
             @endif
         @endforeach
 
-        <!-- jQuery -->
+        <!-- Include DataTables and jQuery CDN -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        
-        <!-- DataTables CSS -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-        
-        <!-- DataTables JS -->
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
         <style>
             .dataTables_wrapper .dataTables_paginate .paginate_button.current,
             .dataTables_wrapper .dataTables_paginate .paginate_button {
                 color: #000 !important;
             }
         </style>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
         <script>
             $(document).ready(function() {
-                @if($isRoleUser)
-                // Initialize DataTable with custom filtering
-                var table = $('#usersTable').DataTable({
+                // Initialize DataTable with export/import buttons
+                let table = new DataTable('#usersTable', {
+                    dom: 'Bfrtip',
                     pageLength: 25,
                     scrollX: true,
                     columnDefs: [
                         { orderable: false, targets: 0 }
+                    ],
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
                     ]
                 });
-
-                // Custom search function for filtering
-                $.fn.dataTable.ext.search.push(
-                    function(settings, data, dataIndex) {
-                        const teacherFilter = $('#teacherFilter').val().toLowerCase();
-                        const parentFilter = $('#parentFilter').val().toLowerCase();
-                        const dateFrom = $('#dateFrom').val();
-                        const dateTo = $('#dateTo').val();
-
-                        // Data indices: 6=Parent Email, 7=Teacher, 11=Registration Date
-                        const parentEmail = data[6].toLowerCase();
-                        const teacher = data[7].toLowerCase();
-                        const dateStr = data[11]; // Format: "YYYY-MM-DD HH:MM AM/PM"
-
-                        // Filter by teacher
-                        if (teacherFilter && teacher.indexOf(teacherFilter) === -1) {
-                            return false;
-                        }
-
-                        // Filter by parent
-                        if (parentFilter && parentEmail.indexOf(parentFilter) === -1) {
-                            return false;
-                        }
-
-                        // Filter by date range
-                        if (dateFrom || dateTo) {
-                            // Extract date part from "YYYY-MM-DD HH:MM AM/PM"
-                            const rowDate = dateStr.substring(0, 10); // Get first 10 chars (YYYY-MM-DD)
-                            
-                            if (dateFrom && rowDate < dateFrom) {
-                                return false;
-                            }
-                            if (dateTo && rowDate > dateTo) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    }
-                );
-
-                // Trigger table redraw when filters change
-                $('#teacherFilter, #parentFilter, #dateFrom, #dateTo').on('change', function() {
-                    table.draw();
-                });
-                @else
-                // Basic DataTable for non-role users
-                $('#usersTable').DataTable({
-                    pageLength: 25,
-                    scrollX: true,
-                    columnDefs: [
-                        { orderable: false, targets: 0 }
-                    ]
-                });
-                @endif
 
                 // Select All functionality
                 $('#selectAll').on('click', function() {
                     const isChecked = $(this).prop('checked');
-                    $('#usersTable tbody tr:visible').find('.row-checkbox').prop('checked', isChecked);
+                    $('.row-checkbox:visible').prop('checked', isChecked);
                     updateExportButton();
                 });
 
@@ -431,8 +346,8 @@
 
                 // Update Select All checkbox state
                 function updateSelectAll() {
-                    const totalVisible = $('#usersTable tbody tr:visible').length;
-                    const totalChecked = $('#usersTable tbody tr:visible').find('.row-checkbox:checked').length;
+                    const totalVisible = $('.row-checkbox:visible').length;
+                    const totalChecked = $('.row-checkbox:visible:checked').length;
                     $('#selectAll').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
                 }
 
@@ -451,13 +366,11 @@
                 $('#exportSelectedBtn').on('click', function() {
                     const selectedIds = [];
                     $('.row-checkbox:checked').each(function() {
-                        if ($(this).closest('tr').is(':visible')) {
-                            selectedIds.push($(this).val());
-                        }
+                        selectedIds.push($(this).val());
                     });
 
                     if (selectedIds.length === 0) {
-                        alert('Please select at least one user from the visible/filtered results to export.');
+                        alert('Please select at least one user to export.');
                         return;
                     }
 
@@ -473,8 +386,10 @@
                         const cells = row.find('td');
                         
                         const rowData = [];
+                        // Skip first cell (checkbox) and last cell (actions)
                         for (let i = 1; i < cells.length - 1; i++) {
                             let cellText = $(cells[i]).text().trim();
+                            // Escape quotes and wrap in quotes if contains comma
                             cellText = cellText.replace(/"/g, '""');
                             if (cellText.includes(',') || cellText.includes('"') || cellText.includes('\n')) {
                                 cellText = '"' + cellText + '"';
@@ -494,6 +409,12 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                });
+
+                // Update checkboxes after DataTable draw
+                table.on('draw', function() {
+                    updateSelectAll();
+                    updateExportButton();
                 });
             });
         </script>
