@@ -340,15 +340,14 @@
             }
         </style>
         
-        <!-- Ensure jQuery is available (don't reload if already loaded) -->
-        <script>
-            window.jQuery || document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
-        </script>
+        <!-- jQuery first -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         
         <!-- Moment.js (MUST be before daterangepicker) -->
-        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <!-- Date Range Picker JS -->
-        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+        <!-- Date Range Picker JS (requires jQuery and Moment) -->
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
+        
         <!-- DataTables Scripts -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
