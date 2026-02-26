@@ -358,7 +358,7 @@
         <script>
             $(document).ready(function() {
                 // Initialize DataTable with export/import buttons
-                var table = $('#usersTable').DataTable({
+                var table = $('#usersTable').dataTable({
                     dom: 'Bfrtip',
                     pageLength: 25,
                     scrollX: true,
@@ -368,7 +368,7 @@
                     buttons: [
                         'copy', 'csv', 'excel', 'pdf', 'print'
                     ]
-                });
+                }).api();
 
                 @if($isRoleUser)
                 // Custom search function for filtering
