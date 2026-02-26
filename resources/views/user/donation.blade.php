@@ -804,8 +804,6 @@ body.tutorial-first-visit .introjs-skipbutton {
             </div>
             @endif
 
-            <!-- jQuery -->
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <!-- DataTables CSS -->
             <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
@@ -868,6 +866,7 @@ body.tutorial-first-visit .introjs-skipbutton {
             <!-- Select2 CSS -->
             <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+        @push('scripts')
             <!-- DataTables JS -->
             <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
             <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -907,8 +906,9 @@ body.tutorial-first-visit .introjs-skipbutton {
                     }
 
                     // Only initialize DataTable if there are rows with data
+                    let table = null;
                     @if (!$data->isEmpty())
-                    let table = new DataTable('.table', {
+                    table = new DataTable('.table', {
                         dom: 'Bfrtip',
                         pageLength: 25,
                         language: {
@@ -969,6 +969,9 @@ body.tutorial-first-visit .introjs-skipbutton {
 
                     // Type filter
                     $('#typeFilter').on('change', function() {
+                        if (!table) {
+                            return;
+                        }
                         table.column(13).search(this.value).draw();
                     });
 
@@ -1014,7 +1017,9 @@ body.tutorial-first-visit .introjs-skipbutton {
                         });
 
                         $('#teacherFilter, #parentFilter').on('change', function() {
-                            table.draw();
+                            if (table) {
+                                table.draw();
+                            }
                         });
 
                         $('#startDateFilter, #endDateFilter').on('change', function() {
@@ -1027,14 +1032,18 @@ body.tutorial-first-visit .introjs-skipbutton {
                                 $('#clearDateRange').hide();
                             }
 
-                            table.draw();
+                            if (table) {
+                                table.draw();
+                            }
                         });
 
                         $('#clearDateRange').on('click', function() {
                             $('#startDateFilter').val('');
                             $('#endDateFilter').val('');
                             $(this).hide();
-                            table.draw();
+                            if (table) {
+                                table.draw();
+                            }
                         });
                     }
                     @endif
@@ -1047,6 +1056,9 @@ body.tutorial-first-visit .introjs-skipbutton {
                     });
 
                     function updateAmountTotal() {
+                        if (!table) {
+                            return;
+                        }
                         const totalIndex = isRoleUser ? 10 : 8;
                         let total = 0;
                         table.rows({ search: 'applied' }).every(function () {
@@ -1066,10 +1078,13 @@ body.tutorial-first-visit .introjs-skipbutton {
 
                     }
 
-                    table.on('draw', updateAmountTotal);
-                    updateAmountTotal();
+                    if (table) {
+                        table.on('draw', updateAmountTotal);
+                        updateAmountTotal();
+                    }
                 });
                 </script>
+        @endpush
 
                 <script>
                 let currentTransactionData = {};
