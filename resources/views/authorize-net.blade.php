@@ -1220,7 +1220,8 @@
         const paymentForm = document.getElementById('payment-form');
         if (paymentForm) {
             paymentForm.addEventListener('submit', function(e) {
-                const baseAmountWithFee = parseFloat('{{ rtrim(rtrim(number_format((($data->amount / 100) * $processingFee) + $data->amount, 2, '.', ','), '0'), '.') }}');
+                const baseAmountStr = '{{ rtrim(rtrim(number_format((($data->amount / 100) * $processingFee) + $data->amount, 2, '.', ','), '0'), '.') }}';
+                const baseAmountWithFee = parseFloat(baseAmountStr.replace(/,/g, ''));
                 const tipAmount = parseFloat(document.getElementById('tip-amount-field')?.value || 0);
                 const totalAmount = baseAmountWithFee + tipAmount;
                 
