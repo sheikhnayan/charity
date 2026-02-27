@@ -920,9 +920,13 @@ body.tutorial-first-visit .introjs-skipbutton {
                                 extend: 'csv',
                                 text: 'Export CSV',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-check:checked');
-                                        if (checked.length === 0) return true; // export all if none checked
+                                        if (checked.length === 0) return true; // export all filtered rows across all pages
                                         return $(node).find('.row-check').prop('checked');
                                     },
                                     columns: ':visible:not(:first-child):not(:last-child)' // Exclude checkbox and action columns
@@ -932,9 +936,13 @@ body.tutorial-first-visit .introjs-skipbutton {
                                 extend: 'excel',
                                 text: 'Export Excel',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-check:checked');
-                                        if (checked.length === 0) return true;
+                                        if (checked.length === 0) return true; // export all filtered rows across all pages
                                         return $(node).find('.row-check').prop('checked');
                                     },
                                     columns: ':visible:not(:first-child):not(:last-child)'
@@ -944,9 +952,13 @@ body.tutorial-first-visit .introjs-skipbutton {
                                 extend: 'pdf',
                                 text: 'Export PDF',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-check:checked');
-                                        if (checked.length === 0) return true;
+                                        if (checked.length === 0) return true; // export all filtered rows across all pages
                                         return $(node).find('.row-check').prop('checked');
                                     },
                                     columns: ':visible:not(:first-child):not(:last-child)'
@@ -956,9 +968,13 @@ body.tutorial-first-visit .introjs-skipbutton {
                                 extend: 'print',
                                 text: 'Print',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-check:checked');
-                                        if (checked.length === 0) return true;
+                                        if (checked.length === 0) return true; // export all filtered rows across all pages
                                         return $(node).find('.row-check').prop('checked');
                                     },
                                     columns: ':visible:not(:first-child):not(:last-child)'

@@ -366,10 +366,14 @@
                             {
                                 extend: 'copy',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-checkbox:checked');
                                         if (checked.length === 0) {
-                                            return $(node).is(':visible');
+                                            return true;
                                         }
                                         return $(node).find('.row-checkbox').prop('checked');
                                     },
@@ -379,10 +383,14 @@
                             {
                                 extend: 'csv',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-checkbox:checked');
                                         if (checked.length === 0) {
-                                            return $(node).is(':visible');
+                                            return true;
                                         }
                                         return $(node).find('.row-checkbox').prop('checked');
                                     },
@@ -392,10 +400,14 @@
                             {
                                 extend: 'excel',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-checkbox:checked');
                                         if (checked.length === 0) {
-                                            return $(node).is(':visible');
+                                            return true;
                                         }
                                         return $(node).find('.row-checkbox').prop('checked');
                                     },
@@ -405,10 +417,14 @@
                             {
                                 extend: 'pdf',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-checkbox:checked');
                                         if (checked.length === 0) {
-                                            return $(node).is(':visible');
+                                            return true;
                                         }
                                         return $(node).find('.row-checkbox').prop('checked');
                                     },
@@ -418,10 +434,14 @@
                             {
                                 extend: 'print',
                                 exportOptions: {
+                                    modifier: {
+                                        search: 'applied',
+                                        order: 'applied'
+                                    },
                                     rows: function(idx, data, node) {
                                         let checked = $('.row-checkbox:checked');
                                         if (checked.length === 0) {
-                                            return $(node).is(':visible');
+                                            return true;
                                         }
                                         return $(node).find('.row-checkbox').prop('checked');
                                     },
