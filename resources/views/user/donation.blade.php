@@ -1100,8 +1100,6 @@ body.tutorial-first-visit .introjs-skipbutton {
                     }
                 });
                 </script>
-        @endpush
-
                 <script>
                 let currentTransactionData = {};
                 
@@ -1801,4 +1799,6 @@ body.tutorial-first-visit .introjs-skipbutton {
                         }
                     });
                 </script>
+        @endpush
+
         @endsection
