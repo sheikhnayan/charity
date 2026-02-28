@@ -1044,7 +1044,7 @@
             <div class="subtitle">Sold by <strong>{{$ticket->user->website->name}}</strong></div>
             <div class="price">US ${{ number_format($ticket->price, 2) }}</div>
 
-            <form action="/tickets" method="post" id="ticketPurchaseForm">
+            <form action="/tickets" method="post" id="ticketPurchaseForm" data-requires-auth="{{ $ticket->type === 'property' ? '1' : '0' }}">
               @csrf
               <div style="height:8px"></div>
               <input type="hidden" name="ticket[{{ $ticket->id }}][id]" value="{{ $ticket->id }}">
@@ -1056,7 +1056,7 @@
                     $sizes = explode(',',$ticket->size);
                     // dd($sizes);
                   @endphp
-                  <button class="btn" id="dec"> </button>
+                  <button type="button" class="btn" id="sizeToggleBtn"> </button>
 
                   <select name="ticket[{{ $ticket->id }}][size]" id="" class="form-control" style="margin-left: 2rem; width: 4.5rem; text-align: center;">
                     @foreach($sizes as $size)
@@ -1070,14 +1070,15 @@
               <div class="qty-row">
                 <label for="qty" class="small">Quantity</label>
                 <div style="display:flex;align-items:center;gap:8px">
-                  <button class="btn" id="dec">-</button>
+                  <button type="button" class="btn" id="qtyDec">-</button>
                   <input id="qty" type="number" min="1" value="1" max="{{$ticket->quantity}}" aria-label="quantity" name="ticket[{{ $ticket->id }}][quantity]">
-                  <button class="btn" id="inc">+</button>
+                  <button type="button" class="btn" id="qtyInc">+</button>
                 </div>
               </div>
+                            <div id="stockStatus" class="small" style="color:#dc2626 !important; font-weight: bold; margin-top:-6px; margin-bottom:10px; display:none;">Out of stock</div>
               
               <div style="display:flex;gap:8px;margin-bottom:10px">
-                <button type="submit" class="btn primary" style="flex: 1;">Buy It Now</button>
+                                <button type="submit" class="btn primary" id="buyNowBtn" style="flex: 1;">Buy It Now</button>
                 <button type="button" class="btn ghost" id="addProductToCartBtn" style="flex: 1;">
                   <i class="fa fa-cart-plus mr-2"></i>Add to Cart
                 </button>
@@ -1152,21 +1153,77 @@
 
     // --- Quantity controls ---
     (function(){
-      const inc = document.getElementById('inc');
-      const dec = document.getElementById('dec');
-      const qty  = document.getElementById('qty');
-      inc.addEventListener('click', ()=>{qty.value = Math.max(1, parseInt(qty.value||1)+1)});
-      dec.addEventListener('click', ()=>{qty.value = Math.max(1, parseInt(qty.value||1)-1)});
+            const inc = document.getElementById('qtyInc');
+            const dec = document.getElementById('qtyDec');
+            const qty = document.getElementById('qty');
+            const addBtn = document.getElementById('addProductToCartBtn');
+            const buyBtn = document.getElementById('buyNowBtn');
+            const stockStatus = document.getElementById('stockStatus');
+            if (!inc || !dec || !qty || !addBtn || !buyBtn || !stockStatus) return;
+
+            const maxQty = parseInt(qty.max || '0', 10) || 0;
+
+            const setOutOfStock = (isOut) => {
+                stockStatus.style.display = isOut ? 'block' : 'none';
+                inc.disabled = isOut;
+                dec.disabled = isOut;
+                addBtn.disabled = isOut;
+                buyBtn.disabled = isOut;
+            };
+
+            const normalizeQty = () => {
+                let current = parseInt(qty.value, 10);
+                if (Number.isNaN(current)) current = 0;
+
+                if (maxQty < 1 || current < 1) {
+                    setOutOfStock(true);
+                    return;
+                }
+
+                setOutOfStock(false);
+                if (current > maxQty) current = maxQty;
+                qty.value = current;
+            };
+
+            if (maxQty < 1) {
+                qty.value = 0;
+                qty.min = 0;
+                qty.max = 0;
+                setOutOfStock(true);
+            } else {
+                qty.value = Math.min(Math.max(parseInt(qty.value || '1', 10) || 1, 1), maxQty);
+                setOutOfStock(false);
+            }
+
+            inc.addEventListener('click', () => {
+                if (maxQty < 1) return;
+                const current = parseInt(qty.value || '1', 10) || 1;
+                qty.value = Math.min(maxQty, current + 1);
+                normalizeQty();
+            });
+
+            dec.addEventListener('click', () => {
+                if (maxQty < 1) return;
+                const current = parseInt(qty.value || '1', 10) || 1;
+                qty.value = current - 1;
+                normalizeQty();
+            });
+
+            qty.addEventListener('input', normalizeQty);
     })();
 
     // --- Add to Cart button ---
     (function(){
       const addBtn = document.getElementById('addProductToCartBtn');
-      if (!addBtn) return;
+            const qtyInput = document.getElementById('qty');
+            if (!addBtn || !qtyInput) return;
       
       addBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const qty = parseInt(document.getElementById('qty').value) || 1;
+                const qty = parseInt(qtyInput.value, 10) || 0;
+                if (qty < 1 || addBtn.disabled) {
+                    return;
+                }
         
         if (typeof window.addToCart === 'function') {
           window.addToCart({
@@ -1201,13 +1258,28 @@
         e.preventDefault();
 
         const submitBtn = form.querySelector('button[type="submit"]');
+                const qtyInput = document.getElementById('qty');
+                const selectedQty = parseInt(qtyInput ? qtyInput.value : '0', 10) || 0;
+                if (selectedQty < 1 || submitBtn.disabled) {
+                    return;
+                }
         const originalText = submitBtn.textContent;
         
         try {
+          // CONDITIONAL_AUTH_MODAL: Only require auth for property/investment type products
+          const isPropertyType = '{{ $ticket->type }}' === 'property';
+          
+          if (!isPropertyType) {
+            // Simple ticket/product/auction - no auth required, submit directly
+            submitBtn.textContent = 'Processing...';
+            form.submit();
+            return;
+          }
+          
           submitBtn.textContent = 'Checking...';
           submitBtn.disabled = true;
 
-          // Check if user is authenticated
+          // Check if user is authenticated (only for property/investment types)
           const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
           const authCheck = await fetch('/ajax/ticket-auth/check', {
             method: 'POST',

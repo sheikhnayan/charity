@@ -382,7 +382,7 @@ class AuthorizeNetController extends Controller
                     $tran->website_id = $donation->website_id;
                     $tran->transaction_id = $tresponse->getTransId();
                     $tran->name = $request->first_name;
-                    $tran->email = Auth::user()->email;
+                    $tran->email = $request->email;
                     $tran->last_name = $request->last_name;
                     // $tran->email = $request->email;
                     $tran->address = $request->address;

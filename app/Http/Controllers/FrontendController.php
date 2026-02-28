@@ -624,13 +624,27 @@ class FrontendController extends Controller
     }
 
     public function tickets(Request $request){
-        // Check authentication and email verification
-        if (!Auth::check()) {
-            return redirect()->back()->withErrors(['auth' => 'You must be logged in to purchase tickets.'])->withInput();
+        // CONDITIONAL_AUTH_CHECK: Check if any tickets are property/investment type
+        $hasPropertyTickets = false;
+        foreach ($request->ticket as $key => $value) {
+            if($value['quantity'] > 0){
+                $ticket = Ticket::find($value['id']);
+                if($ticket->type === 'property') {
+                    $hasPropertyTickets = true;
+                    break;
+                }
+            }
         }
         
-        if (!Auth::user()->email_verified_at) {
-            return redirect()->back()->withErrors(['auth' => 'Please verify your email address before purchasing tickets.'])->withInput();
+        // Only require authentication for investment/property type purchases
+        if ($hasPropertyTickets) {
+            if (!Auth::check()) {
+                return redirect()->back()->withErrors(['auth' => 'You must be logged in to purchase investment properties.'])->withInput();
+            }
+            
+            if (!Auth::user()->email_verified_at) {
+                return redirect()->back()->withErrors(['auth' => 'Please verify your email address before purchasing investment properties.'])->withInput();
+            }
         }
         
         $url = url()->current();

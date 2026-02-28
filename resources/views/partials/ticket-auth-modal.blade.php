@@ -645,6 +645,10 @@
         const action = form.getAttribute('action');
         if (!action) return;
         if (action.includes('/tickets')) {
+            const requiresAuth = form.getAttribute('data-requires-auth');
+            if (requiresAuth === '0' || requiresAuth === 'false') {
+                return;
+            }
             // Check auth status via ajax
             e.preventDefault();
             ajaxPost('/ajax/ticket-auth/check', {}).then(res => {
