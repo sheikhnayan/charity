@@ -393,15 +393,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                 <td data-parent-id="{{ $parent->id ?? '' }}">{{ $parent->email ?? 'N/A' }}</td>
                                                                 <td data-teacher-id="{{ $teacher->id ?? '' }}">{{ trim(($teacher->name ?? '') . ' ' . ($teacher->last_name ?? '')) ?: 'N/A' }}</td>
                                                             @endif
-                                                            @if ($item->type == 'investment')
-                                                            <td>${{ number_format($item->amount, 2) }}</td>
-                                                                
-                                                            @else
-                                                            <td>${{ number_format($item->amount, 2) }}</td>
-                                                                
-                                                            @endif
-                                                            <td>
-                                                                @php
+                                                            @php
                                                                     // Calculate fee for Donation objects, use existing fee for Transaction objects
                                                                     if (isset($item->fee)) {
                                                                         $fee = $item->fee;
@@ -412,6 +404,14 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                         $fee = ($item->amount / 100) * $processingFeePercentage;
                                                                     }
                                                                 @endphp
+                                                            @if ($item->type == 'investment')
+                                                            <td>${{ number_format($item->amount, 2) - number_format($fee, 2)}}</td>
+                                                                
+                                                            @else
+                                                            <td>${{ number_format($item->amount, 2) - number_format($fee, 2)}}</td>
+                                                                
+                                                            @endif
+                                                            <td>
                                                                 ${{ number_format($fee, 2) }}
                                                             </td>
                                                             <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
@@ -419,7 +419,7 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                             <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                             @else
                                                                 
-                                                            <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
+                                                            <td>${{ number_format($item->amount + ($item->tip_amount ?? 0), 2) }}</td>
                                                             @endif
                                                             {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                             <td>
