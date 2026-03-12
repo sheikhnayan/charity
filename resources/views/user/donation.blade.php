@@ -405,10 +405,10 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                                     }
                                                                 @endphp
                                                             @if ($item->type == 'investment')
-                                                            <td>${{ number_format($item->amount, 2) - $fee}}</td>
+                                                            <td>${{ number_format($item->amount - $fee, 2)}}</td>
                                                                 
                                                             @else
-                                                            <td>${{ number_format($item->amount, 2) - $fee}}</td>
+                                                            <td>${{ number_format($item->amount - $fee, 2)}}</td>
                                                                 
                                                             @endif
                                                             <td>
