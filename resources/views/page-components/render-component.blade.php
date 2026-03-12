@@ -4648,18 +4648,36 @@ Extracted Video Data: {{ json_encode($videoData, JSON_PRETTY_PRINT) }}</pre>
                                         // Get goal from website settings
                                         $goal = isset($setting) && isset($setting->goal) ? (float)$setting->goal : 10000;
                                         
-                                        // Get raised amount from all approved donations
+                                        // Get raised amount from approved donations + successful ticket sales (pre-fee)
                                         $raised = 0;
                                         if (isset($check) && isset($check->id)) {
                                             // Get donations for this website
-                                            $raised = \App\Models\Donation::where('website_id', $check->id)
+                                            $donationRaised = \App\Models\Donation::where('website_id', $check->id)
                                                 ->where('status', 1)
                                                 ->sum('amount');
+
+                                            // Get successful ticket sales for this website (uses ticekt_sells.amount without processing fee)
+                                            $ticketRaised = \App\Models\TicektSell::where('website_id', $check->id)
+                                                ->where('status', 1)
+                                                ->sum('amount');
+
+                                            $raised = (float)$donationRaised + (float)$ticketRaised;
                                         } elseif (isset($data) && isset($data->user_id)) {
                                             // Fallback: get donations for the page owner
-                                            $raised = \App\Models\Donation::where('user_id', $data->user_id)
+                                            $donationRaised = \App\Models\Donation::where('user_id', $data->user_id)
                                                 ->where('status', 1)
                                                 ->sum('amount');
+
+                                            // Fallback: get ticket sales for websites owned by this user
+                                            $ownedWebsiteIds = \App\Models\Website::where('user_id', $data->user_id)->pluck('id');
+                                            $ticketRaised = 0;
+                                            if ($ownedWebsiteIds->isNotEmpty()) {
+                                                $ticketRaised = \App\Models\TicektSell::whereIn('website_id', $ownedWebsiteIds)
+                                                    ->where('status', 1)
+                                                    ->sum('amount');
+                                            }
+
+                                            $raised = (float)$donationRaised + (float)$ticketRaised;
                                         }
                                         
                                         $raised = (float)$raised;
