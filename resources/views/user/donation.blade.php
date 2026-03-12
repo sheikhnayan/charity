@@ -417,9 +417,12 @@ body.tutorial-first-visit .introjs-skipbutton {
                                                             <td>${{ number_format($item->tip_amount ?? 0, 2) }}</td>
                                                             @if ($item->type == 'investment')
                                                             <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
+                                                            
+                                                            @elseif ($item->type == 'ticket')
+                                                            <td>${{ number_format($item->amount + ($item->tip_amount ?? 0), 2) }}</td>
                                                             @else
                                                                 
-                                                            <td>${{ number_format($item->amount + ($item->tip_amount ?? 0), 2) }}</td>
+                                                            <td>${{ number_format($item->amount + $fee + ($item->tip_amount ?? 0), 2) }}</td>
                                                             @endif
                                                             {{-- <td>${{ number_format($item->amount, 2) }}</td> --}}
                                                             <td>
